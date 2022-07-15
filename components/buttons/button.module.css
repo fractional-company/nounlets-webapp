@@ -1,0 +1,53 @@
+.button {
+  @apply cursor-pointer transition-all;
+  -webkit-appearance: none !important;
+
+  &:global(.--sm) {
+    @apply h-10;
+  }
+
+  &:global(.--lg) {
+    @apply h-14;
+  }
+
+  &:global(.disabled) {
+    @apply opacity-20 cursor-not-allowed;
+  }
+
+  &:global(.loading) {
+    @apply cursor-not-allowed;
+  }
+
+  &:global(.basic) {
+    @apply inline-flex items-center justify-center h-12 px-4 box-border rounded-px10 bg-white;
+    @apply font-700 text-px16 leading-px16;
+    @apply border-0 hover:bg-gray-2;
+  }
+
+  &:global(.default-outline) {
+    @apply inline-flex items-center justify-center h-12 px-4 box-border rounded-px10;
+    @apply text-black font-700 text-px16 leading-px16;
+    @apply border-2 border-gray-2 hover:border-primary;
+
+    :global(.dark) & {
+      @apply text-white;
+    }
+  }
+
+  &:global(.default) {
+    @apply inline-flex items-center justify-center h-12 px-4 box-border rounded-px10;
+    @apply text-black font-700 text-px16 leading-px16;
+    @apply border-2 border-primary;
+
+    :global(.dark) & {
+      @apply text-white;
+    }
+  }
+
+  &:global(.primary) {
+    @apply inline-flex items-center justify-center h-12 px-4 box-border rounded-px10;
+    @apply text-black font-700 text-px16 leading-px16;
+    @apply border-2 border-primary bg-primary;
+    @apply hover:bg-[#75c63a] hover:border-[#75c63a];
+  }
+}
