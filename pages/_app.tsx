@@ -7,7 +7,9 @@ import { useAppState } from '../store/application'
 import { useState } from 'react'
 import config from '../config'
 import WalletConfig from '../components/WalletConfig'
-import AppHeader from '../components/app-header'
+import AppHeader from 'components/app-header'
+import HomeHero from 'components/home/home-hero'
+import HomeLeaderboard from 'components/home/home-leaderboard'
 
 type SupportedChains = ChainId.Rinkeby | ChainId.Mainnet | ChainId.Hardhat
 
@@ -23,8 +25,10 @@ const useDappConfig = {
 }
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <div className="bg-gray-1">
+    <div className="home-page bg-white text-black pb-[300px]">
       <AppHeader />
+      <HomeHero />
+      <HomeLeaderboard />
     </div>
   )
 
