@@ -15,6 +15,7 @@ import Image from 'next/image'
 import classNames from 'classnames'
 import HomeWTF from 'components/home/home-wtf'
 import HomeCollectiveOwnership from 'components/home/home-collective-ownership'
+import AppFooter from 'components/app-footer'
 
 type SupportedChains = ChainId.Rinkeby | ChainId.Mainnet | ChainId.Hardhat
 
@@ -30,12 +31,13 @@ const useDappConfig = {
 }
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <div className="home-page bg-white text-black pb-[300px]">
+    <div className="home-page bg-white text-black">
       <AppHeader />
       <HomeHero />
       <HomeLeaderboard />
       <HomeCollectiveOwnership />
       <HomeWTF />
+      <AppFooter />
     </div>
   )
 
