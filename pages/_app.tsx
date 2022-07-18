@@ -10,6 +10,11 @@ import WalletConfig from '../components/WalletConfig'
 import AppHeader from 'components/app-header'
 import HomeHero from 'components/home/home-hero'
 import HomeLeaderboard from 'components/home/home-leaderboard'
+import Image from 'next/image'
+
+import classNames from 'classnames'
+import HomeWTF from 'components/home/home-wtf'
+import HomeCollectiveOwnership from 'components/home/home-collective-ownership'
 
 type SupportedChains = ChainId.Rinkeby | ChainId.Mainnet | ChainId.Hardhat
 
@@ -29,6 +34,8 @@ function MyApp({ Component, pageProps }: AppProps) {
       <AppHeader />
       <HomeHero />
       <HomeLeaderboard />
+      <HomeCollectiveOwnership />
+      <HomeWTF />
     </div>
   )
 

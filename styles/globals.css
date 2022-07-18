@@ -36,6 +36,10 @@
   font-style: normal;
 }
 
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
 /*
 
 img {

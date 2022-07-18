@@ -11,7 +11,7 @@ export default function HomeHeroAuctionProgress(): JSX.Element {
   const latestBidsList: JSX.Element[] = useMemo(() => {
     return [1, 2, 3].map((bid) => {
       return (
-        <div key={bid} className="flex items-center flex-1 py-2">
+        <div key={bid} className="flex items-center flex-1 py-2 overflow-hidden">
           <Image
             src={userIcon}
             alt="icon"
@@ -19,7 +19,7 @@ export default function HomeHeroAuctionProgress(): JSX.Element {
             height="24"
             className="overflow-hidden rounded-full flex-shrink-0"
           />
-          <p className="ml-2 text-px18 leading-px28 font-700 flex-1">0x497F...72E0</p>
+          <p className="ml-2 text-px18 leading-px28 font-700 flex-1 truncate">0x497F...72E0</p>
           <IconEth className="flex-shrink-0 h-[12px]" />
           <p className="ml-1 text-px18 leading-px28 font-700">0.12</p>
           <IconLinkOffsite className="ml-3 flex-shrink-0 h-[12px]" />

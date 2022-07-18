@@ -2,11 +2,11 @@
   @apply cursor-pointer transition-all;
   -webkit-appearance: none !important;
 
-  &:global(.--sm) {
+  &:global(.--sm.--sm) {
     @apply h-10;
   }
 
-  &:global(.--lg) {
+  &:global(.--lg.--lg) {
     @apply h-14;
   }
 

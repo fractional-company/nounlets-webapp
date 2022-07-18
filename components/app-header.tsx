@@ -117,8 +117,10 @@ export default function AppHeader(): JSX.Element {
         </div>
         <div className="md:hidden pb-4">
           <div className="flex items-center px-4 h-12 rounded-px10 bg-white space-x-2 justify-center">
-            <span className="hidden sm:inline">Current delegate</span>
-            <span className="font-500 ml-2">hot.gabrielayuso.eth</span>
+            <p className="truncate">
+              <span className="hidden sm:inline">Current delegate</span>
+              <span className="font-500 ml-2">hot.gabrielayuso.eth</span>
+            </p>
             <InfoPopover />
           </div>
         </div>
