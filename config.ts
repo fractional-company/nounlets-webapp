@@ -10,17 +10,15 @@ interface AppConfig {
   jsonRpcUri: string;
   wsRpcUri: string;
   subgraphApiUri: string;
-  nounsDAOSubgraphApiUri: string;
-  enableHistory: boolean;
 }
 
 type SupportedChains = ChainId.Rinkeby | ChainId.Mainnet | ChainId.Hardhat;
 
-export const CHAIN_ID: SupportedChains = parseInt(process.env.REACT_APP_CHAIN_ID ?? '4');
+export const CHAIN_ID: SupportedChains = parseInt(process.env.REACT_APP_CHAIN_ID ?? '1');
 
 export const ETHERSCAN_API_KEY = process.env.REACT_APP_ETHERSCAN_API_KEY ?? '';
 
-const INFURA_PROJECT_ID = process.env.REACT_APP_INFURA_PROJECT_ID;
+const INFURA_PROJECT_ID = process.env.NEXT_PUBLIC_INFURA_ID;
 
 //TODO: replaced infura for prod
 export const createNetworkHttpUrl = (network: string): string => {
@@ -29,7 +27,7 @@ export const createNetworkHttpUrl = (network: string): string => {
   if (network === "rinkeby") {
     return custom || `https://${network}.infura.io/v3/${INFURA_PROJECT_ID}`;
   } else {
-    return custom || `https://eth-mainnet.alchemyapi.io/v2/tEAmLPls4-IajaZM2nyTIfG6CqK_uAb0`
+    return custom || `https://eth-mainnet.alchemyapi.io/v2/jO-pIswuUui5ipthjbcIOZEeuuxWibBd`
   }
 };
 
@@ -39,7 +37,7 @@ export const createNetworkWsUrl = (network: string): string => {
   if (network === "rinkeby") {
     return custom || `wss://${network}.infura.io/ws/v3/${INFURA_PROJECT_ID}`;
   } else {
-    return custom || 'wss://eth-mainnet.alchemyapi.io/v2/tEAmLPls4-IajaZM2nyTIfG6CqK_uAb0'
+    return custom || 'wss://eth-mainnet.alchemyapi.io/v2/jO-pIswuUui5ipthjbcIOZEeuuxWibBd'
   }
 };
 
@@ -47,23 +45,17 @@ const app: Record<SupportedChains, AppConfig> = {
   [ChainId.Rinkeby]: {
     jsonRpcUri: createNetworkHttpUrl('rinkeby'),
     wsRpcUri: createNetworkWsUrl('rinkeby'),
-    subgraphApiUri: 'https://api.thegraph.com/subgraphs/name/lilnounsdao/lil-nouns-subgraph-rinkeby',
-    nounsDAOSubgraphApiUri: 'https://api.thegraph.com/subgraphs/name/nounsdao/nouns-subgraph-rinkeby',
-    enableHistory: process.env.REACT_APP_ENABLE_HISTORY === 'true',
+    subgraphApiUri: 'https://api.thegraph.com/subgraphs/name/vidmahovic/nounlets',
   },
   [ChainId.Mainnet]: {
     jsonRpcUri: createNetworkHttpUrl('mainnet'),
     wsRpcUri: createNetworkWsUrl('mainnet'),
-    subgraphApiUri: 'https://api.thegraph.com/subgraphs/name/lilnounsdao/lil-nouns-subgraph',
-    nounsDAOSubgraphApiUri: 'https://api.thegraph.com/subgraphs/name/nounsdao/nouns-subgraph',
-    enableHistory: process.env.REACT_APP_ENABLE_HISTORY === 'true',
+    subgraphApiUri: 'https://api.thegraph.com/subgraphs/name/vidmahovic/nounlets'
   },
   [ChainId.Hardhat]: {
     jsonRpcUri: 'http://localhost:8545',
     wsRpcUri: 'ws://localhost:8545',
     subgraphApiUri: '',
-    nounsDAOSubgraphApiUri: '',
-    enableHistory: false,
   },
 };
 

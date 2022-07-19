@@ -23,8 +23,11 @@ const useDappConfig = {
 }
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <div className="bg-gray-1">
-      <AppHeader />
+    <div>
+      <div className="bg-gray-1">
+        <AppHeader />
+      </div>
+      <Component {...pageProps} />
     </div>
   )
 
