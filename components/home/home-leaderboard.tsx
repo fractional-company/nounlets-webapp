@@ -41,8 +41,8 @@ export default function HomeLeaderboard(): JSX.Element {
   ]
 
   return (
-    <div className="home-leaderboard lg:container mx-auto xl:max-w-7xl">
-      <div className="p-4 md:p-12">
+    <div className="home-leaderboard lg:container mx-auto">
+      <div className="px-4 md:px-12 lg:px-4 mt-12 lg:mt-16">
         <div
           className="lg:grid leading-[38px]"
           style={{ gridTemplateColumns: 'auto 100px 140px 160px' }}
@@ -57,7 +57,7 @@ export default function HomeLeaderboard(): JSX.Element {
             <LeaderboardListTile key={index} data={data} />
           ))}
 
-          <Button className="border border-gray-2 hover:border-secondary-blue h-[74px] rounded-px16 text-secondary-blue w-full text-px20 font-700">
+          <Button className="border border-gray-2 hover:border-secondary-blue h-12 sm:h-[74px] rounded-px16 text-secondary-blue w-full text-px20 font-700">
             See full leaderboard
           </Button>
         </div>

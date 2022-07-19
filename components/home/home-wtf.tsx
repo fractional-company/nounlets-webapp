@@ -3,8 +3,8 @@ import HomeAccordions from './home-accordions'
 export default function HomeWTF(): JSX.Element {
   return (
     <div className="home-wtf">
-      <div className="lg:container mx-auto xl:max-w-7xl">
-        <div className="p-4 py-12 md:p-12 font-500 text-px22 leading-px28 text-gray-4">
+      <div className="lg:container mx-auto">
+        <div className="px-4 md:px-12 lg:px-4 mt-12 lg:mt-16 font-500 text-px22 leading-px28 text-gray-4">
           <h2 className="font-londrina text-[64px] leading-[78px] font-700 mb-12 text-black">
             WTF?
           </h2>
@@ -25,7 +25,7 @@ export default function HomeWTF(): JSX.Element {
           </p>
         </div>
 
-        <div className="p-4 py-12 md:p-12 font-500 text-px18 leading-px28 text-gray-4">
+        <div className="px-4 md:px-12 lg:px-4 mt-12 lg:mt-16 font-500 text-px18 leading-px28 text-gray-4">
           <HomeAccordions />
         </div>
       </div>

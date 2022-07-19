@@ -5,8 +5,8 @@ import nounImage from 'public/img/noun.png'
 export default function HomeCollectiveOwnership(): JSX.Element {
   return (
     <div className="home-collective-ownership">
-      <div className="lg:container mx-auto xl:max-w-7xl">
-        <div className="p-4 py-12 md:p-12">
+      <div className="lg:container mx-auto">
+        <div className="px-4 md:px-12 lg:px-4 mt-12 lg:mt-16">
           <div className="md:grid md:grid-cols-2 items-end">
             <h1
               className={classNames(

@@ -1,7 +1,7 @@
 export default function AppFooter(): JSX.Element {
   return (
-    <div className="app-footer pt-[84px] pb-[248px]">
-      <div className="flex items-center justify-center space-x-12 text-gray-4 text-px18 font-700">
+    <div className="app-footer pt-28 pb-20">
+      <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-12 text-gray-4 text-px18 font-700">
         <a href="" target="_blank" className="hover:text-secondary-green transition-colors">
           Discord
         </a>
