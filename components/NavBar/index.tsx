@@ -56,7 +56,7 @@ const NavBar = () => {
       `;
 
     async function fetchData() {
-      const repsonse = await createClient({ url: config.app.nounsDAOSubgraphApiUri })
+      const repsonse = await createClient({ url: config.app.subgraphApiUri })
         .query(fetchNounsQuery)
         .toPromise();
       return repsonse.data.accounts[0];

@@ -16,16 +16,19 @@ interface ApplicationState {
     stateBackgroundColor: string;
     isCoolBackground: boolean;
     alertModal: AlertModal;
+    isConnectModalOpen: boolean;
 }
 
 interface ApplicationSetters {
     setAlertModal: (modal: AlertModal) => void;
     setStateBackgroundColor: (color: string) => void;
+    setConnectModalOpen: (isOpen: boolean) => void;
 }
 
 const initialState: ApplicationState = {
     stateBackgroundColor: grey,
     isCoolBackground: true,
+    isConnectModalOpen: false,
     alertModal: {
         show: false,
     }
@@ -45,5 +48,10 @@ export const useAppState = create(
                 state.alertModal = alertModal;
             })
         },
+        setConnectModalOpen: (isOpen: boolean) => {
+            set(state => {
+                state.isConnectModalOpen = isOpen;
+            })
+        }
     }))
 )

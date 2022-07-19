@@ -14,9 +14,9 @@ interface AppConfig {
 
 type SupportedChains = ChainId.Rinkeby | ChainId.Mainnet | ChainId.Hardhat;
 
-export const CHAIN_ID: SupportedChains = parseInt(process.env.REACT_APP_CHAIN_ID ?? '1');
+export const CHAIN_ID: SupportedChains = parseInt(process.env.NEXT_PUBLIC_CHAIN_ID ?? '1');
 
-export const ETHERSCAN_API_KEY = process.env.REACT_APP_ETHERSCAN_API_KEY ?? '';
+export const ETHERSCAN_API_KEY = process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY ?? '';
 
 const INFURA_PROJECT_ID = process.env.NEXT_PUBLIC_INFURA_ID;
 

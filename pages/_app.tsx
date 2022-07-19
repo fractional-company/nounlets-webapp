@@ -1,15 +1,10 @@
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
-import { ChainId, DAppProvider, useEthers } from '@usedapp/core'
-import dayjs from 'dayjs'
-import relativeTime from 'dayjs/plugin/relativeTime'
-import { useAppState } from '../store/application'
-import { useState } from 'react'
-import config from '../config'
-import WalletConfig from '../components/WalletConfig'
 import AppHeader from 'components/app-header'
-
+import { getMainnetSdk } from '@dethcrypto/eth-sdk-client'
 import AppFooter from 'components/app-footer'
+import WalletConfig from "../components/WalletConfig";
+import {DAppProvider, ChainId} from "@usedapp/core";
 
 type SupportedChains = ChainId.Rinkeby | ChainId.Mainnet | ChainId.Hardhat
 
@@ -25,13 +20,17 @@ const useDappConfig = {
 }
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <div>
-      <div className="bg-gray-1">
-        <AppHeader />
-      </div>
-      <Component {...pageProps} />
-      <AppFooter />
-    </div>
+      <DAppProvider config={useDappConfig}>
+          <WalletConfig>
+              <div className="bg-gray-1">
+                <AppHeader />
+              </div>
+              <div id="backdrop-root"></div>
+              <div id="overlay-root"></div>
+              <Component {...pageProps} />
+              <AppFooter />
+          </WalletConfig>
+      </DAppProvider>
   )
 
   // return (

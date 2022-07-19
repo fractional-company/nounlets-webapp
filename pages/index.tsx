@@ -1,5 +1,6 @@
 import type {GetServerSideProps, NextPage} from 'next'
-import { useEthers } from '@usedapp/core'
+import {connectContractToSigner, useEthers} from '@usedapp/core'
+import {ethers, Signer} from 'ethers'
 import OnMounted from '../components/utils/on-mounted'
 
 import { gql } from "@apollo/client";
@@ -9,6 +10,7 @@ import HomeHero from 'components/home/home-hero'
 import HomeLeaderboard from 'components/home/home-leaderboard'
 import HomeWTF from 'components/home/home-wtf'
 import HomeCollectiveOwnership from 'components/home/home-collective-ownership'
+import {getRinkebySdk} from "@dethcrypto/eth-sdk-client";
 
 export const getServerSideProps: GetServerSideProps = async () => {
     const { data } = await client.query({
@@ -36,15 +38,22 @@ export const getServerSideProps: GetServerSideProps = async () => {
 
 // @ts-ignore
 const Home: NextPage = ({vault}) => {
-    console.log(vault)
-  const { account } = useEthers()
+    const { account, library } = useEthers()
+
+    const placeBid = () => {
+        if (account) {
+            debugger
+            const signer = library?.getSigner(account)
+            const { nounletAuction } = getRinkebySdk(signer as Signer)
+        }
+  }
   return (
     <div>
+        <p onClick={placeBid}>This is new page</p>
         <HomeHero />
         <HomeLeaderboard />
         <HomeCollectiveOwnership />
         <HomeWTF />
-      <p>This is new page</p>
       <OnMounted>
         <p>{account}</p>
       </OnMounted>
