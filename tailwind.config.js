@@ -6,13 +6,13 @@ module.exports = {
     fontFamily: {
       inter: ['Inter', 'sans-serif'],
       londrina: ['Londrina Solid', 'cursive'],
-      ptRootUI: ['PTRootUIWeb', 'sans-serif'],
+      ptRootUI: ['PTRootUIWeb', 'sans-serif']
     },
     screens: {
-      sm: '480px',
+      sm: '640px',
       md: '768px',
-      lg: '976px',
-      xl: '1440px',
+      lg: '1024px',
+      xl: '1140px'
     },
     colors: {
       divider: '#DEE2E6',
@@ -24,7 +24,7 @@ module.exports = {
         blue: '#3772FF',
         green: '#45B26B',
         red: '#EF466F',
-        orange: '#FAA87A',
+        orange: '#FAA87A'
       },
       white: '#FFFFFF',
       black: '#060E25',
@@ -35,8 +35,8 @@ module.exports = {
         2: '#E4E6E9',
         3: '#8F97A3',
         4: '#474C5C',
-        5: '#1F263B',
-      },
+        5: '#1F263B'
+      }
     },
     fontSize: {
       px10: '10px',
@@ -56,7 +56,7 @@ module.exports = {
       px36: '36px',
       px42: '42px',
       px48: '48px',
-      px64: '64px',
+      px64: '64px'
     },
     lineHeight: {
       px10: '10px',
@@ -76,7 +76,7 @@ module.exports = {
       px36: '36px',
       px42: '42px',
       px48: '48px',
-      px64: '64px',
+      px64: '64px'
     },
     fontWeight: {
       100: 100,
@@ -87,7 +87,7 @@ module.exports = {
       600: 600,
       700: 700,
       800: 800,
-      900: 900,
+      900: 900
     },
     extend: {
       borderRadius: {
@@ -113,9 +113,9 @@ module.exports = {
         px36: '36px',
         px42: '42px',
         px48: '48px',
-        px64: '64px',
-      },
-    },
+        px64: '64px'
+      }
+    }
   },
-  plugins: [],
-};
+  plugins: []
+}

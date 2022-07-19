@@ -35,7 +35,7 @@ export default function AppHeader(): JSX.Element {
 
   return (
     <div className="app-header bg-gray-1">
-      <div className="lg:container mx-auto xl:max-w-7xl px-4">
+      <div className="lg:container mx-auto px-4">
         <WalletModal />
         <div className="flex items-center h-full space-x-4 min-h-[88px]">
           <IconFractionalLogo className="flex-shrink-0 h-8 w-auto text-[#D63C5E]" />
@@ -87,7 +87,7 @@ export default function AppHeader(): JSX.Element {
           style={{ maxHeight: mobileMenuMaxHeight }}
         >
           <div ref={mobileMenuRef}>
-            <div className="py-4 space-y-2">
+            <div className="space-y-2 pb-4">
               <Button className="default-outline w-full space-x-2">
                 <IconDiscord className="h-[13px] w-auto" />
                 <span>Discord</span>

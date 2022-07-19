@@ -5,6 +5,12 @@
 @tailwind utilities;
 
 @font-face {
+  font-family: 'Londrina Solid';
+  src: url('/fonts/LondrinaSolid-Black.ttf');
+  src: url('/fonts/LondrinaSolid-Regular.ttf');
+}
+
+@font-face {
   font-family: 'PTRootUIWeb';
   src: url('/fonts/PT-Root-UI_Light.woff2') format('woff2'),
     url('/fonts/PT-Root-UI_Light.woff') format('woff');
