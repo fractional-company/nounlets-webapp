@@ -1,10 +1,14 @@
 import type {GetServerSideProps, NextPage} from 'next'
-import styles from '../styles/Home.module.css'
 import { useEthers } from '@usedapp/core'
 import OnMounted from '../components/utils/on-mounted'
 
 import { gql } from "@apollo/client";
 import client from "../apollo-client";
+
+import HomeHero from 'components/home/home-hero'
+import HomeLeaderboard from 'components/home/home-leaderboard'
+import HomeWTF from 'components/home/home-wtf'
+import HomeCollectiveOwnership from 'components/home/home-collective-ownership'
 
 export const getServerSideProps: GetServerSideProps = async () => {
     const { data } = await client.query({
@@ -35,7 +39,11 @@ const Home: NextPage = ({vault}) => {
     console.log(vault)
   const { account } = useEthers()
   return (
-    <div className={styles.container}>
+    <div>
+        <HomeHero />
+        <HomeLeaderboard />
+        <HomeCollectiveOwnership />
+        <HomeWTF />
       <p>This is new page</p>
       <OnMounted>
         <p>{account}</p>
