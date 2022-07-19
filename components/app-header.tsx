@@ -3,25 +3,25 @@ import Button from './buttons/button'
 import IconCaretDropdown from './icons/icon-caret-dropdown'
 import IconDiscord from './icons/icon-discord'
 import IconFractionalLogo from './icons/icon-fractional-logo'
-import IconLink from './icons/icon-link'
 import IconPeople from '../public/img/icon-people.png'
-import { Fragment, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import IconMedium from './icons/icon-medium'
 import IconHeartHollow from './icons/icon-heart-hollow'
 import IconTwitter from './icons/icon-twitter'
 import IconEtherscan from './icons/icon-etherscan'
 import LinksDropdownButton from './buttons/links-dropdown-button'
 import InfoPopover from './info-popover'
-import { Dialog, Transition } from '@headlessui/react'
 import WalletModal from "./wallet-modal";
 import {useAppState} from "../store/application";
+import {useEthers} from "@usedapp/core";
+import {useShortAddress} from "./ShortAddress";
 
 export default function AppHeader(): JSX.Element {
-  let [isOpen, setIsOpen] = useState(false)
   const [isMobileMenuOpen, setIsModalMenuOpen] = useState(false)
   const [mobileMenuMaxHeight, setMobileMenuMaxHeight] = useState(0)
   const mobileMenuRef = useRef<HTMLDivElement>(null)
   const { setConnectModalOpen } = useAppState()
+  const { account } = useEthers();
 
   useEffect(() => {
     if (mobileMenuRef.current == null) return
@@ -32,6 +32,14 @@ export default function AppHeader(): JSX.Element {
       setMobileMenuMaxHeight(0)
     }
   }, [isMobileMenuOpen])
+
+  const shortAddress = useShortAddress(account || '')
+
+  const connectButton = (
+    <Button className="primary space-x-2" onClick={() => setConnectModalOpen(true)}>
+      <span>{account ? shortAddress : 'Connect'}</span>
+    </Button>
+  )
 
   return (
     <div className="app-header bg-gray-1">
@@ -56,15 +64,10 @@ export default function AppHeader(): JSX.Element {
               <span>Discord</span>
             </Button>
             <LinksDropdownButton />
-            <Button className="primary space-x-2" onClick={() => setConnectModalOpen(true)}>
-              <span>Connect</span>
-            </Button>
+            {connectButton}
           </div>
           <div className="flex lg:hidden space-x-2">
-            <Button className="primary space-x-2" onClick={() => setConnectModalOpen(true)}>
-              <span>Connect</span>
-            </Button>
-
+            {connectButton}
             <Button
               className="basic space-x-2"
               onClick={() => setIsModalMenuOpen(!isMobileMenuOpen)}

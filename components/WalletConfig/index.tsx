@@ -10,8 +10,6 @@ import NetworkAlert from '../NetworkAlert'
 import AlertModal from '../Modal'
 import { Col, Row } from 'react-bootstrap'
 import { AvatarProvider } from '@davatar/react'
-import NavBar from '../NavBar'
-import Footer from '../Footer'
 
 export default function WalletConfig(props: { children: ReactNode }) {
   const { account, chainId, library } = useEthers()
