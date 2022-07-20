@@ -8,6 +8,7 @@ import {
     AuctionSettledEvent,
     BidEvent,
 } from '../lib/utils/types';
+import {AlertModal} from "./application";
 
 
 export interface AuctionState {
@@ -15,9 +16,17 @@ export interface AuctionState {
     bids: BidEvent[];
 }
 
+interface AuctionSetters {
+    setActiveAuction: (auction: AuctionCreateEvent) => void;
+    setFullAuction: (auction: IAuction) => void;
+    appendBid: (bid: BidEvent) => void;
+    setAuctionSettled: (auctionSettledEvent: AuctionSettledEvent) => void;
+    setAuctionExtended: (auctionExtendedEvent: AuctionExtendedEvent) => void;
+}
+
 const initialState: AuctionState = {
     activeAuction: undefined,
-    bids: [],
+    bids: []
 };
 
 export const reduxSafeNewAuction = (auction: AuctionCreateEvent): IAuction => ({
@@ -62,7 +71,7 @@ const containsBid = (bidEvents: BidEvent[], bidEvent: BidEvent) =>
     bidEvents.map(bid => bid.transactionHash).indexOf(bidEvent.transactionHash) >= 0;
 
 export const useAuctionState = create(
-    immer<AuctionState>((set) => ({
+    immer<AuctionState & AuctionSetters>((set) => ({
         ...initialState,
         setActiveAuction: (auction: AuctionCreateEvent) => {
             set((state) => {

@@ -1,8 +1,10 @@
 import { BigNumber } from '@ethersproject/bignumber';
-import { useAppSelector } from '../hooks';
 import { generateEmptyNounderAuction, isNounderNoun, isNounsDAONoun } from '../utils/nounderNoun';
 import { Bid, BidEvent } from '../utils/types';
-import { Auction } from './nounsAuction';
+import {Auction} from './nounsAuction';
+import {useDisplayAuction} from "../../store/onDisplayAuction";
+import {useAuctionState} from "../../store/auction";
+import {usePastAuctions} from "../../store/pastAuctions";
 
 const deserializeAuction = (reduxSafeAuction: Auction): Auction => {
   return {
@@ -34,12 +36,11 @@ const deserializeBids = (reduxSafeBids: BidEvent[]): Bid[] => {
 };
 
 const useOnDisplayAuction = (): Auction | undefined => {
-  const lastAuctionNounId = useAppSelector(state => state.auction.activeAuction?.nounId);
-  const onDisplayAuctionNounId = useAppSelector(
-    state => state.onDisplayAuction.onDisplayAuctionNounId,
-  );
-  const currentAuction = useAppSelector(state => state.auction.activeAuction);
-  const pastAuctions = useAppSelector(state => state.pastAuctions.pastAuctions);
+  const {activeAuction: currentAuction} = useAuctionState()
+  const lastAuctionNounId = currentAuction?.nounId
+  const {bids} = useAuctionState()
+  const {onDisplayAuctionNounId} = useDisplayAuction()
+  const {pastAuctions} = usePastAuctions()
 
   if (
     onDisplayAuctionNounId === undefined ||
@@ -75,13 +76,13 @@ const useOnDisplayAuction = (): Auction | undefined => {
 };
 
 export const useAuctionBids = (auctionNounId: BigNumber): Bid[] | undefined => {
-  const lastAuctionNounId = useAppSelector(state => state.onDisplayAuction.lastAuctionNounId);
-  const lastAuctionBids = useAppSelector(state => state.auction.bids);
-  const pastAuctions = useAppSelector(state => state.pastAuctions.pastAuctions);
+  const {lastAuctionNounId} = useDisplayAuction()
+  const {bids} = useAuctionState()
+  const {pastAuctions} = usePastAuctions()
 
   // auction requested is active auction
   if (lastAuctionNounId === auctionNounId.toNumber()) {
-    return deserializeBids(lastAuctionBids);
+    return deserializeBids(bids);
   } else {
     // find bids for past auction requested
     const bidEvents: BidEvent[] | undefined = pastAuctions.find(auction => {

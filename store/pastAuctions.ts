@@ -1,6 +1,7 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AuctionState } from './auction';
 import { BigNumber } from '@ethersproject/bignumber';
+import create from "zustand";
+import {immer} from "zustand/middleware/immer";
 
 interface PastAuctionsState {
   pastAuctions: AuctionState[];
@@ -9,6 +10,10 @@ interface PastAuctionsState {
 const initialState: PastAuctionsState = {
   pastAuctions: [],
 };
+
+interface PastAuctionSetters {
+  addPastAuctions: (auction: any) => void
+}
 
 const reduxSafePastAuctions = (data: any): AuctionState[] => {
   const auctions = data.data.auctions as any[];
@@ -38,16 +43,14 @@ const reduxSafePastAuctions = (data: any): AuctionState[] => {
   return pastAuctions;
 };
 
-const pastAuctionsSlice = createSlice({
-  name: 'pastAuctions',
-  initialState: initialState,
-  reducers: {
-    addPastAuctions: (state, action: PayloadAction<any>) => {
-      state.pastAuctions = reduxSafePastAuctions(action.payload);
-    },
-  },
-});
 
-export const { addPastAuctions } = pastAuctionsSlice.actions;
-
-export default pastAuctionsSlice.reducer;
+export const usePastAuctions = create(
+    immer<PastAuctionsState & PastAuctionSetters>((set) => ({
+      ...initialState,
+      addPastAuctions: (auction: any) => {
+        set(state => {
+          state.pastAuctions = reduxSafePastAuctions(auction);
+        })
+      },
+    }))
+)

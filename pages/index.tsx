@@ -43,7 +43,6 @@ const Home: NextPage = ({ vault }) => {
 
     const placeBid = () => {
         if (account) {
-            debugger
             const signer = library?.getSigner(account)
             const { nounletAuction } = getRinkebySdk(signer as Signer)
         }

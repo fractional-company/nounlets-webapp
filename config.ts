@@ -1,11 +1,5 @@
 import { ChainId } from '@usedapp/core';
 
-interface ExternalContractAddresses {
-  lidoToken: string | undefined;
-}
-
-export type ContractAddresses = ExternalContractAddresses;
-
 interface AppConfig {
   jsonRpcUri: string;
   wsRpcUri: string;
@@ -59,22 +53,45 @@ const app: Record<SupportedChains, AppConfig> = {
   },
 };
 
-const externalAddresses: Record<SupportedChains, ExternalContractAddresses> = {
-  [ChainId.Rinkeby]: {
-    lidoToken: '0xF4242f9d78DB7218Ad72Ee3aE14469DBDE8731eD',
-  },
+export interface NounletContractAddresses {
+  nounsletToken: string;
+  nounletAuction: string;
+}
+
+const chainIdToAddresses: { [chainId: number]: NounletContractAddresses } = {
   [ChainId.Mainnet]: {
-    lidoToken: '0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84',
+    nounsletToken: '0x4b10701Bfd7BFEdc47d50562b76b436fbB5BdB3B',
+    nounletAuction: '0xCC8a0FB5ab3C7132c1b2A0109142Fb112c4Ce515'
   },
-  [ChainId.Hardhat]: {
-    lidoToken: undefined,
-  },
+  [ChainId.Rinkeby]: {
+    nounsletToken: '0x4b10701Bfd7BFEdc47d50562b76b436fbB5BdB3B',
+    nounletAuction: '0xCC8a0FB5ab3C7132c1b2A0109142Fb112c4Ce515'
+  }
 };
+
+
+export const getContractAddressesForChainOrThrow = (chainId: number): NounletContractAddresses => {
+  if (!chainIdToAddresses[chainId]) {
+    throw new Error(
+        `Unknown chain id (${chainId}). No known contracts have been deployed on this chain.`,
+    );
+  }
+  return chainIdToAddresses[chainId];
+};
+
+const getAddresses = (): NounletContractAddresses => {
+  let nounsAddresses = {} as NounletContractAddresses;
+  try {
+    nounsAddresses = getContractAddressesForChainOrThrow(CHAIN_ID);
+  } catch {}
+  return { ...nounsAddresses };
+}
+
 
 const config = {
   app: app[CHAIN_ID],
   isPreLaunch: process.env.REACT_APP_IS_PRELAUNCH || 'false',
-  addresses: [],
+  addresses: getAddresses(),
 };
 
 export default config;
