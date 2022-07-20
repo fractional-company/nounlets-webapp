@@ -11,17 +11,19 @@ import IconTwitter from './icons/icon-twitter'
 import IconEtherscan from './icons/icon-etherscan'
 import LinksDropdownButton from './buttons/links-dropdown-button'
 import InfoPopover from './info-popover'
-import WalletModal from "./wallet-modal";
-import {useAppState} from "../store/application";
-import {useEthers} from "@usedapp/core";
-import {useShortAddress} from "./ShortAddress";
+import WalletModal from './wallet-modal'
+import { useAppState } from '../store/application'
+import { useEthers } from '@usedapp/core'
+import { useShortAddress } from './ShortAddress'
+import SimplePopover from './simple-popover'
+import IconQuestionCircle from './icons/icon-question-circle'
 
 export default function AppHeader(): JSX.Element {
   const [isMobileMenuOpen, setIsModalMenuOpen] = useState(false)
   const [mobileMenuMaxHeight, setMobileMenuMaxHeight] = useState(0)
   const mobileMenuRef = useRef<HTMLDivElement>(null)
   const { setConnectModalOpen } = useAppState()
-  const { account } = useEthers();
+  const { account } = useEthers()
 
   useEffect(() => {
     if (mobileMenuRef.current == null) return
@@ -51,7 +53,15 @@ export default function AppHeader(): JSX.Element {
             <div className="hidden md:inline-flex items-center px-4 h-12 rounded-px10 bg-white space-x-2">
               <span className="hidden lg:inline">Current delegate</span>
               <span className="font-500 ml-2">hot.gabrielayuso.eth</span>
-              <InfoPopover />
+              <SimplePopover>
+                <h1 className="font-700 text-px18 text-gray-4">
+                  <span className="text-secondary-orange">⚠</span>
+                </h1>
+                <div>
+                  This delegate is currently out of sync. There is another wallet with more votes.
+                  You can update the delegate with a transaction.
+                </div>
+              </SimplePopover>
             </div>
           </div>
           <div className="hidden lg:flex items-center space-x-4">
@@ -78,11 +88,19 @@ export default function AppHeader(): JSX.Element {
         </div>
         <div className="md:hidden pb-4">
           <div className="flex items-center px-4 h-12 rounded-px10 bg-white space-x-2 justify-center">
-            <p className="truncate">
+            <p className="truncate font-500">
               <span className="hidden sm:inline">Current delegate</span>
-              <span className="font-500 ml-2">hot.gabrielayuso.eth</span>
+              <span className="font-700 ml-2">hot.gabrielayuso.eth</span>
             </p>
-            <InfoPopover />
+            <SimplePopover>
+              <h1 className="font-700 text-px18 text-gray-4">
+                <span className="text-secondary-orange">⚠</span>
+              </h1>
+              <div>
+                This delegate is currently out of sync. There is another wallet with more votes. You
+                can update the delegate with a transaction.
+              </div>
+            </SimplePopover>
           </div>
         </div>
         <div
