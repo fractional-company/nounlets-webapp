@@ -9,6 +9,8 @@ import LeaderboardListTile, {
 } from 'components/leaderboard/leaderboard-list-tile'
 import IconMagnify from 'components/icons/icon-magnify'
 import IconQuestionCircle from 'components/icons/icon-question-circle'
+import { useState } from 'react'
+import VoteForDelegateModal from 'components/modals/vote-for-delegate-modal'
 
 const Governance: NextPage = () => {
   const myWalletAddress = '0x497F34f8A6EaB10652f846fD82201938e58d72E0'
@@ -46,6 +48,8 @@ const Governance: NextPage = () => {
       numberOfMyVotes: 0
     }
   ]
+
+  const [isVoteForDelegateModalShown, setIsVoteForDelegateModalShown] = useState(false)
 
   return (
     <div className="page-governance lg:container mx-auto w-screen">
@@ -183,12 +187,21 @@ const Governance: NextPage = () => {
               <LeaderboardListTile key={index} data={data} />
             ))}
 
-            <Button className="border border-gray-2 hover:border-secondary-blue h-12 sm:h-[74px] rounded-px16 text-secondary-blue w-full text-px20 font-700">
+            <Button
+              onClick={() => setIsVoteForDelegateModalShown(true)}
+              className="border border-gray-2 hover:border-secondary-blue h-12 sm:h-[74px] rounded-px16 text-secondary-blue w-full text-px20 font-700"
+            >
               Vote for a custom wallet
             </Button>
           </div>
         </div>
       </div>
+      <>
+        <VoteForDelegateModal
+          isShown={isVoteForDelegateModalShown}
+          onClose={() => setIsVoteForDelegateModalShown(false)}
+        />
+      </>
     </div>
   )
 }

@@ -11,12 +11,13 @@ import IconTwitter from './icons/icon-twitter'
 import IconEtherscan from './icons/icon-etherscan'
 import LinksDropdownButton from './buttons/links-dropdown-button'
 import InfoPopover from './info-popover'
-import WalletModal from './wallet-modal'
+import WalletModal from './modals/wallet-modal'
 import { useAppState } from '../store/application'
 import { useEthers } from '@usedapp/core'
 import { useShortAddress } from './ShortAddress'
 import SimplePopover from './simple-popover'
 import IconQuestionCircle from './icons/icon-question-circle'
+import Link from 'next/link'
 
 export default function AppHeader(): JSX.Element {
   const [isMobileMenuOpen, setIsModalMenuOpen] = useState(false)
@@ -48,7 +49,11 @@ export default function AppHeader(): JSX.Element {
       <div className="lg:container mx-auto px-4">
         <WalletModal />
         <div className="flex items-center h-full space-x-4 min-h-[88px]">
-          <IconFractionalLogo className="flex-shrink-0 h-8 w-auto text-[#D63C5E]" />
+          <Link href="/">
+            <a>
+              <IconFractionalLogo className="flex-shrink-0 h-8 w-auto text-[#D63C5E]" />
+            </a>
+          </Link>
           <div className="flex-1">
             <div className="hidden md:inline-flex items-center px-4 h-12 rounded-px10 bg-white space-x-2">
               <span className="hidden lg:inline">Current delegate</span>
@@ -65,10 +70,12 @@ export default function AppHeader(): JSX.Element {
             </div>
           </div>
           <div className="hidden lg:flex items-center space-x-4">
-            <Button className="basic space-x-2">
-              <Image src={IconPeople} alt="votes" height={14} />
-              <span>Vote</span>
-            </Button>
+            <Link href="/governance">
+              <Button className="basic space-x-2">
+                <Image src={IconPeople} alt="votes" height={14} />
+                <span>Vote</span>
+              </Button>
+            </Link>
             <Button className="basic space-x-2">
               <IconDiscord className="h-[11px] w-auto" />
               <span>Discord</span>

@@ -1,22 +1,22 @@
 import Image from 'next/image'
-import Button from './buttons/button'
-import IconCaretDropdown from './icons/icon-caret-dropdown'
-import IconDiscord from './icons/icon-discord'
-import IconFractionalLogo from './icons/icon-fractional-logo'
-import IconLink from './icons/icon-link'
+import Button from '../buttons/button'
+import IconCaretDropdown from '../icons/icon-caret-dropdown'
+import IconDiscord from '../icons/icon-discord'
+import IconFractionalLogo from '../icons/icon-fractional-logo'
+import IconLink from '../icons/icon-link'
 import IconPeople from '../public/img/icon-people.png'
 import { Fragment, useEffect, useRef, useState } from 'react'
-import IconMedium from './icons/icon-medium'
-import IconHeartHollow from './icons/icon-heart-hollow'
-import IconTwitter from './icons/icon-twitter'
-import IconEtherscan from './icons/icon-etherscan'
-import LinksDropdownButton from './buttons/links-dropdown-button'
-import InfoPopover from './info-popover'
+import IconMedium from '../icons/icon-medium'
+import IconHeartHollow from '../icons/icon-heart-hollow'
+import IconTwitter from '../icons/icon-twitter'
+import IconEtherscan from '../icons/icon-etherscan'
+import LinksDropdownButton from '../buttons/links-dropdown-button'
+import InfoPopover from '../info-popover'
 import { Dialog, Transition } from '@headlessui/react'
-import { useAccountState } from '../store/account'
-import { useAppState } from '../store/application'
+import { useAccountState } from '../../store/account'
+import { useAppState } from '../../store/application'
 import { useEthers } from '@usedapp/core'
-import config, { CHAIN_ID } from '../config'
+import config, { CHAIN_ID } from '../../config'
 import classes from './WalletConnectModal/WalletConnectModal.module.css'
 // import WalletButton, { WALLET_TYPE } from './WalletButton'
 import { InjectedConnector } from '@web3-react/injected-connector'
@@ -25,9 +25,9 @@ import { WalletConnectConnector } from '@web3-react/walletconnect-connector'
 import { WalletLinkConnector } from '@web3-react/walletlink-connector'
 import { TrezorConnector } from '@web3-react/trezor-connector'
 import clsx from 'clsx'
-import WalletButton, { WALLET_TYPE } from './wallet-button'
-import IconClose from './icons/icon-close'
-import SimpleModal from './simple-modal'
+import WalletButton, { WALLET_TYPE } from '../wallet-button'
+import IconClose from '../icons/icon-close'
+import SimpleModal from '../simple-modal'
 
 export default function WalletModal(): JSX.Element {
   const [isMobileMenuOpen, setIsModalMenuOpen] = useState(false)
@@ -139,7 +139,11 @@ export default function WalletModal(): JSX.Element {
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
 
   return (
-    <SimpleModal isShown={isConnectModalOpen} onClose={() => setConnectModalOpen(false)}>
+    <SimpleModal
+      className="wallet-modal"
+      isShown={isConnectModalOpen}
+      onClose={() => setConnectModalOpen(false)}
+    >
       <h2 className="font-700 text-px32 leading-px36 text-center">Connect your wallet</h2>
       <div className="mt-8 flex flex-col gap-6">
         {wallets}
