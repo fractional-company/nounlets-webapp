@@ -1,4 +1,5 @@
 import { Popover } from '@headlessui/react'
+import SimplePopover from 'components/simple-popover'
 import { useState } from 'react'
 import { usePopper } from 'react-popper'
 
@@ -30,29 +31,11 @@ export default function LeaderboardVotesDots(props: any): JSX.Element {
   }
 
   return (
-    <Popover className="relative inline-flex items-center">
-      <Popover.Button
-        as="div"
-        ref={setReferenceElement}
-        onMouseEnter={() => setIsShowing(true)}
-        onMouseLeave={() => setIsShowing(false)}
-        className="cursor-pointer"
-      >
-        {element}
-      </Popover.Button>
-
-      {isShowing && (
-        <Popover.Panel
-          static
-          ref={setPopperElement}
-          style={{ ...styles.popper, zIndex: 200 }}
-          {...attributes.popper}
-        >
-          <div className="p-3 bg-white shadow-md rounded-px10 text-gray-4 font-500 text-px14 leading-px18 border-2">
-            You have <span className="font-700">{myVotes}</span> Nounlets voting for this delegate.
-          </div>
-        </Popover.Panel>
-      )}
-    </Popover>
+    <SimplePopover>
+      {element}
+      <div>
+        You have <span className="font-700">{myVotes}</span> Nounlets voting for this delegate.
+      </div>
+    </SimplePopover>
   )
 }
