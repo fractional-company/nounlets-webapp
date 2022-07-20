@@ -18,6 +18,10 @@
     @apply cursor-not-allowed;
   }
 
+  &:global(.link) {
+    @apply inline-flex items-center justify-center box-border;
+  }
+
   &:global(.basic) {
     @apply inline-flex items-center justify-center h-12 px-4 box-border rounded-px10 bg-white;
     @apply font-700 text-px16 leading-px16;
