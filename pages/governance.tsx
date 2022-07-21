@@ -11,6 +11,7 @@ import IconMagnify from 'components/icons/icon-magnify'
 import IconQuestionCircle from 'components/icons/icon-question-circle'
 import { useState } from 'react'
 import VoteForDelegateModal from 'components/modals/vote-for-delegate-modal'
+import VoteForCustomWalletModal from 'components/modals/vote-for-custom-wallet.modal'
 
 const Governance: NextPage = () => {
   const myWalletAddress = '0x497F34f8A6EaB10652f846fD82201938e58d72E0'
@@ -197,7 +198,7 @@ const Governance: NextPage = () => {
         </div>
       </div>
       <>
-        <VoteForDelegateModal
+        <VoteForCustomWalletModal
           isShown={isVoteForDelegateModalShown}
           onClose={() => setIsVoteForDelegateModalShown(false)}
         />

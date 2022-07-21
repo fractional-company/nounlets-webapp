@@ -54,14 +54,16 @@ export default function WalletButton(props: {
       )}
       onClick={props.onClick}
     >
-      <Image
-        src={image}
-        alt="icon"
-        width="32"
-        height="32"
-        className="overflow-hidden rounded-full flex-shrink-0"
-      />
-      <span>{props.walletType}</span>
+      <div className="flex-shrink-0 w-8 h-8">
+        <Image
+          src={image}
+          alt="icon"
+          width="32"
+          height="32"
+          className="overflow-hidden rounded-full flex-shrink-0"
+        />
+      </div>
+      <span className="truncate">{props.walletType}</span>
     </Button>
   )
 }

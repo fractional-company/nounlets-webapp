@@ -2,12 +2,14 @@ import Button from 'components/buttons/button'
 import IconEth from 'components/icons/icon-eth'
 import IconLinkOffsite from 'components/icons/icon-link-offsite'
 import IconQuestionCircle from 'components/icons/icon-question-circle'
+import CongratulationsModal from 'components/modals/congratulations-modal'
 import Image from 'next/image'
 
 import userIcon from 'public/img/user-icon.jpg'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 
 export default function HomeHeroAuctionProgress(): JSX.Element {
+  const [isCongratulationsModalShown, setIsCongratulationsModalShown] = useState(false)
   const latestBidsList: JSX.Element[] = useMemo(() => {
     return [1, 2, 3].map((bid) => {
       return (
@@ -72,6 +74,20 @@ export default function HomeHeroAuctionProgress(): JSX.Element {
         <div className="flex flex-col divide-y divide-gray-2">{latestBidsList}</div>
         <p className="text-center text-gray-4 text-px16 leading-px24 font-500">View all bids</p>
       </div>
+
+      <Button
+        className="primary !h-[52px] w-full"
+        onClick={() => setIsCongratulationsModalShown(true)}
+      >
+        Settle auction
+      </Button>
+
+      <CongratulationsModal
+        isShown={isCongratulationsModalShown}
+        onClose={() => {
+          setIsCongratulationsModalShown(false)
+        }}
+      />
     </div>
   )
 }

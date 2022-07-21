@@ -4,6 +4,7 @@ import IconUpdateDelegate from 'components/icons/icon-update-delegate'
 import Image from 'next/image'
 import userIcon from 'public/img/user-icon.jpg'
 import { useMemo } from 'react'
+import { useAppState } from 'store/application'
 import LeaderboardVotesDots from './leaderboard-votes-dots'
 
 export type LeaderboardListTileProps = {
@@ -20,6 +21,7 @@ export type LeaderboardListTileProps = {
 export default function LeaderboardListTile(props: {
   data: LeaderboardListTileProps
 }): JSX.Element {
+  const { setVoteForDelegateModalForAddress } = useAppState()
   const {
     isMe,
     percentage,
@@ -48,6 +50,11 @@ export default function LeaderboardListTile(props: {
       mostVotesWalletAddress === walletAddress && walletAddress !== currentDelegateWalletAddress
     )
   }, [walletAddress, currentDelegateWalletAddress, mostVotesWalletAddress])
+
+  const handleCastVote = (address: string) => {
+    console.log('casting vote for!', address)
+    setVoteForDelegateModalForAddress(true, address)
+  }
 
   return (
     <div className="leaderboard-list-tile">
@@ -138,7 +145,10 @@ export default function LeaderboardListTile(props: {
           )}
 
           <div className="flex lg:justify-end lg:pr-4">
-            <Button className="primary --sm flex-auto lg:flex-none">
+            <Button
+              className="primary --sm flex-auto lg:flex-none"
+              onClick={() => handleCastVote(walletAddress)}
+            >
               <span>Cast Votes</span>
             </Button>
           </div>
