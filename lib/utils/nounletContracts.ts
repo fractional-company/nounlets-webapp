@@ -1,20 +1,20 @@
 import {getRinkebySdk, getMainnetSdk, RinkebySdk} from "@dethcrypto/eth-sdk-client";
-import {connectContractToSigner, useEthers} from "@usedapp/core";
+import {useEthers} from "@usedapp/core";
 import config, {CHAIN_ID} from "../../config";
 import {WebSocketProvider} from "@ethersproject/providers";
 
 export const useNounletTokenContract = (isWrite = false) => {
-    const { library, account } = useEthers()
+    const { library } = useEthers()
     const { nounletToken } = useNounletContract()
     // @ts-ignore
-    return isWrite && account ? connectContractToSigner(nounletToken, undefined, library) : nounletToken
+    return isWrite && library?.getSigner() ? nounletToken.connect(library?.getSigner()) : nounletToken
 }
 
 export const useNounletAuctionContract = (isWrite = false) => {
-    const { library, account } = useEthers()
+    const { library } = useEthers()
     const { nounletAuction } = useNounletContract()
     // @ts-ignore
-    return isWrite && account ? connectContractToSigner(nounletAuction, undefined, library) : nounletAuction
+    return isWrite && library?.getSigner() ? nounletAuction.connect(library?.getSigner()) : nounletAuction
 }
 
 const useNounletContract = () => {
