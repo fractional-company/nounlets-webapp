@@ -23,3 +23,22 @@ const useNounletContract = () => {
     const provider = library || wsProvider
     return CHAIN_ID === 4 ? getRinkebySdk(provider) : getMainnetSdk(provider) as RinkebySdk
 }
+
+export const useNounletsAuction = () => {
+    const auctionContract = useNounletAuctionContract()
+    const { library } = useEthers()
+
+    const bid = async () => {
+        if (!library?.getSigner()) {
+            return
+        }
+        const temp = auctionContract.connect(library?.getSigner())
+        const tx = await temp.createBid('1')
+        return tx.wait().then().catch()
+    }
+
+    return {bid}
+}
+
+type NounletAuction = RinkebySdk["nounletAuction"]
+type NounletToken = RinkebySdk["nounletToken"]

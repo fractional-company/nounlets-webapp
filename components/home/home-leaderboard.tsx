@@ -2,8 +2,11 @@ import Button from 'components/buttons/button'
 import LeaderboardListTile, {
   LeaderboardListTileProps
 } from 'components/leaderboard/leaderboard-list-tile'
+import {useRouter} from "next/router";
+import Link from "next/link";
 
 export default function HomeLeaderboard(): JSX.Element {
+  const router = useRouter()
   const myWalletAddress = '0x497F34f8A6EaB10652f846fD82201938e58d72E0'
   const currentDelegateWalletAddress = '0x497F34f8A6EaB10652f846fD82201938e58d72E0'
   const mostVotesWalletAddress = '0x277E3bEecEd0E805f3ccCfF870ccB974B57d000'
@@ -56,10 +59,11 @@ export default function HomeLeaderboard(): JSX.Element {
           {leaderboardMocks.map((data, index) => (
             <LeaderboardListTile key={index} data={data} />
           ))}
-
-          <Button className="border border-gray-2 hover:border-secondary-blue h-12 sm:h-[74px] rounded-px16 text-secondary-blue w-full text-px20 font-700">
-            See full leaderboard
-          </Button>
+          <Link href="/governance">
+            <Button className="border border-gray-2 hover:border-secondary-blue h-12 sm:h-[74px] rounded-px16 text-secondary-blue w-full text-px20 font-700">
+              See full leaderboard
+            </Button>
+          </Link>
         </div>
       </div>
     </div>
