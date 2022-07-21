@@ -1,8 +1,8 @@
 import type { GetServerSideProps, NextPage } from 'next'
-import { connectContractToSigner, useEthers } from '@usedapp/core'
+import { useEthers } from '@usedapp/core'
 import { ethers, Signer } from 'ethers'
 import OnMounted from '../components/utils/on-mounted'
-
+import nounletAuctionABI from '../eth-sdk/abis/rinkeby/nounletAuction.json'
 import { gql } from '@apollo/client'
 import client from '../apollo-client'
 
@@ -12,6 +12,8 @@ import HomeWTF from 'components/home/home-wtf'
 import HomeCollectiveOwnership from 'components/home/home-collective-ownership'
 import { getRinkebySdk } from '@dethcrypto/eth-sdk-client'
 import HomeVotesFromNounlet from 'components/home/home-votes-from-nounlet'
+import {useRouter} from "next/router";
+import {Contract} from "@ethersproject/contracts";
 
 export const getServerSideProps: GetServerSideProps = async () => {
   const { data } = await client.query({
@@ -40,17 +42,40 @@ export const getServerSideProps: GetServerSideProps = async () => {
 // @ts-ignore
 const Home: NextPage = ({ vault }) => {
   const { account, library } = useEthers()
+    const router = useRouter()
+    const { nid } = router.query
+    console.log(nid)
+    const getLeaves = async () => {
+        const nounletAuction = new Contract('0xc7500c1fe21BCEdd62A2953BE9dCb05911394027', nounletAuctionABI, library)
+        return await nounletAuction.getLeafNodes();
+    }
 
-  const placeBid = () => {
+    const getProofs = async (hashes: any) => {
+        const nounletAuction = new Contract('0xc7500c1fe21BCEdd62A2953BE9dCb05911394027', nounletAuctionABI, library)
+        return await Promise.all(hashes.map((hash: any, key: any) => nounletAuction.getProof(hashes, key)))
+    }
+
+
+  const placeBid = async () => {
+      const nounletAuction = new Contract('0xc7500c1fe21BCEdd62A2953BE9dCb05911394027', nounletAuctionABI, library?.getSigner(account as string))
+      const leaves = await getLeaves()
+      const proofs = await getProofs(leaves)
+      const tx = await nounletAuction.deployVault(['0xc7500c1fe21BCEdd62A2953BE9dCb05911394027'], [], [], proofs[0], '0x7aA6e56B7CDFC51835CAC9ca7CC05c39b21A4251', 1)
+      return tx.wait().then((res: any) => {
+          console.log(res)
+      }).catch((e: any) => {
+          console.log(e)
+      })
+      console.log(proofs)
     if (account) {
-      const signer = library?.getSigner(account)
-      const { nounletAuction } = getRinkebySdk(signer as Signer)
+      // const signer = library?.getSigner(account)
+      // const { nounletAuction } = getRinkebySdk(signer as Signer)
     }
   }
 
   return (
     <div className="page-home w-screen">
-      <p onClick={placeBid}>This is new page</p>
+      <p onClick={placeBid} className="text-px24 m-4 font-500 cursor-pointer">GET PROOFS</p>
       <HomeHero />
       <HomeVotesFromNounlet />
       <HomeLeaderboard />

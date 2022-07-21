@@ -4,8 +4,11 @@ import Button from 'components/buttons/button'
 import IconArrow from 'components/icons/icon-arrow'
 import IconEth from 'components/icons/icon-eth'
 import HomeHeroAuctionProgress from './home-hero-auction-progress'
+import {useRouter} from "next/router";
 
 export default function HomeHero(): JSX.Element {
+  const navigateToNoun = () => {
+  }
   return (
     <div className="home-hero bg-gray-1">
       <div className="lg:container mx-auto px-4">
