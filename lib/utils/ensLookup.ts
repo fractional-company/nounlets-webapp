@@ -1,9 +1,9 @@
-// import { useEthers } from '@usedapp/core';
+import { useEthers } from '@usedapp/core';
 import { useEnsName } from 'wagmi';
 import { useEffect, useState } from 'react';
 
 export const useReverseENSLookUp = (address: string) => {
-  //  const { library } = useEthers();
+   const { library } = useEthers();
   const [ens, setEns] = useState<string>();
   const {
     data: ensName,
@@ -58,12 +58,12 @@ export const useReverseENSLookUp = (address: string) => {
   //         console.log(`error resolving reverse ens lookup: `, error);
   //       });
   //   }
-
+  //
   //   return () => {
   //     setEns('');
   //     mounted = false;
   //   };
   // }, [address, library]);
-
+  //
   // return ens;
 };

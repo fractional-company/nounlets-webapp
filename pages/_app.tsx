@@ -7,13 +7,14 @@ import WalletConfig from "../components/WalletConfig";
 import {DAppProvider, ChainId, Config, useEthers} from "@usedapp/core";
 import {WebSocketProvider} from "@ethersproject/providers";
 import config from "../config";
-import {Signer} from "ethers";
+import {providers, Signer} from "ethers";
 import {useNounletTokenContract} from "../lib/utils/nounletContracts";
 import {BigNumber, BigNumberish} from "@ethersproject/bignumber";
 import {reduxSafeAuction, reduxSafeBid, reduxSafeNewAuction, useAuctionState} from "../store/auction";
 import {useDisplayAuction} from "../store/onDisplayAuction";
 import {nounPath} from "../lib/utils/history";
 import { useRouter } from 'next/router'
+import {createClient, WagmiConfig} from "wagmi";
 
 type SupportedChains = ChainId.Rinkeby | ChainId.Mainnet | ChainId.Hardhat
 
@@ -27,6 +28,14 @@ const useDappConfig: Config = {
     [ChainId.Hardhat]: 'http://localhost:8545'
   }
 }
+
+const infuraId = process.env.NEXT_PUBLIC_INFURA_ID;
+
+const wagmiClient = createClient({
+    provider(config) {
+        return new providers.InfuraProvider(config.chainId, infuraId);
+    },
+});
 
 const BLOCKS_PER_DAY = 6_500;
 
@@ -111,18 +120,20 @@ const ChainUpdater: React.FC = () => {
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-      <DAppProvider config={useDappConfig}>
-          <ChainUpdater />
-          <WalletConfig>
-              <div className="bg-gray-1">
-                <AppHeader />
-              </div>
-              <div id="backdrop-root"></div>
-              <div id="overlay-root"></div>
-              <Component {...pageProps} />
-              <AppFooter />
-          </WalletConfig>
-      </DAppProvider>
+      <WagmiConfig client={wagmiClient}>
+          <DAppProvider config={useDappConfig}>
+              <ChainUpdater />
+              <WalletConfig>
+                  <div className="bg-gray-1">
+                    <AppHeader />
+                  </div>
+                  <div id="backdrop-root"></div>
+                  <div id="overlay-root"></div>
+                  <Component {...pageProps} />
+                  <AppFooter />
+              </WalletConfig>
+          </DAppProvider>
+      </WagmiConfig>
   )
 
   // return (
