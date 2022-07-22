@@ -22,7 +22,8 @@ import { useRouter } from 'next/router'
 import { Toaster } from 'react-hot-toast'
 
 import { configureChains, chain, createClient, WagmiConfig } from 'wagmi'
-import { publicProvider } from 'wagmi/providers/public'
+import { infuraProvider } from 'wagmi/providers/infura'
+
 
 type SupportedChains = ChainId.Rinkeby | ChainId.Mainnet | ChainId.Hardhat
 
@@ -38,13 +39,6 @@ const useDappConfig: Config = {
 }
 
 const infuraId = process.env.NEXT_PUBLIC_INFURA_ID;
-
-const wagmiClient = createClient({
-    provider(config) {
-        return new providers.InfuraProvider(config.chainId, infuraId);
-    },
-});
-
 const BLOCKS_PER_DAY = 6_500;
 
 const ChainUpdater: React.FC = () => {
@@ -134,7 +128,7 @@ const ChainUpdater: React.FC = () => {
 
 const { chains, provider, webSocketProvider } = configureChains(
   [chain.mainnet, chain.rinkeby],
-  [publicProvider()]
+  [infuraProvider({infuraId})]
 )
 
 const wagmiClient = createClient({
