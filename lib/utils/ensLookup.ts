@@ -1,10 +1,10 @@
 // import { useEthers } from '@usedapp/core';
-import { useEnsName } from 'wagmi';
-import { useEffect, useState } from 'react';
+import { useEnsName } from 'wagmi'
+import { useEffect, useState } from 'react'
 
-export const useReverseENSLookUp = (address: string) => {
+export const useReverseENSLookUp = (address: string, withStatus = true) => {
   //  const { library } = useEthers();
-  const [ens, setEns] = useState<string>();
+  const [ens, setEns] = useState<string>()
   const {
     data: ensName,
     error: ensNameError,
@@ -13,32 +13,30 @@ export const useReverseENSLookUp = (address: string) => {
     refetch
   } = useEnsName({
     address: address,
-    cacheTime: 86400000,
+    cacheTime: 86400000
   })
 
   useEffect(() => {
-    let mounted = true;
+    let mounted = true
     if (address) {
-
       if (!ensName) {
-        return;
+        return
       }
       if (mounted && ensName) {
-        setEns(ensName);
-        console.log(`error resolving no == ${ensName}`);
+        setEns(ensName)
+        console.log(`error resolving no == ${ensName}`)
       } else {
-        console.log(`error resolving reverse ens lookup: `, ensNameError?.message);
+        console.log(`error resolving reverse ens lookup: `, ensNameError?.message)
       }
     }
     return () => {
-      setEns('');
-      mounted = false;
-    };
-  }, [address, ensName, ensNameError?.message, refetch]);
+      setEns('')
+      mounted = false
+    }
+  }, [address, ensName, ensNameError?.message, refetch])
 
-
-  if (isLoading) return "Fetching name…"
-  if (isError) return "Error fetching name"
+  if (isLoading) return withStatus ? 'Fetching name…' : null
+  if (isError) return withStatus ? 'Error fetching name' : null
   if (ensName) return ens
 
   return ens
@@ -66,4 +64,4 @@ export const useReverseENSLookUp = (address: string) => {
   // }, [address, library]);
 
   // return ens;
-};
+}
