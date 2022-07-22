@@ -19,6 +19,7 @@ import SimplePopover from './simple-popover'
 import IconQuestionCircle from './icons/icon-question-circle'
 import Link from 'next/link'
 import VoteForDelegateModal from './modals/vote-for-delegate-modal'
+import toast from 'react-hot-toast'
 
 export default function AppHeader(): JSX.Element {
   const [isMobileMenuOpen, setIsModalMenuOpen] = useState(false)
@@ -44,6 +45,11 @@ export default function AppHeader(): JSX.Element {
       <span>{account ? shortAddress : 'Connect'}</span>
     </Button>
   )
+
+  const handleShowNotification = () => {
+    console.log('asd')
+    toast('Hello!')
+  }
 
   return (
     <div className="app-header bg-gray-1">
@@ -75,7 +81,7 @@ export default function AppHeader(): JSX.Element {
                 <span>Vote</span>
               </Button>
             </Link>
-            <Button className="basic space-x-2">
+            <Button className="basic space-x-2" onClick={handleShowNotification}>
               <IconDiscord className="h-[11px] w-auto" />
               <span>Discord</span>
             </Button>

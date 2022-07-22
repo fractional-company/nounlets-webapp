@@ -2,14 +2,14 @@ import Button from 'components/buttons/button'
 import LeaderboardListTile, {
   LeaderboardListTileProps
 } from 'components/leaderboard/leaderboard-list-tile'
-import {useRouter} from "next/router";
-import Link from "next/link";
+import { useRouter } from 'next/router'
+import Link from 'next/link'
 
 export default function HomeLeaderboard(): JSX.Element {
   const router = useRouter()
   const myWalletAddress = '0x497F34f8A6EaB10652f846fD82201938e58d72E0'
   const currentDelegateWalletAddress = '0x497F34f8A6EaB10652f846fD82201938e58d72E0'
-  const mostVotesWalletAddress = '0x277E3bEecEd0E805f3ccCfF870ccB974B57d000'
+  const mostVotesWalletAddress = '0x431863c96403aD96d343D87cc47D61CC1F299e51'
   const leaderboardMocks: LeaderboardListTileProps[] = [
     {
       isMe: false,

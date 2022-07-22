@@ -1,6 +1,7 @@
 import classNames from 'classnames'
 import Button from 'components/buttons/button'
 import IconUpdateDelegate from 'components/icons/icon-update-delegate'
+import SimpleAddress from 'components/simple-address'
 import Image from 'next/image'
 import userIcon from 'public/img/user-icon.jpg'
 import { useMemo } from 'react'
@@ -77,14 +78,19 @@ export default function LeaderboardListTile(props: {
             >
               {percentageString}
             </div>
-            <Image
+            {/* <Image
               src={userIcon}
               alt="icon"
               width="32"
               height="32"
               className="overflow-hidden rounded-full flex-shrink-0"
             />
-            <p className="text-px20 leading-px20 font-700 ml-2 flex-1 truncate">{walletAddress}</p>
+            <p className="text-px20 leading-px20 font-700 ml-2 flex-1 truncate">{walletAddress}</p> */}
+            <SimpleAddress
+              avatarSize={32}
+              address={walletAddress}
+              className="text-px18 leading-px28 font-700 gap-2 flex-1"
+            />
             {isMe && (
               <p className="text-px14 leading-px26 font-700 ml-2 border-2 border-t-secondary-blue text-secondary-blue px-3 rounded-px8">
                 You
