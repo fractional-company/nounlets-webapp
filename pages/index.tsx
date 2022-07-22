@@ -15,7 +15,8 @@ import HomeVotesFromNounlet from 'components/home/home-votes-from-nounlet'
 import {useRouter} from "next/router";
 import {Contract} from "@ethersproject/contracts";
 import {useNounletsAuction} from "../lib/utils/nounletContracts";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
+import BidHistoryModal from "../components/modals/bid-history-modal";
 
 export const getServerSideProps: GetServerSideProps = async () => {
   const { data } = await client.query({
@@ -46,7 +47,6 @@ const Home: NextPage = ({ vault }) => {
   const { account, library } = useEthers()
     const router = useRouter()
     const { nid } = router.query
-    const auctionContract = useNounletsAuction()
     useEffect(() => {
         console.log('neki', nid)
         return () => console.log('unsub')
@@ -64,21 +64,21 @@ const Home: NextPage = ({ vault }) => {
 
 
   const placeBid = async () => {
-      await router.push(`/nounlet/${ Math.ceil(Math.random()*100)}`)
-    //   const nounletAuction = new Contract('0xc7500c1fe21BCEdd62A2953BE9dCb05911394027', nounletAuctionABI, library?.getSigner(account as string))
-    //   const leaves = await getLeaves()
-    //   const proofs = await getProofs(leaves)
-    //   const tx = await nounletAuction.deployVault(['0xc7500c1fe21BCEdd62A2953BE9dCb05911394027'], [], [], proofs[0], '0x7aA6e56B7CDFC51835CAC9ca7CC05c39b21A4251', 1)
-    //   return tx.wait().then((res: any) => {
-    //       console.log(res)
-    //   }).catch((e: any) => {
-    //       console.log(e)
-    //   })
-    //   console.log(proofs)
-    // if (account) {
-    //   // const signer = library?.getSigner(account)
-    //   // const { nounletAuction } = getRinkebySdk(signer as Signer)
-    // }
+      // await router.push(`/nounlet/${ Math.ceil(Math.random()*100)}`)
+      const nounletAuction = new Contract('0xc7500c1fe21BCEdd62A2953BE9dCb05911394027', nounletAuctionABI, library?.getSigner(account as string))
+      const leaves = await getLeaves()
+      const proofs = await getProofs(leaves)
+      const tx = await nounletAuction.deployVault(['0xc7500c1fe21BCEdd62A2953BE9dCb05911394027'], [], [], proofs[0], '0x7aA6e56B7CDFC51835CAC9ca7CC05c39b21A4251', 1)
+      return tx.wait().then((res: any) => {
+          console.log(res)
+      }).catch((e: any) => {
+          console.log(e)
+      })
+      console.log(proofs)
+    if (account) {
+      // const signer = library?.getSigner(account)
+      // const { nounletAuction } = getRinkebySdk(signer as Signer)
+    }
   }
 
   return (

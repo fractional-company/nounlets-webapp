@@ -4,14 +4,14 @@ import BigNumber from 'bignumber.js';
 import NounletsAuctionABI from '../../eth-sdk/abis/rinkeby/nounletAuction.json'
 import config from "../../config";
 
-export enum AuctionHouseContractFunction {
-  auction = 'auction',
-  duration = 'duration',
-  minBidIncrementPercentage = 'minBidIncrementPercentage',
-  nouns = 'nouns',
-  createBid = 'createBid',
-  settleCurrentAndCreateNewAuction = 'settleCurrentAndCreateNewAuction',
-}
+// export enum AuctionHouseContractFunction {
+//   auction = 'auction',
+//   duration = 'duration',
+//   minBidIncrementPercentage = 'minBidIncrementPercentage',
+//   nouns = 'nouns',
+//   createBid = 'createBid',
+//   settleCurrentAndCreateNewAuction = 'settleCurrentAndCreateNewAuction',
+// }
 
 export interface Auction {
   amount: EthersBN;

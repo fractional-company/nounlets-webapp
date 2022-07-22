@@ -28,12 +28,11 @@ export const useNounletsAuction = () => {
     const auctionContract = useNounletAuctionContract()
     const { library } = useEthers()
 
-    const bid = async () => {
+    const bid = async (amount: string) => {
         if (!library?.getSigner()) {
             return
         }
-        const temp = auctionContract.connect(library?.getSigner())
-        const tx = await temp.createBid('1')
+        const tx = await auctionContract.createBid(amount)
         return tx.wait().then().catch()
     }
 

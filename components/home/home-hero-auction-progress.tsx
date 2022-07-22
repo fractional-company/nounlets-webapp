@@ -5,9 +5,19 @@ import IconQuestionCircle from 'components/icons/icon-question-circle'
 import Image from 'next/image'
 
 import userIcon from 'public/img/user-icon.jpg'
-import { useMemo } from 'react'
+import {useMemo, useState} from 'react'
+import BidHistoryModal from "../modals/bid-history-modal";
+import SimpleModal from "../simple-modal";
 
 export default function HomeHeroAuctionProgress(): JSX.Element {
+    const [showBidHistoryModal, setShowBidHistoryModal] = useState(false);
+    const showBidModalHandler = () => {
+        setShowBidHistoryModal(true);
+    };
+    const dismissBidModalHandler = () => {
+        setShowBidHistoryModal(false);
+    };
+
   const latestBidsList: JSX.Element[] = useMemo(() => {
     return [1, 2, 3].map((bid) => {
       return (
@@ -30,6 +40,9 @@ export default function HomeHeroAuctionProgress(): JSX.Element {
 
   return (
     <div className="home-hero-auction space-y-3">
+        <SimpleModal onClose={dismissBidModalHandler} isShown={showBidHistoryModal}>
+            <BidHistoryModal />
+        </SimpleModal>
       <div className="flex flex-col sm:flex-row space-y-2 sm:space-x-14 lg:space-x-10 xl:space-x-14 sm:space-y-0">
         <div className="flex flex-col space-y-3">
           <p className="text-px18 leading-px22 font-500 text-gray-4">Current bid</p>
@@ -70,7 +83,7 @@ export default function HomeHeroAuctionProgress(): JSX.Element {
 
       <div className="latest-bids space-y-2 pt-5 lg:pt-0">
         <div className="flex flex-col divide-y divide-gray-2">{latestBidsList}</div>
-        <p className="text-center text-gray-4 text-px16 leading-px24 font-500">View all bids</p>
+        <p className="text-center text-gray-4 text-px16 leading-px24 font-500 cursor-pointer" onClick={showBidModalHandler}>View all bids</p>
       </div>
     </div>
   )
