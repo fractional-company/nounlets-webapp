@@ -1,57 +1,76 @@
 import create from 'zustand'
 import { immer } from 'zustand/middleware/immer'
-import {grey} from "../lib/utils/nounBgColors";
+import { grey } from '../lib/utils/nounBgColors'
 
 export interface AlertModal {
-    show: boolean;
-    title?: string;
-    message?: string;
-    isMilestone?: boolean;
-    isActionPrompt?: boolean;
-    actionMessage?: string;
-    action?: () => void
+  show: boolean
+  title?: string
+  message?: string
+  isMilestone?: boolean
+  isActionPrompt?: boolean
+  actionMessage?: string
+  action?: () => void
+}
+
+export interface VoteForDelegateModal {
+  show: boolean
+  address?: string
 }
 
 interface ApplicationState {
-    stateBackgroundColor: string;
-    isCoolBackground: boolean;
-    alertModal: AlertModal;
-    isConnectModalOpen: boolean;
+  stateBackgroundColor: string
+  isCoolBackground: boolean
+  alertModal: AlertModal
+  isConnectModalOpen: boolean
+  voteForDelegateModal: VoteForDelegateModal
 }
 
 interface ApplicationSetters {
-    setAlertModal: (modal: AlertModal) => void;
-    setStateBackgroundColor: (color: string) => void;
-    setConnectModalOpen: (isOpen: boolean) => void;
+  setAlertModal: (modal: AlertModal) => void
+  setStateBackgroundColor: (color: string) => void
+  setConnectModalOpen: (isOpen: boolean) => void
+  setVoteForDelegateModalForAddress: (isOpen: boolean, address?: string) => void
 }
 
 const initialState: ApplicationState = {
-    stateBackgroundColor: grey,
-    isCoolBackground: true,
-    isConnectModalOpen: false,
-    alertModal: {
-        show: false,
-    }
+  stateBackgroundColor: grey,
+  isCoolBackground: true,
+  isConnectModalOpen: false,
+  alertModal: {
+    show: false
+  },
+  voteForDelegateModal: {
+    show: false,
+    address: undefined
+  }
 }
 
 export const useAppState = create(
-    immer<ApplicationState & ApplicationSetters>((set) => ({
-        ...initialState,
-        setStateBackgroundColor: (bgColor: string) => {
-            set(state => {
-                state.stateBackgroundColor = bgColor;
-                state.isCoolBackground = bgColor === grey;
-            })
-        },
-        setAlertModal: (alertModal: AlertModal) => {
-            set(state => {
-                state.alertModal = alertModal;
-            })
-        },
-        setConnectModalOpen: (isOpen: boolean) => {
-            set(state => {
-                state.isConnectModalOpen = isOpen;
-            })
+  immer<ApplicationState & ApplicationSetters>((set) => ({
+    ...initialState,
+    setStateBackgroundColor: (bgColor: string) => {
+      set((state) => {
+        state.stateBackgroundColor = bgColor
+        state.isCoolBackground = bgColor === grey
+      })
+    },
+    setAlertModal: (alertModal: AlertModal) => {
+      set((state) => {
+        state.alertModal = alertModal
+      })
+    },
+    setConnectModalOpen: (isOpen: boolean) => {
+      set((state) => {
+        state.isConnectModalOpen = isOpen
+      })
+    },
+    setVoteForDelegateModalForAddress(isOpen: boolean, address?: string) {
+      set((state) => {
+        state.voteForDelegateModal.show = isOpen
+        if (address != null) {
+          state.voteForDelegateModal.address = address
         }
-    }))
+      })
+    }
+  }))
 )

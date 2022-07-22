@@ -1,33 +1,41 @@
 import Button from 'components/buttons/button'
 import SimpleModal from 'components/simple-modal'
+import { useAppState } from 'store/application'
 
-type ComponentProps = {
-  isShown: boolean
-  onClose?: () => void
-}
+export default function VoteForDelegateModal(): JSX.Element {
+  const { voteForDelegateModal, setVoteForDelegateModalForAddress } = useAppState()
 
-export default function VoteForDelegateModal(props: ComponentProps): JSX.Element {
   return (
     <SimpleModal
-      className="vote-for-delegate-modal"
-      isShown={props.isShown}
-      onClose={() => props?.onClose?.()}
+      className="vote-for-delegate-modal !max-w-[454px]"
+      isShown={voteForDelegateModal.show}
+      onClose={() => setVoteForDelegateModalForAddress(false)}
     >
-      <h2 className="font-700 text-px32 leading-px36 text-center">Enter address</h2>
-      <div className="mt-8 flex flex-col gap-3">
-        <input
-          className="leading-px48 rounded-px10 px-4 font-500 text-px20 flex-1 outline-none sm:w-[400px]"
-          type="text"
-          placeholder="eth wallet address or ENS"
-        />
-        <Button
-          className="primary"
-          onClick={() => {
-            console.log('Vote for delegate')
-          }}
-        >
-          Vote for delegate
-        </Button>
+      <div className="font-londrina">
+        <h2 className="text-px24 leading-px30 text-gray-4">Vote for delegate</h2>
+        <h2 className="mt-2 text-px42 leading-px36 truncate">
+          {voteForDelegateModal.address || 'Address'}
+        </h2>
+      </div>
+      <div className="mt-8 flex flex-col gap-8">
+        <p className="font-500 text-px20 leading-px30 text-gray-4">
+          You can change your vote to another delegate at any time.
+        </p>
+
+        <div className="flex flex-col bg-gray-4/10 p-4 gap-3 rounded-px16">
+          <p className="font-londrina text-px24 leading-px36 text-gray-4 text-center">
+            My voting power
+          </p>
+          <p className="font-londrina text-px36 leading-px42 text-center">3</p>
+          <Button
+            className="primary"
+            onClick={() => {
+              console.log('Vote for delegate')
+            }}
+          >
+            Vote
+          </Button>
+        </div>
       </div>
     </SimpleModal>
   )

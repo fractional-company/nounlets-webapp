@@ -18,6 +18,7 @@ import { useShortAddress } from './ShortAddress'
 import SimplePopover from './simple-popover'
 import IconQuestionCircle from './icons/icon-question-circle'
 import Link from 'next/link'
+import VoteForDelegateModal from './modals/vote-for-delegate-modal'
 
 export default function AppHeader(): JSX.Element {
   const [isMobileMenuOpen, setIsModalMenuOpen] = useState(false)
@@ -48,6 +49,7 @@ export default function AppHeader(): JSX.Element {
     <div className="app-header bg-gray-1">
       <div className="lg:container mx-auto px-4">
         <WalletModal />
+        <VoteForDelegateModal />
         <div className="flex items-center h-full space-x-4 min-h-[88px]">
           <Link href="/">
             <a>
@@ -62,10 +64,7 @@ export default function AppHeader(): JSX.Element {
                 <h1 className="font-700 text-px18 text-gray-4">
                   <span className="text-secondary-orange">⚠</span>
                 </h1>
-                <div>
-                  This delegate is currently out of sync. There is another wallet with more votes.
-                  You can update the delegate with a transaction.
-                </div>
+                <div>Delegate is out of sync. You can update it on the vote page.</div>
               </SimplePopover>
             </div>
           </div>
@@ -103,10 +102,7 @@ export default function AppHeader(): JSX.Element {
               <h1 className="font-700 text-px18 text-gray-4">
                 <span className="text-secondary-orange">⚠</span>
               </h1>
-              <div>
-                This delegate is currently out of sync. There is another wallet with more votes. You
-                can update the delegate with a transaction.
-              </div>
+              <div>Delegate is out of sync. You can update it on the vote page.</div>
             </SimplePopover>
           </div>
         </div>

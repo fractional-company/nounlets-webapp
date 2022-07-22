@@ -12,7 +12,7 @@ import IconTwitter from '../icons/icon-twitter'
 import IconEtherscan from '../icons/icon-etherscan'
 import LinksDropdownButton from '../buttons/links-dropdown-button'
 import InfoPopover from '../info-popover'
-import { Dialog, Transition } from '@headlessui/react'
+import { Dialog, Switch, Transition } from '@headlessui/react'
 import { useAccountState } from '../../store/account'
 import { useAppState } from '../../store/application'
 import { useEthers } from '@usedapp/core'
@@ -28,6 +28,9 @@ import clsx from 'clsx'
 import WalletButton, { WALLET_TYPE } from '../wallet-button'
 import IconClose from '../icons/icon-close'
 import SimpleModal from '../simple-modal'
+import SimpleCheckbox from 'components/simple-checkbox'
+import Link from 'next/link'
+import classNames from 'classnames'
 
 export default function WalletModal(): JSX.Element {
   const [isMobileMenuOpen, setIsModalMenuOpen] = useState(false)
@@ -36,6 +39,7 @@ export default function WalletModal(): JSX.Element {
   const { setConnectModalOpen, isConnectModalOpen } = useAppState()
   const { activate, account } = useEthers()
   const supportedChainIds = [CHAIN_ID]
+  const [areConditionsAccepted, setAreConditionsAccepted] = useState(false)
 
   useEffect(() => {
     if (mobileMenuRef.current == null) return
@@ -140,13 +144,37 @@ export default function WalletModal(): JSX.Element {
 
   return (
     <SimpleModal
-      className="wallet-modal"
+      className="wallet-modal !max-w-[454px]"
       isShown={isConnectModalOpen}
       onClose={() => setConnectModalOpen(false)}
     >
       <h2 className="font-700 text-px32 leading-px36 text-center">Connect your wallet</h2>
       <div className="mt-8 flex flex-col gap-6">
-        {wallets}
+        <div className="flex items-center p-5 rounded-px16 bg-gray-5 gap-4">
+          <SimpleCheckbox isChecked={areConditionsAccepted} onChange={setAreConditionsAccepted} />
+          <p className="font-500 font-px12 leading-px20 text-white">
+            I have read and accept the site&apos;s{' '}
+            <Link href="/">
+              <a className="text-primary hover:text-white transition-colors">Disclaimer</a>
+            </Link>
+            {', '}
+            <Link href="/">
+              <a className="text-primary hover:text-white transition-colors">Privacy Policy</a>
+            </Link>
+            {', and '}
+            <Link href="/">
+              <a className="text-primary hover:text-white transition-colors">Terms of Use</a>
+            </Link>
+            .
+          </p>
+        </div>
+        <div
+          className={classNames('transition-opacity', {
+            'pointer-events-none opacity-25': !areConditionsAccepted
+          })}
+        >
+          {wallets}
+        </div>
         <Button
           className="link text-px14 font-700 text-gray-3 hover:text-secondary-blue w-full --sm"
           onClick={() => {
