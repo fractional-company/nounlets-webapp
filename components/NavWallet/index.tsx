@@ -121,6 +121,7 @@ const NavWallet: React.FC<NavWalletProps> = props => {
       </div>
     </>
   ));
+  customDropdownToggle.displayName = 'customDropdownToggle'
 
   const CustomMenu = React.forwardRef((props: CustomMenuProps, ref: React.Ref<HTMLDivElement>) => {
     return (
@@ -166,6 +167,8 @@ const NavWallet: React.FC<NavWalletProps> = props => {
       </div>
     );
   });
+
+  CustomMenu.displayName = 'CustomMenu'
 
   const walletConnectedContentMobile = (
     <div className="d-flex flex-row justify-content-between">

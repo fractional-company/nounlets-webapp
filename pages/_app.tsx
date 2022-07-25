@@ -17,7 +17,7 @@ import {
   useAuctionState
 } from '../store/auction'
 import { useDisplayAuction } from '../store/onDisplayAuction'
-import { nounPath } from '../lib/utils/history'
+import { nounletPath } from '../lib/utils/history'
 import { useRouter } from 'next/router'
 import { Toaster } from 'react-hot-toast'
 
@@ -80,7 +80,7 @@ const ChainUpdater: React.FC = () => {
       // setActiveAuction(reduxSafeNewAuction({ nounId, startTime, endTime, settled: false }))
       const nounIdNumber = BigNumber.from(nounId).toNumber()
       const startTimeNumber = BigNumber.from(startTime).toNumber()
-      router.push(nounPath(nounIdNumber))
+      router.push(nounletPath(nounIdNumber))
       setOnDisplayAuctionNounId(nounIdNumber)
       setOnDisplayAuctionStartTime(startTimeNumber)
 

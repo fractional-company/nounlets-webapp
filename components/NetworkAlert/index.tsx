@@ -62,7 +62,7 @@ const NetworkAlert = () => {
                   <ol className="list-decimal mt-4 ml-8">
                     <li>Open Metamask</li>
                     <li>Click the network select dropdown</li>
-                    <li>Click on "{metamaskNetworkName()}"</li>
+                    <li>Click on &quot;{metamaskNetworkName()}&quot;</li>
                   </ol>
                 </div>
               </Dialog.Panel>
