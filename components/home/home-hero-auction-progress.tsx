@@ -1,9 +1,13 @@
 import Button from 'components/buttons/button'
+import CountdownTimer from 'components/countdown-timer'
 import IconEth from 'components/icons/icon-eth'
 import IconLinkOffsite from 'components/icons/icon-link-offsite'
 import IconQuestionCircle from 'components/icons/icon-question-circle'
 import CongratulationsModal from 'components/modals/congratulations-modal'
 import SimpleAddress from 'components/simple-address'
+import { BigNumber, BigNumberish, ethers } from 'ethers'
+import { formatUnits } from 'ethers/lib/utils'
+import { NounletAuction } from 'hooks/useDisplayedNounlet'
 import Image from 'next/image'
 
 import userIcon from 'public/img/user-icon.jpg'
@@ -11,8 +15,22 @@ import { useMemo, useState } from 'react'
 import BidHistoryModal from '../modals/bid-history-modal'
 import SimpleModal from '../simple-modal'
 
-export default function HomeHeroAuctionProgress(): JSX.Element {
+type ComponentProps = {
+  auction: NounletAuction
+}
+
+export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Element {
   const [showBidHistoryModal, setShowBidHistoryModal] = useState(false)
+  const [showEndTime, setShowEndTime] = useState(false)
+  const currentBidEth = useMemo(() => formatUnits(props.auction.amount), [props.auction.amount])
+  const minNextBidEth = useMemo(
+    () => formatUnits(props.auction.amount.add('10000000000000000')),
+    [props.auction.amount]
+  )
+
+  // console.log(ethers, props.auction.amount)
+  // formatUnits(props.currentBid, 18)
+
   const showBidModalHandler = () => {
     setShowBidHistoryModal(true)
   }
@@ -56,14 +74,23 @@ export default function HomeHeroAuctionProgress(): JSX.Element {
           <p className="text-px18 leading-px22 font-500 text-gray-4">Current bid</p>
           <div className="flex items-center space-x-3">
             <IconEth className="flex-shrink-0" />
-            <p className="text-px32 leading-[38px] font-700">0.90</p>
+            <p className="text-px32 leading-[38px] font-700">{currentBidEth}</p>
           </div>
         </div>
         <div className="sm:border-r-2 border-gray-2"></div>
-        <div className="flex flex-col space-y-3">
-          <p className="text-px18 leading-px22 font-500 text-gray-4">Auction ends in</p>
+        <div
+          className="flex flex-col space-y-3 cursor-pointer"
+          onClick={() => setShowEndTime(!showEndTime)}
+        >
+          <p className="text-px18 leading-px22 font-500 text-gray-4">
+            {showEndTime ? 'Auction ends at' : 'Auction ends in'}
+          </p>
           <div className="flex items-center">
-            <p className="text-px32 leading-[38px] font-700">03h 44m 10s</p>
+            <CountdownTimer
+              showEndTime={showEndTime}
+              auctionStart={props.auction.startTime}
+              auctionEnd={props.auction.endTime}
+            />
           </div>
         </div>
       </div>
@@ -82,7 +109,7 @@ export default function HomeHeroAuctionProgress(): JSX.Element {
           <input
             className="text-[25px] font-700 placeholder:text-gray-3 bg-transparent outline-none w-full"
             type="text"
-            placeholder="0.90 or more"
+            placeholder={`${minNextBidEth} or more`}
           />
         </div>
 
