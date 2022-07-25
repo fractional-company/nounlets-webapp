@@ -1,6 +1,6 @@
 import { Auction } from '../wrappers/nounsAuction';
-import { AuctionState } from '../state/slices/auction';
 import { BigNumber } from '@ethersproject/bignumber';
+import {AuctionState} from "../../store/auction";
 
 export const isNounderNoun = (nounId: BigNumber) => {
   return nounId.mod(10).eq(0) || nounId.eq(0);

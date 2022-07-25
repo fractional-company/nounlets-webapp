@@ -1,11 +1,14 @@
 import type { NextPage } from 'next'
-import { useEthers } from '@usedapp/core'
+import {shortenAddress, useEthers} from '@usedapp/core'
 import nounletAuctionABI from '../../eth-sdk/abis/rinkeby/nounletAuction.json'
 
 import {Contract} from "@ethersproject/contracts";
 import {Fragment, useState} from "react";
 import {Dialog, Transition} from "@headlessui/react";
 import useOnDisplayAuction from "../../lib/wrappers/onDisplayAuction";
+import IconEth from "../icons/icon-eth";
+import IconLinkOffsite from "../icons/icon-link-offsite";
+import SimpleAddress from "../simple-address";
 
 // interface BidHistoryModalProps {
 //     auction: any
@@ -13,29 +16,30 @@ import useOnDisplayAuction from "../../lib/wrappers/onDisplayAuction";
 
 // @ts-ignore
 const BidHistoryModal: NextPage = () => {
-    const onDisplayAuction = useOnDisplayAuction();
-    const { account, library } = useEthers()
-    const [showBidHistoryModal, setShowBidHistoryModal] = useState(false);
-    const showBidModalHandler = () => {
-        setShowBidHistoryModal(true);
-    };
-    const dismissBidModalHanlder = () => {
-        setShowBidHistoryModal(false);
-    };
     const nounletId = 32
 
-    const getLeaves = async () => {
-        const nounletAuction = new Contract('0xc7500c1fe21BCEdd62A2953BE9dCb05911394027', nounletAuctionABI, library)
-        return await nounletAuction.getLeafNodes();
-    }
-
-    const getProofs = async (hashes: any) => {
-        const nounletAuction = new Contract('0xc7500c1fe21BCEdd62A2953BE9dCb05911394027', nounletAuctionABI, library)
-        return await Promise.all(hashes.map((hash: any, key: any) => nounletAuction.getProof(hashes, key)))
-    }
+    const bidHistory = () => ([0, 1, 2, 3, 4, 5, 6].map(el => {
+        return (
+            <div key={el} className={ `items-center rounded-px10 justify-between p-3 flex bg-white ${el === 0 ? 'opacity-100' : 'opacity-50'}` }>
+                <div className="flex flex-col">
+                    <SimpleAddress
+                        avatarSize={24}
+                        address="0x497F34f8A6EaB10652f846fD82201938e58d72E0"
+                        className="text-px18 leading-px28 font-700 gap-2 flex-1"
+                    />
+                    <div className="text-px14 leading-px24">Jun 28, 2022, 1:25PM</div>
+                </div>
+                <div className="flex items-center">
+                    <IconEth className="flex-shrink-0 h-[12px]" />
+                    <p className="ml-1 text-px18 leading-px28 font-700">0.12</p>
+                    <IconLinkOffsite className="ml-3 flex-shrink-0 h-[12px]" />
+                </div>
+            </div>
+        )
+    }))
 
     return (
-        <>
+        <div className="sm:w-[370px]">
             <Dialog.Title className="p-4 text-px24 font-500 border-b border-divider">
                 <div className="flex -mt-10">
                     <img src="" alt=""/>
@@ -45,20 +49,10 @@ const BidHistoryModal: NextPage = () => {
                     </div>
                 </div>
             </Dialog.Title>
-            <div className="p-4">
-                <Dialog.Description className="pt-4 pb-8">
-                    Lil Nouns DAO auctions require you to switch over to be able to participate.
-                </Dialog.Description>
-                <Dialog.Description>
-                    <b>To get started, please switch your network by following the instructions below:</b>
-                </Dialog.Description>
-                <ol className="list-decimal mt-4 ml-8">
-                    <li>Open Metamask</li>
-                    <li>Click the network select dropdown</li>
-                    <li>Click on</li>
-                </ol>
+            <div className="p-4 flex flex-col bg-gray-2 rounded-px10 gap-2">
+                {bidHistory()}
             </div>
-        </>
+        </div>
     );
 }
 

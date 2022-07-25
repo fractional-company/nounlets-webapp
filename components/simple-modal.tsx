@@ -39,7 +39,7 @@ const SimpleModal = function (props: ComponentProps): JSX.Element {
             <div className="flex min-h-screen items-center justify-center p-4">
               <Dialog.Panel
                 className={classNames(
-                  'relative bg-gray-2/90 rounded-px24 py-10 p-4 xs:px-10 w-full sm:w-auto max-w-screen-md',
+                  'relative bg-gray-1 rounded-px24 py-10 p-4 xs:px-8 w-full sm:w-auto max-w-screen-md',
                   props.className
                 )}
               >
