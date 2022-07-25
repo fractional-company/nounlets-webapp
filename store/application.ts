@@ -22,13 +22,15 @@ interface ApplicationState {
   isCoolBackground: boolean
   alertModal: AlertModal
   isConnectModalOpen: boolean
-  voteForDelegateModal: VoteForDelegateModal
+  voteForDelegateModal: VoteForDelegateModal,
+  isBidModalOpen: boolean
 }
 
 interface ApplicationSetters {
   setAlertModal: (modal: AlertModal) => void
   setStateBackgroundColor: (color: string) => void
   setConnectModalOpen: (isOpen: boolean) => void
+  setBidModalOpen: (isOpen: boolean) => void
   setVoteForDelegateModalForAddress: (isOpen: boolean, address?: string) => void
 }
 
@@ -36,6 +38,7 @@ const initialState: ApplicationState = {
   stateBackgroundColor: grey,
   isCoolBackground: true,
   isConnectModalOpen: false,
+  isBidModalOpen: false,
   alertModal: {
     show: false
   },
@@ -62,6 +65,11 @@ export const useAppState = create(
     setConnectModalOpen: (isOpen: boolean) => {
       set((state) => {
         state.isConnectModalOpen = isOpen
+      })
+    },
+    setBidModalOpen: (isOpen: boolean) => {
+      set((state) => {
+        state.isBidModalOpen = isOpen
       })
     },
     setVoteForDelegateModalForAddress(isOpen: boolean, address?: string) {

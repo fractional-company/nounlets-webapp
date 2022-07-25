@@ -18,6 +18,8 @@ import { useNounletsAuction } from '../lib/utils/nounletContracts'
 import { useEffect, useState } from 'react'
 import BidHistoryModal from '../components/modals/bid-history-modal'
 import useDisplayedNounlet from 'hooks/useDisplayedNounlet'
+import SimpleModal from "../components/simple-modal";
+import {useAppState} from "../store/application";
 
 export const getServerSideProps: GetServerSideProps = async () => {
   const { data } = await client.query({
@@ -46,7 +48,8 @@ export const getServerSideProps: GetServerSideProps = async () => {
 // @ts-ignore
 const Home: NextPage = ({ vault }) => {
   const { account, library } = useEthers()
-  const { nid } = useDisplayedNounlet()
+  const { nid, auctionData } = useDisplayedNounlet()
+  const { setBidModalOpen, isBidModalOpen } = useAppState()
 
   // const router = useRouter()
   // const { nid } = router.query
@@ -112,6 +115,9 @@ const Home: NextPage = ({ vault }) => {
       <p onClick={placeBid} className="text-px24 m-4 font-500 cursor-pointer">
         GET PROOFS
       </p>
+      <SimpleModal onClose={() => setBidModalOpen(false)} isShown={isBidModalOpen}>
+        <BidHistoryModal bids={auctionData?.bids || []}/>
+      </SimpleModal>
       <HomeHero />
       <HomeVotesFromNounlet />
       <HomeLeaderboard />

@@ -7,6 +7,7 @@ import IconEth from 'components/icons/icon-eth'
 import HomeHeroAuctionProgress from './home-hero-auction-progress'
 import { useRouter } from 'next/router'
 import useDisplayedNounlet from 'hooks/useDisplayedNounlet'
+import HomeHeroAuctionCompleted from "./home-hero-auction-completed";
 
 export default function HomeHero(): JSX.Element {
   const router = useRouter()
@@ -59,7 +60,10 @@ export default function HomeHero(): JSX.Element {
 
             <h1 className="font-londrina text-px64 leading-[82px]">Nounlet {nid}</h1>
 
-            {auctionData && <HomeHeroAuctionProgress auction={auctionData} />}
+            {auctionData && (auctionData.ended
+                ? <HomeHeroAuctionCompleted auction={auctionData} />
+                : <HomeHeroAuctionProgress auction={auctionData}/>
+            )}
           </div>
         </div>
       </div>

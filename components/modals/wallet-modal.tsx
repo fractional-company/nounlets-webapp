@@ -51,6 +51,12 @@ export default function WalletModal(): JSX.Element {
     }
   }, [isMobileMenuOpen])
 
+  useEffect(() => {
+    if (account) {
+        setConnectModalOpen(false)
+    }
+  }, [account])
+
   const wallets = (
     <div className="wallet-buttons-list grid grid-cols-1 md:grid-cols-2 gap-3 justify-items-stretch md:justify-items-start">
       <style jsx global>{`

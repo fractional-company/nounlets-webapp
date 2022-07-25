@@ -5,8 +5,8 @@ import IconLinkOffsite from 'components/icons/icon-link-offsite'
 import IconQuestionCircle from 'components/icons/icon-question-circle'
 import CongratulationsModal from 'components/modals/congratulations-modal'
 import SimpleAddress from 'components/simple-address'
-import { BigNumber, BigNumberish, ethers } from 'ethers'
-import { formatUnits } from 'ethers/lib/utils'
+import BigNumber from 'bignumber.js';
+import {formatEther, formatUnits} from 'ethers/lib/utils'
 import { NounletAuction } from 'hooks/useDisplayedNounlet'
 import Image from 'next/image'
 
@@ -14,13 +14,16 @@ import userIcon from 'public/img/user-icon.jpg'
 import { useMemo, useState } from 'react'
 import BidHistoryModal from '../modals/bid-history-modal'
 import SimpleModal from '../simple-modal'
+import {useAppState} from "../../store/application";
+import {ChainId, getExplorerTransactionLink} from "@usedapp/core";
+import {CHAIN_ID} from "../../pages/_app";
 
 type ComponentProps = {
   auction: NounletAuction
 }
 
 export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Element {
-  const [showBidHistoryModal, setShowBidHistoryModal] = useState(false)
+    const { setBidModalOpen } = useAppState()
   const [showEndTime, setShowEndTime] = useState(false)
   const currentBidEth = useMemo(() => formatUnits(props.auction.amount), [props.auction.amount])
   const minNextBidEth = useMemo(
@@ -31,44 +34,28 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
   // console.log(ethers, props.auction.amount)
   // formatUnits(props.currentBid, 18)
 
-  const showBidModalHandler = () => {
-    setShowBidHistoryModal(true)
-  }
-  const dismissBidModalHandler = () => {
-    setShowBidHistoryModal(false)
-  }
-
-  const [isCongratulationsModalShown, setIsCongratulationsModalShown] = useState(false)
   const latestBidsList: JSX.Element[] = useMemo(() => {
-    return [1, 2, 3].map((bid) => {
+    return props.auction.bids.slice(0, 3).map((bid) => {
+        const ethValue = new BigNumber(formatEther(bid.value)).toFixed(2);
       return (
-        <div key={bid} className="flex items-center flex-1 py-2 overflow-hidden">
-          {/* <Image
-            src={userIcon}
-            alt="icon"
-            width="24"
-            height="24"
-            className="overflow-hidden rounded-full flex-shrink-0"
-          />
-          <p className="ml-2 text-px18 leading-px28 font-700 flex-1 truncate">0x497F...72E0</p> */}
+        <div key={bid.id.toString()} className="flex items-center flex-1 py-2 overflow-hidden">
           <SimpleAddress
             avatarSize={24}
-            address="0x497F34f8A6EaB10652f846fD82201938e58d72E0"
+            address={bid.sender}
             className="text-px18 leading-px28 font-700 gap-2 flex-1"
           />
           <IconEth className="flex-shrink-0 h-[12px]" />
-          <p className="ml-1 text-px18 leading-px28 font-700">0.12</p>
-          <IconLinkOffsite className="ml-3 flex-shrink-0 h-[12px]" />
+          <p className="ml-1 text-px18 leading-px28 font-700">{ethValue}</p>
+            <a href={getExplorerTransactionLink(bid.txHash, CHAIN_ID as ChainId)} target="_blank" rel="noreferrer">
+                <IconLinkOffsite className="ml-3 flex-shrink-0 h-[12px]" />
+            </a>
         </div>
       )
     })
-  }, [])
+  }, [props.auction.bids])
 
   return (
     <div className="home-hero-auction space-y-3">
-      <SimpleModal onClose={dismissBidModalHandler} isShown={showBidHistoryModal}>
-        <BidHistoryModal />
-      </SimpleModal>
       <div className="flex flex-col sm:flex-row space-y-2 sm:space-x-14 lg:space-x-10 xl:space-x-14 sm:space-y-0">
         <div className="flex flex-col space-y-3">
           <p className="text-px18 leading-px22 font-500 text-gray-4">Current bid</p>
@@ -120,25 +107,11 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
         <div className="flex flex-col divide-y divide-gray-2">{latestBidsList}</div>
         <p
           className="text-center text-gray-4 text-px16 leading-px24 font-500 cursor-pointer"
-          onClick={showBidModalHandler}
+          onClick={() => setBidModalOpen(true)}
         >
           View all bids
         </p>
       </div>
-
-      <Button
-        className="primary !h-[52px] w-full"
-        onClick={() => setIsCongratulationsModalShown(true)}
-      >
-        Settle auction
-      </Button>
-
-      <CongratulationsModal
-        isShown={isCongratulationsModalShown}
-        onClose={() => {
-          setIsCongratulationsModalShown(false)
-        }}
-      />
     </div>
   )
 }

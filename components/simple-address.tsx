@@ -4,6 +4,7 @@ import { shortenAddress } from 'lib/utils/common'
 import { useReverseENSLookUp } from 'lib/utils/ensLookup'
 import OnMounted from './utils/on-mounted'
 import { useEthers } from '@usedapp/core'
+import {buildEtherscanAddressLink} from "../lib/utils/etherscan";
 
 type ComponentProps = {
   className?: string
@@ -26,14 +27,18 @@ export default function SimpleAddress(props: ComponentProps): JSX.Element {
     >
       <OnMounted>
         {!!avatarSize && (
-          <div
-            className="overflow-hidden rounded-full flex-shrink-0"
-            style={{ width: avatarSize, height: avatarSize }}
-          >
-            <Davatar size={avatarSize} address={address} provider={provider} />
-          </div>
+            <a href={buildEtherscanAddressLink(address)} target="_blank" rel="noreferrer">
+              <div
+              className="overflow-hidden rounded-full flex-shrink-0"
+              style={{ width: avatarSize, height: avatarSize }}
+            >
+              <Davatar size={avatarSize} address={address} provider={provider} />
+            </div>
+            </a>
         )}
-        <p className="truncate">{ens || shortenedAddres}</p>
+        <a href={buildEtherscanAddressLink(address)} target="_blank" rel="noreferrer">
+          <p className="truncate">{ens || shortenedAddres}</p>
+        </a>
       </OnMounted>
     </div>
   )
