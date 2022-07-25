@@ -1,5 +1,4 @@
 import classes from './Footer.module.css';
-import { Container } from 'react-bootstrap';
 import config from '../../config';
 import {ExternalURL, externalURL} from "../../lib/utils/externalURL";
 import {buildEtherscanAddressLink} from "../../lib/utils/etherscan";
@@ -14,14 +13,14 @@ const Footer = () => {
 
   return (
     <div className={classes.wrapper}>
-      <Container className={classes.container}>
+      <div className={'container ' + classes.container}>
         <footer className={classes.footerSignature}>
           <Link href={discordURL} passHref={true}>Discord</Link>
           <Link href={twitterURL} passHref={true}>Twitter</Link>
           <Link href={etherscanURL} passHref={true}>Etherscan</Link>
           <Link href={discourseURL}>Forums</Link>
         </footer>
-      </Container>
+      </div>
     </div>
   );
 };

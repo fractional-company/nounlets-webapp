@@ -8,7 +8,6 @@ import { useAccountState } from '../../store/account'
 import classes from './WalletConfig.module.css'
 import NetworkAlert from '../NetworkAlert'
 import AlertModal from '../Modal'
-import { Col, Row } from 'react-bootstrap'
 import { AvatarProvider } from '@davatar/react'
 
 export default function WalletConfig(props: { children: ReactNode }) {
@@ -39,21 +38,21 @@ export default function WalletConfig(props: { children: ReactNode }) {
                 {alertModal.isActionPrompt && (
                   <>
                     {
-                      <Row>
-                        <Col>
+                      <div className="flex grid-cols-2">
+                        <div className="col-span-1">
                           <button
                             className={classes.alertButton}
                             onClick={() => setAlertModal({ ...alertModal, show: false })}
                           >
                             Cancel
                           </button>
-                        </Col>
-                        <Col>
+                        </div>
+                        <div className="col-span-1">
                           <button className={classes.alertButton} onClick={alertModal.action}>
                             {alertModal.actionMessage}
                           </button>
-                        </Col>
-                      </Row>
+                        </div>
+                      </div>
                     }
                   </>
                 )}

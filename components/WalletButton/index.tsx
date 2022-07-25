@@ -6,7 +6,7 @@ import braveLogo from '../../assets/wallet-brand-assets/brave.svg';
 import ledgerLogo from '../../assets/wallet-brand-assets/ledger.svg';
 import trezorLogo from '../../assets/wallet-brand-assets/trezor.svg';
 import coinbaseWalletLogo from '../../assets/wallet-brand-assets/coinbase-wallet-dot.svg';
-import {Button} from "react-bootstrap";
+import Button from "../buttons/button";
 
 export enum WALLET_TYPE {
   metamask = 'Metamask',

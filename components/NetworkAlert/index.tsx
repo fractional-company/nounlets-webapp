@@ -1,4 +1,3 @@
-import { Modal } from 'react-bootstrap';
 import { CHAIN_ID } from '../../config';
 import {Fragment} from "react";
 import {Dialog, Transition} from "@headlessui/react";
