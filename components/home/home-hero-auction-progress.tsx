@@ -5,38 +5,55 @@ import IconLinkOffsite from 'components/icons/icon-link-offsite'
 import IconQuestionCircle from 'components/icons/icon-question-circle'
 import CongratulationsModal from 'components/modals/congratulations-modal'
 import SimpleAddress from 'components/simple-address'
-import BigNumber from 'bignumber.js';
-import {formatEther, formatUnits} from 'ethers/lib/utils'
+import BigNumber from 'bignumber.js'
+import { formatEther, formatUnits, parseUnits } from 'ethers/lib/utils'
 import { NounletAuction } from 'hooks/useDisplayedNounlet'
 import Image from 'next/image'
 
 import userIcon from 'public/img/user-icon.jpg'
-import { useMemo, useState } from 'react'
+import { ChangeEvent, SyntheticEvent, useMemo, useRef, useState } from 'react'
 import BidHistoryModal from '../modals/bid-history-modal'
 import SimpleModal from '../simple-modal'
-import {useAppState} from "../../store/application";
-import {ChainId, getExplorerTransactionLink} from "@usedapp/core";
-import {CHAIN_ID} from "../../pages/_app";
+import { useAppState } from '../../store/application'
+import { ChainId, getExplorerTransactionLink, useEthers } from '@usedapp/core'
+import { CHAIN_ID } from '../../pages/_app'
+import OnMounted from 'components/utils/on-mounted'
 
 type ComponentProps = {
   auction: NounletAuction
 }
 
 export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Element {
-    const { setBidModalOpen } = useAppState()
+  const { account } = useEthers()
+  const { setBidModalOpen } = useAppState()
   const [showEndTime, setShowEndTime] = useState(false)
-  const currentBidEth = useMemo(() => formatUnits(props.auction.amount), [props.auction.amount])
-  const minNextBidEth = useMemo(
-    () => formatUnits(props.auction.amount.add('10000000000000000')),
+  const bidInputRef = useRef<HTMLInputElement>(null)
+  const [bidInputValue, setBidInputValue] = useState('')
+  // const currentBidEth = useMemo(() => formatUnits(props.auction.amount), [props.auction.amount])
+  // const minNextBidEth = useMemo(
+  //   () => formatUnits(props.auction.amount.add('10000000000000000')),
+  //   [props.auction.amount]
+  // )
+
+  const currentBidEth = useMemo(
+    () => new BigNumber(formatEther(props.auction.amount)).toFixed(2),
     [props.auction.amount]
   )
 
+  const minNextBidBN = useMemo(
+    () => props.auction.amount.add('10000000000000000'),
+    [props.auction.amount]
+  )
+  const minNextBidEth = useMemo(
+    () => new BigNumber(formatEther(minNextBidBN)).toFixed(2),
+    [minNextBidBN]
+  )
   // console.log(ethers, props.auction.amount)
   // formatUnits(props.currentBid, 18)
 
   const latestBidsList: JSX.Element[] = useMemo(() => {
     return props.auction.bids.slice(0, 3).map((bid) => {
-        const ethValue = new BigNumber(formatEther(bid.value)).toFixed(2);
+      const ethValue = new BigNumber(formatEther(bid.value)).toFixed(2)
       return (
         <div key={bid.id.toString()} className="flex items-center flex-1 py-2 overflow-hidden">
           <SimpleAddress
@@ -46,13 +63,49 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
           />
           <IconEth className="flex-shrink-0 h-[12px]" />
           <p className="ml-1 text-px18 leading-px28 font-700">{ethValue}</p>
-            <a href={getExplorerTransactionLink(bid.txHash, CHAIN_ID as ChainId)} target="_blank" rel="noreferrer">
-                <IconLinkOffsite className="ml-3 flex-shrink-0 h-[12px]" />
-            </a>
+          <a
+            href={getExplorerTransactionLink(bid.txHash, CHAIN_ID as ChainId)}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <IconLinkOffsite className="ml-3 flex-shrink-0 h-[12px]" />
+          </a>
         </div>
       )
     })
   }, [props.auction.bids])
+
+  const handleBidInputValue = (event: ChangeEvent<HTMLInputElement>) => {
+    const onlyNumbers = /^\d+\.?\d?\d?$/
+    try {
+      if (event.target.value === '' || onlyNumbers.test(event.target.value)) {
+        setBidInputValue(event.target.value)
+      }
+    } catch (error) {
+      console.error('handleBidInputValue error', error)
+    }
+  }
+
+  const [showWrongBidModal, setShowWrongBidModal] = useState(false)
+  const handleBid = () => {
+    if (bidInputValue === '') return
+    try {
+      const bidAmount = parseUnits(bidInputValue, 18)
+      if (bidAmount.gte(minNextBidBN)) {
+        console.log('Proceed with bid!')
+      } else {
+        setShowWrongBidModal(true)
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const isBidButtonEnabled = useMemo(() => {
+    if (bidInputValue === '') return false
+    if (account == null) return false
+    return true
+  }, [bidInputValue, account])
 
   return (
     <div className="home-hero-auction space-y-3">
@@ -94,13 +147,20 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
         <div className="bid-input flex items-center space-x-1 bg-gray-1 lg:bg-white rounded-px10 px-4 leading-[52px] focus-within:outline-dashed flex-1">
           <IconEth className="flex-shrink-0 h-[12px] text-gray-3" />
           <input
+            value={bidInputValue}
+            onChange={handleBidInputValue}
+            ref={bidInputRef}
             className="text-[25px] font-700 placeholder:text-gray-3 bg-transparent outline-none w-full"
             type="text"
             placeholder={`${minNextBidEth} or more`}
           />
         </div>
 
-        <Button className="primary !h-[52px]">Place bid</Button>
+        <OnMounted>
+          <Button className="primary !h-[52px]" onClick={handleBid} disabled={!isBidButtonEnabled}>
+            Place bid
+          </Button>
+        </OnMounted>
       </div>
 
       <div className="latest-bids space-y-2 pt-5 lg:pt-0">
@@ -112,6 +172,20 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
           View all bids
         </p>
       </div>
+
+      <SimpleModal
+        className="vote-for-custom-wallet-modal !max-w-[472px]"
+        isShown={showWrongBidModal}
+        onClose={() => setShowWrongBidModal(false)}
+      >
+        <h2 className="font-700 text-px32 leading-px36 text-center">Insufficient bid amount 🤏</h2>
+        <div className="mt-8 flex flex-col gap-3">
+          <p className="font-500 text-px20 leading-px30 text-gray-4 text-center">
+            Please place a bid higher than or equal to the minimum bid amount of{' '}
+            <span className="font-900 text-black text-px22">{minNextBidEth} ETH</span>
+          </p>
+        </div>
+      </SimpleModal>
     </div>
   )
 }
