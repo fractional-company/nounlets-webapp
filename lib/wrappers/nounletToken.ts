@@ -1,8 +1,7 @@
-import { useContractCall, useEthers } from '@usedapp/core';
 import { BigNumber as EthersBN, utils } from 'ethers';
-import config from '../../config';
+import {useNounletTokenContract} from "../utils/nounletContracts";
 
-interface NounToken {
+interface NounletToken {
   name: string;
   description: string;
   image: string;
@@ -15,6 +14,11 @@ export interface INounSeed {
   glasses: number;
   head: number;
 }
+
+export const useNounletSeed = async (nounId: EthersBN) => {
+  const contract = useNounletTokenContract()
+  const seed = await contract.generateSeed(nounId)
+};
 
 // const abi = new utils.Interface(NounsTokenABI);
 //
@@ -32,7 +36,7 @@ export interface INounSeed {
 //   }
 //
 //   const nounImgData = noun.split(';base64,').pop() as string;
-//   const json: NounToken = JSON.parse(atob(nounImgData));
+//   const json: NounletToken = JSON.parse(atob(nounImgData));
 //
 //   return json;
 // };

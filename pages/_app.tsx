@@ -23,18 +23,17 @@ import { Toaster } from 'react-hot-toast'
 
 import { configureChains, chain, createClient, WagmiConfig } from 'wagmi'
 import { infuraProvider } from 'wagmi/providers/infura'
+import { getDefaultProvider } from 'ethers'
 
-
-type SupportedChains = ChainId.Rinkeby | ChainId.Mainnet | ChainId.Hardhat
+type SupportedChains = ChainId.Rinkeby | ChainId.Mainnet
 
 export const CHAIN_ID: SupportedChains = parseInt(process.env.REACT_APP_CHAIN_ID ?? '4')
 
 const useDappConfig: Config = {
   readOnlyChainId: CHAIN_ID,
   readOnlyUrls: {
-    [ChainId.Rinkeby]: 'https://eth-rinkeby.alchemyapi.io/v2/oj6wP54JEn9E4QLpWJDr4Z7AvMZOjnad',
-    [ChainId.Mainnet]: 'https://eth-mainnet.alchemyapi.io/v2/jO-pIswuUui5ipthjbcIOZEeuuxWibBd',
-    [ChainId.Hardhat]: 'http://localhost:8545'
+    [ChainId.Rinkeby]: 'https://eth-rinkeby.alchemyapi.io/v2/WCQsygq3peGhgnTkPKsFj6OsWrLXgkzt',
+    [ChainId.Mainnet]: 'https://eth-mainnet.g.alchemy.com/v2/JBgRzZwEiE7Im5glhOhqaTHdtvEsHYNs',
   }
 }
 
@@ -131,29 +130,21 @@ const { chains, provider, webSocketProvider } = configureChains(
   [infuraProvider({infuraId})]
 )
 
-const wagmiClient = createClient({
-  autoConnect: true,
-  provider,
-  webSocketProvider
-})
-
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-      <WagmiConfig client={wagmiClient}>
-          <DAppProvider config={useDappConfig}>
-              <ChainUpdater />
-              <WalletConfig>
-          <Toaster />
-                  <div className="bg-gray-1">
-                    <AppHeader />
-                  </div>
-                  <div id="backdrop-root"></div>
-                  <div id="overlay-root"></div>
-                  <Component {...pageProps} />
-                  <AppFooter />
-              </WalletConfig>
-          </DAppProvider>
-      </WagmiConfig>
+      <DAppProvider config={useDappConfig}>
+          <ChainUpdater />
+          <WalletConfig>
+              <Toaster />
+              <div className="bg-gray-1">
+                <AppHeader />
+              </div>
+              <div id="backdrop-root"></div>
+              <div id="overlay-root"></div>
+              <Component {...pageProps} />
+              <AppFooter />
+          </WalletConfig>
+      </DAppProvider>
   )
 
   // return (

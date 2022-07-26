@@ -2,45 +2,25 @@ import type { GetServerSideProps, NextPage } from 'next'
 import { useEthers } from '@usedapp/core'
 import { BigNumber, ethers, Signer } from 'ethers'
 import OnMounted from '../components/utils/on-mounted'
-import nounletAuctionABI from '../eth-sdk/abis/rinkeby/nounletAuction.json'
-import { gql } from '@apollo/client'
-import client from '../apollo-client'
+import nounletAuctionABI from '../typechain/abis/nounletAuction.abi.json'
 
 import HomeHero from 'components/home/home-hero'
 import HomeLeaderboard from 'components/home/home-leaderboard'
 import HomeWTF from 'components/home/home-wtf'
 import HomeCollectiveOwnership from 'components/home/home-collective-ownership'
-import { getRinkebySdk } from '@dethcrypto/eth-sdk-client'
 import HomeVotesFromNounlet from 'components/home/home-votes-from-nounlet'
-import { useRouter } from 'next/router'
 import { Contract } from '@ethersproject/contracts'
-import { useNounletsAuction } from '../lib/utils/nounletContracts'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import BidHistoryModal from '../components/modals/bid-history-modal'
 import useDisplayedNounlet from 'hooks/useDisplayedNounlet'
 import SimpleModal from "../components/simple-modal";
 import {useAppState} from "../store/application";
+import {getVault} from "../lib/graphql/queries";
 
 export const getServerSideProps: GetServerSideProps = async () => {
-  const { data } = await client.query({
-    query: gql`
-      query MyQuery {
-        vault(id: "0x067b73fbc3accf78b4b8ebfb7964a03fb4554a0e") {
-          id
-          noun {
-            id
-            nounlets {
-              id
-            }
-          }
-        }
-      }
-    `
-  })
-
   return {
     props: {
-      vault: data.vault
+      vault: await getVault('0x0000000000000000000000000000000000000000')
     }
   }
 }
@@ -54,10 +34,9 @@ const Home: NextPage = ({ vault }) => {
   // const router = useRouter()
   // const { nid } = router.query
   useEffect(() => {
-    console.log('neki', nid)
     return () => console.log('unsub')
   }, [nid])
-  console.log(nid)
+
   const getLeaves = async () => {
     const nounletAuction = new Contract(
       '0xc7500c1fe21BCEdd62A2953BE9dCb05911394027',
@@ -104,10 +83,6 @@ const Home: NextPage = ({ vault }) => {
         console.log(e)
       })
     console.log(proofs)
-    if (account) {
-      // const signer = library?.getSigner(account)
-      // const { nounletAuction } = getRinkebySdk(signer as Signer)
-    }
   }
 
   return (

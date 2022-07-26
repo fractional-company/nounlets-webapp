@@ -6,7 +6,7 @@ interface AppConfig {
   subgraphApiUri: string;
 }
 
-type SupportedChains = ChainId.Rinkeby | ChainId.Mainnet | ChainId.Hardhat;
+type SupportedChains = ChainId.Rinkeby | ChainId.Mainnet;
 
 export const CHAIN_ID: SupportedChains = parseInt(process.env.NEXT_PUBLIC_CHAIN_ID ?? '1');
 
@@ -45,12 +45,7 @@ const app: Record<SupportedChains, AppConfig> = {
     jsonRpcUri: createNetworkHttpUrl('mainnet'),
     wsRpcUri: createNetworkWsUrl('mainnet'),
     subgraphApiUri: 'https://api.thegraph.com/subgraphs/name/vidmahovic/nounlets'
-  },
-  [ChainId.Hardhat]: {
-    jsonRpcUri: 'http://localhost:8545',
-    wsRpcUri: 'ws://localhost:8545',
-    subgraphApiUri: '',
-  },
+  }
 };
 
 export interface NounletContractAddresses {

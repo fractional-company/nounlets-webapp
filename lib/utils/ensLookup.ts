@@ -1,20 +1,14 @@
-import { useEthers } from '@usedapp/core';
-import { useEnsName } from 'wagmi'
+import {useEthers, useLookupAddress} from '@usedapp/core';
 import { useEffect, useState } from 'react'
 
 export const useReverseENSLookUp = (address: string, withStatus = true) => {
    const { library } = useEthers();
   const [ens, setEns] = useState<string>()
   const {
-    data: ensName,
+    ens: ensName,
     error: ensNameError,
-    isLoading,
-    isError,
-    refetch
-  } = useEnsName({
-    address: address,
-    cacheTime: 86400000
-  })
+    isLoading
+  } = useLookupAddress(address)
 
   useEffect(() => {
     let mounted = true
@@ -33,10 +27,10 @@ export const useReverseENSLookUp = (address: string, withStatus = true) => {
       setEns('')
       mounted = false
     }
-  }, [address, ensName, ensNameError?.message, refetch])
+  }, [address, ensName, ensNameError?.message])
 
   if (isLoading) return withStatus ? 'Fetching name…' : null
-  if (isError) return withStatus ? 'Error fetching name' : null
+  if (ensNameError) return withStatus ? 'Error fetching name' : null
   if (ensName) return ens
 
   return ens

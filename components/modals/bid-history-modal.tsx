@@ -1,11 +1,5 @@
-import type { NextPage } from 'next'
-import {ChainId, getExplorerTransactionLink, shortenAddress, useEthers} from '@usedapp/core'
-import nounletAuctionABI from '../../eth-sdk/abis/rinkeby/nounletAuction.json'
-
-import {Contract} from "@ethersproject/contracts";
-import {Fragment, useState} from "react";
-import {Dialog, Transition} from "@headlessui/react";
-import useOnDisplayAuction from "../../lib/wrappers/onDisplayAuction";
+import {ChainId, getExplorerTransactionLink} from '@usedapp/core'
+import {Dialog} from "@headlessui/react";
 import IconEth from "../icons/icon-eth";
 import IconLinkOffsite from "../icons/icon-link-offsite";
 import SimpleAddress from "../simple-address";

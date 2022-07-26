@@ -53,7 +53,7 @@ const NetworkAlert = () => {
                 <Dialog.Title className="p-4 text-px24 font-500 border-b border-divider">Wrong Network Detected</Dialog.Title>
                 <div className="p-4">
                   <Dialog.Description className="pt-4 pb-8">
-                    Lil Nouns DAO auctions require you to switch over {networkName()} to be able to participate.
+                    Nounlets auctions require you to switch over {networkName()} to be able to participate.
                   </Dialog.Description>
                   <Dialog.Description>
                     <b>To get started, please switch your network by following the instructions below:</b>

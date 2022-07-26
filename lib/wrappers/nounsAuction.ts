@@ -1,7 +1,7 @@
 import { useContractCall } from '@usedapp/core';
 import { BigNumber as EthersBN, utils } from 'ethers';
 import BigNumber from 'bignumber.js';
-import NounletsAuctionABI from '../../eth-sdk/abis/rinkeby/nounletAuction.json'
+import NounletsAuctionABI from '../../typechain/abis/nounletAuction.abi.json'
 import config from "../../config";
 
 // export enum AuctionHouseContractFunction {

@@ -19,7 +19,7 @@ export default function WalletModal(): JSX.Element {
   const [mobileMenuMaxHeight, setMobileMenuMaxHeight] = useState(0)
   const mobileMenuRef = useRef<HTMLDivElement>(null)
   const { setConnectModalOpen, isConnectModalOpen } = useAppState()
-  const { activate, account } = useEthers()
+  const { activate, activateBrowserWallet, account, deactivate } = useEthers()
   const supportedChainIds = [CHAIN_ID]
   const [areConditionsAccepted, setAreConditionsAccepted] = useState(false)
 
@@ -49,11 +49,10 @@ export default function WalletModal(): JSX.Element {
         }
       `}</style>
       <WalletButton
-        onClick={() => {
-          const injected = new InjectedConnector({
-            supportedChainIds
-          })
-          activate(injected)
+        onClick={async () => {
+            debugger
+            const response = await activateBrowserWallet()
+            debugger
         }}
         walletType={WALLET_TYPE.metamask}
       />
@@ -93,13 +92,8 @@ export default function WalletModal(): JSX.Element {
         walletType={WALLET_TYPE.coinbaseWallet}
       />
       <WalletButton
-        onClick={() => {
-          const injected = new InjectedConnector({
-            supportedChainIds
-          })
-          activate(injected)
-        }}
-        walletType={WALLET_TYPE.brave}
+          onClick={() => activateBrowserWallet()}
+          walletType={WALLET_TYPE.brave}
       />
       {/* <WalletButton
         onClick={() => {
@@ -167,6 +161,7 @@ export default function WalletModal(): JSX.Element {
           className="link text-px14 font-700 text-gray-3 hover:text-secondary-blue w-full --sm"
           onClick={() => {
             console.log(localStorage.removeItem('walletconnect'))
+              deactivate()
             setIsSuccessModalOpen(true)
           }}
         >

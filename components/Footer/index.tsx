@@ -1,5 +1,4 @@
 import classes from './Footer.module.css';
-import config from '../../config';
 import {ExternalURL, externalURL} from "../../lib/utils/externalURL";
 import {buildEtherscanAddressLink} from "../../lib/utils/etherscan";
 import Link from "next/link";
