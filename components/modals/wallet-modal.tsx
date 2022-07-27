@@ -4,6 +4,7 @@ import { useAppState } from '../../store/application'
 import { useEthers } from '@usedapp/core'
 import config, { CHAIN_ID } from '../../config'
 import { InjectedConnector } from '@web3-react/injected-connector'
+import WalletConnectProvider from '@walletconnect/web3-provider'
 import { FortmaticConnector } from '@web3-react/fortmatic-connector'
 import { WalletConnectConnector } from '@web3-react/walletconnect-connector'
 import { WalletLinkConnector } from '@web3-react/walletlink-connector'
@@ -50,9 +51,7 @@ export default function WalletModal(): JSX.Element {
       `}</style>
       <WalletButton
         onClick={async () => {
-            debugger
-            const response = await activateBrowserWallet()
-            debugger
+            await activateBrowserWallet()
         }}
         walletType={WALLET_TYPE.metamask}
       />
@@ -68,21 +67,21 @@ export default function WalletModal(): JSX.Element {
       />
       <WalletButton
         onClick={() => {
-          const walletlink = new WalletConnectConnector({
+          const walletConnect = new WalletConnectConnector({
             supportedChainIds,
             chainId: CHAIN_ID,
             rpc: {
               [CHAIN_ID]: config.app.jsonRpcUri
             }
           })
-          activate(walletlink)
+          activate(walletConnect)
         }}
         walletType={WALLET_TYPE.walletconnect}
       />
       <WalletButton
         onClick={() => {
           const walletlink = new WalletLinkConnector({
-            appName: 'LilNouns.WTF',
+            appName: 'Nounlets',
             appLogoUrl: 'https://lilnouns.wtf/static/media/logo.svg',
             url: config.app.jsonRpcUri,
             supportedChainIds

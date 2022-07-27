@@ -34,7 +34,8 @@ const useDappConfig: Config = {
   readOnlyUrls: {
     [ChainId.Rinkeby]: 'https://eth-rinkeby.alchemyapi.io/v2/WCQsygq3peGhgnTkPKsFj6OsWrLXgkzt',
     [ChainId.Mainnet]: 'https://eth-mainnet.g.alchemy.com/v2/JBgRzZwEiE7Im5glhOhqaTHdtvEsHYNs',
-  }
+  },
+  autoConnect: true
 }
 
 const infuraId = process.env.NEXT_PUBLIC_INFURA_ID;
