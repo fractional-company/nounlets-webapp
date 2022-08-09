@@ -1,22 +1,22 @@
 // import {INounSeed, useNounletSeed} from "../../lib/wrappers/nounletToken";
-// import {BigNumber} from "ethers";
-// import Link from "next/link";
-// import {useDisplayAuction} from "../../store/onDisplayAuction";
+import {BigNumber} from "ethers";
+import Link from "next/link";
+import {useDisplayAuction} from "../../store/onDisplayAuction";
 // import Nounlet from "./nounlet";
-// import {useMemo} from "react";
-//
-// interface StandaloneNounletProps {
-//     nounId: BigNumber;
-// }
-// interface StandaloneCircularNounletProps {
-//     nounId: BigNumber;
-// }
-//
-// interface StandaloneNounletWithSeedProps {
-//     nounId: BigNumber;
-//     onLoadSeed?: (seed: INounSeed) => void;
-//     shouldLinkToProfile: boolean;
-// }
+import {useMemo} from "react";
+
+interface StandaloneNounletProps {
+    nounId: BigNumber;
+}
+interface StandaloneCircularNounletProps {
+    nounId: BigNumber;
+}
+
+interface StandaloneNounletWithSeedProps {
+    nounId: BigNumber;
+    onLoadSeed?: (seed: any) => void;
+    shouldLinkToProfile: boolean;
+}
 //
 // const getNounlet = (nounId: string | BigNumber | number, seed: INounSeed) => {
 //     const id = nounId.toString();
