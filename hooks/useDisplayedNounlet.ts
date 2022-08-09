@@ -4,15 +4,15 @@ import { useEffect, useMemo, useState } from 'react'
 import dayjs from "dayjs";
 
 export type NounletAuction = {
-  id: number
-  nounlet: { id: number }
+  id?: number
+  nounlet?: { id: number }
   amount: BigNumber
   startTime: BigNumber
   endTime: BigNumber
   bidder?: string
   ended?: boolean
   settled: boolean
-  bids: Bid[]
+  bids?: Bid[]
 }
 
 export interface Bid {

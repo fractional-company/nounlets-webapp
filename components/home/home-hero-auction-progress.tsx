@@ -18,9 +18,10 @@ import { useAppState } from '../../store/application'
 import { ChainId, getExplorerTransactionLink, useEthers } from '@usedapp/core'
 import { CHAIN_ID } from '../../pages/_app'
 import OnMounted from 'components/utils/on-mounted'
+import {Auction} from "../../lib/wrappers/nounsAuction";
 
 type ComponentProps = {
-  auction: NounletAuction
+  auction: Auction
 }
 
 export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Element {
@@ -52,7 +53,7 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
   // formatUnits(props.currentBid, 18)
 
   const latestBidsList: JSX.Element[] = useMemo(() => {
-    return props.auction.bids.slice(0, 3).map((bid) => {
+    return (props.auction.startTime ? [] : [{sender: '', value: '', txHash: '', id: ''}]).slice(0, 3).map((bid) => {
       const ethValue = new BigNumber(formatEther(bid.value)).toFixed(2)
       return (
         <div key={bid.id.toString()} className="flex items-center flex-1 py-2 overflow-hidden">
@@ -73,7 +74,7 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
         </div>
       )
     })
-  }, [props.auction.bids])
+  }, [props.auction.amount])
 
   const handleBidInputValue = (event: ChangeEvent<HTMLInputElement>) => {
     const onlyNumbers = /^\d+\.?\d?\d?$/

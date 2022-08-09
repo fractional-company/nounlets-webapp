@@ -15,11 +15,11 @@ export interface INounSeed {
   head: number;
 }
 
-export const useNounletSeed = async (nounId: EthersBN) => {
-  const contract = useNounletTokenContract()
-  const seed = await contract.generateSeed(nounId)
-};
-
+// export const useNounletSeed = async (nounId: EthersBN) => {
+//   const contract = useNounletTokenContract()
+//   return await contract.generateSeed(nounId)
+// };
+//
 // const abi = new utils.Interface(NounsTokenABI);
 //
 // export const useNounToken = (nounId: EthersBN) => {
@@ -41,7 +41,7 @@ export const useNounletSeed = async (nounId: EthersBN) => {
 //   return json;
 // };
 //
-// export const useNounSeed = (nounId: EthersBN) => {
+// export const useNounletSeed = (nounId: EthersBN) => {
 //   const seed = useContractCall<INounSeed>({
 //     abi,
 //     address: config.addresses.nounsToken,

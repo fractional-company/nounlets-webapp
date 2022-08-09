@@ -20,6 +20,7 @@ import IconQuestionCircle from './icons/icon-question-circle'
 import Link from 'next/link'
 import VoteForDelegateModal from './modals/vote-for-delegate-modal'
 import toast from 'react-hot-toast'
+import IconNounletsLogo from "./icons/icon-nounlets-logo";
 
 export default function AppHeader(): JSX.Element {
   const [isMobileMenuOpen, setIsModalMenuOpen] = useState(false)
@@ -47,7 +48,6 @@ export default function AppHeader(): JSX.Element {
   )
 
   const handleShowNotification = () => {
-    console.log('asd')
     toast('Hello!')
   }
 
@@ -59,7 +59,7 @@ export default function AppHeader(): JSX.Element {
         <div className="flex items-center h-full space-x-4 min-h-[88px]">
           <Link href="/">
             <a>
-              <IconFractionalLogo className="flex-shrink-0 h-8 w-auto text-[#D63C5E]" />
+              <IconNounletsLogo className="flex-shrink-0 h-8 w-auto text-[#D63C5E] mt-1" />
             </a>
           </Link>
           <div className="flex-1">

@@ -3,15 +3,18 @@ import nounImage from 'public/img/noun.png'
 import nounLoadingImage from 'public/img/loading-skull.gif'
 import Button from 'components/buttons/button'
 import IconArrow from 'components/icons/icon-arrow'
-import IconEth from 'components/icons/icon-eth'
 import HomeHeroAuctionProgress from './home-hero-auction-progress'
 import { useRouter } from 'next/router'
 import useDisplayedNounlet from 'hooks/useDisplayedNounlet'
 import HomeHeroAuctionCompleted from "./home-hero-auction-completed";
+import {useDisplayAuction} from "../../store/onDisplayAuction";;
+import useOnDisplayAuction from "../../lib/wrappers/onDisplayAuction";
 
 export default function HomeHero(): JSX.Element {
   const router = useRouter()
   const { nid, liveNounletId, auctionData } = useDisplayedNounlet()
+  const { lastAuctionNounId, lastAuctionStartTime, onDisplayAuctionNounId, onDisplayAuctionStartTime } = useDisplayAuction()
+  const onDisplayAuction = useOnDisplayAuction();
   const navigateToNoun = () => {}
 
   const isLoading = true
@@ -60,9 +63,9 @@ export default function HomeHero(): JSX.Element {
 
             <h1 className="font-londrina text-px64 leading-[82px]">Nounlet {nid}</h1>
 
-            {auctionData && (auctionData.ended
-                ? <HomeHeroAuctionCompleted auction={auctionData} />
-                : <HomeHeroAuctionProgress auction={auctionData}/>
+            {onDisplayAuction && (onDisplayAuction.settled
+                ? <HomeHeroAuctionCompleted auction={onDisplayAuction} />
+                : <HomeHeroAuctionProgress auction={onDisplayAuction}/>
             )}
           </div>
         </div>

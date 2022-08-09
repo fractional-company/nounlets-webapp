@@ -12,7 +12,7 @@ const deserializeAuction = (reduxSafeAuction: Auction): Auction => {
     bidder: reduxSafeAuction.bidder,
     startTime: BigNumber.from(reduxSafeAuction.startTime),
     endTime: BigNumber.from(reduxSafeAuction.endTime),
-    nounId: BigNumber.from(reduxSafeAuction.nounId),
+    id: BigNumber.from(reduxSafeAuction.id || 0),
     settled: false,
   };
 };
@@ -37,42 +37,34 @@ const deserializeBids = (reduxSafeBids: BidEvent[]): Bid[] => {
 
 const useOnDisplayAuction = (): Auction | undefined => {
   const {activeAuction: currentAuction} = useAuctionState()
-  const lastAuctionNounId = currentAuction?.nounId
+  // TODO: REMOVE MOCK || 0
+  const lastAuctionNounId = currentAuction?.nounId || 0
   const {bids} = useAuctionState()
   const {onDisplayAuctionNounId} = useDisplayAuction()
-  const {pastAuctions} = usePastAuctions()
+  // TODO: REMOVE MOCK || []
+  const {pastAuctions} = usePastAuctions() || []
 
   if (
     onDisplayAuctionNounId === undefined ||
     lastAuctionNounId === undefined ||
     currentAuction === undefined ||
     !pastAuctions
-  )
-    return undefined;
+  ) {
+    return undefined
+  }
 
   // current auction
   if (BigNumber.from(onDisplayAuctionNounId).eq(lastAuctionNounId)) {
     return deserializeAuction(currentAuction);
   } else {
-    // nounder auction
-    if (isNounderNoun(BigNumber.from(onDisplayAuctionNounId)) || isNounsDAONoun(BigNumber.from(onDisplayAuctionNounId))) {
-      const emptyNounderAuction = generateEmptyNounderAuction(
-        BigNumber.from(onDisplayAuctionNounId),
-        pastAuctions,
-      );
+    // past auction
+    const reduxSafeAuction: Auction | undefined = pastAuctions.find(auction => {
+      const nounId = auction.activeAuction && BigNumber.from(auction.activeAuction.nounId);
+      return nounId && nounId.toNumber() === onDisplayAuctionNounId;
+    })?.activeAuction;
 
-      return deserializeAuction(emptyNounderAuction);
-    } else {
-
-  // past auction
-  const reduxSafeAuction: Auction | undefined = pastAuctions.find(auction => {
-    const nounId = auction.activeAuction && BigNumber.from(auction.activeAuction.nounId);
-    return nounId && nounId.toNumber() === onDisplayAuctionNounId;
-  })?.activeAuction;
-
-  return reduxSafeAuction ? deserializeAuction(reduxSafeAuction) : undefined;
-}
-}
+    return reduxSafeAuction ? deserializeAuction(reduxSafeAuction) : undefined;
+  }
 };
 
 export const useAuctionBids = (auctionNounId: BigNumber): Bid[] | undefined => {

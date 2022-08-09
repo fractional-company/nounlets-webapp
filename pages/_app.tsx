@@ -21,9 +21,9 @@ import { nounletPath } from '../lib/utils/history'
 import { useRouter } from 'next/router'
 import { Toaster } from 'react-hot-toast'
 
-import { configureChains, chain, createClient, WagmiConfig } from 'wagmi'
+import { configureChains, chain } from 'wagmi'
 import { infuraProvider } from 'wagmi/providers/infura'
-import { getDefaultProvider } from 'ethers'
+import {useEffect} from "react";
 
 type SupportedChains = ChainId.Rinkeby | ChainId.Mainnet
 
@@ -52,6 +52,10 @@ const ChainUpdater: React.FC = () => {
     setLastAuctionStartTime
   } = useDisplayAuction()
 
+  useEffect(() => {
+    loadState()
+  }, [])
+
   const loadState = async () => {
     const provider = new WebSocketProvider(config.app.wsRpcUri)
     const { nounletAuction, nounletToken } =
@@ -61,6 +65,21 @@ const ChainUpdater: React.FC = () => {
     const extendedFilter = nounletAuction.filters.AuctionExtended(null, null)
     const createdFilter = nounletAuction.filters.AuctionCreated(null, null, null)
     const settledFilter = nounletAuction.filters.AuctionSettled(null, null, null)
+    const [createdAuction] = await nounletAuction.queryFilter(createdFilter)
+    const vaultAddress = createdAuction?.args?._vault
+    if (vaultAddress) {
+      const auctionInfo = await nounletAuction.auctionInfo(vaultAddress)
+      if (auctionInfo) {
+        setFullAuction(auctionInfo)
+        setLastAuctionNounId(0)
+        setLastAuctionStartTime(auctionInfo.startTime.toNumber())
+        setOnDisplayAuctionNounId(0)
+        setOnDisplayAuctionStartTime(auctionInfo.startTime.toNumber())
+        // setFullAuction(reduxSafeAuction(currentAuction))
+        // setLastAuctionNounId(currentAuction.nounId.toNumber())
+      }
+    }
+
     const processBidFilter = async (
       nounId: BigNumberish,
       sender: string,
@@ -94,14 +113,6 @@ const ChainUpdater: React.FC = () => {
       setAuctionSettled({ nounId, amount, winner })
     }
 
-    // Fetch the current auction
-    const currentAuction = await nounletAuction.auctionInfo(
-      '0x0000000000000000000000000000000000000000'
-    )
-    // setFullAuction(reduxSafeAuction(currentAuction))
-    // setLastAuctionNounId(currentAuction.nounId.toNumber())
-
-    setLastAuctionStartTime(currentAuction.startTime.toNumber())
 
     // Fetch the previous 24hours of  bids
     const previousBids = await nounletAuction.queryFilter(bidFilter, 0 - BLOCKS_PER_DAY)
@@ -121,7 +132,6 @@ const ChainUpdater: React.FC = () => {
       processAuctionSettled(nounId, winner, amount)
     )
   }
-  loadState()
 
   return <></>
 }

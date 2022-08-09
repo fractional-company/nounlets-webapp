@@ -14,6 +14,7 @@ import config from "../../config";
 // }
 
 export interface Auction {
+  id?: EthersBN;
   amount: EthersBN;
   bidder: string;
   endTime: EthersBN;

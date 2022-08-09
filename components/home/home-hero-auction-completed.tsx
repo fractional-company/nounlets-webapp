@@ -23,9 +23,10 @@ import { buildEtherscanAddressLink } from '../../lib/utils/etherscan'
 import { useAppState } from '../../store/application'
 import dayjs from 'dayjs'
 import useOnDisplayAuction, { useAuctionBids } from '../../lib/wrappers/onDisplayAuction'
+import {Auction} from "../../lib/wrappers/nounsAuction";
 
 type ComponentProps = {
-  auction: NounletAuction
+  auction: Auction
 }
 
 export default function HomeHeroAuctionCompleted(props: ComponentProps): JSX.Element {

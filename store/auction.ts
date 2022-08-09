@@ -43,7 +43,6 @@ export const reduxSafeAuction = (auction: IAuction): IAuction => ({
     bidder: auction.bidder,
     startTime: BigNumber.from(auction.startTime).toJSON(),
     endTime: BigNumber.from(auction.endTime).toJSON(),
-    nounId: BigNumber.from(auction.nounId).toJSON(),
     settled: auction.settled,
 });
 
