@@ -9,11 +9,15 @@ import useDisplayedNounlet from 'hooks/useDisplayedNounlet'
 import HomeHeroAuctionCompleted from "./home-hero-auction-completed";
 import {useDisplayAuction} from "../../store/onDisplayAuction";;
 import useOnDisplayAuction from "../../lib/wrappers/onDisplayAuction";
+import CountdownTimer from "../countdown-timer";
+import {BigNumber} from "ethers";
+import {auctionStart} from "../../config";
+import IconInfo from "../icons/icon-info";
 
 export default function HomeHero(): JSX.Element {
   const router = useRouter()
   const { nid, liveNounletId, auctionData } = useDisplayedNounlet()
-  const { lastAuctionNounId, lastAuctionStartTime, onDisplayAuctionNounId, onDisplayAuctionStartTime } = useDisplayAuction()
+  const { lastAuctionNounId, lastAuctionStartTime, onDisplayAuctionNounId, onDisplayAuctionStartTime, isLoaded } = useDisplayAuction()
   const onDisplayAuction = useOnDisplayAuction();
   const navigateToNoun = () => {}
 
@@ -22,6 +26,17 @@ export default function HomeHero(): JSX.Element {
   const moveToNounlet = (id: number) => {
     router.push(`/nounlet/${id}`)
   }
+
+  const auctionTimer = (
+      <div className="font-500">
+        <p className="mb-3 text-gray-4 text-px18 leading-px22">First auction starts in</p>
+        <CountdownTimer auctionStart={auctionStart} showEndTime={false} auctionEnd={auctionStart} />
+        <p className="text-px14 text-gray-4 flex items-center font-500 mt-3">
+          <IconInfo className="mr-2" />
+          Bidding for 1% ownership of the Noun.
+          &nbsp;<a href="https://medium.com/fractional-art" target="_blank" className="font-700 text-secondary-blue cursor-pointer" rel="noreferrer">Read more</a></p>
+      </div>)
+  const loadingScreen = <div>Loading...</div>
 
   return (
     <div className="home-hero bg-gray-1">
@@ -62,11 +77,14 @@ export default function HomeHero(): JSX.Element {
             </div>
 
             <h1 className="font-londrina text-px64 leading-[82px]">Nounlet {nid}</h1>
-
-            {onDisplayAuction && (onDisplayAuction.settled
-                ? <HomeHeroAuctionCompleted auction={onDisplayAuction} />
-                : <HomeHeroAuctionProgress auction={onDisplayAuction}/>
-            )}
+            {!isLoaded
+                ? loadingScreen :
+                !lastAuctionNounId || !onDisplayAuction
+                    ? auctionTimer
+                    : onDisplayAuction.settled
+                        ? <HomeHeroAuctionCompleted auction={onDisplayAuction} />
+                        : <HomeHeroAuctionProgress auction={onDisplayAuction}/>
+            }
           </div>
         </div>
       </div>

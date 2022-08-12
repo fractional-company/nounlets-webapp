@@ -49,7 +49,8 @@ const ChainUpdater: React.FC = () => {
     setOnDisplayAuctionNounId,
     setOnDisplayAuctionStartTime,
     setLastAuctionNounId,
-    setLastAuctionStartTime
+    setLastAuctionStartTime,
+    setIsLoaded
   } = useDisplayAuction()
 
   useEffect(() => {
@@ -58,17 +59,20 @@ const ChainUpdater: React.FC = () => {
 
   const loadState = async () => {
     const provider = new WebSocketProvider(config.app.wsRpcUri)
-    const { nounletAuction, nounletToken } =
+    const { nounletAuction, nounletToken, nounletProtoform } =
       CHAIN_ID === 4 ? getRinkebySdk(provider) : (getMainnetSdk(provider) as RinkebySdk)
 
-    const bidFilter = nounletAuction.filters.AuctionBid(null, null, null, null, null)
-    const extendedFilter = nounletAuction.filters.AuctionExtended(null, null)
-    const createdFilter = nounletAuction.filters.AuctionCreated(null, null, null)
-    const settledFilter = nounletAuction.filters.AuctionSettled(null, null, null)
+    const bidFilter = nounletAuction.filters.Bid(null, null, null, null, null)
+    // const extendedFilter = nounletAuction.filters.AuctionExtended(null, null)
+    const createdFilter = nounletAuction.filters.Created(null, null, null)
+    const settledFilter = nounletAuction.filters.Settled(null, null, null)
+    const deployFilter = nounletProtoform.filters.ActiveModules(null, null)
     const [createdAuction] = await nounletAuction.queryFilter(createdFilter)
+    const [deployVault] = await nounletProtoform.queryFilter(createdFilter)
     const vaultAddress = createdAuction?.args?._vault
+    debugger
     if (vaultAddress) {
-      const auctionInfo = await nounletAuction.auctionInfo(vaultAddress)
+      const auctionInfo = await nounletAuction.auctionInfo(vaultAddress, 0)
       if (auctionInfo) {
         setFullAuction(auctionInfo)
         setLastAuctionNounId(0)
@@ -79,6 +83,7 @@ const ChainUpdater: React.FC = () => {
         // setLastAuctionNounId(currentAuction.nounId.toNumber())
       }
     }
+    setIsLoaded()
 
     const processBidFilter = async (
       nounId: BigNumberish,

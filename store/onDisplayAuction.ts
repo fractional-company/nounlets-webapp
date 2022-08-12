@@ -6,6 +6,7 @@ interface OnDisplayAuctionState {
   lastAuctionStartTime: number | undefined;
   onDisplayAuctionNounId: number | undefined;
   onDisplayAuctionStartTime: number | undefined;
+  isLoaded: boolean;
 }
 
 interface OnDisplayAuctionSetters {
@@ -15,6 +16,7 @@ interface OnDisplayAuctionSetters {
   setOnDisplayAuctionStartTime: (startTime: number) => void;
   setPrevOnDisplayAuctionNounId: () => void;
   setNextOnDisplayAuctionNounId: () => void;
+  setIsLoaded: () => void;
 }
 
 const initialState: OnDisplayAuctionState = {
@@ -22,6 +24,7 @@ const initialState: OnDisplayAuctionState = {
   lastAuctionStartTime: undefined,
   onDisplayAuctionNounId: undefined,
   onDisplayAuctionStartTime: undefined,
+  isLoaded: false
 };
 
 export const useDisplayAuction = create(
@@ -61,5 +64,10 @@ export const useDisplayAuction = create(
           state.onDisplayAuctionNounId = state.onDisplayAuctionNounId + 1;
         })
       },
+      setIsLoaded: () => {
+          set(state => {
+              state.isLoaded = true
+          })
+      }
     }))
 )

@@ -1,4 +1,5 @@
 import { ChainId } from '@usedapp/core';
+import {BigNumber} from "ethers";
 
 interface AppConfig {
   jsonRpcUri: string;
@@ -9,6 +10,7 @@ interface AppConfig {
 type SupportedChains = ChainId.Rinkeby | ChainId.Mainnet;
 
 export const CHAIN_ID: SupportedChains = parseInt(process.env.NEXT_PUBLIC_CHAIN_ID ?? '1');
+export const auctionStart: BigNumber = BigNumber.from(process.env.NEXT_PUBLIC_AUCTION_START || 0).mul(1000);
 
 export const ETHERSCAN_API_KEY = process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY ?? '';
 
