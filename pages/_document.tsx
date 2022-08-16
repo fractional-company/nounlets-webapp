@@ -1,10 +1,25 @@
 import Document, { Html, Head, Main, NextScript } from 'next/document'
+import Script from 'next/script'
 
 class MyDocument extends Document {
   render() {
     return (
-      <Html>
-        <Head></Head>
+      <Html lang="en">
+        <Head>
+          <Script
+            src="https://www.googletagmanager.com/gtag/js?id=G-T3PEPVT1PH"
+            strategy="afterInteractive"
+          />
+          <Script id="google-analytics" strategy="afterInteractive">
+            {`
+           window.dataLayer = window.dataLayer || [];
+           function gtag(){dataLayer.push(arguments);}
+           gtag('js', new Date());
+
+           gtag('config', 'G-T3PEPVT1PH');
+        `}
+          </Script>
+        </Head>
         <body className="font-ptRootUI">
           <Main />
           <NextScript />

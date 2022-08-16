@@ -7,7 +7,7 @@ import WalletConfig from '../components/WalletConfig'
 import { DAppProvider, ChainId, Config, useEthers } from '@usedapp/core'
 import { WebSocketProvider } from '@ethersproject/providers'
 import config from '../config'
-import { providers, Signer} from 'ethers'
+import { providers, Signer } from 'ethers'
 import { useNounletTokenContract } from '../lib/utils/nounletContracts'
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber'
 import {
@@ -23,23 +23,23 @@ import { Toaster } from 'react-hot-toast'
 
 import { configureChains, chain } from 'wagmi'
 import { infuraProvider } from 'wagmi/providers/infura'
-import {useEffect} from "react";
+import { useEffect } from 'react'
 
 type SupportedChains = ChainId.Rinkeby | ChainId.Mainnet
 
 export const CHAIN_ID: SupportedChains = parseInt(process.env.REACT_APP_CHAIN_ID ?? '4')
+const infuraId = process.env.NEXT_PUBLIC_INFURA_ID
+const BLOCKS_PER_DAY = 6_500
 
 const useDappConfig: Config = {
   readOnlyChainId: CHAIN_ID,
   readOnlyUrls: {
-    [ChainId.Rinkeby]: 'https://eth-rinkeby.alchemyapi.io/v2/WCQsygq3peGhgnTkPKsFj6OsWrLXgkzt',
-    [ChainId.Mainnet]: 'https://eth-mainnet.g.alchemy.com/v2/JBgRzZwEiE7Im5glhOhqaTHdtvEsHYNs',
+    // [ChainId.Rinkeby]: 'https://eth-rinkeby.alchemyapi.io/v2/WCQsygq3peGhgnTkPKsFj6OsWrLXgkzt',
+    [ChainId.Rinkeby]: 'https://rinkeby.infura.io/v3/' + infuraId,
+    [ChainId.Mainnet]: 'https://eth-mainnet.g.alchemy.com/v2/JBgRzZwEiE7Im5glhOhqaTHdtvEsHYNs'
   },
   autoConnect: true
 }
-
-const infuraId = process.env.NEXT_PUBLIC_INFURA_ID;
-const BLOCKS_PER_DAY = 6_500;
 
 const ChainUpdater: React.FC = () => {
   const router = useRouter()
@@ -53,11 +53,12 @@ const ChainUpdater: React.FC = () => {
     setIsLoaded
   } = useDisplayAuction()
 
-  useEffect(() => {
-    loadState()
-  }, [])
+  // useEffect(() => {
+  //   loadState()
+  // }, [])
 
   const loadState = async () => {
+    console.log('load state')
     const provider = new WebSocketProvider(config.app.wsRpcUri)
     const { nounletAuction, nounletToken, nounletProtoform } =
       CHAIN_ID === 4 ? getRinkebySdk(provider) : (getMainnetSdk(provider) as RinkebySdk)
@@ -67,18 +68,22 @@ const ChainUpdater: React.FC = () => {
     const createdFilter = nounletAuction.filters.Created(null, null, null)
     const settledFilter = nounletAuction.filters.Settled(null, null, null)
     const deployFilter = nounletProtoform.filters.ActiveModules(null, null)
-    const [createdAuction] = await nounletAuction.queryFilter(createdFilter)
+    // const [createdAuction] = await nounletAuction.queryFilter(createdFilter)
+    const response = await nounletAuction.queryFilter(createdFilter)
+    const [createdAuction] = response
     const [deployVault] = await nounletProtoform.queryFilter(createdFilter)
+
+    console.log('createdAuction', response, createdAuction)
     const vaultAddress = createdAuction?.args?._vault
-    debugger
+    // debugger
     if (vaultAddress) {
       const auctionInfo = await nounletAuction.auctionInfo(vaultAddress, 0)
       if (auctionInfo) {
-        setFullAuction(auctionInfo)
-        setLastAuctionNounId(0)
-        setLastAuctionStartTime(auctionInfo.startTime.toNumber())
-        setOnDisplayAuctionNounId(0)
-        setOnDisplayAuctionStartTime(auctionInfo.startTime.toNumber())
+        // setFullAuction(auctionInfo)
+        // setLastAuctionNounId(0)
+        // setLastAuctionStartTime(auctionInfo.startTime.toNumber())
+        // setOnDisplayAuctionNounId(0)
+        // setOnDisplayAuctionStartTime(auctionInfo.startTime.toNumber())
         // setFullAuction(reduxSafeAuction(currentAuction))
         // setLastAuctionNounId(currentAuction.nounId.toNumber())
       }
@@ -118,7 +123,6 @@ const ChainUpdater: React.FC = () => {
       setAuctionSettled({ nounId, amount, winner })
     }
 
-
     // Fetch the previous 24hours of  bids
     const previousBids = await nounletAuction.queryFilter(bidFilter, 0 - BLOCKS_PER_DAY)
     for (const event of previousBids) {
@@ -126,41 +130,47 @@ const ChainUpdater: React.FC = () => {
       // processBidFilter(...(event.args as [BigNumber, string, BigNumber, boolean]), event);
     }
 
-    nounletAuction.on(bidFilter, (nounId, sender, value, extended, event) =>
-      processBidFilter(nounId, sender, value, false, event)
-    )
+    // nounletAuction.on(bidFilter, (nounId, sender, value, extended, event) =>
+    //   processBidFilter(nounId, sender, value, false, event)
+    // )
     nounletAuction.on(createdFilter, (nounId, startTime, endTime) =>
       processAuctionCreated(nounId, startTime, endTime)
     )
-    nounletAuction.on(extendedFilter, (nounId, endTime) => processAuctionExtended(nounId, endTime))
-    nounletAuction.on(settledFilter, (nounId, winner, amount) =>
-      processAuctionSettled(nounId, winner, amount)
-    )
+    // nounletAuction.on(extendedFilter, (nounId, endTime) => processAuctionExtended(nounId, endTime))
+    // nounletAuction.on(settledFilter, (nounId, winner, amount) =>
+    //   processAuctionSettled(nounId, winner, amount)
+    // )
   }
 
-  return <></>
+  return (
+    <>
+      <button onClick={loadState}>Load me</button>
+    </>
+  )
 }
 
-const { chains, provider, webSocketProvider } = configureChains(
-  [chain.mainnet, chain.rinkeby],
-  [infuraProvider({infuraId})]
-)
+// console.log('infura id', infuraId)
+
+// const { chains, provider, webSocketProvider } = configureChains(
+//   [chain.mainnet, chain.rinkeby],
+//   [infuraProvider({ infuraId })]
+// )
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-      <DAppProvider config={useDappConfig}>
-          <ChainUpdater />
-          <WalletConfig>
-              <Toaster />
-              <div className="bg-gray-1">
-                <AppHeader />
-              </div>
-              <div id="backdrop-root"></div>
-              <div id="overlay-root"></div>
-              <Component {...pageProps} />
-              <AppFooter />
-          </WalletConfig>
-      </DAppProvider>
+    <DAppProvider config={useDappConfig}>
+      <ChainUpdater />
+      <WalletConfig>
+        <Toaster />
+        <div className="bg-gray-1">
+          <AppHeader />
+        </div>
+        <div id="backdrop-root"></div>
+        <div id="overlay-root"></div>
+        <Component {...pageProps} />
+        <AppFooter />
+      </WalletConfig>
+    </DAppProvider>
   )
 
   // return (
