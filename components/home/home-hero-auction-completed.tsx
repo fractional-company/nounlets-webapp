@@ -7,7 +7,6 @@ import CongratulationsModal from 'components/modals/congratulations-modal'
 import SimpleAddress from 'components/simple-address'
 import { BigNumberish, ethers } from 'ethers'
 import { formatEther, formatUnits } from 'ethers/lib/utils'
-import { NounletAuction } from 'hooks/useDisplayedNounlet'
 import Image from 'next/image'
 import BigNumber from 'bignumber.js'
 
@@ -23,7 +22,7 @@ import { buildEtherscanAddressLink } from '../../lib/utils/etherscan'
 import { useAppState } from '../../store/application'
 import dayjs from 'dayjs'
 import useOnDisplayAuction, { useAuctionBids } from '../../lib/wrappers/onDisplayAuction'
-import {Auction} from "../../lib/wrappers/nounsAuction";
+import { Auction } from '../../lib/wrappers/nounsAuction'
 
 type ComponentProps = {
   auction: Auction

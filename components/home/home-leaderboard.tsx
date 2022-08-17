@@ -4,9 +4,12 @@ import LeaderboardListTile, {
 } from 'components/leaderboard/leaderboard-list-tile'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
+import { useAuctionStateStore } from 'store/auctionStateStore'
 
 export default function HomeLeaderboard(): JSX.Element {
   const router = useRouter()
+  const { isBeforeLaunch } = useAuctionStateStore()
+
   const myWalletAddress = '0x497F34f8A6EaB10652f846fD82201938e58d72E0'
   const currentDelegateWalletAddress = '0x497F34f8A6EaB10652f846fD82201938e58d72E0'
   const mostVotesWalletAddress = '0x431863c96403aD96d343D87cc47D61CC1F299e51'
@@ -42,6 +45,21 @@ export default function HomeLeaderboard(): JSX.Element {
       numberOfMyVotes: 0
     }
   ]
+
+  if (isBeforeLaunch) {
+    return (
+      <div className="home-leaderboard lg:container mx-auto">
+        <div className="px-4 md:px-12 lg:px-4 mt-12 lg:mt-16">
+          <h3 className="text-px32 font-londrina">Leaderboard</h3>
+
+          <p className="text-px20 leading-px28 text-gray-4 mt-6 lg:mt-16">
+            The leaderboard has no activity yet, since the auction for the first Nounlet did not
+            finish yet. Check back soon!
+          </p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="home-leaderboard lg:container mx-auto">

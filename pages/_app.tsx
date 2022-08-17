@@ -25,6 +25,10 @@ import { configureChains, chain } from 'wagmi'
 import { infuraProvider } from 'wagmi/providers/infura'
 import { useEffect } from 'react'
 
+import useSWR, { SWRConfig, useSWRConfig } from 'swr'
+import { useAuctionStateStore } from 'store/auctionStateStore'
+import { generateNounletAuctionInfoKey } from 'hooks/useDisplayedNounlet'
+
 type SupportedChains = ChainId.Rinkeby | ChainId.Mainnet
 
 export const CHAIN_ID: SupportedChains = parseInt(process.env.REACT_APP_CHAIN_ID ?? '4')
@@ -42,9 +46,8 @@ const useDappConfig: Config = {
 }
 
 const ChainUpdater: React.FC = () => {
+  const { mutate } = useSWRConfig()
   const router = useRouter()
-  const { setActiveAuction, setFullAuction, appendBid, setAuctionSettled, setAuctionExtended } =
-    useAuctionState()
   const {
     setOnDisplayAuctionNounId,
     setOnDisplayAuctionStartTime,
@@ -52,6 +55,195 @@ const ChainUpdater: React.FC = () => {
     setLastAuctionStartTime,
     setIsLoaded
   } = useDisplayAuction()
+  const {
+    setVaultAddress,
+    // setVaultTokenAddress,
+    setVaultTokenId,
+    setLatestNounletId,
+    setIsLoading
+  } = useAuctionStateStore()
+
+  const { mutate: refreshNounletAuctionState } = useSWR(
+    { name: 'NounletAuctionState' },
+    async (args) => {
+      console.log('SWR', { args })
+
+      // Mock response
+
+      return {
+        vault: {
+          id: '0x34f67ab3458eC703EBc2bd2683B117d8F0764614',
+          noun: {
+            id: '0',
+            nounlets: [
+              {
+                id: '1',
+                auction: {
+                  nounlet: {
+                    id: '1'
+                  },
+                  amount: '300000000000000',
+                  startTime: '1660726678',
+                  endTime: '1660741078',
+                  bidder: {
+                    id: '0x6d2343beeced0e805f3cccff870ccb974b5795e6'
+                  },
+                  settled: true,
+                  bids: [
+                    {
+                      id: '0x7a68646c9da387c30b75170240a7293170e6ca68055361d04b0baf3926b0dffa',
+                      bidder: {
+                        id: '0x497f34f8a6eab10652f846fd82201938e58d72e0'
+                      },
+                      amount: '100000000000000',
+                      blockNumber: '11213957',
+                      blockTimestamp: '1660674514'
+                    },
+                    {
+                      id: '0xad69d23da6d90074f330359b4c9e62d14dcf2412b33e54c036a066196a067d62',
+                      bidder: {
+                        id: '0x497f34f8a6eab10652f846fd82201938e58d72e0'
+                      },
+                      amount: '200000000000000',
+                      blockNumber: '11213984',
+                      blockTimestamp: '1660674919'
+                    },
+                    {
+                      id: '0xb8c83c018000653b2faca5761fd9014d41971a4217e573da600a1c359c10a4aa',
+                      bidder: {
+                        id: '0x6d2343beeced0e805f3cccff870ccb974b5795e6'
+                      },
+                      amount: '300000000000000',
+                      blockNumber: '11214062',
+                      blockTimestamp: '1660676089'
+                    }
+                  ]
+                }
+              },
+              {
+                id: '2',
+                auction: {
+                  nounlet: {
+                    id: '2'
+                  },
+                  amount: '0',
+                  startTime: '1660741078',
+                  endTime: '1660742078',
+                  bidder: {
+                    id: '0x6d2343beeced0e805f3cccff870ccb974b5795e6'
+                  },
+                  settled: false,
+                  bids: []
+                }
+              }
+            ]
+          }
+        }
+      }
+
+      // return {
+      //   vaultAddress: '0x332F26aA917d20806954E8fAcCE349b5C3Ba0FDC',
+      //   vaultTokenAddress: '0xdcb57d0a870e19ca4accb440e6fb54d41e86ffea',
+      //   vaultTokenId: BigNumber.from(1),
+      //   auctionInfo: {
+      //     amount: BigNumber.from(0),
+      //     bidder: '0x0000000000000000000000000000000000000000',
+      //     endTime: BigNumber.from(0)
+      //   },
+      //   vaultInfo: {
+      //     curator: '0xAa1660e1c0A6F7026de04A95576DB6Ee4Afb502C',
+      //     currentId: BigNumber.from(0) // Default to 1 if 0 (first auction not started)
+      //   }
+      // }
+
+      // return {
+      //   vaultAddress: '0x332F26aA917d20806954E8fAcCE349b5C3Ba0FDC',
+      //   vaultTokenAddress: '0xdcb57d0a870e19ca4accb440e6fb54d41e86ffea',
+      //   vaultTokenId: BigNumber.from(1),
+      //   auctionInfo: {
+      //     amount: BigNumber.from(0),
+      //     bidder: '0xAa1660e1c0A6F7026de04A95576DB6Ee4Afb502C',
+      //     endTime: 1660099449
+      //   },
+      //   vaultInfo: {
+      //     curator: '0xAa1660e1c0A6F7026de04A95576DB6Ee4Afb502C',
+      //     currentId: BigNumber.from(1)
+      //   }
+      // }
+
+      // const provider = new WebSocketProvider(config.app.wsRpcUri)
+      // const { nounletAuction, nounletToken, nounletProtoform } =
+      //   CHAIN_ID === 4 ? getRinkebySdk(provider) : (getMainnetSdk(provider) as RinkebySdk)
+
+      // const [createdAuction] = await nounletAuction.queryFilter(
+      //   nounletAuction.filters.Created(null, null, null)
+      // )
+
+      // if (createdAuction == null || createdAuction?.args?._vault == null) {
+      //   console.log('no auction yet')
+      //   return null
+      // }
+
+      // const vaultAddress = createdAuction.args._vault
+      // // const vaultTokenAddress = createdAuction.args._token
+      // const vaultTokenId = createdAuction.args._id
+      // const auctionInfo = await nounletAuction.auctionInfo(vaultAddress, vaultTokenId)
+      // const vaultInfo = await nounletAuction.vaultInfo(vaultAddress)
+
+      // console.log({ auctionInfo, vaultInfo })
+      // return {
+      //   vaultAddress,
+      //   // vaultTokenAddress,
+      //   vaultTokenId,
+      //   auctionInfo,
+      //   vaultInfo
+      // }
+    },
+    {
+      onSuccess: (data) => {
+        if (data == null) {
+          console.log('Null data')
+          return
+        }
+
+        console.log('Initial data finished', data)
+
+        const latestNounlet = data.vault.noun.nounlets.at(-1)
+        if (latestNounlet == null) return // shouldn't happen
+
+        const latestNounletId = latestNounlet.id
+        const latestAuction = latestNounlet.auction
+
+        // prepopulate SWR cache
+        data.vault.noun.nounlets.map((nounlet, index) => {
+          if (index === data.vault.noun.nounlets.length - 1) {
+            console.log('skip populating latest nounlet')
+          }
+
+          console.log('🍄 populating nounlet', index + 1)
+          const key = generateNounletAuctionInfoKey({
+            vaultAddress: data.vault.id,
+            vaultTokenId: data.vault.noun.id,
+            nounletId: `${index + 1}`
+          })
+
+          mutate(key, nounlet, {
+            revalidate: false
+          })
+
+          console.log({ key })
+        })
+
+        setVaultAddress(data.vault.id)
+        setVaultTokenId(data.vault.noun.id)
+        setLatestNounletId(latestNounletId)
+        setIsLoading(false)
+      }
+    }
+  )
+
+  const { setActiveAuction, setFullAuction, appendBid, setAuctionSettled, setAuctionExtended } =
+    useAuctionState()
 
   // useEffect(() => {
   //   loadState()
@@ -77,7 +269,8 @@ const ChainUpdater: React.FC = () => {
     const vaultAddress = createdAuction?.args?._vault
     // debugger
     if (vaultAddress) {
-      const auctionInfo = await nounletAuction.auctionInfo(vaultAddress, 0)
+      const auctionInfo = await nounletAuction.auctionInfo(vaultAddress, 1)
+      console.log({ auctionInfo })
       if (auctionInfo) {
         // setFullAuction(auctionInfo)
         // setLastAuctionNounId(0)
@@ -142,9 +335,30 @@ const ChainUpdater: React.FC = () => {
     // )
   }
 
+  const testMutate = async () => {
+    const provider = new WebSocketProvider(config.app.wsRpcUri)
+    const { nounletAuction } =
+      CHAIN_ID === 4 ? getRinkebySdk(provider) : (getMainnetSdk(provider) as RinkebySdk)
+
+    // const bidFilter = nounletAuction.filters
+    //   .Bid
+    //   // null, // vaultAddress,
+    //   // null, //vaultTokenAddress,
+    //   // null, //BigNumber.from(vaultTokenId),
+    //   // null,
+    //   // null
+    //   ()
+    console.log(nounletAuction.filters.Bid())
+    const previousBids = await nounletAuction.queryFilter(nounletAuction)
+    console.log(previousBids)
+
+    // const result = await mutate('test', [1, 3, 4, 5, 6, 6])
+    // console.log('awaited', result)
+  }
+
   return (
     <>
-      <button onClick={loadState}>Load me</button>
+      <button onClick={() => testMutate()}>(Re)load curret nounlet auction state</button>
     </>
   )
 }
@@ -158,19 +372,28 @@ const ChainUpdater: React.FC = () => {
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <DAppProvider config={useDappConfig}>
-      <ChainUpdater />
-      <WalletConfig>
-        <Toaster />
-        <div className="bg-gray-1">
-          <AppHeader />
-        </div>
-        <div id="backdrop-root"></div>
-        <div id="overlay-root"></div>
-        <Component {...pageProps} />
-        <AppFooter />
-      </WalletConfig>
-    </DAppProvider>
+    <SWRConfig
+      value={{
+        refreshInterval: 0,
+        dedupingInterval: 2000, // 10 * 60 * 1000, // 10 min dedup
+        revalidateOnFocus: false,
+        revalidateOnReconnect: false
+      }}
+    >
+      <DAppProvider config={useDappConfig}>
+        <ChainUpdater />
+        <WalletConfig>
+          <Toaster />
+          <div className="bg-gray-1">
+            <AppHeader />
+          </div>
+          <div id="backdrop-root"></div>
+          <div id="overlay-root"></div>
+          <Component {...pageProps} />
+          <AppFooter />
+        </WalletConfig>
+      </DAppProvider>
+    </SWRConfig>
   )
 
   // return (

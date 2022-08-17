@@ -5,9 +5,8 @@ import IconLinkOffsite from 'components/icons/icon-link-offsite'
 import IconQuestionCircle from 'components/icons/icon-question-circle'
 import CongratulationsModal from 'components/modals/congratulations-modal'
 import SimpleAddress from 'components/simple-address'
-import BigNumber from 'bignumber.js'
-import { formatEther, formatUnits, parseUnits } from 'ethers/lib/utils'
-import { NounletAuction } from 'hooks/useDisplayedNounlet'
+import { formatEther, formatUnits, parseEther, parseUnits } from 'ethers/lib/utils'
+import useDisplayedNounlet, { NounletAuction } from 'hooks/useDisplayedNounlet'
 import Image from 'next/image'
 
 import userIcon from 'public/img/user-icon.jpg'
@@ -18,66 +17,71 @@ import { useAppState } from '../../store/application'
 import { ChainId, getExplorerTransactionLink, useEthers } from '@usedapp/core'
 import { CHAIN_ID } from '../../pages/_app'
 import OnMounted from 'components/utils/on-mounted'
-import {Auction} from "../../lib/wrappers/nounsAuction";
+import { Auction } from '../../lib/wrappers/nounsAuction'
+import { BigNumber, FixedNumber } from 'ethers'
 
 type ComponentProps = {
-  auction: Auction
+  auction?: Auction
 }
+
+const MIN_BID_INCREASE = '0.0001'
 
 export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Element {
   const { account } = useEthers()
   const { setBidModalOpen } = useAppState()
+  const { data, auctionEndTime, bid } = useDisplayedNounlet()
   const [showEndTime, setShowEndTime] = useState(false)
   const bidInputRef = useRef<HTMLInputElement>(null)
   const [bidInputValue, setBidInputValue] = useState('')
-  // const currentBidEth = useMemo(() => formatUnits(props.auction.amount), [props.auction.amount])
-  // const minNextBidEth = useMemo(
-  //   () => formatUnits(props.auction.amount.add('10000000000000000')),
-  //   [props.auction.amount]
-  // )
+
+  const currentBid = useMemo(() => {
+    return BigNumber.from(data?.auctionInfo.amount ?? 0)
+  }, [data])
 
   const currentBidEth = useMemo(
-    () => new BigNumber(formatEther(props.auction.amount)).toFixed(2),
-    [props.auction.amount]
+    () => FixedNumber.from(formatEther(currentBid)).round(4),
+    [currentBid]
   )
 
   const minNextBidBN = useMemo(
-    () => props.auction.amount.add('10000000000000000'),
-    [props.auction.amount]
+    () => BigNumber.from(currentBidEth.addUnsafe(FixedNumber.from(MIN_BID_INCREASE))),
+    [currentBidEth]
   )
+
   const minNextBidEth = useMemo(
-    () => new BigNumber(formatEther(minNextBidBN)).toFixed(2),
+    () => FixedNumber.from(formatEther(minNextBidBN)).round(4),
     [minNextBidBN]
   )
-  // console.log(ethers, props.auction.amount)
-  // formatUnits(props.currentBid, 18)
 
   const latestBidsList: JSX.Element[] = useMemo(() => {
-    return (props.auction.startTime ? [] : [{sender: '', value: '', txHash: '', id: ''}]).slice(0, 3).map((bid) => {
-      const ethValue = new BigNumber(formatEther(bid.value)).toFixed(2)
-      return (
-        <div key={bid.id.toString()} className="flex items-center flex-1 py-2 overflow-hidden">
-          <SimpleAddress
-            avatarSize={24}
-            address={bid.sender}
-            className="text-px18 leading-px28 font-700 gap-2 flex-1"
-          />
-          <IconEth className="flex-shrink-0 h-[12px]" />
-          <p className="ml-1 text-px18 leading-px28 font-700">{ethValue}</p>
-          <a
-            href={getExplorerTransactionLink(bid.txHash, CHAIN_ID as ChainId)}
-            target="_blank"
-            rel="noreferrer"
-          >
-            <IconLinkOffsite className="ml-3 flex-shrink-0 h-[12px]" />
-          </a>
-        </div>
-      )
-    })
-  }, [props.auction.amount])
+    return []
+    // return (props.auction.startTime ? [] : [{ sender: '', value: '', txHash: '', id: '' }])
+    //   .slice(0, 3)
+    //   .map((bid) => {
+    //     const ethValue = new BigNumber(formatEther(bid.value)).toFixed(2)
+    //     return (
+    //       <div key={bid.id.toString()} className="flex items-center flex-1 py-2 overflow-hidden">
+    //         <SimpleAddress
+    //           avatarSize={24}
+    //           address={bid.sender}
+    //           className="text-px18 leading-px28 font-700 gap-2 flex-1"
+    //         />
+    //         <IconEth className="flex-shrink-0 h-[12px]" />
+    //         <p className="ml-1 text-px18 leading-px28 font-700">{ethValue}</p>
+    //         <a
+    //           href={getExplorerTransactionLink(bid.txHash, CHAIN_ID as ChainId)}
+    //           target="_blank"
+    //           rel="noreferrer"
+    //         >
+    //           <IconLinkOffsite className="ml-3 flex-shrink-0 h-[12px]" />
+    //         </a>
+    //       </div>
+    //     )
+    //   })
+  }, [])
 
   const handleBidInputValue = (event: ChangeEvent<HTMLInputElement>) => {
-    const onlyNumbers = /^\d+\.?\d?\d?$/
+    const onlyNumbers = /^\d+\.?\d{0,4}$/
     try {
       if (event.target.value === '' || onlyNumbers.test(event.target.value)) {
         setBidInputValue(event.target.value)
@@ -88,12 +92,14 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
   }
 
   const [showWrongBidModal, setShowWrongBidModal] = useState(false)
-  const handleBid = () => {
+  const handleBid = async () => {
     if (bidInputValue === '') return
     try {
-      const bidAmount = parseUnits(bidInputValue, 18)
+      const bidAmount = parseEther(bidInputValue)
       if (bidAmount.gte(minNextBidBN)) {
-        console.log('Proceed with bid!')
+        console.log('Proceed with bid!', bidAmount)
+        const result = await bid(bidAmount)
+        console.log('yas bid!', result)
       } else {
         setShowWrongBidModal(true)
       }
@@ -115,7 +121,7 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
           <p className="text-px18 leading-px22 font-500 text-gray-4">Current bid</p>
           <div className="flex items-center space-x-3">
             <IconEth className="flex-shrink-0" />
-            <p className="text-px32 leading-[38px] font-700">{currentBidEth}</p>
+            <p className="text-px32 leading-[38px] font-700">{currentBidEth.toString()}</p>
           </div>
         </div>
         <div className="sm:border-r-2 border-gray-2"></div>
@@ -127,11 +133,7 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
             {showEndTime ? 'Auction ends at' : 'Auction ends in'}
           </p>
           <div className="flex items-center">
-            <CountdownTimer
-              showEndTime={showEndTime}
-              auctionStart={props.auction.startTime}
-              auctionEnd={props.auction.endTime}
-            />
+            <CountdownTimer showEndTime={showEndTime} auctionEnd={auctionEndTime} />
           </div>
         </div>
       </div>
@@ -183,7 +185,7 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
         <div className="mt-8 flex flex-col gap-3">
           <p className="font-500 text-px20 leading-px30 text-gray-4 text-center">
             Please place a bid higher than or equal to the minimum bid amount of{' '}
-            <span className="font-900 text-black text-px22">{minNextBidEth} ETH</span>
+            <span className="font-900 text-black text-px22">{minNextBidEth.toString()} ETH</span>
           </p>
         </div>
       </SimpleModal>

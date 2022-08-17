@@ -17,7 +17,7 @@ export default function WalletConfig(props: { children: ReactNode }) {
   const { setActiveAccount } = useAccountState()
 
   const [emojiQueue, setEmojiQueue] = useState([''])
-  console.log(Number(CHAIN_ID), chainId)
+  // console.log(Number(CHAIN_ID), chainId)
   const isPreLaunch = config.isPreLaunch === 'true'
   useEffect(() => {
     // Local account array updated

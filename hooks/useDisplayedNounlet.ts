@@ -1,140 +1,236 @@
 import { BigNumber } from 'ethers'
 import { useRouter } from 'next/router'
 import { useEffect, useMemo, useState } from 'react'
-import dayjs from "dayjs";
+import dayjs from 'dayjs'
+import useSWR from 'swr'
+import { useEthers } from '@usedapp/core'
+import { useAuctionStateStore } from 'store/auctionStateStore'
+import { getMainnetSdk, getRinkebySdk, RinkebySdk } from '@dethcrypto/eth-sdk-client'
+import { CHAIN_ID } from 'pages/_app'
+import { parseEther } from 'ethers/lib/utils'
 
-export type NounletAuction = {
-  id?: number
-  nounlet?: { id: number }
-  amount: BigNumber
-  startTime: BigNumber
-  endTime: BigNumber
-  bidder?: string
-  ended?: boolean
-  settled: boolean
-  bids?: Bid[]
-}
-
-export interface Bid {
-  vault: string;
-  token: string;
-  id: BigNumber;
-  sender: string;
-  value: BigNumber;
-  extended: boolean;
-  timestamp: dayjs.Dayjs,
-  txHash: string;
-}
-
-type MockData = {
-  id: string
-  noun: {
-    id: number
-    nounlets: {
-      id: number
-      holder?: string
-      delegate?: string
-      auction: NounletAuction
-    }[]
-  }
-}
-
-// const mockResponse: MockData = {
-//   id: '0x067b73fbc3accf78b4b8ebfb7964a03fb4554a0e',
-//   noun: {
-//     id: 0,
-//     nounlets: [
-//       {
-//         id: 0,
-//         auction: {
-//           id: 0,
-//           nounlet: { id: 0 },
-//           amount: BigNumber.from('910000000000000000'),
-//           startTime: BigNumber.from('1658743102000'),
-//           endTime: BigNumber.from('1658749102000'),
-//           settled: false,
-//           bids: []
-//         }
-//       }
-//     ]
-//   }
-// }
-
-const mockLiveNounletId = 13
-const now = Math.floor(Date.now() / 1000)
-
-function generateMockNounlets(id: number) {
-  const nounlets = []
-  for (let i = 0; i <= mockLiveNounletId; i++) {
-    const finalBid = Math.floor(10 + Math.random() * 200)
-    const auctionDuration = 60 * 60 * 16 // 16 hours
-    const dayOffset = 60 * 60 * 24 * (mockLiveNounletId - i)
-    const randomHourOffset = Math.floor(60 * 60 * Math.random() * 5)
-    const auctionStart = now - dayOffset - randomHourOffset
-    const auctionEnd = auctionStart + auctionDuration
-    const currentDate = dayjs(new Date())
-    const ended = currentDate.isAfter(auctionEnd * 1000)
-    const bids: Bid[] = [1, 2, 3, 4, 5, 6].map(bid => {
-      return {
-        id: BigNumber.from(bid),
-        vault: '0x067b73fbc3accf78b4b8ebfb7964a03fb4554a0e',
-        sender: bid % 2 === 0 ? '0x7e2082bDD377E2184266f58c104f1eFBd2b59Fc5' : '0x2D631a9C0FF16B57E6c85789341ef2C1BC7d0a2b',
-        token: '0x1bFa0347683E7e8774D2208Ccd884609478f7De1',
-        extended: bid === 6,
-        value: BigNumber.from('920000000000000000').mul(bid),
-        timestamp: dayjs(new Date()).subtract(bid * 6, 'hour'),
-        txHash: '0xe0bf8f9e5c849e8481c48eef312dfe34b94796dff44b2705a6a8fe5f717a1c3d'
-      }
-    })
-
-    nounlets.push({
-      id: i,
-      auction: {
-        id: i,
-        nounlet: { id: i },
-        amount: BigNumber.from(finalBid + '0000000000000000'),
-        startTime: BigNumber.from(`${auctionStart}`),
-        endTime: BigNumber.from(`${auctionEnd}`),
-        settled: i < mockLiveNounletId,
-        ended,
-        bids,
-      }
-    })
-  }
-
-  return nounlets
-}
-
-const mockResponse: MockData = {
-  id: '0x067b73fbc3accf78b4b8ebfb7964a03fb4554a0e',
-  noun: {
-    id: 0,
-    nounlets: [...generateMockNounlets(mockLiveNounletId)]
+export function generateNounletAuctionInfoKey({
+  vaultAddress,
+  vaultTokenId,
+  nounletId
+}: {
+  vaultAddress?: string
+  vaultTokenId?: string
+  nounletId?: string
+}) {
+  return {
+    name: 'NounletAuctionInfo',
+    vaultAddress,
+    vaultTokenId: vaultTokenId,
+    nounletId: nounletId
   }
 }
 
 export default function useDisplayedNounlet() {
   const router = useRouter()
-  const liveNounletId = mockLiveNounletId
-  const nid = +(router.query?.nid || 0)
-  const [isLoading, setIsLoading] = useState(true)
-  const [auctionData, setAuctionData] = useState<NounletAuction | null>(null)
+  const { account, library } = useEthers()
+  const { isLoading, vaultAddress, vaultTokenId, latestNounletId } = useAuctionStateStore()
 
-  useEffect(() => {
-    console.log('nid change!')
-    const data = mockResponse.noun.nounlets[nid].auction
-    setAuctionData(data)
-  }, [nid])
+  const nid = useMemo(() => {
+    if (router.query?.nid == null) return latestNounletId
+    return router.query.nid as string
+  }, [router.query?.nid, latestNounletId])
+
+  const { data: auctionInfo } = useSWR(
+    generateNounletAuctionInfoKey({
+      vaultAddress,
+      vaultTokenId,
+      nounletId: nid
+    }),
+    async (key) => {
+      if (library == null) return null
+      if (key.vaultAddress == null || key.vaultTokenId == null || key.nounletId == null) return null
+      if (key.nounletId === '0') return null
+
+      console.log('trying to fetch auctionInfo for', key)
+
+      if (key.nounletId === '1')
+        return {
+          id: '1',
+          auction: {
+            nounlet: {
+              id: '1'
+            },
+            amount: '300000000000000',
+            startTime: '1660726678',
+            endTime: '1660741078',
+            bidder: {
+              id: '0x6d2343beeced0e805f3cccff870ccb974b5795e6'
+            },
+            settled: true,
+            bids: [
+              {
+                id: '0x7a68646c9da387c30b75170240a7293170e6ca68055361d04b0baf3926b0dffa',
+                bidder: {
+                  id: '0x497f34f8a6eab10652f846fd82201938e58d72e0'
+                },
+                amount: '100000000000000',
+                blockNumber: '11213957',
+                blockTimestamp: '1660674514'
+              },
+              {
+                id: '0xad69d23da6d90074f330359b4c9e62d14dcf2412b33e54c036a066196a067d62',
+                bidder: {
+                  id: '0x497f34f8a6eab10652f846fd82201938e58d72e0'
+                },
+                amount: '200000000000000',
+                blockNumber: '11213984',
+                blockTimestamp: '1660674919'
+              },
+              {
+                id: '0xb8c83c018000653b2faca5761fd9014d41971a4217e573da600a1c359c10a4aa',
+                bidder: {
+                  id: '0x6d2343beeced0e805f3cccff870ccb974b5795e6'
+                },
+                amount: '300000000000000',
+                blockNumber: '11214062',
+                blockTimestamp: '1660676089'
+              }
+            ]
+          }
+        }
+
+      return {
+        id: '2',
+        auction: {
+          nounlet: {
+            id: '2'
+          },
+          amount: '0',
+          startTime: '1660741078',
+          endTime: '1660742078',
+          bidder: {
+            id: '0x6d2343beeced0e805f3cccff870ccb974b5795e6'
+          },
+          settled: false,
+          bids: []
+        }
+      }
+    },
+    {
+      revalidateIfStale: nid === latestNounletId
+    }
+  )
+
+  // const { data: auctionInfo } = useSWR(
+  //   { name: 'NounletAuctionInfo2', vaultAddress, nid },
+  //   async (key) => {
+  //     if (vaultAddress == null || library == null || key.nid === null) return null
+
+  //     const { nounletAuction } =
+  //       CHAIN_ID === 4
+  //         ? getRinkebySdk(library || library)
+  //         : (getMainnetSdk(library || library) as RinkebySdk)
+
+  //     const auctionInfo = await nounletAuction.auctionInfo(vaultAddress, nid)
+  //     console.group('Getting auction data for', nid)
+  //     console.table(key)
+  //     console.table(auctionInfo)
+  //     console.groupEnd()
+  //     return auctionInfo
+  //   },
+  //   {
+  //     revalidateIfStale: nid === latestNounletId // Revalidate only latest auction
+  //   }
+  // )
+
+  /*
+      /// @dev Event log for bidding on an auction
+    /// @param _vault The vault associated with the auction
+    /// @param _token The token associated with the vault
+    /// @param _id The ID of the token at auction
+    /// @param _bidder The address of the bidder
+    /// @param _value The ether value of the bid
+    event Bid(
+        address indexed _vault,
+        address indexed _token,
+        uint256 indexed _id,
+        address _bidder,
+        uint256 _value
+    );
+
+    */
+  const { data: historicBids } = useSWR(
+    { name: 'NounletHistoricBidEvents', vaultAddress, nid },
+    async (key) => {
+      return []
+      // console.group('NounletHistoricBidEvents')
+      // console.table(key)
+      // // console.log(vaultTokenAddress, vaultTokenId)
+      // console.groupEnd()
+      // if (vaultAddress == null || library == null || key.nid === null) return null
+
+      // const { nounletAuction } =
+      //   CHAIN_ID === 4 ? getRinkebySdk(library) : (getMainnetSdk(library) as RinkebySdk)
+      // const bidFilter = nounletAuction.filters.Bid(
+      //   vaultAddress,
+      //   null, // vaultTokenAddress,
+      //   BigNumber.from(vaultTokenId),
+      //   null,
+      //   null
+      // )
+      // const previousBids = await nounletAuction.queryFilter(bidFilter)
+      // console.log('queriing bids', key, previousBids)
+      // return previousBids
+    },
+    {
+      revalidateIfStale: nid === latestNounletId
+    }
+  )
+
+  const { data: historicVotes } = useSWR(
+    'test',
+    (key) => {
+      console.log('im mutating historicVotes')
+      return [1, 2]
+    },
+    { revalidateIfStale: true }
+  )
+
+  const auctionEndTime = useMemo(() => {
+    if (auctionInfo == null) return 0
+
+    const seconds = BigNumber.from(auctionInfo.auction.endTime).toNumber()
+    return seconds
+  }, [auctionInfo])
 
   const hasAuctionEnded = useMemo(() => {
-    return auctionData?.endTime.mul(1000).lt(Date.now())
-  }, [auctionData])
+    return (auctionEndTime ?? 0 * 1000) < Date.now()
+  }, [auctionEndTime])
+
+  const hasAuctionSettled = useMemo(() => {
+    return false
+  }, [])
+
+  const bid = async (bidAmount: BigNumber) => {
+    if (library == null || account == null) throw new Error('no signer')
+    if (vaultAddress == null) throw new Error('no vault')
+
+    const { nounletAuction } =
+      CHAIN_ID === 4
+        ? getRinkebySdk(library.getSigner(account as string))
+        : (getMainnetSdk(library.getSigner(account as string)) as RinkebySdk)
+
+    const tx = await nounletAuction.bid(vaultAddress, { value: bidAmount })
+    return tx.wait()
+  }
 
   return {
     isLoading,
-    hasAuctionEnded,
     nid,
-    liveNounletId,
-    auctionData
+    latestNounletId,
+    auctionEndTime,
+    hasAuctionEnded,
+    hasAuctionSettled,
+    auctionInfo,
+    historicBids,
+    historicVotes,
+    // methods
+    bid
   }
 }
