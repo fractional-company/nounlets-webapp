@@ -36,12 +36,12 @@ const app: Record<SupportedChains, AppConfig> = {
   [ChainId.Rinkeby]: {
     jsonRpcUri: createNetworkHttpUrl('rinkeby'),
     wsRpcUri: createNetworkWsUrl('rinkeby'),
-    subgraphApiUri: 'https://api.thegraph.com/subgraphs/name/vidmahovic/nounlets'
+    subgraphApiUri: process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT ?? ''
   },
   [ChainId.Mainnet]: {
     jsonRpcUri: createNetworkHttpUrl('mainnet'),
     wsRpcUri: createNetworkWsUrl('mainnet'),
-    subgraphApiUri: 'https://api.thegraph.com/subgraphs/name/vidmahovic/nounlets'
+    subgraphApiUri: process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT ?? ''
   }
 }
 

@@ -1,24 +1,22 @@
 import Button from 'components/buttons/button'
 import CountdownTimer from 'components/countdown-timer'
 import IconEth from 'components/icons/icon-eth'
-import IconLinkOffsite from 'components/icons/icon-link-offsite'
 import IconQuestionCircle from 'components/icons/icon-question-circle'
-import CongratulationsModal from 'components/modals/congratulations-modal'
-import SimpleAddress from 'components/simple-address'
-import { formatEther, formatUnits, parseEther, parseUnits } from 'ethers/lib/utils'
-import useDisplayedNounlet, { NounletAuction } from 'hooks/useDisplayedNounlet'
-import Image from 'next/image'
+import { formatEther, parseEther } from 'ethers/lib/utils'
+import useDisplayedNounlet from 'hooks/useDisplayedNounlet'
 
-import userIcon from 'public/img/user-icon.jpg'
-import { ChangeEvent, SyntheticEvent, useMemo, useRef, useState } from 'react'
-import BidHistoryModal from '../modals/bid-history-modal'
-import SimpleModal from '../simple-modal'
-import { useAppState } from '../../store/application'
-import { ChainId, getExplorerTransactionLink, useEthers } from '@usedapp/core'
-import { CHAIN_ID } from '../../pages/_app'
+import { getExplorerTransactionLink, useEthers } from '@usedapp/core'
 import OnMounted from 'components/utils/on-mounted'
-import { Auction } from '../../lib/wrappers/nounsAuction'
 import { BigNumber, FixedNumber } from 'ethers'
+import { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react'
+import { Auction } from '../../lib/wrappers/nounsAuction'
+import { useAppState } from '../../store/application'
+import SimpleModal from '../simple-modal'
+import useSdk from 'hooks/useSdk'
+import SimpleAddress from 'components/simple-address'
+import IconLinkOffsite from 'components/icons/icon-link-offsite'
+import { useAuctionStateStore } from 'store/auctionStateStore'
+import { BidEvent } from 'typechain/interfaces/NounletAuctionAbi'
 
 type ComponentProps = {
   auction?: Auction
@@ -28,15 +26,27 @@ const MIN_BID_INCREASE = '0.0001'
 
 export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Element {
   const { account } = useEthers()
+  const sdk = useSdk()
+
+  const { isLoading, vaultAddress, vaultTokenAddress, vaultTokenId, latestNounletId } =
+    useAuctionStateStore()
+  const {
+    nid: nounletId,
+    auctionInfo,
+    auctionEndTime,
+    historicBids,
+    refreshDisplayedNounlet,
+    bid
+  } = useDisplayedNounlet()
   const { setBidModalOpen } = useAppState()
-  const { data, auctionEndTime, bid } = useDisplayedNounlet()
   const [showEndTime, setShowEndTime] = useState(false)
   const bidInputRef = useRef<HTMLInputElement>(null)
   const [bidInputValue, setBidInputValue] = useState('')
+  const [showWrongBidModal, setShowWrongBidModal] = useState(false)
 
   const currentBid = useMemo(() => {
-    return BigNumber.from(data?.auctionInfo.amount ?? 0)
-  }, [data])
+    return BigNumber.from(auctionInfo?.auction.amount ?? 0)
+  }, [auctionInfo])
 
   const currentBidEth = useMemo(
     () => FixedNumber.from(formatEther(currentBid)).round(4),
@@ -53,32 +63,66 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
     [minNextBidBN]
   )
 
+  const isBidButtonEnabled = useMemo(() => {
+    if (bidInputValue === '') return false
+    if (account == null) return false
+    return true
+  }, [bidInputValue, account])
+
   const latestBidsList: JSX.Element[] = useMemo(() => {
-    return []
-    // return (props.auction.startTime ? [] : [{ sender: '', value: '', txHash: '', id: '' }])
-    //   .slice(0, 3)
-    //   .map((bid) => {
-    //     const ethValue = new BigNumber(formatEther(bid.value)).toFixed(2)
-    //     return (
-    //       <div key={bid.id.toString()} className="flex items-center flex-1 py-2 overflow-hidden">
-    //         <SimpleAddress
-    //           avatarSize={24}
-    //           address={bid.sender}
-    //           className="text-px18 leading-px28 font-700 gap-2 flex-1"
-    //         />
-    //         <IconEth className="flex-shrink-0 h-[12px]" />
-    //         <p className="ml-1 text-px18 leading-px28 font-700">{ethValue}</p>
-    //         <a
-    //           href={getExplorerTransactionLink(bid.txHash, CHAIN_ID as ChainId)}
-    //           target="_blank"
-    //           rel="noreferrer"
-    //         >
-    //           <IconLinkOffsite className="ml-3 flex-shrink-0 h-[12px]" />
-    //         </a>
-    //       </div>
-    //     )
-    //   })
-  }, [])
+    console.log('latestbits', historicBids)
+    return historicBids.slice(0, 3).map((bid) => {
+      const ethValue = FixedNumber.from(formatEther(bid.amount)).round(4).toString()
+      return (
+        <div key={bid.id.toString()} className="flex items-center flex-1 py-2 overflow-hidden">
+          <SimpleAddress
+            avatarSize={24}
+            address={bid.bidder.id}
+            className="text-px18 leading-px28 font-700 gap-2 flex-1"
+          />
+          <IconEth className="flex-shrink-0 h-[12px]" />
+          <p className="ml-1 text-px18 leading-px28 font-700">{ethValue}</p>
+          <a href={''} target="_blank" rel="noreferrer">
+            <IconLinkOffsite className="ml-3 flex-shrink-0 h-[12px]" />
+          </a>
+        </div>
+      )
+    })
+  }, [historicBids])
+
+  useEffect(() => {
+    if (sdk == null) return
+    if (nounletId === '0') return
+
+    console.log('👍 setting bid listener for ', nounletId)
+    const nounletAuction = sdk.nounletAuction
+    const bidFilter = nounletAuction.filters.Bid(
+      vaultAddress,
+      vaultTokenAddress,
+      nounletId,
+      null,
+      null
+    )
+
+    const listener = (
+      vault: string,
+      token: string,
+      id: BigNumber,
+      bidder: string,
+      amount: BigNumber,
+      extendedTime: BigNumber,
+      event: any // IDK why this isnt BidEvent
+    ) => {
+      console.log('🖐 bid event!', vault, token, id, bidder, amount, extendedTime, event)
+      refreshDisplayedNounlet()
+    }
+    nounletAuction.on(bidFilter, listener)
+
+    return () => {
+      console.log('👎 removing listener for', nounletId)
+      nounletAuction.off(bidFilter, listener)
+    }
+  }, [vaultAddress, vaultTokenAddress, vaultTokenId, nounletId, sdk, refreshDisplayedNounlet])
 
   const handleBidInputValue = (event: ChangeEvent<HTMLInputElement>) => {
     const onlyNumbers = /^\d+\.?\d{0,4}$/
@@ -91,7 +135,6 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
     }
   }
 
-  const [showWrongBidModal, setShowWrongBidModal] = useState(false)
   const handleBid = async () => {
     if (bidInputValue === '') return
     try {
@@ -107,12 +150,6 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
       console.error(error)
     }
   }
-
-  const isBidButtonEnabled = useMemo(() => {
-    if (bidInputValue === '') return false
-    if (account == null) return false
-    return true
-  }, [bidInputValue, account])
 
   return (
     <div className="home-hero-auction space-y-3">

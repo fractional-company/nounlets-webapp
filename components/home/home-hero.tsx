@@ -25,9 +25,11 @@ export default function HomeHero(): JSX.Element {
     latestNounletId,
     auctionEndTime,
     hasAuctionEnded,
+    hasAuctionSettled,
     auctionInfo,
     historicVotes,
-    historicBids
+    historicBids,
+    endedAuctionInfo: settledAuctionInfo
   } = useDisplayedNounlet()
 
   // const { nid, latestNounletId, auctionData } = useDisplayedNounlet()
@@ -114,19 +116,15 @@ export default function HomeHero(): JSX.Element {
               Nounlet {nounletNumberString}
             </h1>
 
-            <h1>REMOVE historicVotes</h1>
-            {JSON.stringify(historicVotes, null, 4)}
-
             {isLoading ? (
               <>Ahhh Im loading</>
             ) : (
               <>
-                {isBeforeLaunch ? (
-                  auctionTimer
-                ) : onDisplayAuction?.settled ? (
-                  <p>settled</p>
+                {hasAuctionEnded ? (
+                  <>
+                    <HomeHeroAuctionCompleted />
+                  </>
                 ) : (
-                  // <HomeHeroAuctionCompleted auction={onDisplayAuction} />
                   <>
                     <HomeHeroAuctionProgress />
                     {allBids.length}

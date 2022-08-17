@@ -23,11 +23,13 @@ import { Toaster } from 'react-hot-toast'
 
 import { configureChains, chain } from 'wagmi'
 import { infuraProvider } from 'wagmi/providers/infura'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 import useSWR, { SWRConfig, useSWRConfig } from 'swr'
 import { useAuctionStateStore } from 'store/auctionStateStore'
 import { generateNounletAuctionInfoKey } from 'hooks/useDisplayedNounlet'
+import { getVaultData } from 'lib/graphql/queries'
+import ChainUpdater from './ChainUpdater'
 
 type SupportedChains = ChainId.Rinkeby | ChainId.Mainnet
 
@@ -45,29 +47,44 @@ const useDappConfig: Config = {
   autoConnect: true
 }
 
-const ChainUpdater: React.FC = () => {
-  const { mutate } = useSWRConfig()
+const ChainUpdater2: React.FC = () => {
   const router = useRouter()
-  const {
-    setOnDisplayAuctionNounId,
-    setOnDisplayAuctionStartTime,
-    setLastAuctionNounId,
-    setLastAuctionStartTime,
-    setIsLoaded
-  } = useDisplayAuction()
+  const { mutate } = useSWRConfig()
+  const { account, library } = useEthers()
+  const [sdk, setSdk] = useState<RinkebySdk | null>(null)
   const {
     setVaultAddress,
-    // setVaultTokenAddress,
     setVaultTokenId,
     setLatestNounletId,
-    setIsLoading
+    setIsLoading,
+    vaultAddress,
+    vaultTokenAddress,
+    vaultTokenId,
+    latestNounletId
   } = useAuctionStateStore()
+
+  const { data: serverData } = useSWR(`serverData`, () => {})
+
+  // const {
+  //   nounsToken,
+  //   nounletAuction,
+  //   nounletToken,
+  //   nounletProtoform,
+  //   optimisticBid,
+  //   nounsDescriptiorV2,
+  //   nounletGovernance
+  // } = CHAIN_ID === 4 ? getRinkebySdk(library) : (getMainnetSdk(library) as RinkebySdk)
+
+  useEffect(() => {
+    if (library != null) {
+      setSdk(CHAIN_ID === 4 ? getRinkebySdk(library) : (getMainnetSdk(library) as RinkebySdk))
+    }
+  }, [library])
 
   const { mutate: refreshNounletAuctionState } = useSWR(
     { name: 'NounletAuctionState' },
     async (args) => {
       console.log('SWR', { args })
-
       // Mock response
 
       return {
@@ -79,9 +96,6 @@ const ChainUpdater: React.FC = () => {
               {
                 id: '1',
                 auction: {
-                  nounlet: {
-                    id: '1'
-                  },
                   amount: '300000000000000',
                   startTime: '1660726678',
                   endTime: '1660741078',
@@ -123,12 +137,9 @@ const ChainUpdater: React.FC = () => {
               {
                 id: '2',
                 auction: {
-                  nounlet: {
-                    id: '2'
-                  },
                   amount: '0',
                   startTime: '1660741078',
-                  endTime: '1660742078',
+                  endTime: '1660745078',
                   bidder: {
                     id: '0x6d2343beeced0e805f3cccff870ccb974b5795e6'
                   },
@@ -242,12 +253,36 @@ const ChainUpdater: React.FC = () => {
     }
   )
 
-  const { setActiveAuction, setFullAuction, appendBid, setAuctionSettled, setAuctionExtended } =
-    useAuctionState()
+  useEffect(() => {
+    console.log('sdk change', sdk)
+    if (sdk == null) return
+    if (
+      vaultAddress == null ||
+      vaultTokenAddress == null ||
+      vaultTokenId == null ||
+      latestNounletId == null
+    )
+      return
 
-  // useEffect(() => {
-  //   loadState()
-  // }, [])
+    const { nounletAuction } = sdk
+    const settledFilter = nounletAuction.filters.Settled(
+      vaultAddress,
+      vaultTokenAddress,
+      vaultTokenId
+    )
+
+    const handler = (event: any) => {
+      console.log('event')
+    }
+
+    console.log('subbing')
+    nounletAuction.on(settledFilter, handler)
+
+    return () => {
+      console.log('unsubbing')
+      nounletAuction.off(settledFilter, handler)
+    }
+  }, [sdk, vaultAddress, vaultTokenAddress, vaultTokenId, latestNounletId])
 
   const loadState = async () => {
     console.log('load state')
@@ -281,54 +316,54 @@ const ChainUpdater: React.FC = () => {
         // setLastAuctionNounId(currentAuction.nounId.toNumber())
       }
     }
-    setIsLoaded()
+    // setIsLoaded()
 
-    const processBidFilter = async (
-      nounId: BigNumberish,
-      sender: string,
-      value: BigNumberish,
-      extended: boolean,
-      event: any
-    ) => {
-      const timestamp = (await event.getBlock()).timestamp
-      const transactionHash = event.transactionHash
-      appendBid(reduxSafeBid({ nounId, sender, value, extended, transactionHash, timestamp }))
-    }
-    const processAuctionCreated = (
-      nounId: BigNumberish,
-      startTime: BigNumberish,
-      endTime: BigNumberish
-    ) => {
-      // setActiveAuction(reduxSafeNewAuction({ nounId, startTime, endTime, settled: false }))
-      const nounIdNumber = BigNumber.from(nounId).toNumber()
-      const startTimeNumber = BigNumber.from(startTime).toNumber()
-      router.push(nounletPath(nounIdNumber))
-      setOnDisplayAuctionNounId(nounIdNumber)
-      setOnDisplayAuctionStartTime(startTimeNumber)
+    // const processBidFilter = async (
+    //   nounId: BigNumberish,
+    //   sender: string,
+    //   value: BigNumberish,
+    //   extended: boolean,
+    //   event: any
+    // ) => {
+    //   const timestamp = (await event.getBlock()).timestamp
+    //   const transactionHash = event.transactionHash
+    //   appendBid(reduxSafeBid({ nounId, sender, value, extended, transactionHash, timestamp }))
+    // }
+    // const processAuctionCreated = (
+    //   nounId: BigNumberish,
+    //   startTime: BigNumberish,
+    //   endTime: BigNumberish
+    // ) => {
+    //   // setActiveAuction(reduxSafeNewAuction({ nounId, startTime, endTime, settled: false }))
+    //   const nounIdNumber = BigNumber.from(nounId).toNumber()
+    //   const startTimeNumber = BigNumber.from(startTime).toNumber()
+    //   router.push(nounletPath(nounIdNumber))
+    //   setOnDisplayAuctionNounId(nounIdNumber)
+    //   setOnDisplayAuctionStartTime(startTimeNumber)
 
-      setLastAuctionNounId(nounIdNumber)
-      setLastAuctionStartTime(startTimeNumber)
-    }
-    const processAuctionExtended = (nounId: BigNumberish, endTime: BigNumberish) => {
-      setAuctionExtended({ nounId, endTime })
-    }
-    const processAuctionSettled = (nounId: BigNumberish, winner: string, amount: BigNumberish) => {
-      setAuctionSettled({ nounId, amount, winner })
-    }
+    //   setLastAuctionNounId(nounIdNumber)
+    //   setLastAuctionStartTime(startTimeNumber)
+    // }
+    // const processAuctionExtended = (nounId: BigNumberish, endTime: BigNumberish) => {
+    //   setAuctionExtended({ nounId, endTime })
+    // }
+    // const processAuctionSettled = (nounId: BigNumberish, winner: string, amount: BigNumberish) => {
+    //   setAuctionSettled({ nounId, amount, winner })
+    // }
 
     // Fetch the previous 24hours of  bids
-    const previousBids = await nounletAuction.queryFilter(bidFilter, 0 - BLOCKS_PER_DAY)
-    for (const event of previousBids) {
-      if (event.args === undefined) return
-      // processBidFilter(...(event.args as [BigNumber, string, BigNumber, boolean]), event);
-    }
+    // const previousBids = await nounletAuction.queryFilter(bidFilter, 0 - BLOCKS_PER_DAY)
+    // for (const event of previousBids) {
+    //   if (event.args === undefined) return
+    // processBidFilter(...(event.args as [BigNumber, string, BigNumber, boolean]), event);
+    // }
 
     // nounletAuction.on(bidFilter, (nounId, sender, value, extended, event) =>
     //   processBidFilter(nounId, sender, value, false, event)
     // )
-    nounletAuction.on(createdFilter, (nounId, startTime, endTime) =>
-      processAuctionCreated(nounId, startTime, endTime)
-    )
+    // nounletAuction.on(createdFilter, (nounId, startTime, endTime) =>
+    //   processAuctionCreated(nounId, startTime, endTime)
+    // )
     // nounletAuction.on(extendedFilter, (nounId, endTime) => processAuctionExtended(nounId, endTime))
     // nounletAuction.on(settledFilter, (nounId, winner, amount) =>
     //   processAuctionSettled(nounId, winner, amount)
@@ -336,21 +371,24 @@ const ChainUpdater: React.FC = () => {
   }
 
   const testMutate = async () => {
-    const provider = new WebSocketProvider(config.app.wsRpcUri)
-    const { nounletAuction } =
-      CHAIN_ID === 4 ? getRinkebySdk(provider) : (getMainnetSdk(provider) as RinkebySdk)
+    const apiResponse = await getVaultData(vaultAddress)
+    console.log('🦚', { apiResponse })
 
-    // const bidFilter = nounletAuction.filters
-    //   .Bid
-    //   // null, // vaultAddress,
-    //   // null, //vaultTokenAddress,
-    //   // null, //BigNumber.from(vaultTokenId),
-    //   // null,
-    //   // null
-    //   ()
-    console.log(nounletAuction.filters.Bid())
-    const previousBids = await nounletAuction.queryFilter(nounletAuction)
-    console.log(previousBids)
+    // const provider = new WebSocketProvider(config.app.wsRpcUri)
+    // const { nounletAuction } =
+    //   CHAIN_ID === 4 ? getRinkebySdk(provider) : (getMainnetSdk(provider) as RinkebySdk)
+
+    // // const bidFilter = nounletAuction.filters
+    // //   .Bid
+    // //   // null, // vaultAddress,
+    // //   // null, //vaultTokenAddress,
+    // //   // null, //BigNumber.from(vaultTokenId),
+    // //   // null,
+    // //   // null
+    // //   ()
+    // console.log(nounletAuction.filters.Bid())
+    // const previousBids = await nounletAuction.queryFilter(nounletAuction)
+    // console.log(previousBids)
 
     // const result = await mutate('test', [1, 3, 4, 5, 6, 6])
     // console.log('awaited', result)

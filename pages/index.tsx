@@ -39,7 +39,6 @@ Token ID    | Vault
 // }
 
 const Home: NextPage<{ vault: any }> = ({ vault }: { vault: any }) => {
-  console.log('Vault page', vault)
   const router = useRouter()
   const { account, library } = useEthers()
   const { setBidModalOpen, isBidModalOpen } = useAppState()
@@ -149,69 +148,6 @@ const Home: NextPage<{ vault: any }> = ({ vault }: { vault: any }) => {
     //   })
   }
 
-  const getLeaves = async () => {
-    const nounletAuction = new Contract(
-      '0x6d7B5aD50c21c72844Da477f7D08c04829Bf1852',
-      nounletAuctionABI,
-      library
-    )
-    return await nounletAuction.getLeafNodes()
-  }
-
-  const getProofs = async (hashes: any) => {
-    const nounletProtoform = new Contract(
-      '0x023f4dfea21d5DE04D9421073a0ede6DF13E8800',
-      nounletProtoformABI,
-      library
-    )
-    return nounletProtoform.generateMerkleTree([
-      '0x6d7B5aD50c21c72844Da477f7D08c04829Bf1852',
-      '0xeEb28759aF7ec93f0678d7Ce294cF3F75b697355'
-    ])
-    // return await Promise.all(
-    //     hashes.map((hash: any, key: any) => nounletProtoform.getProof(hashes, key))
-    // )
-  }
-
-  const placeBid = async () => {
-    // await router.push(`/nounlet/${ Math.ceil(Math.random()*100)}`)
-    const nounletProtoform = new Contract(
-      '0x023f4dfea21d5DE04D9421073a0ede6DF13E8800',
-      nounletProtoformABI,
-      library?.getSigner(account as string)
-    )
-    const nounletAuction = new Contract(
-      '0x6d7B5aD50c21c72844Da477f7D08c04829Bf1852',
-      nounletAuctionABI,
-      library?.getSigner(account as string)
-    )
-    const leaves = await getLeaves()
-    const proofs = await getProofs(leaves)
-    const finalProofs = [proofs[1], proofs[2]]
-    const tx = await nounletProtoform.deployVault(
-      ['0x6d7B5aD50c21c72844Da477f7D08c04829Bf1852', '0xeEb28759aF7ec93f0678d7Ce294cF3F75b697355'],
-      [],
-      [],
-      finalProofs,
-      '0x7aA6e56B7CDFC51835CAC9ca7CC05c39b21A4251',
-      1
-    )
-    return tx
-      .wait()
-      .then((res: any) => {
-        debugger
-        nounletAuction.createAuction()
-      })
-      .catch((e: any) => {
-        console.log(e)
-      })
-    console.log(proofs)
-    if (account) {
-      // const signer = library?.getSigner(account)
-      // const { nounletAuction } = getRinkebySdk(signer as Signer)
-    }
-  }
-
   // useEffect(() => {
   //   if (nid != null) {
   //     if (nid < 1 || nid > 100) {
@@ -223,9 +159,6 @@ const Home: NextPage<{ vault: any }> = ({ vault }: { vault: any }) => {
 
   return (
     <div className="page-home w-screen">
-      <p onClick={placeBid} className="text-px24 m-4 font-500 cursor-pointer">
-        GET PROOFS
-      </p>
       <p onClick={createVault} className="text-px24 m-4 font-500 cursor-pointer">
         CREATE VAULT
       </p>
@@ -252,7 +185,7 @@ const Home: NextPage<{ vault: any }> = ({ vault }: { vault: any }) => {
         <pre>{JSON.stringify(data?.auctionInfo, null, 4)}</pre> */}
       </div>
       <HomeHero />
-      {nid === latestNounletId ? <HomeLeaderboard /> : <HomeVotesFromNounlet />}
+      {/* {nid === latestNounletId ? <HomeLeaderboard /> : <HomeVotesFromNounlet />} */}
       {/* <HomeCollectiveOwnership /> */}
       {/* <HomeWTF /> */}
     </div>

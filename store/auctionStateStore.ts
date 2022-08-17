@@ -6,22 +6,25 @@ import { immer } from 'zustand/middleware/immer'
 interface StoreState {
   isBeforeLaunch: boolean
   isLoading: boolean
-  vaultAddress?: string
-  vaultTokenId?: string
+  vaultAddress: string
+  vaultTokenAddress: string
+  vaultTokenId: string
   latestNounletId: string
 }
 
 interface StoreActions {
   setIsLoading: (flag: boolean) => void
-  setVaultAddress: (address?: string) => void
-  setVaultTokenId: (id?: string) => void
+  setVaultAddress: (address: string) => void
+  setVaultTokenAddress: (address: string) => void
+  setVaultTokenId: (id: string) => void
   setLatestNounletId: (id: string) => void
 }
 
 const initialState: StoreState = {
   isBeforeLaunch: false,
   isLoading: true,
-  vaultAddress: process.env.NEXT_PUBLIC_NOUN_VAULT_ADDRESS,
+  vaultAddress: process.env.NEXT_PUBLIC_NOUN_VAULT_ADDRESS || '',
+  vaultTokenAddress: process.env.NEXT_PUBLIC_NOUN_VAULT_TOKEN_ADDRESS || '',
   vaultTokenId: process.env.NEXT_PUBLIC_NOUN_VAULT_TOKEN_ID ?? '0',
   latestNounletId: '0'
 }
@@ -37,6 +40,11 @@ export const useAuctionStateStore = create(
     setVaultAddress: (address) => {
       set((state) => {
         state.vaultAddress = address
+      })
+    },
+    setVaultTokenAddress: (address) => {
+      set((state) => {
+        state.vaultTokenAddress = address
       })
     },
     setVaultTokenId: (id) => {

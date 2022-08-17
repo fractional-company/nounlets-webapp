@@ -8,6 +8,8 @@ import { useAuctionStateStore } from 'store/auctionStateStore'
 import { getMainnetSdk, getRinkebySdk, RinkebySdk } from '@dethcrypto/eth-sdk-client'
 import { CHAIN_ID } from 'pages/_app'
 import { parseEther } from 'ethers/lib/utils'
+import { getNouletAuctionDataFromBC } from 'lib/graphql/queries'
+import useSdk from './useSdk'
 
 export function generateNounletAuctionInfoKey({
   vaultAddress,
@@ -29,88 +31,97 @@ export function generateNounletAuctionInfoKey({
 export default function useDisplayedNounlet() {
   const router = useRouter()
   const { account, library } = useEthers()
-  const { isLoading, vaultAddress, vaultTokenId, latestNounletId } = useAuctionStateStore()
+  const sdk = useSdk()
+
+  const { isLoading, vaultAddress, vaultTokenAddress, vaultTokenId, latestNounletId } =
+    useAuctionStateStore()
 
   const nid = useMemo(() => {
     if (router.query?.nid == null) return latestNounletId
     return router.query.nid as string
   }, [router.query?.nid, latestNounletId])
 
-  const { data: auctionInfo } = useSWR(
-    generateNounletAuctionInfoKey({
-      vaultAddress,
-      vaultTokenId,
-      nounletId: nid
-    }),
+  const { data: auctionInfo, mutate: refreshDisplayedNounlet } = useSWR(
+    sdk != null && latestNounletId !== '0'
+      ? generateNounletAuctionInfoKey({
+          vaultAddress,
+          vaultTokenId,
+          nounletId: nid
+        })
+      : null,
     async (key) => {
-      if (library == null) return null
+      if (sdk == null) return null
       if (key.vaultAddress == null || key.vaultTokenId == null || key.nounletId == null) return null
       if (key.nounletId === '0') return null
 
       console.log('trying to fetch auctionInfo for', key)
 
-      if (key.nounletId === '1')
-        return {
-          id: '1',
-          auction: {
-            nounlet: {
-              id: '1'
-            },
-            amount: '300000000000000',
-            startTime: '1660726678',
-            endTime: '1660741078',
-            bidder: {
-              id: '0x6d2343beeced0e805f3cccff870ccb974b5795e6'
-            },
-            settled: true,
-            bids: [
-              {
-                id: '0x7a68646c9da387c30b75170240a7293170e6ca68055361d04b0baf3926b0dffa',
-                bidder: {
-                  id: '0x497f34f8a6eab10652f846fd82201938e58d72e0'
-                },
-                amount: '100000000000000',
-                blockNumber: '11213957',
-                blockTimestamp: '1660674514'
-              },
-              {
-                id: '0xad69d23da6d90074f330359b4c9e62d14dcf2412b33e54c036a066196a067d62',
-                bidder: {
-                  id: '0x497f34f8a6eab10652f846fd82201938e58d72e0'
-                },
-                amount: '200000000000000',
-                blockNumber: '11213984',
-                blockTimestamp: '1660674919'
-              },
-              {
-                id: '0xb8c83c018000653b2faca5761fd9014d41971a4217e573da600a1c359c10a4aa',
-                bidder: {
-                  id: '0x6d2343beeced0e805f3cccff870ccb974b5795e6'
-                },
-                amount: '300000000000000',
-                blockNumber: '11214062',
-                blockTimestamp: '1660676089'
-              }
-            ]
-          }
-        }
+      const response = await getNouletAuctionDataFromBC(
+        vaultAddress,
+        vaultTokenAddress,
+        vaultTokenId,
+        key.nounletId,
+        sdk.nounletAuction,
+        latestNounletId
+      )
 
-      return {
-        id: '2',
-        auction: {
-          nounlet: {
-            id: '2'
-          },
-          amount: '0',
-          startTime: '1660741078',
-          endTime: '1660742078',
-          bidder: {
-            id: '0x6d2343beeced0e805f3cccff870ccb974b5795e6'
-          },
-          settled: false,
-          bids: []
-        }
-      }
+      return response
+      // if (key.nounletId === '1')
+      //   return {
+      //     id: '1',
+      //     auction: {
+      //       amount: '300000000000000',
+      //       startTime: '1660726678',
+      //       endTime: '1660741078',
+      //       bidder: {
+      //         id: '0x6d2343beeced0e805f3cccff870ccb974b5795e6'
+      //       },
+      //       settled: true,
+      //       bids: [
+      //         {
+      //           id: '0x7a68646c9da387c30b75170240a7293170e6ca68055361d04b0baf3926b0dffa',
+      //           bidder: {
+      //             id: '0x497f34f8a6eab10652f846fd82201938e58d72e0'
+      //           },
+      //           amount: '100000000000000',
+      //           blockNumber: '11213957',
+      //           blockTimestamp: '1660674514'
+      //         },
+      //         {
+      //           id: '0xad69d23da6d90074f330359b4c9e62d14dcf2412b33e54c036a066196a067d62',
+      //           bidder: {
+      //             id: '0x497f34f8a6eab10652f846fd82201938e58d72e0'
+      //           },
+      //           amount: '200000000000000',
+      //           blockNumber: '11213984',
+      //           blockTimestamp: '1660674919'
+      //         },
+      //         {
+      //           id: '0xb8c83c018000653b2faca5761fd9014d41971a4217e573da600a1c359c10a4aa',
+      //           bidder: {
+      //             id: '0x6d2343beeced0e805f3cccff870ccb974b5795e6'
+      //           },
+      //           amount: '300000000000000',
+      //           blockNumber: '11214062',
+      //           blockTimestamp: '1660676089'
+      //         }
+      //       ]
+      //     }
+      //   }
+
+      // return {
+      //   id: '2',
+      //   auction: {
+      //     amount: '0',
+      //     startTime: '1660741078',
+      //     endTime: '1660741078',
+      //     bidder: {
+      //       id: '0x6d2343beeced0e805f3cccff870ccb974b5795e6'
+      //     },
+      //     settled: false,
+      //     bids: []
+      //   }
+      // }
     },
     {
       revalidateIfStale: nid === latestNounletId
@@ -139,54 +150,14 @@ export default function useDisplayedNounlet() {
   //   }
   // )
 
-  /*
-      /// @dev Event log for bidding on an auction
-    /// @param _vault The vault associated with the auction
-    /// @param _token The token associated with the vault
-    /// @param _id The ID of the token at auction
-    /// @param _bidder The address of the bidder
-    /// @param _value The ether value of the bid
-    event Bid(
-        address indexed _vault,
-        address indexed _token,
-        uint256 indexed _id,
-        address _bidder,
-        uint256 _value
-    );
-
-    */
-  const { data: historicBids } = useSWR(
-    { name: 'NounletHistoricBidEvents', vaultAddress, nid },
-    async (key) => {
-      return []
-      // console.group('NounletHistoricBidEvents')
-      // console.table(key)
-      // // console.log(vaultTokenAddress, vaultTokenId)
-      // console.groupEnd()
-      // if (vaultAddress == null || library == null || key.nid === null) return null
-
-      // const { nounletAuction } =
-      //   CHAIN_ID === 4 ? getRinkebySdk(library) : (getMainnetSdk(library) as RinkebySdk)
-      // const bidFilter = nounletAuction.filters.Bid(
-      //   vaultAddress,
-      //   null, // vaultTokenAddress,
-      //   BigNumber.from(vaultTokenId),
-      //   null,
-      //   null
-      // )
-      // const previousBids = await nounletAuction.queryFilter(bidFilter)
-      // console.log('queriing bids', key, previousBids)
-      // return previousBids
-    },
-    {
-      revalidateIfStale: nid === latestNounletId
-    }
-  )
+  const historicBids = useMemo(() => {
+    return auctionInfo?.auction.bids ?? []
+  }, [auctionInfo])
 
   const { data: historicVotes } = useSWR(
     'test',
     (key) => {
-      console.log('im mutating historicVotes')
+      // console.log('im mutating historicVotes')
       return [1, 2]
     },
     { revalidateIfStale: true }
@@ -200,37 +171,80 @@ export default function useDisplayedNounlet() {
   }, [auctionInfo])
 
   const hasAuctionEnded = useMemo(() => {
-    return (auctionEndTime ?? 0 * 1000) < Date.now()
+    return auctionEndTime * 1000 < Date.now()
   }, [auctionEndTime])
 
   const hasAuctionSettled = useMemo(() => {
-    return false
-  }, [])
+    return !!auctionInfo?.auction.settled
+  }, [auctionInfo])
 
   const bid = async (bidAmount: BigNumber) => {
-    if (library == null || account == null) throw new Error('no signer')
+    if (sdk == null) throw new Error('no sdk')
+    if (account == null) throw new Error('no signer')
+    if (library == null) throw new Error('no library')
     if (vaultAddress == null) throw new Error('no vault')
 
-    const { nounletAuction } =
-      CHAIN_ID === 4
-        ? getRinkebySdk(library.getSigner(account as string))
-        : (getMainnetSdk(library.getSigner(account as string)) as RinkebySdk)
-
-    const tx = await nounletAuction.bid(vaultAddress, { value: bidAmount })
+    const tx = await sdk.nounletAuction
+      .connect(library.getSigner())
+      .bid(vaultAddress, { value: bidAmount })
     return tx.wait()
   }
 
+  const settleAuction = async () => {
+    if (sdk == null) throw new Error('no sdk')
+    if (account == null) throw new Error('no signer')
+    if (library == null) throw new Error('no library')
+    if (vaultAddress == null) throw new Error('no vault')
+
+    const merkleTree = await sdk.nounletProtoform.generateMerkleTree([
+      sdk.nounletAuction.address,
+      sdk.optimisticBid.address,
+      sdk.nounletGovernance.address
+    ])
+
+    console.log(library?.getSigner())
+    const mintProof = await sdk.nounletProtoform.getProof(merkleTree, 0)
+    const tx = await sdk.nounletAuction
+      .connect(library.getSigner())
+      .settleAuction(vaultAddress, mintProof)
+    return tx
+      .wait()
+      .then((res: any) => {
+        console.log('SETTLED!', res)
+        // debugger
+        // nounletAuction.createAuction()
+      })
+      .catch((e: any) => {
+        console.log(e)
+      })
+  }
+
+  const endedAuctionInfo = useMemo(() => {
+    if (auctionInfo == null) return null
+
+    return {
+      isSettled: auctionInfo.auction.settled,
+      winningBid: auctionInfo.auction.amount,
+      heldByAddress: auctionInfo.auction.bidder?.id,
+      endedOn: auctionEndTime,
+      wonByAddress: auctionInfo.auction.bidder?.id
+    }
+  }, [auctionEndTime, auctionInfo])
+
   return {
     isLoading,
-    nid,
-    latestNounletId,
-    auctionEndTime,
     hasAuctionEnded,
     hasAuctionSettled,
+    nid,
+    latestNounletId,
     auctionInfo,
+    auctionEndTime,
+    endedAuctionInfo,
     historicBids,
     historicVotes,
     // methods
-    bid
+    refreshDisplayedNounlet,
+    bid,
+    settleAuction
   }
 }
