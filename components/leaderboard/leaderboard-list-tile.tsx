@@ -5,7 +5,7 @@ import SimpleAddress from 'components/simple-address'
 import Image from 'next/image'
 import userIcon from 'public/img/user-icon.jpg'
 import { useMemo } from 'react'
-import { useAppState } from 'store/application'
+import { useAppStore } from 'store/application'
 import LeaderboardVotesDots from './leaderboard-votes-dots'
 
 export type LeaderboardListTileProps = {
@@ -22,7 +22,7 @@ export type LeaderboardListTileProps = {
 export default function LeaderboardListTile(props: {
   data: LeaderboardListTileProps
 }): JSX.Element {
-  const { setVoteForDelegateModalForAddress } = useAppState()
+  const { setVoteForDelegateModalForAddress } = useAppStore()
   const {
     isMe,
     percentage,

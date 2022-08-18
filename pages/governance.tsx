@@ -16,8 +16,6 @@ import { useAuctionStateStore } from 'store/auctionStateStore'
 import Link from 'next/link'
 
 const Governance: NextPage = () => {
-  const { isBeforeLaunch } = useAuctionStateStore()
-
   const myWalletAddress = '0x497F34f8A6EaB10652f846fD82201938e58d72E0'
   const currentDelegateWalletAddress = '0x497F34f8A6EaB10652f846fD82201938e58d72E0'
   const mostVotesWalletAddress = '0x431863c96403aD96d343D87cc47D61CC1F299e51'
@@ -62,7 +60,7 @@ const Governance: NextPage = () => {
         <h4 className="font-londrina text-px24 leading-px36 text-gray-4">Governance</h4>
         <h1 className="font-londrina text-[56px] leading-[68px] mt-3">Vote for a delegate</h1>
 
-        {isBeforeLaunch ? (
+        {false ? (
           <>
             <p className="text-px20 leading-px28 text-gray-4 mt-6">
               The governance page has no activity yet, since the auction for the first Nounlet did

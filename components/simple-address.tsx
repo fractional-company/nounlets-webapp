@@ -4,7 +4,7 @@ import { shortenAddress } from 'lib/utils/common'
 import { useReverseENSLookUp } from 'lib/utils/ensLookup'
 import OnMounted from './utils/on-mounted'
 import { useEthers } from '@usedapp/core'
-import {buildEtherscanAddressLink} from "../lib/utils/etherscan";
+import { buildEtherscanAddressLink } from '../lib/utils/etherscan'
 
 type ComponentProps = {
   className?: string
@@ -16,7 +16,7 @@ export default function SimpleAddress(props: ComponentProps): JSX.Element {
   const { library: provider } = useEthers()
   const { avatarSize = 0 } = props
   const address = props.address || '0x0000000000000000000000000000000000000000'
-  const shortenedAddres = shortenAddress(address)
+  const shortenedAddres = shortenAddress(address).toLowerCase()
   const ens = useReverseENSLookUp(address, false)
 
   // TODO if the address owns an nounlet, use it as avatar
@@ -27,14 +27,14 @@ export default function SimpleAddress(props: ComponentProps): JSX.Element {
     >
       <OnMounted>
         {!!avatarSize && (
-            <a href={buildEtherscanAddressLink(address)} target="_blank" rel="noreferrer">
-              <div
+          <a href={buildEtherscanAddressLink(address)} target="_blank" rel="noreferrer">
+            <div
               className="overflow-hidden rounded-full flex-shrink-0"
               style={{ width: avatarSize, height: avatarSize }}
             >
               <Davatar size={avatarSize} address={address} provider={provider} />
             </div>
-            </a>
+          </a>
         )}
         <a href={buildEtherscanAddressLink(address)} target="_blank" rel="noreferrer">
           <p className="truncate">{ens || shortenedAddres}</p>

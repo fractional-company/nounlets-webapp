@@ -18,47 +18,30 @@ import IconHeart from '../icons/icon-heart'
 import IconBidHistory from '../icons/icon-bid-history'
 import IconVerified from '../icons/icon-verified'
 import { buildEtherscanAddressLink } from '../../lib/utils/etherscan'
-import { useAppState } from '../../store/application'
+import { useAppStore } from '../../store/application'
 import dayjs from 'dayjs'
 import useOnDisplayAuction, { useAuctionBids } from '../../lib/wrappers/onDisplayAuction'
 import { Auction } from '../../lib/wrappers/nounsAuction'
 import useDisplayedNounlet from 'hooks/useDisplayedNounlet'
+import { BID_DECIMALS } from 'config'
+import { useEthers } from '@usedapp/core'
 
-type ComponentProps = {
-  auction?: Auction
-}
-
-export default function HomeHeroAuctionCompleted(props: ComponentProps): JSX.Element {
-  const { setBidModalOpen } = useAppState()
-  const {
-    isLoading,
-    nid,
-    latestNounletId,
-    auctionEndTime,
-    hasAuctionEnded,
-    hasAuctionSettled,
-    auctionInfo,
-    historicVotes,
-    historicBids,
-    endedAuctionInfo,
-    settleAuction
-  } = useDisplayedNounlet()
-
-  const isSettled = true
-  const currentBidEth = useMemo(
-    () => FixedNumber.from(formatEther(endedAuctionInfo?.winningBid ?? 0)).round(2),
-    [endedAuctionInfo]
-  )
+export default function HomeHeroAuctionCompleted(): JSX.Element {
+  const { account } = useEthers()
+  const { setBidModalOpen } = useAppStore()
+  const { endedAuctionInfo, settleAuction } = useDisplayedNounlet()
 
   const formattedData = useMemo(() => {
+    const isLoading = endedAuctionInfo == null
     const winningBid = FixedNumber.from(formatEther(endedAuctionInfo?.winningBid ?? 0))
-      .round(4)
+      .round(BID_DECIMALS)
       .toString()
     const heldByAddress = endedAuctionInfo?.heldByAddress || ethers.constants.AddressZero
     const endedOn = dayjs((endedAuctionInfo?.endedOn ?? 0) * 1000).format('h:mmA, MMMM D, YYYY')
     const wonByAddress = endedAuctionInfo?.wonByAddress || ethers.constants.AddressZero
 
     return {
+      isLoading,
       isSettled: !!endedAuctionInfo?.isSettled,
       winningBid,
       heldByAddress,
@@ -68,17 +51,27 @@ export default function HomeHeroAuctionCompleted(props: ComponentProps): JSX.Ele
   }, [endedAuctionInfo])
 
   const [isCongratulationsModalShown, setIsCongratulationsModalShown] = useState(false)
-
+  const [isSettlingAuction, setIsSettlingAuction] = useState(false)
   const handleSettleAuction = async () => {
     console.log('handle settle!')
+    setIsSettlingAuction(true)
 
-    const result = await settleAuction()
-    console.log('result of settling', result)
+    try {
+      const result = await settleAuction()
+      console.log('result of settling', result)
+      if (formattedData.heldByAddress.toLowerCase() === account?.toLowerCase()) {
+        setIsCongratulationsModalShown(true)
+      }
+    } catch (error) {
+      console.error('settling auction failed', error)
+    }
+
+    setIsSettlingAuction(false)
   }
 
   return (
     <div className="home-hero-auction lg:min-h-[21.875rem]">
-      <pre>{JSON.stringify(endedAuctionInfo, null, 2)}</pre>
+      {/* <pre>{JSON.stringify(endedAuctionInfo, null, 2)}</pre> */}
 
       <div className="flex flex-col sm:flex-row space-y-2 sm:space-x-14 lg:space-x-10 xl:space-x-14 sm:space-y-0">
         <div className="flex flex-col space-y-3">
@@ -122,6 +115,7 @@ export default function HomeHeroAuctionCompleted(props: ComponentProps): JSX.Ele
         {formattedData.isSettled ? (
           <>
             <Button
+              key={0}
               className="text-px18 leading-px26 basic default !h-11"
               onClick={() => setBidModalOpen(true)}
             >
@@ -139,7 +133,12 @@ export default function HomeHeroAuctionCompleted(props: ComponentProps): JSX.Ele
           </>
         ) : (
           <>
-            <Button className="primary !h-[52px] w-full" onClick={() => handleSettleAuction()}>
+            <Button
+              key={1}
+              className="primary !h-[52px] w-full"
+              loading={isSettlingAuction}
+              onClick={() => handleSettleAuction()}
+            >
               Settle & start next auction
             </Button>
             <CongratulationsModal

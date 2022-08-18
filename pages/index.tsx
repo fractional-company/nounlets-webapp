@@ -1,48 +1,26 @@
-import type { GetServerSideProps, NextPage } from 'next'
 import { useEthers } from '@usedapp/core'
-import { BigNumber, ethers, Signer } from 'ethers'
-import OnMounted from '../components/utils/on-mounted'
-import nounletAuctionABI from '../typechain/abis/nounletAuction.abi.json'
-import nounletProtoformABI from '../typechain/abis/nounletProtoform.abi.json'
+import type { NextPage } from 'next'
 
+import { getMainnetSdk, getRinkebySdk, RinkebySdk } from '@dethcrypto/eth-sdk-client'
 import HomeHero from 'components/home/home-hero'
-import HomeLeaderboard from 'components/home/home-leaderboard'
-import HomeWTF from 'components/home/home-wtf'
-import HomeCollectiveOwnership from 'components/home/home-collective-ownership'
-import HomeVotesFromNounlet from 'components/home/home-votes-from-nounlet'
-import { Contract } from '@ethersproject/contracts'
-import { useEffect } from 'react'
+import useDisplayedNounlet from 'hooks/useDisplayedNounlet'
+import { useRouter } from 'next/router'
 import BidHistoryModal from '../components/modals/bid-history-modal'
 import SimpleModal from '../components/simple-modal'
-import { useAppState } from '../store/application'
-import { getVault } from '../lib/graphql/queries'
-import useSWR from 'swr'
+import { useAppStore } from '../store/application'
 import { CHAIN_ID } from './_app'
-import { getMainnetSdk, getRinkebySdk, RinkebySdk } from '@dethcrypto/eth-sdk-client'
-import { useRouter } from 'next/router'
-import { useAuctionStateStore } from 'store/auctionStateStore'
-import useDisplayedNounlet from 'hooks/useDisplayedNounlet'
 
 /*
 Token ID    | Vault
 0           | 0x34f67ab3458eC703EBc2bd2683B117d8F0764614
 */
 
-// export const getServerSideProps: GetServerSideProps = async () => {
-//   console.log('Getting SSP 2')
-//   return {
-//     props: {
-//       // vault: await getVault('0x88645a6d84830311e4090107b106f5c75a3feab8')
-//       vault: null // await getVault('0x332f26aa917d20806954e8facce349b5c3ba0fdc')
-//     }
-//   }
-// }
-
 const Home: NextPage<{ vault: any }> = ({ vault }: { vault: any }) => {
   const router = useRouter()
   const { account, library } = useEthers()
-  const { setBidModalOpen, isBidModalOpen } = useAppState()
-  const { isLoading, auctionInfo, nid, latestNounletId } = useDisplayedNounlet()
+  const { setBidModalOpen, isBidModalOpen } = useAppStore()
+  const { isLoading, auctionInfo, nid, latestNounletTokenId, refreshDisplayedNounlet } =
+    useDisplayedNounlet()
 
   // const { vaultAddress, isLoading } = useAuctionStateStore()
   // const nid = +(router.query?.nid || 0)
@@ -89,10 +67,12 @@ const Home: NextPage<{ vault: any }> = ({ vault }: { vault: any }) => {
       nounletProtoform.address
     )
 
-    // if (!isApprovedForAll) {
-    //   console.log('not approved!')
-    //   await nounsToken.setApprovalForAll(nounletProtoform.address, true)
-    // }
+    if (!isApprovedForAll) {
+      console.log('not approved!')
+      await nounsToken
+        .connect(library.getSigner())
+        .setApprovalForAll(nounletProtoform.address, true)
+    }
     console.log('approved!')
 
     // const leafs = await nounletAuction.getLeafNodes()
@@ -159,18 +139,15 @@ const Home: NextPage<{ vault: any }> = ({ vault }: { vault: any }) => {
 
   return (
     <div className="page-home w-screen">
-      <p onClick={createVault} className="text-px24 m-4 font-500 cursor-pointer">
-        CREATE VAULT
-      </p>
       <SimpleModal onClose={() => setBidModalOpen(false)} isShown={isBidModalOpen}>
-        {/* <BidHistoryModal bids={auctionData?.bids || []} /> */}
+        <BidHistoryModal />
       </SimpleModal>
       <div>
-        <pre className="bg-gray-5 text-white p-4">
+        {/* <pre className="bg-gray-5 text-white p-4">
           {JSON.stringify(
             {
               isLoading,
-              latestNounletId,
+              latestNounletTokenId,
               nid,
               auctionInfo
             },
@@ -178,6 +155,13 @@ const Home: NextPage<{ vault: any }> = ({ vault }: { vault: any }) => {
             4
           )}
         </pre>
+        <button
+          onClick={() => {
+            refreshDisplayedNounlet()
+          }}
+        >
+          refreshDisplayedNounlet
+        </button> */}
         {/* <p>{isLoading || data == null ? 'loading' : 'loaded'}</p>
         <p>{latestNounletId}</p>
         <p>{nid}</p>

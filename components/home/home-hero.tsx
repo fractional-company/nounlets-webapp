@@ -18,31 +18,18 @@ import { useAuctionStateStore } from 'store/auctionStateStore'
 
 export default function HomeHero(): JSX.Element {
   const router = useRouter()
-  const { isBeforeLaunch } = useAuctionStateStore()
   const {
     isLoading,
     nid,
-    latestNounletId,
+    latestNounletTokenId,
     auctionEndTime,
     hasAuctionEnded,
     hasAuctionSettled,
     auctionInfo,
     historicVotes,
     historicBids,
-    endedAuctionInfo: settledAuctionInfo
+    endedAuctionInfo
   } = useDisplayedNounlet()
-
-  // const { nid, latestNounletId, auctionData } = useDisplayedNounlet()
-  const {
-    lastAuctionNounId,
-    lastAuctionStartTime,
-    onDisplayAuctionNounId,
-    onDisplayAuctionStartTime,
-    isLoaded
-  } = useDisplayAuction()
-  const onDisplayAuction = useOnDisplayAuction()
-
-  const navigateToNoun = () => {}
 
   const moveToNounlet = (id: number) => {
     router.push(`/nounlet/${id}`)
@@ -89,45 +76,43 @@ export default function HomeHero(): JSX.Element {
           </div>
 
           <div className="px-4 py-12 md:p-12 lg:pl-6 lg:pr-10 -mx-4 lg:-mx-0 bg-white lg:bg-transparent space-y-3">
-            <div className="navigation flex items-center space-x-1">
-              <Button
-                disabled={(+nid ?? 0) <= 1}
-                onClick={() => moveToNounlet((+nid ?? 2) - 1)}
-                className="flex items-center justify-center rounded-full w-10 h-10 cursor-pointer bg-gray-2 lg:bg-white hover:bg-gray-2"
-              >
-                <IconArrow />
-              </Button>
-
-              <Button
-                onClick={() => moveToNounlet((+nid ?? 0) + 1)}
-                disabled={(+nid ?? 101) >= +latestNounletId}
-                className="flex items-center justify-center rounded-full w-10 h-10 cursor-pointer bg-gray-2 lg:bg-white hover:bg-gray-2"
-              >
-                <IconArrow className="rotate-180" />
-              </Button>
-
-              <p className="text-px18 font-700 pl-2">
-                {nounletNumberString}
-                <span className="text-gray-4">/100</span>
-              </p>
-            </div>
-
-            <h1 className="font-londrina text-px64 leading-[82px]">
-              Nounlet {nounletNumberString}
-            </h1>
-
-            {isLoading ? (
+            {auctionInfo == null || isLoading ? (
               <>Ahhh Im loading</>
             ) : (
               <>
+                <div className="navigation flex items-center space-x-1">
+                  <Button
+                    disabled={(+nid ?? 0) <= 1}
+                    onClick={() => moveToNounlet((+nid ?? 2) - 1)}
+                    className="flex items-center justify-center rounded-full w-10 h-10 cursor-pointer bg-gray-2 lg:bg-white hover:bg-gray-2"
+                  >
+                    <IconArrow />
+                  </Button>
+
+                  <Button
+                    onClick={() => moveToNounlet((+nid ?? 0) + 1)}
+                    disabled={(+nid ?? 101) >= +latestNounletTokenId}
+                    className="flex items-center justify-center rounded-full w-10 h-10 cursor-pointer bg-gray-2 lg:bg-white hover:bg-gray-2"
+                  >
+                    <IconArrow className="rotate-180" />
+                  </Button>
+
+                  <p className="text-px18 font-700 pl-2">
+                    {nounletNumberString}
+                    <span className="text-gray-4">/100</span>
+                  </p>
+                </div>
+
+                <h1 className="font-londrina text-px64 leading-[82px]">
+                  Nounlet {nounletNumberString}
+                </h1>
+
                 {hasAuctionEnded ? (
-                  <>
-                    <HomeHeroAuctionCompleted />
-                  </>
+                  <HomeHeroAuctionCompleted />
                 ) : (
                   <>
-                    <HomeHeroAuctionProgress />
-                    {allBids.length}
+                    <h1>Porgress</h1>
+                    {/* <HomeHeroAuctionProgress />  */}
                   </>
                 )}
               </>

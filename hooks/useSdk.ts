@@ -5,7 +5,13 @@ import { useEffect, useState } from 'react'
 
 export default function useSdk() {
   const { account, library } = useEthers()
-  const [sdk, setSdk] = useState<RinkebySdk | null>(null)
+  const [sdk, setSdk] = useState<RinkebySdk | null>(
+    library == null
+      ? null
+      : CHAIN_ID === 4
+      ? getRinkebySdk(library)
+      : (getMainnetSdk(library) as RinkebySdk)
+  )
 
   useEffect(() => {
     if (library == null) {

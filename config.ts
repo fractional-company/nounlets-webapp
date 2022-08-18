@@ -10,11 +10,14 @@ interface AppConfig {
 type SupportedChains = ChainId.Rinkeby | ChainId.Mainnet
 
 export const CHAIN_ID: SupportedChains = parseInt(process.env.NEXT_PUBLIC_CHAIN_ID ?? '1')
-export const NOUN_VAULT_ADDRESS =
+export const NEXT_PUBLIC_NOUN_VAULT_ADDRESS =
   process.env.NEXT_PUBLIC_NOUN_VAULT_ADDRESS || '0x34f67ab3458ec703ebc2bd2683b117d8f0764614'
+export const NEXT_PUBLIC_BLOCKS_PER_DAY = 7_000
+// OLD
 export const NOUN_VAULT_TOKEN_ID = process.env.NEXT_PUBLIC_NOUN_VAULT_TOKEN_ID || '0'
-export const auctionStart: BigNumber = BigNumber.from(process.env.NEXT_PUBLIC_AUCTION_START || 0)
+export const BID_DECIMALS = +(process.env.NEXT_PUBLIC_BID_DECIMALS || 2)
 
+export const auctionStart: BigNumber = BigNumber.from(process.env.NEXT_PUBLIC_AUCTION_START || 0)
 export const ETHERSCAN_API_KEY = process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY ?? ''
 
 const INFURA_PROJECT_ID = process.env.NEXT_PUBLIC_INFURA_ID

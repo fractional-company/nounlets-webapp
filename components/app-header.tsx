@@ -12,7 +12,7 @@ import IconEtherscan from './icons/icon-etherscan'
 import LinksDropdownButton from './buttons/links-dropdown-button'
 import InfoPopover from './info-popover'
 import WalletModal from './modals/wallet-modal'
-import { useAppState } from '../store/application'
+import { useAppStore } from '../store/application'
 import { useEthers } from '@usedapp/core'
 import { useShortAddress } from './ShortAddress'
 import SimplePopover from './simple-popover'
@@ -20,13 +20,13 @@ import IconQuestionCircle from './icons/icon-question-circle'
 import Link from 'next/link'
 import VoteForDelegateModal from './modals/vote-for-delegate-modal'
 import toast from 'react-hot-toast'
-import IconNounletsLogo from "./icons/icon-nounlets-logo";
+import IconNounletsLogo from './icons/icon-nounlets-logo'
 
 export default function AppHeader(): JSX.Element {
   const [isMobileMenuOpen, setIsModalMenuOpen] = useState(false)
   const [mobileMenuMaxHeight, setMobileMenuMaxHeight] = useState(0)
   const mobileMenuRef = useRef<HTMLDivElement>(null)
-  const { setConnectModalOpen } = useAppState()
+  const { setConnectModalOpen } = useAppStore()
   const { account } = useEthers()
 
   useEffect(() => {

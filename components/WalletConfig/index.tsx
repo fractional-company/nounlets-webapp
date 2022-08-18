@@ -2,7 +2,7 @@ import { ReactNode, useEffect, useMemo, useState } from 'react'
 import { useEthers } from '@usedapp/core'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import { useAppState } from '../../store/application'
+import { useAppStore } from '../../store/application'
 import config, { CHAIN_ID } from '../../config'
 import { useAccountState } from '../../store/account'
 import classes from './WalletConfig.module.css'
@@ -13,7 +13,7 @@ import { AvatarProvider } from '@davatar/react'
 export default function WalletConfig(props: { children: ReactNode }) {
   const { account, chainId, library } = useEthers()
   dayjs.extend(relativeTime)
-  const { alertModal, setAlertModal } = useAppState()
+  const { alertModal, setAlertModal } = useAppStore()
   const { setActiveAccount } = useAccountState()
 
   const [emojiQueue, setEmojiQueue] = useState([''])

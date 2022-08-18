@@ -1,9 +1,9 @@
 import Button from 'components/buttons/button'
 import SimpleModal from 'components/simple-modal'
-import { useAppState } from 'store/application'
+import { useAppStore } from 'store/application'
 
 export default function VoteForDelegateModal(): JSX.Element {
-  const { voteForDelegateModal, setVoteForDelegateModalForAddress } = useAppState()
+  const { voteForDelegateModal, setVoteForDelegateModalForAddress } = useAppStore()
 
   return (
     <SimpleModal

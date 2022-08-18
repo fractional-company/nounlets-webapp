@@ -1,6 +1,6 @@
 import Button from '../buttons/button'
 import { useEffect, useRef, useState } from 'react'
-import { useAppState } from '../../store/application'
+import { useAppStore } from '../../store/application'
 import { useEthers } from '@usedapp/core'
 import config, { CHAIN_ID } from '../../config'
 import { InjectedConnector } from '@web3-react/injected-connector'
@@ -19,7 +19,7 @@ export default function WalletModal(): JSX.Element {
   const [isMobileMenuOpen, setIsModalMenuOpen] = useState(false)
   const [mobileMenuMaxHeight, setMobileMenuMaxHeight] = useState(0)
   const mobileMenuRef = useRef<HTMLDivElement>(null)
-  const { setConnectModalOpen, isConnectModalOpen } = useAppState()
+  const { setConnectModalOpen, isConnectModalOpen } = useAppStore()
   const { activate, activateBrowserWallet, account, deactivate } = useEthers()
   const supportedChainIds = [CHAIN_ID]
   const [areConditionsAccepted, setAreConditionsAccepted] = useState(false)
@@ -36,7 +36,7 @@ export default function WalletModal(): JSX.Element {
 
   useEffect(() => {
     if (account) {
-        setConnectModalOpen(false)
+      setConnectModalOpen(false)
     }
   }, [account])
 
@@ -51,7 +51,7 @@ export default function WalletModal(): JSX.Element {
       `}</style>
       <WalletButton
         onClick={async () => {
-            await activateBrowserWallet()
+          await activateBrowserWallet()
         }}
         walletType={WALLET_TYPE.metamask}
       />
@@ -90,10 +90,7 @@ export default function WalletModal(): JSX.Element {
         }}
         walletType={WALLET_TYPE.coinbaseWallet}
       />
-      <WalletButton
-          onClick={() => activateBrowserWallet()}
-          walletType={WALLET_TYPE.brave}
-      />
+      <WalletButton onClick={() => activateBrowserWallet()} walletType={WALLET_TYPE.brave} />
       {/* <WalletButton
         onClick={() => {
           const ledger = new LedgerConnector({
@@ -160,7 +157,7 @@ export default function WalletModal(): JSX.Element {
           className="link text-px14 font-700 text-gray-3 hover:text-secondary-blue w-full --sm"
           onClick={() => {
             console.log(localStorage.removeItem('walletconnect'))
-              deactivate()
+            deactivate()
             setIsSuccessModalOpen(true)
           }}
         >

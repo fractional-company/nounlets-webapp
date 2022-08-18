@@ -22,7 +22,7 @@ interface ApplicationState {
   isCoolBackground: boolean
   alertModal: AlertModal
   isConnectModalOpen: boolean
-  voteForDelegateModal: VoteForDelegateModal,
+  voteForDelegateModal: VoteForDelegateModal
   isBidModalOpen: boolean
 }
 
@@ -48,7 +48,7 @@ const initialState: ApplicationState = {
   }
 }
 
-export const useAppState = create(
+export const useAppStore = create(
   immer<ApplicationState & ApplicationSetters>((set) => ({
     ...initialState,
     setStateBackgroundColor: (bgColor: string) => {

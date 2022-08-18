@@ -1,4 +1,4 @@
-import {useAppState} from "../../store/application";
+import { useAppStore } from '../../store/application'
 
 /**
  * Utility function that takes three items and returns whichever one corresponds to the current
@@ -10,10 +10,10 @@ import {useAppState} from "../../store/application";
  * @returns item corresponding to current state
  */
 export const usePickByState = (whiteState: any, coolState: any, warmState: any) => {
-  const {isCoolBackground: isCoolState} = useAppState();
+  const { isCoolBackground: isCoolState } = useAppStore()
 
   if (isCoolState) {
-    return coolState;
+    return coolState
   }
-  return warmState;
-};
+  return warmState
+}

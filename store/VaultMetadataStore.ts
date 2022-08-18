@@ -6,30 +6,30 @@ import { immer } from 'zustand/middleware/immer'
 interface StoreState {
   isLoading: boolean
   vaultAddress: string
-  vaultTokenAddress: string
-  vaultTokenId: string
-  latestNounletId: string
+  nounletTokenAddress: string
+  backendLatestNounletTokenId: string
+  latestNounletTokenId: string
   minBidIncrease: string
 }
 
 interface StoreActions {
   setIsLoading: (flag: boolean) => void
   setVaultAddress: (address: string) => void
-  setVaultTokenAddress: (address: string) => void
-  setVaultTokenId: (id: string) => void
-  setLatestNounletId: (id: string) => void
+  setNounletTokenAddress: (address: string) => void
+  setBackendLatestNounletTokenId: (id: string) => void
+  setLatestNounletTokenId: (id: string) => void
 }
 
 const initialState: StoreState = {
   isLoading: true,
   vaultAddress: process.env.NEXT_PUBLIC_NOUN_VAULT_ADDRESS || '',
-  vaultTokenAddress: '',
-  vaultTokenId: '0',
-  latestNounletId: '0',
+  nounletTokenAddress: '',
+  backendLatestNounletTokenId: '',
+  latestNounletTokenId: '',
   minBidIncrease: '0.05'
 }
 
-export const useAuctionStateStore = create(
+export const useVaultMetadataStore = create(
   immer<StoreState & StoreActions>((set) => ({
     ...initialState,
     setIsLoading: (flag) => {
@@ -42,25 +42,21 @@ export const useAuctionStateStore = create(
         state.vaultAddress = address
       })
     },
-    setVaultTokenAddress: (address) => {
+    setNounletTokenAddress: (address) => {
       set((state) => {
-        state.vaultTokenAddress = address
+        state.nounletTokenAddress = address
       })
     },
-    setVaultTokenId: (id) => {
+    setBackendLatestNounletTokenId: (id) => {
       set((state) => {
-        state.vaultTokenId = id
+        state.backendLatestNounletTokenId = id
       })
     },
-    setLatestNounletId: (id) => {
+    setLatestNounletTokenId: (id) => {
       set((state) => {
         console.log('setCurredntId', id)
-        if (id === '0') {
-          console.log('Its before the first auction')
-          state.latestNounletId = '1'
-        } else {
-          state.latestNounletId = id
-        }
+
+        state.latestNounletTokenId = id
       })
     }
   }))

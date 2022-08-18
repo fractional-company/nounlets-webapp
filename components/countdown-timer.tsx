@@ -1,16 +1,12 @@
 import dayjs from 'dayjs'
-import duration from 'dayjs/plugin/duration'
-import utc from 'dayjs/plugin/utc'
 import { BigNumber, BigNumberish } from 'ethers'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
-
-dayjs.extend(duration)
-dayjs.extend(utc)
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 type ComponentProps = {
   showEndTime?: boolean
   auctionEnd: BigNumberish
+  onTimerFinished?: () => void
 }
 
 export default function CountdownTimer(props: ComponentProps): JSX.Element {
@@ -23,6 +19,8 @@ export default function CountdownTimer(props: ComponentProps): JSX.Element {
 
     if (timeLeft <= 0) {
       setAuctionTimer(0)
+      props.onTimerFinished?.()
+      console.log('⏱ Timer ended!')
     } else {
       const timer = setTimeout(() => {
         setAuctionTimer((v) => v - 1)

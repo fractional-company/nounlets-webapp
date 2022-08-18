@@ -8,8 +8,13 @@ import { useAuctionStateStore } from 'store/auctionStateStore'
 import { getMainnetSdk, getRinkebySdk, RinkebySdk } from '@dethcrypto/eth-sdk-client'
 import { CHAIN_ID } from 'pages/_app'
 import { parseEther } from 'ethers/lib/utils'
-import { getNouletAuctionDataFromBC } from 'lib/graphql/queries'
+import {
+  getNouletAuctionDataFromBC,
+  getNounletAuctionData,
+  getNounletAuctionDataBC
+} from 'lib/graphql/queries'
 import useSdk from './useSdk'
+import { useVaultMetadataStore } from 'store/VaultMetadataStore'
 
 export function generateNounletAuctionInfoKey({
   vaultAddress,
@@ -28,130 +33,89 @@ export function generateNounletAuctionInfoKey({
   }
 }
 
-export default function useDisplayedNounlet() {
+export default function useDisplayedNounlet(ignoreUpdate = false) {
   const router = useRouter()
   const { account, library } = useEthers()
+  const {
+    isLoading,
+    vaultAddress,
+    nounletTokenAddress,
+    backendLatestNounletTokenId,
+    latestNounletTokenId
+  } = useVaultMetadataStore()
   const sdk = useSdk()
 
-  const { isLoading, vaultAddress, vaultTokenAddress, vaultTokenId, latestNounletId } =
-    useAuctionStateStore()
-
   const nid = useMemo(() => {
-    if (router.query?.nid == null) return latestNounletId
+    if (!router.isReady) return ''
+    if (router.query?.nid == null) return latestNounletTokenId
     return router.query.nid as string
-  }, [router.query?.nid, latestNounletId])
+  }, [router.isReady, router.query, latestNounletTokenId])
+
+  const [wasOutOfSyncFixed, setWasOutOfSyncFixed] = useState(false)
+  const IsOutOfSync = useMemo(() => {
+    if (nid == null) return false
+    return nid === backendLatestNounletTokenId && nid !== latestNounletTokenId && !wasOutOfSyncFixed
+  }, [nid, backendLatestNounletTokenId, latestNounletTokenId, wasOutOfSyncFixed])
 
   const { data: auctionInfo, mutate: refreshDisplayedNounlet } = useSWR(
-    sdk != null && latestNounletId !== '0'
-      ? generateNounletAuctionInfoKey({
-          vaultAddress,
-          vaultTokenId,
-          nounletId: nid
-        })
-      : null,
+    router.isReady &&
+      !isLoading &&
+      !ignoreUpdate &&
+      sdk != null &&
+      nid != null && {
+        name: 'NounletAuctionData',
+        vaultAddress,
+        nounletTokenAddress,
+        nounletId: nid,
+        IsOutOfSync
+      },
     async (key) => {
       if (sdk == null) return null
-      if (key.vaultAddress == null || key.vaultTokenId == null || key.nounletId == null) return null
-      if (key.nounletId === '0') return null
+      if (key.vaultAddress == null || key.nounletTokenAddress == null || key.nounletId == null)
+        return null
 
-      console.log('trying to fetch auctionInfo for', key)
+      console.log('🧽 Fetching displayed nounlet data')
+      console.table(key)
 
-      const response = await getNouletAuctionDataFromBC(
-        vaultAddress,
-        vaultTokenAddress,
-        vaultTokenId,
-        key.nounletId,
-        sdk.nounletAuction,
-        latestNounletId
-      )
+      let response
+      if (key.IsOutOfSync || key.nounletId === latestNounletTokenId) {
+        response = await getNounletAuctionDataBC(
+          key.vaultAddress,
+          key.nounletTokenAddress,
+          key.nounletId,
+          sdk.nounletAuction
+        )
 
+        if (key.IsOutOfSync) {
+          console.log('Should not refetch as it is synced')
+          response.auction.settled = true
+          setWasOutOfSyncFixed(true)
+        }
+      } else {
+        response = await getNounletAuctionData(
+          key.vaultAddress,
+          key.nounletTokenAddress,
+          key.nounletId
+        )
+      }
+
+      console.log('🧽 Fetched displayed nounlet data')
+      console.log(response)
       return response
-      // if (key.nounletId === '1')
-      //   return {
-      //     id: '1',
-      //     auction: {
-      //       amount: '300000000000000',
-      //       startTime: '1660726678',
-      //       endTime: '1660741078',
-      //       bidder: {
-      //         id: '0x6d2343beeced0e805f3cccff870ccb974b5795e6'
-      //       },
-      //       settled: true,
-      //       bids: [
-      //         {
-      //           id: '0x7a68646c9da387c30b75170240a7293170e6ca68055361d04b0baf3926b0dffa',
-      //           bidder: {
-      //             id: '0x497f34f8a6eab10652f846fd82201938e58d72e0'
-      //           },
-      //           amount: '100000000000000',
-      //           blockNumber: '11213957',
-      //           blockTimestamp: '1660674514'
-      //         },
-      //         {
-      //           id: '0xad69d23da6d90074f330359b4c9e62d14dcf2412b33e54c036a066196a067d62',
-      //           bidder: {
-      //             id: '0x497f34f8a6eab10652f846fd82201938e58d72e0'
-      //           },
-      //           amount: '200000000000000',
-      //           blockNumber: '11213984',
-      //           blockTimestamp: '1660674919'
-      //         },
-      //         {
-      //           id: '0xb8c83c018000653b2faca5761fd9014d41971a4217e573da600a1c359c10a4aa',
-      //           bidder: {
-      //             id: '0x6d2343beeced0e805f3cccff870ccb974b5795e6'
-      //           },
-      //           amount: '300000000000000',
-      //           blockNumber: '11214062',
-      //           blockTimestamp: '1660676089'
-      //         }
-      //       ]
-      //     }
-      //   }
-
-      // return {
-      //   id: '2',
-      //   auction: {
-      //     amount: '0',
-      //     startTime: '1660741078',
-      //     endTime: '1660741078',
-      //     bidder: {
-      //       id: '0x6d2343beeced0e805f3cccff870ccb974b5795e6'
-      //     },
-      //     settled: false,
-      //     bids: []
-      //   }
-      // }
     },
     {
-      revalidateIfStale: nid === latestNounletId
+      revalidateIfStale: nid === latestNounletTokenId || IsOutOfSync,
+      errorRetryCount: 0,
+      onError: (error) => {
+        console.log('Error', error)
+      }
     }
   )
 
-  // const { data: auctionInfo } = useSWR(
-  //   { name: 'NounletAuctionInfo2', vaultAddress, nid },
-  //   async (key) => {
-  //     if (vaultAddress == null || library == null || key.nid === null) return null
-
-  //     const { nounletAuction } =
-  //       CHAIN_ID === 4
-  //         ? getRinkebySdk(library || library)
-  //         : (getMainnetSdk(library || library) as RinkebySdk)
-
-  //     const auctionInfo = await nounletAuction.auctionInfo(vaultAddress, nid)
-  //     console.group('Getting auction data for', nid)
-  //     console.table(key)
-  //     console.table(auctionInfo)
-  //     console.groupEnd()
-  //     return auctionInfo
-  //   },
-  //   {
-  //     revalidateIfStale: nid === latestNounletId // Revalidate only latest auction
-  //   }
-  // )
-
   const historicBids = useMemo(() => {
-    return auctionInfo?.auction.bids ?? []
+    return [...(auctionInfo?.auction.bids ?? [])].sort((a, b) => {
+      return BigNumber.from(b.amount).sub(BigNumber.from(a.amount)).toNumber()
+    })
   }, [auctionInfo])
 
   const { data: historicVotes } = useSWR(
@@ -171,8 +135,8 @@ export default function useDisplayedNounlet() {
   }, [auctionInfo])
 
   const hasAuctionEnded = useMemo(() => {
-    return auctionEndTime * 1000 < Date.now()
-  }, [auctionEndTime])
+    return auctionInfo != null && auctionEndTime * 1000 < Date.now()
+  }, [auctionInfo, auctionEndTime])
 
   const hasAuctionSettled = useMemo(() => {
     return !!auctionInfo?.auction.settled
@@ -211,8 +175,6 @@ export default function useDisplayedNounlet() {
       .wait()
       .then((res: any) => {
         console.log('SETTLED!', res)
-        // debugger
-        // nounletAuction.createAuction()
       })
       .catch((e: any) => {
         console.log(e)
@@ -220,23 +182,25 @@ export default function useDisplayedNounlet() {
   }
 
   const endedAuctionInfo = useMemo(() => {
-    if (auctionInfo == null) return null
+    if (auctionInfo == null || nid == null) return null
 
     return {
-      isSettled: auctionInfo.auction.settled,
-      winningBid: auctionInfo.auction.amount,
+      isSettled: +nid < +latestNounletTokenId,
+      winningBid: auctionInfo.auction.amount.toString(),
       heldByAddress: auctionInfo.auction.bidder?.id,
       endedOn: auctionEndTime,
       wonByAddress: auctionInfo.auction.bidder?.id
     }
-  }, [auctionEndTime, auctionInfo])
+  }, [auctionEndTime, auctionInfo, nid, latestNounletTokenId])
 
   return {
-    isLoading,
+    isLoading: auctionInfo == null || isLoading,
+    vaultAddress,
+    nounletTokenAddress,
+    latestNounletTokenId,
+    nid,
     hasAuctionEnded,
     hasAuctionSettled,
-    nid,
-    latestNounletId,
     auctionInfo,
     auctionEndTime,
     endedAuctionInfo,
