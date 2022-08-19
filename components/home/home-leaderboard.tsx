@@ -5,44 +5,15 @@ import LeaderboardListTile, {
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { useAuctionStateStore } from 'store/auctionStateStore'
+import useLeaderboard from 'hooks/useLeaderboard'
+import { useEthers } from '@usedapp/core'
+import { useMemo } from 'react'
+import { ethers } from 'ethers'
 
 export default function HomeLeaderboard(): JSX.Element {
+  const { account, library } = useEthers()
   const router = useRouter()
-  const myWalletAddress = '0x497F34f8A6EaB10652f846fD82201938e58d72E0'
-  const currentDelegateWalletAddress = '0x497F34f8A6EaB10652f846fD82201938e58d72E0'
-  const mostVotesWalletAddress = '0x431863c96403aD96d343D87cc47D61CC1F299e51'
-  const leaderboardMocks: LeaderboardListTileProps[] = [
-    {
-      isMe: false,
-      percentage: 0.7,
-      walletAddress: mostVotesWalletAddress,
-      currentDelegateWalletAddress,
-      mostVotesWalletAddress,
-      numberOfOwnedNounlets: 40,
-      numberOfVotes: 70,
-      numberOfMyVotes: 25
-    },
-    {
-      isMe: true,
-      percentage: 0.24,
-      walletAddress: '0x497F34f8A6EaB10652f846fD82201938e58d72E0',
-      currentDelegateWalletAddress,
-      mostVotesWalletAddress,
-      numberOfOwnedNounlets: 30,
-      numberOfVotes: 24,
-      numberOfMyVotes: 5
-    },
-    {
-      isMe: false,
-      percentage: 0.06,
-      walletAddress: '0x6d2343bEecEd0E805f3ccCfF870ccB974B5795E6',
-      currentDelegateWalletAddress,
-      mostVotesWalletAddress,
-      numberOfOwnedNounlets: 30,
-      numberOfVotes: 6,
-      numberOfMyVotes: 0
-    }
-  ]
+  const { leaderboardListData } = useLeaderboard()
 
   return (
     <div className="home-leaderboard lg:container mx-auto">
@@ -57,7 +28,7 @@ export default function HomeLeaderboard(): JSX.Element {
           <div className="hidden lg:block"></div>
         </div>
         <div className="leaderboard-list mt-8 space-y-2">
-          {leaderboardMocks.map((data, index) => (
+          {leaderboardListData.map((data, index) => (
             <LeaderboardListTile key={index} data={data} />
           ))}
           <Link href="/governance">

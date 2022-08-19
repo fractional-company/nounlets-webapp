@@ -1,11 +1,11 @@
 import { GetServerSideProps } from 'next'
 import client from '../../apollo-client'
 import { gql } from '@apollo/client'
-import { Vault } from '../models/vault'
 import { NounletAuctionAbiInterface } from 'typechain/interfaces/NounletAuctionAbi'
 import { RinkebySdk } from '@dethcrypto/eth-sdk-client'
 import { BigNumber, ethers } from 'ethers'
 import { NEXT_PUBLIC_BLOCKS_PER_DAY } from 'config'
+import { Account, Vault } from './graphql.models'
 
 interface VaultResponse {
   vault: Vault
@@ -18,9 +18,10 @@ export const getVaultMetadata = async (vaultAddress: string) => {
       {
         vault(id: "${vaultAddress.toLowerCase()}") {
           id,
+          tokenAddress,
           noun {
             nounlets {
-              id
+              id,
             }
           }
         }
@@ -29,7 +30,7 @@ export const getVaultMetadata = async (vaultAddress: string) => {
   })
 
   // this should not happen
-  if (data.vault == null) {
+  if (data.vault == null || data.vault.noun == null) {
     console.log('no auction started')
     return {
       vaultAddress: vaultAddress.toLowerCase(),
@@ -43,7 +44,7 @@ export const getVaultMetadata = async (vaultAddress: string) => {
     console.log('no auction started')
     return {
       vaultAddress: data.vault.id.toLowerCase(),
-      nounletTokenAddress: ethers.constants.AddressZero,
+      nounletTokenAddress: data.vault.tokenAddress.toLowerCase(),
       nounletCount: 0
     }
   }
@@ -53,7 +54,7 @@ export const getVaultMetadata = async (vaultAddress: string) => {
 
   return {
     vaultAddress: data.vault.id.toLowerCase(),
-    nounletTokenAddress: nounletTokenAddress.toLowerCase(),
+    nounletTokenAddress: data.vault.tokenAddress.toLowerCase(),
     nounletCount: data.vault.noun.nounlets.length
   }
 }
@@ -104,7 +105,7 @@ export const getNounletAuctionData = async (
   console.log('🚀 Fetched auction data from BE')
   console.log(data)
 
-  return data.vault.noun.nounlets[0]
+  return data.vault.noun!.nounlets[0]
 }
 
 export const getNounletAuctionDataBC = async (
@@ -162,67 +163,6 @@ export const getNounletAuctionDataBC = async (
   return shape
 }
 
-export const getNouletAuctionDataFromBC = async (
-  vaultAddress: string,
-  vaultTokenAddress: string,
-  vaultTokenId: string,
-  nounletId: string,
-  nounletAuction: RinkebySdk['NounletAuction'],
-  latestNounletId: string
-) => {
-  console.log('🌟 Fetching blockchain data', {
-    vaultAddress,
-    vaultTokenAddress,
-    vaultTokenId,
-    nounletId,
-    latestNounletId
-  })
-
-  const bidFilter = nounletAuction.filters.Bid(
-    vaultAddress,
-    vaultTokenAddress,
-    nounletId,
-    null,
-    null
-  )
-
-  const [auctionInfo, bids] = await Promise.all([
-    nounletAuction.auctionInfo(vaultAddress, nounletId),
-    nounletAuction.queryFilter(bidFilter)
-  ])
-
-  // Transform into GraphQL shape
-  const formattedBids = bids.map((bid) => {
-    const value = bid.args._value.toString()
-    return {
-      id: bid.transactionHash.toLowerCase(),
-      bidder: {
-        id: bid.args._bidder.toLowerCase()
-      },
-      amount: value,
-      blockNumber: bid.blockNumber,
-      blockTimestamp: '1660674514'
-    }
-  })
-
-  const bidder = formattedBids.at(-1)?.bidder || null
-
-  const shape = {
-    id: nounletId,
-    auction: {
-      amount: auctionInfo.amount.toString(),
-      startTime: '' + auctionInfo.endTime,
-      endTime: '' + auctionInfo.endTime,
-      bidder,
-      settled: nounletId !== latestNounletId,
-      bids: [...formattedBids]
-    }
-  }
-
-  console.log('🌟 got curent data', { auctionInfo, bids, shape })
-  return shape
-}
-
 export const getNounletBids = async (id: string, nounletId: string) => {
   const { data } = await client.query<VaultResponse>({
     query: gql`
@@ -252,35 +192,21 @@ export const getNounletBids = async (id: string, nounletId: string) => {
   return data
 }
 
-export const getVaultData = async (id: string) => {
-  const { data } = await client.query<VaultResponse>({
+export const getLeaderboardData = async () => {
+  const { data } = await client.query<{ accounts: Account[] }>({
     query: gql`
       {
-        vault(id: "${id.toLowerCase()}") {
+        accounts(orderBy: totalNounletsHeld, orderDirection: desc) {
           id
-          noun {
+          totalNounletsHeld
+          nounlets {
             id
-            nounlets {
-              id
-              auction {
-                amount
-                startTime
-                endTime
-                bidder {
-                  id
-                }
-                settled
-                bids(first: 3, orderBy: blockTimestamp, orderDirection: desc) {
-                  id
-                  bidder {
-                    id
-                  }
-                  amount
-                  blockNumber
-                  blockTimestamp
-                  txIndex
-                }
+            delegateVotes {
+              delegate {
+                id
               }
+              voteAmount
+              id
             }
           }
         }

@@ -1,18 +1,18 @@
-import { BigNumber as EthersBN, utils } from 'ethers';
-import {useNounletTokenContract} from "../utils/nounletContracts";
+import { BigNumber as EthersBN, utils } from 'ethers'
+// import {useNounletTokenContract} from "../utils/nounletContracts";
 
 interface NounletToken {
-  name: string;
-  description: string;
-  image: string;
+  name: string
+  description: string
+  image: string
 }
 
 export interface INounSeed {
-  accessory: number;
-  background: number;
-  body: number;
-  glasses: number;
-  head: number;
+  accessory: number
+  background: number
+  body: number
+  glasses: number
+  head: number
 }
 
 // export const useNounletSeed = async (nounId: EthersBN) => {

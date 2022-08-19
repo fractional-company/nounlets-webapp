@@ -34,7 +34,7 @@ const BidHistoryModal = (): JSX.Element => {
             <div className="flex flex-col">
               <SimpleAddress
                 avatarSize={24}
-                address={bid.bidder.id}
+                address={bid.bidder?.id || '0x0'}
                 className="text-px18 leading-px28 font-700 gap-2 flex-1"
               />
               {/* <div className="text-px14 leading-px24">{formttedTimestamp}</div> */}

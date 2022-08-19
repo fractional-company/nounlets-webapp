@@ -117,7 +117,7 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
   )
 
   const historicBids = useMemo(() => {
-    return [...(auctionInfo?.auction.bids ?? [])].sort((a, b) => {
+    return [...(auctionInfo?.auction!.bids ?? [])].sort((a, b) => {
       return BigNumber.from(b.amount).sub(BigNumber.from(a.amount)).toNumber()
     })
   }, [auctionInfo])
@@ -125,7 +125,7 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
   const auctionEndTime = useMemo(() => {
     if (auctionInfo == null) return 0
 
-    const seconds = BigNumber.from(auctionInfo.auction.endTime).toNumber()
+    const seconds = BigNumber.from(auctionInfo.auction!.endTime).toNumber()
     return seconds
   }, [auctionInfo])
 
@@ -134,7 +134,7 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
   }, [auctionInfo, auctionEndTime])
 
   const hasAuctionSettled = useMemo(() => {
-    return !!auctionInfo?.auction.settled
+    return !!auctionInfo?.auction!.settled
   }, [auctionInfo])
 
   const endedAuctionInfo = useMemo(() => {
@@ -142,10 +142,10 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
 
     return {
       isSettled: +nid < +latestNounletTokenId,
-      winningBid: auctionInfo.auction.amount.toString(),
-      heldByAddress: auctionInfo.auction.bidder?.id,
+      winningBid: auctionInfo.auction!.amount.toString(),
+      heldByAddress: auctionInfo.auction!.bidder?.id,
       endedOn: auctionEndTime,
-      wonByAddress: auctionInfo.auction.bidder?.id
+      wonByAddress: auctionInfo.auction!.bidder?.id
     }
   }, [auctionEndTime, auctionInfo, nid, latestNounletTokenId])
 

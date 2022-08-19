@@ -9,6 +9,7 @@ import BidHistoryModal from '../components/modals/bid-history-modal'
 import SimpleModal from '../components/simple-modal'
 import { useAppStore } from '../store/application'
 import { CHAIN_ID } from './_app'
+import HomeLeaderboard from 'components/home/home-leaderboard'
 
 /*
 Token ID    | Vault
@@ -169,6 +170,7 @@ const Home: NextPage<{ vault: any }> = ({ vault }: { vault: any }) => {
         <pre>{JSON.stringify(data?.auctionInfo, null, 4)}</pre> */}
       </div>
       <HomeHero />
+      <HomeLeaderboard />
       {/* {nid === latestNounletId ? <HomeLeaderboard /> : <HomeVotesFromNounlet />} */}
       {/* <HomeCollectiveOwnership /> */}
       {/* <HomeWTF /> */}

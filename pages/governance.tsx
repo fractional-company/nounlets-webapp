@@ -9,54 +9,35 @@ import LeaderboardListTile, {
 } from 'components/leaderboard/leaderboard-list-tile'
 import IconMagnify from 'components/icons/icon-magnify'
 import IconQuestionCircle from 'components/icons/icon-question-circle'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import VoteForDelegateModal from 'components/modals/vote-for-delegate-modal'
 import VoteForCustomWalletModal from 'components/modals/vote-for-custom-wallet.modal'
 import { useAuctionStateStore } from 'store/auctionStateStore'
 import Link from 'next/link'
+import useLeaderboard from 'hooks/useLeaderboard'
 
 const Governance: NextPage = () => {
-  const myWalletAddress = '0x497F34f8A6EaB10652f846fD82201938e58d72E0'
-  const currentDelegateWalletAddress = '0x497F34f8A6EaB10652f846fD82201938e58d72E0'
-  const mostVotesWalletAddress = '0x431863c96403aD96d343D87cc47D61CC1F299e51'
-  const leaderboardMocks: LeaderboardListTileProps[] = [
-    {
-      isMe: false,
-      percentage: 0.7,
-      walletAddress: mostVotesWalletAddress,
-      currentDelegateWalletAddress,
-      mostVotesWalletAddress,
-      numberOfOwnedNounlets: 40,
-      numberOfVotes: 70,
-      numberOfMyVotes: 25
-    },
-    {
-      isMe: true,
-      percentage: 0.24,
-      walletAddress: '0x497F34f8A6EaB10652f846fD82201938e58d72E0',
-      currentDelegateWalletAddress,
-      mostVotesWalletAddress,
-      numberOfOwnedNounlets: 30,
-      numberOfVotes: 24,
-      numberOfMyVotes: 5
-    },
-    {
-      isMe: false,
-      percentage: 0.06,
-      walletAddress: '0x6d2343bEecEd0E805f3ccCfF870ccB974B5795E6',
-      currentDelegateWalletAddress,
-      mostVotesWalletAddress,
-      numberOfOwnedNounlets: 30,
-      numberOfVotes: 6,
-      numberOfMyVotes: 0
-    }
-  ]
-
+  const { leaderboardListData, myNounlets, myNounletsVotes } = useLeaderboard()
   const [isVoteForDelegateModalShown, setIsVoteForDelegateModalShown] = useState(false)
+
+  const areMyVotesSplit = useMemo(() => {
+    return Object.keys(myNounletsVotes).length > 1
+  }, [myNounletsVotes])
 
   return (
     <div className="page-governance lg:container mx-auto w-screen">
       <div className="px-4 md:px-12 lg:px-4 mt-12 lg:mt-16">
+        {/* <pre>
+          {JSON.stringify(
+            {
+              leaderboardListData,
+              myNounlets,
+              myNounletsVotes
+            },
+            null,
+            4
+          )}
+        </pre> */}
         <h4 className="font-londrina text-px24 leading-px36 text-gray-4">Governance</h4>
         <h1 className="font-londrina text-[56px] leading-[68px] mt-3">Vote for a delegate</h1>
 
@@ -118,48 +99,36 @@ const Governance: NextPage = () => {
                   <div className="flex flex-col xs:flex-row items-center xs:gap-3">
                     <p className="font-londrina text-px24 text-gray-4 leading-px36">My nounlets</p>
 
-                    <div className="flex items-center">
-                      <SimplePopover>
-                        <h1 className="font-700 text-px18 text-gray-4">
-                          <span className="text-secondary-orange">⚠</span> Multiple votes
-                        </h1>
-                        <div>
-                          Your nounlets are voting for multiple addresses. We recommend you update
-                          your votes to only be for one address.
-                        </div>
-                      </SimplePopover>
-                    </div>
+                    {areMyVotesSplit && (
+                      <div className="flex items-center">
+                        <SimplePopover>
+                          <h1 className="font-700 text-px18 text-gray-4">
+                            <span className="text-secondary-orange">⚠</span> Multiple votes
+                          </h1>
+                          <div>
+                            Your nounlets are voting for multiple addresses. We recommend you update
+                            your votes to only be for one address.
+                          </div>
+                        </SimplePopover>
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex items-center mt-4">
                     <p className="text-px36 font-londrina leading-px42 mr-3 truncate w-10 text-center flex-shrink-0">
-                      8
+                      {myNounlets.length}
                     </p>
                     <div className="flex items-center gap-2 flex-wrap">
-                      <div className="overflow-hidden rounded-sm flex-shrink-0 w-10 h-10">
-                        <Image src={nounletIcon} alt="icon" width="40" height="40" />
-                      </div>
-                      <div className="overflow-hidden rounded-sm flex-shrink-0 w-10 h-10">
-                        <Image src={nounletIcon} alt="icon" width="40" height="40" />
-                      </div>
-                      <div className="overflow-hidden rounded-sm flex-shrink-0 w-10 h-10">
-                        <Image src={nounletIcon} alt="icon" width="40" height="40" />
-                      </div>
-                      <div className="overflow-hidden rounded-sm flex-shrink-0 w-10 h-10">
-                        <Image src={nounletIcon} alt="icon" width="40" height="40" />
-                      </div>
-                      <div className="overflow-hidden rounded-sm flex-shrink-0 w-10 h-10">
-                        <Image src={nounletIcon} alt="icon" width="40" height="40" />
-                      </div>
-                      <div className="overflow-hidden rounded-sm flex-shrink-0 w-10 h-10">
-                        <Image src={nounletIcon} alt="icon" width="40" height="40" />
-                      </div>
-                      <div className="overflow-hidden rounded-sm flex-shrink-0 w-10 h-10">
-                        <Image src={nounletIcon} alt="icon" width="40" height="40" />
-                      </div>
-                      <div className="overflow-hidden rounded-sm flex-shrink-0 w-10 h-10">
-                        <Image src={nounletIcon} alt="icon" width="40" height="40" />
-                      </div>
+                      {myNounlets.map((nounlet) => {
+                        return (
+                          <div
+                            className="overflow-hidden rounded-sm flex-shrink-0 w-10 h-10"
+                            key={nounlet.id}
+                          >
+                            <Image src={nounletIcon} alt="icon" width="40" height="40" />
+                          </div>
+                        )
+                      })}
                     </div>
                   </div>
                 </div>
@@ -203,7 +172,7 @@ const Governance: NextPage = () => {
               </div>
 
               <div className="leaderboard-list mt-8 space-y-2">
-                {leaderboardMocks.map((data, index) => (
+                {leaderboardListData.map((data, index) => (
                   <LeaderboardListTile key={index} data={data} />
                 ))}
 
