@@ -47,86 +47,86 @@ const Home: NextPage<{ vault: any }> = ({ vault }: { vault: any }) => {
   //   return () => console.log('unsub')
   // }, [nid])
 
-  const createVault = async () => {
-    if (library == null) return
-    console.log('creating vault')
+  // const createVault = async () => {
+  //   if (library == null) return
+  //   console.log('creating vault')
 
-    const {
-      nounsToken,
-      nounletAuction,
-      nounletToken,
-      nounletProtoform,
-      optimisticBid,
-      nounsDescriptiorV2,
-      nounletGovernance
-    } = CHAIN_ID === 4 ? getRinkebySdk(library) : (getMainnetSdk(library) as RinkebySdk)
+  //   const {
+  //     nounsToken,
+  //     nounletAuction,
+  //     nounletToken,
+  //     nounletProtoform,
+  //     optimisticBid,
+  //     nounsDescriptiorV2,
+  //     nounletGovernance
+  //   } = CHAIN_ID === 4 ? getRinkebySdk(library) : (getMainnetSdk(library) as RinkebySdk)
 
-    // Approve protoform: 0xa9fA8E3e9ea15c37Ec6b65C8d754987bad679820
-    const isApprovedForAll = await nounsToken.isApprovedForAll(
-      '0xa9fA8E3e9ea15c37Ec6b65C8d754987bad679820',
-      nounletProtoform.address
-    )
+  //   // Approve protoform: 0xa9fA8E3e9ea15c37Ec6b65C8d754987bad679820
+  //   const isApprovedForAll = await nounsToken.isApprovedForAll(
+  //     '0xa9fA8E3e9ea15c37Ec6b65C8d754987bad679820',
+  //     nounletProtoform.address
+  //   )
 
-    if (!isApprovedForAll) {
-      console.log('not approved!')
-      await nounsToken
-        .connect(library.getSigner())
-        .setApprovalForAll(nounletProtoform.address, true)
-    }
-    console.log('approved!')
+  //   if (!isApprovedForAll) {
+  //     console.log('not approved!')
+  //     await nounsToken
+  //       .connect(library.getSigner())
+  //       .setApprovalForAll(nounletProtoform.address, true)
+  //   }
+  //   console.log('approved!')
 
-    // const leafs = await nounletAuction.getLeafNodes()
+  //   // const leafs = await nounletAuction.getLeafNodes()
 
-    // console.log('leafs!', leafs)
+  //   // console.log('leafs!', leafs)
 
-    const merkleTree = await nounletProtoform.generateMerkleTree([
-      nounletAuction.address,
-      optimisticBid.address,
-      nounletGovernance.address
-    ])
-    console.log('merklee!', merkleTree)
+  //   const merkleTree = await nounletProtoform.generateMerkleTree([
+  //     nounletAuction.address,
+  //     optimisticBid.address,
+  //     nounletGovernance.address
+  //   ])
+  //   console.log('merklee!', merkleTree)
 
-    /*
-    // nounletAuction
-    mintProof = protoform.getProof(merkleTree, 0);
+  //   /*
+  //   // nounletAuction
+  //   mintProof = protoform.getProof(merkleTree, 0);
 
-    // optimisticBid
-    batchBurnProof = protoform.getProof(merkleTree, 1); 
-    withdrawERC721Proof = protoform.getProof(merkleTree, 2); 
+  //   // optimisticBid
+  //   batchBurnProof = protoform.getProof(merkleTree, 1);
+  //   withdrawERC721Proof = protoform.getProof(merkleTree, 2);
 
-    // nounletGovernance
-    castVoteProof = protoform.getProof(merkleTree, 3);    
-    castVoteWithReasonProof = protoform.getProof(merkleTree, 4);
-    cancelProof = protoform.getProof(merkleTree, 5);
-    proposeProof = protoform.getProof(merkleTree, 6);
-    delegateProof = protoform.getProof(merkleTree, 7);
-    */
+  //   // nounletGovernance
+  //   castVoteProof = protoform.getProof(merkleTree, 3);
+  //   castVoteWithReasonProof = protoform.getProof(merkleTree, 4);
+  //   cancelProof = protoform.getProof(merkleTree, 5);
+  //   proposeProof = protoform.getProof(merkleTree, 6);
+  //   delegateProof = protoform.getProof(merkleTree, 7);
+  //   */
 
-    const mintProof = await nounletProtoform.getProof(merkleTree, 0)
-    console.log({ mintProof })
+  //   const mintProof = await nounletProtoform.getProof(merkleTree, 0)
+  //   console.log({ mintProof })
 
-    // const gasPrice = await library.getGasPrice()
+  //   // const gasPrice = await library.getGasPrice()
 
-    // const tx = await nounletProtoform.deployVault(
-    //   [nounletAuction.address, optimisticBid.address, nounletGovernance.address],
-    //   [],
-    //   [],
-    //   mintProof,
-    //   nounsDescriptiorV2.address,
-    //   0
-    // )
+  //   // const tx = await nounletProtoform.deployVault(
+  //   //   [nounletAuction.address, OptimisticBid.address, NounletGovernance.address],
+  //   //   [],
+  //   //   [],
+  //   //   mintProof,
+  //   //   nounsDescriptiorV2.address,
+  //   //   0
+  //   // )
 
-    // return tx
-    //   .wait()
-    //   .then((res: any) => {
-    //     console.log('Vault deployed', res)
-    //     // debugger
-    //     // nounletAuction.createAuction()
-    //   })
-    //   .catch((e: any) => {
-    //     console.log(e)
-    //   })
-  }
+  //   // return tx
+  //   //   .wait()
+  //   //   .then((res: any) => {
+  //   //     console.log('Vault deployed', res)
+  //   //     // debugger
+  //   //     // nounletAuction.createAuction()
+  //   //   })
+  //   //   .catch((e: any) => {
+  //   //     console.log(e)
+  //   //   })
+  // }
 
   // useEffect(() => {
   //   if (nid != null) {

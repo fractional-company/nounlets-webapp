@@ -29,7 +29,7 @@ import { useEthers } from '@usedapp/core'
 export default function HomeHeroAuctionCompleted(): JSX.Element {
   const { account } = useEthers()
   const { setBidModalOpen } = useAppStore()
-  const { endedAuctionInfo, settleAuction } = useDisplayedNounlet()
+  const { endedAuctionInfo, settleAuction, historicBids } = useDisplayedNounlet()
 
   const formattedData = useMemo(() => {
     const isLoading = endedAuctionInfo == null
@@ -50,7 +50,6 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
     }
   }, [endedAuctionInfo])
 
-  const [isCongratulationsModalShown, setIsCongratulationsModalShown] = useState(false)
   const [isSettlingAuction, setIsSettlingAuction] = useState(false)
   const handleSettleAuction = async () => {
     console.log('handle settle!')
@@ -60,7 +59,7 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
       const result = await settleAuction()
       console.log('result of settling', result)
       if (formattedData.heldByAddress.toLowerCase() === account?.toLowerCase()) {
-        setIsCongratulationsModalShown(true)
+        // setIsCongratulationsModalShown(true)
       }
     } catch (error) {
       console.error('settling auction failed', error)
@@ -118,6 +117,7 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
               key={0}
               className="text-px18 leading-px26 basic default !h-11"
               onClick={() => setBidModalOpen(true)}
+              disabled={historicBids.length === 0}
             >
               <IconBidHistory className="mr-2.5" /> Bid history
             </Button>
@@ -141,12 +141,6 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
             >
               Settle & start next auction
             </Button>
-            <CongratulationsModal
-              isShown={isCongratulationsModalShown}
-              onClose={() => {
-                setIsCongratulationsModalShown(false)
-              }}
-            />
           </>
         )}
       </div>

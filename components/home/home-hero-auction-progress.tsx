@@ -19,6 +19,7 @@ import { useAuctionStateStore } from 'store/auctionStateStore'
 import { BidEvent } from 'typechain/interfaces/NounletAuctionAbi'
 import { BID_DECIMALS } from 'config'
 import { calculateNextBid } from 'lib/utils/nextBidCalculator'
+import { useVaultMetadataStore } from 'store/VaultMetadataStore'
 
 type ComponentProps = {
   auction?: Auction
@@ -28,14 +29,8 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
   const { account } = useEthers()
   const sdk = useSdk()
 
-  const {
-    isLoading,
-    vaultAddress,
-    vaultTokenAddress,
-    vaultTokenId,
-    latestNounletId,
-    minBidIncrease
-  } = useAuctionStateStore()
+  const { isLoading, vaultAddress, nounletTokenAddress, latestNounletTokenId, minBidIncrease } =
+    useVaultMetadataStore()
   const {
     nid: nounletId,
     auctionInfo,
@@ -102,10 +97,10 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
     if (nounletId === '0') return
 
     console.log('👍 setting bid listener for ', nounletId)
-    const nounletAuction = sdk.nounletAuction
+    const nounletAuction = sdk.NounletAuction
     const bidFilter = nounletAuction.filters.Bid(
       vaultAddress,
-      vaultTokenAddress,
+      nounletTokenAddress,
       nounletId,
       null,
       null
@@ -129,7 +124,7 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
       console.log('👎 removing listener for', nounletId)
       nounletAuction.off(bidFilter, listener)
     }
-  }, [vaultAddress, vaultTokenAddress, vaultTokenId, nounletId, sdk, refreshDisplayedNounlet])
+  }, [vaultAddress, nounletTokenAddress, nounletId, sdk, refreshDisplayedNounlet])
 
   const handleBidInputValue = (event: ChangeEvent<HTMLInputElement>) => {
     const onlyNumbers = new RegExp(`^\\d+\\.?\\d{0,${BID_DECIMALS}}$`)
@@ -142,20 +137,24 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
     }
   }
 
+  const [isBidding, setIsBidding] = useState(false)
   const handleBid = async () => {
     if (bidInputValue === '') return
+    setIsBidding(true)
     try {
       const bidAmount = parseEther(bidInputValue)
       if (bidAmount.gte(parseEther(formattedValues.minNextBid))) {
         console.log('Proceed with bid!', bidAmount)
         const result = await bid(bidAmount)
         console.log('yas bid!', result)
+        setBidInputValue('')
       } else {
         setShowWrongBidModal(true)
       }
     } catch (error) {
       console.error(error)
     }
+    setIsBidding(false)
   }
 
   return (
@@ -204,7 +203,12 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
         </div>
 
         <OnMounted>
-          <Button className="primary !h-[52px]" onClick={handleBid} disabled={!isBidButtonEnabled}>
+          <Button
+            className="primary !h-[52px]"
+            onClick={handleBid}
+            disabled={!isBidButtonEnabled}
+            loading={isBidding}
+          >
             Place bid
           </Button>
         </OnMounted>

@@ -1,20 +1,11 @@
-import { BigNumber } from 'ethers'
-import { useRouter } from 'next/router'
-import { useEffect, useMemo, useState } from 'react'
-import dayjs from 'dayjs'
-import useSWR from 'swr'
 import { useEthers } from '@usedapp/core'
-import { useAuctionStateStore } from 'store/auctionStateStore'
-import { getMainnetSdk, getRinkebySdk, RinkebySdk } from '@dethcrypto/eth-sdk-client'
-import { CHAIN_ID } from 'pages/_app'
-import { parseEther } from 'ethers/lib/utils'
-import {
-  getNouletAuctionDataFromBC,
-  getNounletAuctionData,
-  getNounletAuctionDataBC
-} from 'lib/graphql/queries'
-import useSdk from './useSdk'
+import { BigNumber } from 'ethers'
+import { getNounletAuctionData, getNounletAuctionDataBC } from 'lib/graphql/queries'
+import { useRouter } from 'next/router'
+import { useMemo } from 'react'
 import { useVaultMetadataStore } from 'store/VaultMetadataStore'
+import useSWR, { unstable_serialize, useSWRConfig } from 'swr'
+import useSdk from './useSdk'
 
 export function generateNounletAuctionInfoKey({
   vaultAddress,
@@ -35,6 +26,7 @@ export function generateNounletAuctionInfoKey({
 
 export default function useDisplayedNounlet(ignoreUpdate = false) {
   const router = useRouter()
+  const { mutate: mutateSWRGlobal, cache: cacheSWRGlobal } = useSWRConfig()
   const { account, library } = useEthers()
   const {
     isLoading,
@@ -51,45 +43,47 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
     return router.query.nid as string
   }, [router.isReady, router.query, latestNounletTokenId])
 
-  const [wasOutOfSyncFixed, setWasOutOfSyncFixed] = useState(false)
-  const IsOutOfSync = useMemo(() => {
-    if (nid == null) return false
-    return nid === backendLatestNounletTokenId && nid !== latestNounletTokenId && !wasOutOfSyncFixed
-  }, [nid, backendLatestNounletTokenId, latestNounletTokenId, wasOutOfSyncFixed])
-
-  const { data: auctionInfo, mutate: refreshDisplayedNounlet } = useSWR(
+  const cachedData = cacheSWRGlobal.get(
+    unstable_serialize({
+      name: 'NounletAuctionData',
+      vaultAddress,
+      nounletTokenAddress,
+      nounletId: nid
+    })
+  )
+  const { data: auctionInfo = null, mutate: refreshDisplayedNounlet } = useSWR(
     router.isReady &&
       !isLoading &&
-      !ignoreUpdate &&
       sdk != null &&
       nid != null && {
         name: 'NounletAuctionData',
         vaultAddress,
         nounletTokenAddress,
-        nounletId: nid,
-        IsOutOfSync
+        nounletId: nid
       },
     async (key) => {
       if (sdk == null) return null
       if (key.vaultAddress == null || key.nounletTokenAddress == null || key.nounletId == null)
         return null
 
-      console.log('🧽 Fetching displayed nounlet data')
+      console.log('🧽 Fetching displayed nounlet data', key.nounletId)
       console.table(key)
 
       let response
-      if (key.IsOutOfSync || key.nounletId === latestNounletTokenId) {
+      if (key.nounletId == backendLatestNounletTokenId || key.nounletId === latestNounletTokenId) {
         response = await getNounletAuctionDataBC(
           key.vaultAddress,
           key.nounletTokenAddress,
           key.nounletId,
-          sdk.nounletAuction
+          sdk.NounletAuction
         )
 
-        if (key.IsOutOfSync) {
-          console.log('Should not refetch as it is synced')
+        if (
+          key.nounletId == backendLatestNounletTokenId &&
+          key.nounletId !== latestNounletTokenId
+        ) {
+          console.log('Data for unsynced auction should now be fixed')
           response.auction.settled = true
-          setWasOutOfSyncFixed(true)
         }
       } else {
         response = await getNounletAuctionData(
@@ -99,24 +93,19 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
         )
       }
 
-      console.log('🧽 Fetched displayed nounlet data')
+      console.log('🧽 Fetched displayed nounlet data', key.nounletId)
       console.log(response)
       return response
     },
     {
-      revalidateIfStale: nid === latestNounletTokenId || IsOutOfSync,
-      errorRetryCount: 0,
+      refreshInterval: nid === latestNounletTokenId ? 5 * 60 * 1000 : 0, // Every 5 min if live
+      revalidateIfStale: !ignoreUpdate && cachedData?.auction.settled !== true,
+      errorRetryCount: 0, // TODO change to 2
       onError: (error) => {
         console.log('Error', error)
       }
     }
   )
-
-  const historicBids = useMemo(() => {
-    return [...(auctionInfo?.auction.bids ?? [])].sort((a, b) => {
-      return BigNumber.from(b.amount).sub(BigNumber.from(a.amount)).toNumber()
-    })
-  }, [auctionInfo])
 
   const { data: historicVotes } = useSWR(
     'test',
@@ -126,6 +115,12 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
     },
     { revalidateIfStale: true }
   )
+
+  const historicBids = useMemo(() => {
+    return [...(auctionInfo?.auction.bids ?? [])].sort((a, b) => {
+      return BigNumber.from(b.amount).sub(BigNumber.from(a.amount)).toNumber()
+    })
+  }, [auctionInfo])
 
   const auctionEndTime = useMemo(() => {
     if (auctionInfo == null) return 0
@@ -142,45 +137,6 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
     return !!auctionInfo?.auction.settled
   }, [auctionInfo])
 
-  const bid = async (bidAmount: BigNumber) => {
-    if (sdk == null) throw new Error('no sdk')
-    if (account == null) throw new Error('no signer')
-    if (library == null) throw new Error('no library')
-    if (vaultAddress == null) throw new Error('no vault')
-
-    const tx = await sdk.nounletAuction
-      .connect(library.getSigner())
-      .bid(vaultAddress, { value: bidAmount })
-    return tx.wait()
-  }
-
-  const settleAuction = async () => {
-    if (sdk == null) throw new Error('no sdk')
-    if (account == null) throw new Error('no signer')
-    if (library == null) throw new Error('no library')
-    if (vaultAddress == null) throw new Error('no vault')
-
-    const merkleTree = await sdk.nounletProtoform.generateMerkleTree([
-      sdk.nounletAuction.address,
-      sdk.optimisticBid.address,
-      sdk.nounletGovernance.address
-    ])
-
-    console.log(library?.getSigner())
-    const mintProof = await sdk.nounletProtoform.getProof(merkleTree, 0)
-    const tx = await sdk.nounletAuction
-      .connect(library.getSigner())
-      .settleAuction(vaultAddress, mintProof)
-    return tx
-      .wait()
-      .then((res: any) => {
-        console.log('SETTLED!', res)
-      })
-      .catch((e: any) => {
-        console.log(e)
-      })
-  }
-
   const endedAuctionInfo = useMemo(() => {
     if (auctionInfo == null || nid == null) return null
 
@@ -192,6 +148,46 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
       wonByAddress: auctionInfo.auction.bidder?.id
     }
   }, [auctionEndTime, auctionInfo, nid, latestNounletTokenId])
+
+  const bid = async (bidAmount: BigNumber) => {
+    if (sdk == null) throw new Error('no sdk')
+    if (account == null) throw new Error('no signer')
+    if (library == null) throw new Error('no library')
+    if (vaultAddress == null) throw new Error('no vault')
+
+    const tx = await sdk.NounletAuction.connect(library.getSigner()).bid(vaultAddress, {
+      value: bidAmount
+    })
+    return tx.wait()
+  }
+
+  const settleAuction = async () => {
+    if (sdk == null) throw new Error('no sdk')
+    if (account == null) throw new Error('no signer')
+    if (library == null) throw new Error('no library')
+    if (vaultAddress == null) throw new Error('no vault')
+
+    const merkleTree = await sdk.NounletProtoform.generateMerkleTree([
+      sdk.NounletAuction.address,
+      sdk.OptimisticBid.address,
+      sdk.NounletGovernance.address
+    ])
+
+    console.log(library?.getSigner())
+    const mintProof = await sdk.NounletProtoform.getProof(merkleTree, 0)
+    const tx = await sdk.NounletAuction.connect(library.getSigner()).settleAuction(
+      vaultAddress,
+      mintProof
+    )
+    return tx
+      .wait()
+      .then((res: any) => {
+        console.log('SETTLED!', res)
+      })
+      .catch((e: any) => {
+        console.log(e)
+      })
+  }
 
   return {
     isLoading: auctionInfo == null || isLoading,

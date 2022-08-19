@@ -7,7 +7,7 @@ import WalletConfig from '../components/WalletConfig'
 import '../styles/globals.css'
 
 import { SWRConfig } from 'swr'
-import ChainUpdater from './ChainUpdater'
+import ChainUpdater from '../components/ChainUpdater'
 
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'

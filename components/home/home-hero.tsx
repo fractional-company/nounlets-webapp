@@ -15,6 +15,7 @@ import { auctionStart } from '../../config'
 import IconInfo from '../icons/icon-info'
 import { useEffect, useMemo } from 'react'
 import { useAuctionStateStore } from 'store/auctionStateStore'
+import CongratulationsModal from 'components/modals/congratulations-modal'
 
 export default function HomeHero(): JSX.Element {
   const router = useRouter()
@@ -76,6 +77,7 @@ export default function HomeHero(): JSX.Element {
           </div>
 
           <div className="px-4 py-12 md:p-12 lg:pl-6 lg:pr-10 -mx-4 lg:-mx-0 bg-white lg:bg-transparent space-y-3">
+            {/* <pre>assas: {JSON.stringify(auctionInfo, null, 4)}</pre> */}
             {auctionInfo == null || isLoading ? (
               <>Ahhh Im loading</>
             ) : (
@@ -111,8 +113,8 @@ export default function HomeHero(): JSX.Element {
                   <HomeHeroAuctionCompleted />
                 ) : (
                   <>
-                    <h1>Porgress</h1>
-                    {/* <HomeHeroAuctionProgress />  */}
+                    {/* <h1>Porgress</h1> */}
+                    <HomeHeroAuctionProgress />
                   </>
                 )}
               </>
@@ -120,6 +122,13 @@ export default function HomeHero(): JSX.Element {
           </div>
         </div>
       </div>
+
+      {/* <CongratulationsModal
+        isShown={isCongratulationsModalShown}
+        onClose={() => {
+          setIsCongratulationsModalShown(false)
+        }}
+      /> */}
     </div>
   )
 }

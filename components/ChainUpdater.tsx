@@ -51,7 +51,7 @@ export default function ChainUpdater() {
 
       const [vaultMetadata, vaultInfo] = await Promise.all([
         getVaultMetadata(key.vaultAddress),
-        sdk.nounletAuction.vaultInfo(vaultAddress)
+        sdk.NounletAuction.vaultInfo(vaultAddress)
       ])
 
       return {
@@ -170,8 +170,8 @@ export default function ChainUpdater() {
     if (latestNounletTokenId === '') return
 
     console.log('🍁 setting settled listener for ', latestNounletTokenId)
-    const nounletAuction = sdk.nounletAuction
-    const settledFilter = sdk.nounletAuction.filters.Settled(
+    const nounletAuction = sdk.NounletAuction
+    const settledFilter = sdk.NounletAuction.filters.Settled(
       vaultAddress,
       nounletTokenAddress,
       latestNounletTokenId
@@ -186,7 +186,7 @@ export default function ChainUpdater() {
     ) => {
       console.log('settled event!', vault, token, id, winner, amount, event)
       nounletAuction.off(settledFilter, listener)
-      refreshVaultMetadata()
+      // refreshVaultMetadata()
     }
 
     nounletAuction.on(settledFilter, listener)
@@ -211,7 +211,7 @@ export default function ChainUpdater() {
     //   vaultTokenAddress,
     //   '0',
     //   '1',
-    //   sdk.nounletAuction,
+    //   sdk.NounletAuction,
     //   latestNounletId.toString()
     // )
 
@@ -221,11 +221,13 @@ export default function ChainUpdater() {
   const handleTest = async () => {
     if (sdk == null) return
 
-    console.log('handling test')
-    // const nounletAuction = sdk.nounletAuction
-    // const settledFilter = sdk.nounletAuction.filters.Settled(vaultAddress, vaultTokenAddress, '1')
+    refreshVaultMetadata()
 
-    // console.log('result', await nounletAuction.queryFilter(settledFilter))
+    console.log('handling test')
+    // const nounletAuction = sdk.NounletAuction
+    // const settledFilter = sdk.NounletAuction.filters.Settled(vaultAddress, vaultTokenAddress, '1')
+
+    // console.log('result', await NounletAuction.queryFilter(settledFilter))
   }
 
   return (

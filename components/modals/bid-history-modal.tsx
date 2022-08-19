@@ -4,6 +4,7 @@ import { BID_DECIMALS } from 'config'
 import { FixedNumber } from 'ethers'
 import { formatEther } from 'ethers/lib/utils'
 import useDisplayedNounlet from 'hooks/useDisplayedNounlet'
+import { useMemo } from 'react'
 import { CHAIN_ID } from '../../pages/_app'
 import IconEth from '../icons/icon-eth'
 import IconLinkOffsite from '../icons/icon-link-offsite'
@@ -12,41 +13,44 @@ import SimpleAddress from '../simple-address'
 const BidHistoryModal = (): JSX.Element => {
   const { nid, historicBids } = useDisplayedNounlet(true)
 
-  const bidHistory = () =>
-    historicBids.map((bid, index) => {
-      const ethValue = FixedNumber.from(formatEther(bid.amount.toString()))
-        .round(BID_DECIMALS)
-        .toString()
-      //   const formttedTimestamp = dayjs.unix(+bid.blockTimestamp).format('MMM D, YYYY, h:mmA')
-      const explorerLink =
-        CHAIN_ID === 1
-          ? Mainnet.getExplorerTransactionLink(bid.id)
-          : Rinkeby.getExplorerTransactionLink(bid.id)
-      return (
-        <div
-          key={bid.id.toString()}
-          className={`items-center rounded-px10 justify-between p-3 flex bg-white ${
-            index === 0 ? 'opacity-100' : 'opacity-50'
-          }`}
-        >
-          <div className="flex flex-col">
-            <SimpleAddress
-              avatarSize={24}
-              address={bid.bidder.id}
-              className="text-px18 leading-px28 font-700 gap-2 flex-1"
-            />
-            {/* <div className="text-px14 leading-px24">{formttedTimestamp}</div> */}
+  const bidHistory = useMemo(
+    () =>
+      historicBids.map((bid, index) => {
+        const ethValue = FixedNumber.from(formatEther(bid.amount.toString()))
+          .round(BID_DECIMALS)
+          .toString()
+        //   const formttedTimestamp = dayjs.unix(+bid.blockTimestamp).format('MMM D, YYYY, h:mmA')
+        const explorerLink =
+          CHAIN_ID === 1
+            ? Mainnet.getExplorerTransactionLink(bid.id)
+            : Rinkeby.getExplorerTransactionLink(bid.id)
+        return (
+          <div
+            key={bid.id.toString()}
+            className={`items-center rounded-px10 justify-between p-3 flex bg-white ${
+              index === 0 ? 'opacity-100' : 'opacity-50'
+            }`}
+          >
+            <div className="flex flex-col">
+              <SimpleAddress
+                avatarSize={24}
+                address={bid.bidder.id}
+                className="text-px18 leading-px28 font-700 gap-2 flex-1"
+              />
+              {/* <div className="text-px14 leading-px24">{formttedTimestamp}</div> */}
+            </div>
+            <div className="flex items-center">
+              <IconEth className="flex-shrink-0 h-[12px]" />
+              <p className="ml-1 text-px18 leading-px28 font-700">{ethValue}</p>
+              <a href={explorerLink} target="_blank" rel="noreferrer">
+                <IconLinkOffsite className="ml-3 flex-shrink-0 h-[12px]" />
+              </a>
+            </div>
           </div>
-          <div className="flex items-center">
-            <IconEth className="flex-shrink-0 h-[12px]" />
-            <p className="ml-1 text-px18 leading-px28 font-700">{ethValue}</p>
-            <a href={explorerLink} target="_blank" rel="noreferrer">
-              <IconLinkOffsite className="ml-3 flex-shrink-0 h-[12px]" />
-            </a>
-          </div>
-        </div>
-      )
-    })
+        )
+      }),
+    [historicBids]
+  )
 
   return (
     <div className="sm:w-[370px]">
@@ -61,7 +65,7 @@ const BidHistoryModal = (): JSX.Element => {
       </Dialog.Title>
       <div className="py-4 pl-4 pr-2 bg-gray-2 rounded-px10 h-[17.25rem]">
         <div className="flex flex-col overflow-y-scroll gap-2 h-full custom-scrollbar pr-2">
-          {bidHistory()}
+          {bidHistory}
         </div>
       </div>
     </div>

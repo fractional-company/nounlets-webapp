@@ -29,6 +29,16 @@ export const getVaultMetadata = async (vaultAddress: string) => {
   })
 
   // this should not happen
+  if (data.vault == null) {
+    console.log('no auction started')
+    return {
+      vaultAddress: vaultAddress.toLowerCase(),
+      nounletTokenAddress: '0xf84c41e7b15df8c6e218ccc701f7b3be87e6b8c4', // ethers.constants.AddressZero,
+      nounletCount: 1
+    }
+  }
+
+  // this should not happen
   if (data.vault.noun.nounlets.length === 0) {
     console.log('no auction started')
     return {
@@ -101,7 +111,7 @@ export const getNounletAuctionDataBC = async (
   vaultAddress: string,
   nounletTokenAddress: string,
   nounletTokenId: string,
-  nounletAuction: RinkebySdk['nounletAuction']
+  nounletAuction: RinkebySdk['NounletAuction']
 ) => {
   console.log('⛓ Fetching auction data from Blockchain')
   console.table({ vaultAddress, nounletTokenAddress, nounletTokenId })
@@ -157,7 +167,7 @@ export const getNouletAuctionDataFromBC = async (
   vaultTokenAddress: string,
   vaultTokenId: string,
   nounletId: string,
-  nounletAuction: RinkebySdk['nounletAuction'],
+  nounletAuction: RinkebySdk['NounletAuction'],
   latestNounletId: string
 ) => {
   console.log('🌟 Fetching blockchain data', {
