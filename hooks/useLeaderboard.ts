@@ -2,7 +2,7 @@ import { useEthers } from '@usedapp/core'
 import { ethers } from 'ethers'
 import { getLeaderboardData } from 'lib/graphql/queries'
 import { useMemo } from 'react'
-import { useVaultMetadataStore } from 'store/VaultMetadataStore'
+import { useVaultMetadataStore } from 'store/vaultMetadataStore'
 import useSWR from 'swr'
 import useSdk from './useSdk'
 
@@ -77,9 +77,41 @@ export default function useLeaderboard() {
     return mapped
   }, [data, account, myNounletsVotes])
 
+  const delegateVotes = async (toAddress: string) => {
+    const primary = '0x497F34f8A6EaB10652f846fD82201938e58d72E0'
+    const secondary = '0x6d2343bEecEd0E805f3ccCfF870ccB974B5795E6'
+
+    console.log('delegating votes to:', toAddress)
+    if (sdk == null || account == null || library == null) return
+    if (nounletTokenAddress == null) return
+    try {
+      const nounletToken = sdk.NounletToken.connect(library.getSigner()).attach(nounletTokenAddress)
+      // console.log(await nounletToken.NOUNS_TOKEN_ID())
+
+      // console.log(await nounletToken.balanceOf(account, 4))
+      // console.log(await nounletToken.maxSupply())
+      // console.log(await nounletToken.ownerOf(4)) // NounletAuction contract
+      // console.log(await nounletToken.votesToDelegate(account))
+      // console.log(await nounletToken.delegates(account))
+      // console.log(await nounletToken.getCurrentVotes(account))
+
+      // console.log(await nounletToken.balanceOf(secondary, 4))
+      // console.log(await nounletToken.votesToDelegate(secondary))
+      // console.log(await nounletToken.delegates(secondary))
+      // console.log(await nounletToken.getCurrentVotes(secondary))
+      // console.log(await nounletToken.numCheckpoints(secondary))
+
+      const tx = await nounletToken.delegate(primary)
+      console.log(await tx.wait())
+    } catch (error) {
+      console.log('error', error)
+    }
+  }
+
   return {
     leaderboardListData,
     myNounlets,
-    myNounletsVotes
+    myNounletsVotes,
+    delegateVotes
   }
 }

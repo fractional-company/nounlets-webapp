@@ -13,7 +13,7 @@ export const CHAIN_ID: SupportedChains = parseInt(process.env.NEXT_PUBLIC_CHAIN_
 export const NEXT_PUBLIC_NOUN_VAULT_ADDRESS =
   process.env.NEXT_PUBLIC_NOUN_VAULT_ADDRESS || '0x34f67ab3458ec703ebc2bd2683b117d8f0764614'
 export const NEXT_PUBLIC_BLOCKS_PER_DAY = 7_000
-export const BID_DECIMALS = +(process.env.NEXT_PUBLIC_BID_DECIMALS || 2)
+export const NEXT_PUBLIC_BID_DECIMALS = +(process.env.NEXT_PUBLIC_BID_DECIMALS || 2)
 // OLD
 
 export const auctionStart: BigNumber = BigNumber.from(process.env.NEXT_PUBLIC_AUCTION_START || 0)

@@ -23,18 +23,19 @@ import dayjs from 'dayjs'
 import useOnDisplayAuction, { useAuctionBids } from '../../lib/wrappers/onDisplayAuction'
 import { Auction } from '../../lib/wrappers/nounsAuction'
 import useDisplayedNounlet from 'hooks/useDisplayedNounlet'
-import { BID_DECIMALS } from 'config'
+import { NEXT_PUBLIC_BID_DECIMALS } from 'config'
 import { useEthers } from '@usedapp/core'
 
 export default function HomeHeroAuctionCompleted(): JSX.Element {
   const { account } = useEthers()
   const { setBidModalOpen } = useAppStore()
-  const { endedAuctionInfo, settleAuction, historicBids } = useDisplayedNounlet()
+  const { endedAuctionInfo, settleAuction, historicBids, mutateDisplayedNounletAuctionInfo } =
+    useDisplayedNounlet()
 
   const formattedData = useMemo(() => {
     const isLoading = endedAuctionInfo == null
     const winningBid = FixedNumber.from(formatEther(endedAuctionInfo?.winningBid ?? 0))
-      .round(BID_DECIMALS)
+      .round(NEXT_PUBLIC_BID_DECIMALS)
       .toString()
     const heldByAddress = endedAuctionInfo?.heldByAddress || ethers.constants.AddressZero
     const endedOn = dayjs((endedAuctionInfo?.endedOn ?? 0) * 1000).format('h:mmA, MMMM D, YYYY')
@@ -61,11 +62,12 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
       if (formattedData.heldByAddress.toLowerCase() === account?.toLowerCase()) {
         // setIsCongratulationsModalShown(true)
       }
+      // await mutateDisplayedNounletAuctionInfo() // not needed since there is no new events
     } catch (error) {
       console.error('settling auction failed', error)
+      setIsSettlingAuction(false) // only stop the spinner if it errors
     }
-
-    setIsSettlingAuction(false)
+    // setIsSettlingAuction(false) // dont set it here since it stops the spinner to early
   }
 
   return (

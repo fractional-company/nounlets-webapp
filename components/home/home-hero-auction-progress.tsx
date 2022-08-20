@@ -17,9 +17,9 @@ import SimpleAddress from 'components/simple-address'
 import IconLinkOffsite from 'components/icons/icon-link-offsite'
 import { useAuctionStateStore } from 'store/auctionStateStore'
 import { BidEvent } from 'typechain/interfaces/NounletAuctionAbi'
-import { BID_DECIMALS } from 'config'
+import { NEXT_PUBLIC_BID_DECIMALS } from 'config'
 import { calculateNextBid } from 'lib/utils/nextBidCalculator'
-import { useVaultMetadataStore } from 'store/VaultMetadataStore'
+import { useVaultMetadataStore } from 'store/vaultMetadataStore'
 
 type ComponentProps = {
   auction?: Auction
@@ -36,9 +36,9 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
     auctionInfo,
     auctionEndTime,
     historicBids,
-    refreshDisplayedNounlet,
+    mutateDisplayedNounletAuctionInfo,
     bid
-  } = useDisplayedNounlet()
+  } = useDisplayedNounlet(false)
   const { setBidModalOpen } = useAppStore()
   const [showEndTime, setShowEndTime] = useState(false)
   const bidInputRef = useRef<HTMLInputElement>(null)
@@ -58,8 +58,8 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
 
   const formattedValues = useMemo(() => {
     return {
-      currrentBid: currentBidFX.round(BID_DECIMALS).toString(),
-      minNextBid: minNextBidFX.round(BID_DECIMALS).toString()
+      currrentBid: currentBidFX.round(NEXT_PUBLIC_BID_DECIMALS).toString(),
+      minNextBid: minNextBidFX.round(NEXT_PUBLIC_BID_DECIMALS).toString()
     }
   }, [currentBidFX, minNextBidFX])
 
@@ -73,7 +73,7 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
     console.log('latestbits', historicBids)
     return historicBids.slice(0, 3).map((bid) => {
       const ethValue = FixedNumber.from(formatEther(bid.amount.toString()))
-        .round(BID_DECIMALS)
+        .round(NEXT_PUBLIC_BID_DECIMALS)
         .toString()
       return (
         <div key={bid.id.toString()} className="flex items-center flex-1 py-2 overflow-hidden">
@@ -116,7 +116,7 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
       event: any // IDK why this isnt BidEvent
     ) => {
       console.log('🖐 bid event!', vault, token, id, bidder, amount, extendedTime, event)
-      refreshDisplayedNounlet()
+      mutateDisplayedNounletAuctionInfo()
     }
     nounletAuction.on(bidFilter, listener)
 
@@ -124,10 +124,15 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
       console.log('👎 removing listener for', nounletId)
       nounletAuction.off(bidFilter, listener)
     }
-  }, [vaultAddress, nounletTokenAddress, nounletId, sdk, refreshDisplayedNounlet])
+  }, [vaultAddress, nounletTokenAddress, nounletId, sdk, mutateDisplayedNounletAuctionInfo])
+
+  const handleTimerFinished = () => {
+    mutateDisplayedNounletAuctionInfo()
+    console.log('finished timer!')
+  }
 
   const handleBidInputValue = (event: ChangeEvent<HTMLInputElement>) => {
-    const onlyNumbers = new RegExp(`^\\d+\\.?\\d{0,${BID_DECIMALS}}$`)
+    const onlyNumbers = new RegExp(`^\\d+\\.?\\d{0,${NEXT_PUBLIC_BID_DECIMALS}}$`)
     try {
       if (event.target.value === '' || onlyNumbers.test(event.target.value)) {
         setBidInputValue(event.target.value)
@@ -176,7 +181,11 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
             {showEndTime ? 'Auction ends at' : 'Auction ends in'}
           </p>
           <div className="flex items-center">
-            <CountdownTimer showEndTime={showEndTime} auctionEnd={auctionEndTime} />
+            <CountdownTimer
+              showEndTime={showEndTime}
+              auctionEnd={auctionEndTime}
+              onTimerFinished={handleTimerFinished}
+            />
           </div>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import { Dialog } from '@headlessui/react'
 import { Mainnet, Rinkeby } from '@usedapp/core'
-import { BID_DECIMALS } from 'config'
+import { NEXT_PUBLIC_BID_DECIMALS } from 'config'
 import { FixedNumber } from 'ethers'
 import { formatEther } from 'ethers/lib/utils'
 import useDisplayedNounlet from 'hooks/useDisplayedNounlet'
@@ -17,7 +17,7 @@ const BidHistoryModal = (): JSX.Element => {
     () =>
       historicBids.map((bid, index) => {
         const ethValue = FixedNumber.from(formatEther(bid.amount.toString()))
-          .round(BID_DECIMALS)
+          .round(NEXT_PUBLIC_BID_DECIMALS)
           .toString()
         //   const formttedTimestamp = dayjs.unix(+bid.blockTimestamp).format('MMM D, YYYY, h:mmA')
         const explorerLink =

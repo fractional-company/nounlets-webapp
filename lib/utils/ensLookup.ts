@@ -1,14 +1,10 @@
-import {useEthers, useLookupAddress} from '@usedapp/core';
+import { useEthers, useLookupAddress, useResolveName } from '@usedapp/core'
 import { useEffect, useState } from 'react'
 
 export const useReverseENSLookUp = (address: string, withStatus = true) => {
-   const { library } = useEthers();
+  const { library } = useEthers()
   const [ens, setEns] = useState<string>()
-  const {
-    ens: ensName,
-    error: ensNameError,
-    isLoading
-  } = useLookupAddress(address)
+  const { ens: ensName, error: ensNameError, isLoading } = useLookupAddress(address)
 
   useEffect(() => {
     let mounted = true

@@ -1,14 +1,52 @@
 import { getMainnetSdk, getRinkebySdk } from '@dethcrypto/eth-sdk-client'
 import { useEthers } from '@usedapp/core'
 import Button from 'components/buttons/button'
+import {
+  NEXT_PUBLIC_BID_DECIMALS,
+  NEXT_PUBLIC_BLOCKS_PER_DAY,
+  NEXT_PUBLIC_NOUN_VAULT_ADDRESS
+} from 'config'
+import useLeaderboard from 'hooks/useLeaderboard'
 import useSdk from 'hooks/useSdk'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
+import { useVaultMetadataStore } from 'store/vaultMetadataStore'
 
 const Settings: NextPage<{}, {}> = () => {
   const router = useRouter()
   const { account, library } = useEthers()
   const sdk = useSdk()
+  const {
+    isLoading,
+    setNounletTokenAddress,
+    setBackendLatestNounletTokenId,
+    setLatestNounletTokenId,
+    setIsLoading,
+    vaultAddress,
+    nounletTokenAddress,
+    latestNounletTokenId
+  } = useVaultMetadataStore()
+
+  const { delegateVotes } = useLeaderboard()
+
+  const environment = {
+    NEXT_PUBLIC_NOUN_VAULT_ADDRESS: `${process.env.NEXT_PUBLIC_NOUN_VAULT_ADDRESS} || ${NEXT_PUBLIC_NOUN_VAULT_ADDRESS}`,
+    NEXT_PUBLIC_BLOCKS_PER_DAY: `${process.env.NEXT_PUBLIC_BLOCKS_PER_DAY} || ${NEXT_PUBLIC_BLOCKS_PER_DAY}`,
+    BID_DECIMALS: `${process.env.BID_DECIMALS} || ${NEXT_PUBLIC_BID_DECIMALS}`
+  }
+
+  const vaultMetadata = {
+    isLoading,
+    vaultAddress, // VaultContract
+    nounletTokenAddress, // NouneltTokenContract (proxy?)
+    latestNounletTokenId
+  }
+
+  const myAddresses = {
+    current: account,
+    main: '0x497F34f8A6EaB10652f846fD82201938e58d72E0',
+    secondary: '0x6d2343bEecEd0E805f3ccCfF870ccB974B5795E6'
+  }
 
   const createVault = async () => {
     if (library == null || sdk == null || account == null) throw new Error('sdk or account missing')
@@ -85,11 +123,29 @@ const Settings: NextPage<{}, {}> = () => {
   }
 
   return (
-    <div className="p-4 flex flex-col gap-6">
-      <h1>Settings</h1>
+    <div className="p-4 flex flex-col gap-3 text-px12">
+      <h1 className="font-600">Settings</h1>
+
+      <div className="px-4">
+        <h1 className="font-600">ENV</h1>
+        <pre>{JSON.stringify(environment, null, 4)}</pre>
+      </div>
+
+      <div className="px-4">
+        <h1 className="font-600">My eth addresses:</h1>
+        <pre>{JSON.stringify(myAddresses, null, 4)}</pre>
+      </div>
+
+      <div className="px-4">
+        <h1 className="font-600">Vault METADATA</h1>
+        <pre>{JSON.stringify(vaultMetadata, null, 4)}</pre>
+      </div>
 
       <Button className="primary" onClick={() => createVault()}>
         Create new vault
+      </Button>
+      <Button className="primary" onClick={() => delegateVotes(myAddresses.secondary)}>
+        Delegate votes
       </Button>
     </div>
   )

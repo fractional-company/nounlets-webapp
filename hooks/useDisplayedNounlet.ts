@@ -1,9 +1,9 @@
 import { useEthers } from '@usedapp/core'
 import { BigNumber } from 'ethers'
-import { getNounletAuctionData, getNounletAuctionDataBC } from 'lib/graphql/queries'
 import { useRouter } from 'next/router'
-import { useMemo } from 'react'
-import { useVaultMetadataStore } from 'store/VaultMetadataStore'
+import { useCallback, useMemo } from 'react'
+import { useAuctionInfoStore } from 'store/auctionInfoStore'
+import { useVaultMetadataStore } from 'store/vaultMetadataStore'
 import useSWR, { unstable_serialize, useSWRConfig } from 'swr'
 import useSdk from './useSdk'
 
@@ -24,6 +24,8 @@ export function generateNounletAuctionInfoKey({
   }
 }
 
+// let prev: any = null
+
 export default function useDisplayedNounlet(ignoreUpdate = false) {
   const router = useRouter()
   const { mutate: mutateSWRGlobal, cache: cacheSWRGlobal } = useSWRConfig()
@@ -37,86 +39,28 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
   } = useVaultMetadataStore()
   const sdk = useSdk()
 
+  const { data: auctionInfoMap } = useAuctionInfoStore()
   const nid = useMemo(() => {
-    if (!router.isReady) return ''
+    if (isLoading) return null
+    if (!router.isReady) return null
     if (router.query?.nid == null) return latestNounletTokenId
     return router.query.nid as string
-  }, [router.isReady, router.query, latestNounletTokenId])
+  }, [isLoading, router.isReady, router.query, latestNounletTokenId])
 
-  const cachedData = cacheSWRGlobal.get(
-    unstable_serialize({
+  const auctionInfo = nid ? auctionInfoMap[nid] : null
+
+  const swrQueryKey = useMemo(() => {
+    if (nid == null) return null
+    return {
       name: 'NounletAuctionData',
       vaultAddress,
       nounletTokenAddress,
       nounletId: nid
-    })
-  )
-  const { data: auctionInfo = null, mutate: refreshDisplayedNounlet } = useSWR(
-    router.isReady &&
-      !isLoading &&
-      sdk != null &&
-      nid != null && {
-        name: 'NounletAuctionData',
-        vaultAddress,
-        nounletTokenAddress,
-        nounletId: nid
-      },
-    async (key) => {
-      if (sdk == null) return null
-      if (key.vaultAddress == null || key.nounletTokenAddress == null || key.nounletId == null)
-        return null
-
-      console.log('🧽 Fetching displayed nounlet data', key.nounletId)
-      console.table(key)
-
-      let response
-      if (key.nounletId == backendLatestNounletTokenId || key.nounletId === latestNounletTokenId) {
-        response = await getNounletAuctionDataBC(
-          key.vaultAddress,
-          key.nounletTokenAddress,
-          key.nounletId,
-          sdk.NounletAuction
-        )
-
-        if (
-          key.nounletId == backendLatestNounletTokenId &&
-          key.nounletId !== latestNounletTokenId
-        ) {
-          console.log('Data for unsynced auction should now be fixed')
-          response.auction.settled = true
-        }
-      } else {
-        response = await getNounletAuctionData(
-          key.vaultAddress,
-          key.nounletTokenAddress,
-          key.nounletId
-        )
-      }
-
-      console.log('🧽 Fetched displayed nounlet data', key.nounletId)
-      console.log(response)
-      return response
-    },
-    {
-      refreshInterval: nid === latestNounletTokenId ? 5 * 60 * 1000 : 0, // Every 5 min if live
-      revalidateIfStale: !ignoreUpdate && cachedData?.auction.settled !== true,
-      errorRetryCount: 0, // TODO change to 2
-      onError: (error) => {
-        console.log('Error', error)
-      }
     }
-  )
-
-  const { data: historicVotes } = useSWR(
-    'test',
-    (key) => {
-      // console.log('im mutating historicVotes')
-      return [1, 2]
-    },
-    { revalidateIfStale: true }
-  )
+  }, [nid, vaultAddress, nounletTokenAddress])
 
   const historicBids = useMemo(() => {
+    console.log('historic bids')
     return [...(auctionInfo?.auction!.bids ?? [])].sort((a, b) => {
       return BigNumber.from(b.amount).sub(BigNumber.from(a.amount)).toNumber()
     })
@@ -130,7 +74,8 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
   }, [auctionInfo])
 
   const hasAuctionEnded = useMemo(() => {
-    return auctionInfo != null && auctionEndTime * 1000 < Date.now()
+    const now = Date.now() + 5000 // add 5 second buffer
+    return auctionInfo != null && auctionEndTime * 1000 <= now
   }, [auctionInfo, auctionEndTime])
 
   const hasAuctionSettled = useMemo(() => {
@@ -173,7 +118,6 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
       sdk.NounletGovernance.address
     ])
 
-    console.log(library?.getSigner())
     const mintProof = await sdk.NounletProtoform.getProof(merkleTree, 0)
     const tx = await sdk.NounletAuction.connect(library.getSigner()).settleAuction(
       vaultAddress,
@@ -189,21 +133,28 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
       })
   }
 
+  const mutateDisplayedNounletAuctionInfo = useCallback(async () => {
+    if (swrQueryKey != null) {
+      console.log('🔨 force mutate', swrQueryKey.nounletId)
+      return mutateSWRGlobal(swrQueryKey)
+    }
+  }, [swrQueryKey, mutateSWRGlobal])
+
   return {
+    swrQueryKey,
+    nid,
     isLoading: auctionInfo == null || isLoading,
     vaultAddress,
     nounletTokenAddress,
     latestNounletTokenId,
-    nid,
     hasAuctionEnded,
     hasAuctionSettled,
     auctionInfo,
     auctionEndTime,
     endedAuctionInfo,
     historicBids,
-    historicVotes,
     // methods
-    refreshDisplayedNounlet,
+    mutateDisplayedNounletAuctionInfo,
     bid,
     settleAuction
   }

@@ -1,10 +1,10 @@
-import { BID_DECIMALS } from 'config'
+import { NEXT_PUBLIC_BID_DECIMALS } from 'config'
 import { BigNumber, BigNumberish, FixedNumber } from 'ethers'
 
 export function calculateNextBid(
   amount: BigNumberish,
   increaseMultiplier: BigNumberish,
-  decimals = BID_DECIMALS
+  decimals = NEXT_PUBLIC_BID_DECIMALS
 ) {
   if (amount == null) throw new Error('amount is required')
   const amountFX = FixedNumber.from(amount)

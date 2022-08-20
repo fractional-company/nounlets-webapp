@@ -5,7 +5,7 @@ import { NounletAuctionAbiInterface } from 'typechain/interfaces/NounletAuctionA
 import { RinkebySdk } from '@dethcrypto/eth-sdk-client'
 import { BigNumber, ethers } from 'ethers'
 import { NEXT_PUBLIC_BLOCKS_PER_DAY } from 'config'
-import { Account, Vault } from './graphql.models'
+import { Account, Nounlet, Vault } from './graphql.models'
 
 interface VaultResponse {
   vault: Vault
@@ -29,28 +29,17 @@ export const getVaultMetadata = async (vaultAddress: string) => {
     `
   })
 
+  console.log('getVaultMetadata', data)
+
   // this should not happen
   if (data.vault == null || data.vault.noun == null) {
     console.log('no auction started')
     return {
       vaultAddress: vaultAddress.toLowerCase(),
-      nounletTokenAddress: '0xf84c41e7b15df8c6e218ccc701f7b3be87e6b8c4', // ethers.constants.AddressZero,
+      nounletTokenAddress: '0xf84c41e7b15df8c6e218ccc701f7b3be87e6b8c4', // ethers.constants.AddressZero
       nounletCount: 1
     }
   }
-
-  // this should not happen
-  if (data.vault.noun.nounlets.length === 0) {
-    console.log('no auction started')
-    return {
-      vaultAddress: data.vault.id.toLowerCase(),
-      nounletTokenAddress: data.vault.tokenAddress.toLowerCase(),
-      nounletCount: 0
-    }
-  }
-
-  const firstNounlet = data.vault.noun.nounlets[0]
-  const [nounletTokenAddress, nounletId] = firstNounlet.id.split('-')
 
   return {
     vaultAddress: data.vault.id.toLowerCase(),
@@ -64,8 +53,9 @@ export const getNounletAuctionData = async (
   nounletTokenAddress: string,
   nounletTokenId: string
 ) => {
-  console.log('🚀 Fetching auction data from BE')
+  console.groupCollapsed('🚀 Fetching auction data from BE')
   console.table({ vaultAddress, nounletTokenAddress, nounletTokenId })
+  console.groupEnd()
 
   const { data } = await client.query<VaultResponse>({
     query: gql`
@@ -102,8 +92,9 @@ export const getNounletAuctionData = async (
     }`
   })
 
-  console.log('🚀 Fetched auction data from BE')
+  console.groupCollapsed('🚀 Fetched auction data from BE')
   console.log(data)
+  console.groupEnd()
 
   return data.vault.noun!.nounlets[0]
 }
@@ -114,8 +105,9 @@ export const getNounletAuctionDataBC = async (
   nounletTokenId: string,
   nounletAuction: RinkebySdk['NounletAuction']
 ) => {
-  console.log('⛓ Fetching auction data from Blockchain')
+  console.groupCollapsed('🔩 Fetching auction data from Blockchain')
   console.table({ vaultAddress, nounletTokenAddress, nounletTokenId })
+  console.groupEnd()
 
   const bidFilter = nounletAuction.filters.Bid(
     vaultAddress,
@@ -160,7 +152,11 @@ export const getNounletAuctionDataBC = async (
     }
   }
 
-  return shape
+  console.groupCollapsed('🔩 Fetched auction data from Blockchain')
+  console.log(shape)
+  console.groupEnd()
+
+  return shape as Awaited<ReturnType<typeof getNounletAuctionData>>
 }
 
 export const getNounletBids = async (id: string, nounletId: string) => {

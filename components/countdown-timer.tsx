@@ -18,9 +18,9 @@ export default function CountdownTimer(props: ComponentProps): JSX.Element {
     setAuctionTimer(timeLeft)
 
     if (timeLeft <= 0) {
+      console.log('⏱ Timer ended!')
       setAuctionTimer(0)
       props.onTimerFinished?.()
-      console.log('⏱ Timer ended!')
     } else {
       const timer = setTimeout(() => {
         setAuctionTimer((v) => v - 1)

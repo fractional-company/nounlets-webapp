@@ -10,18 +10,92 @@ import SimpleModal from '../components/simple-modal'
 import { useAppStore } from '../store/application'
 import { CHAIN_ID } from './_app'
 import HomeLeaderboard from 'components/home/home-leaderboard'
+import { useEffect, useMemo, useState } from 'react'
+import { useVaultMetadataStore } from 'store/vaultMetadataStore'
+import useSWR from 'swr'
+import useSdk from 'hooks/useSdk'
+import { getNounletAuctionData, getNounletAuctionDataBC } from 'lib/graphql/queries'
+import { useAuctionStateStore } from 'store/auctionStateStore'
+import { useAuctionInfoStore } from 'store/auctionInfoStore'
 
 /*
 Token ID    | Vault
-0           | 0x34f67ab3458eC703EBc2bd2683B117d8F0764614
+0           | 0xba9e59afaee607782245bb78f6b93c89b070e855
 */
 
 const Home: NextPage<{ vault: any }> = ({ vault }: { vault: any }) => {
-  const router = useRouter()
-  const { account, library } = useEthers()
+  const sdk = useSdk()
   const { setBidModalOpen, isBidModalOpen } = useAppStore()
-  const { isLoading, auctionInfo, nid, latestNounletTokenId, refreshDisplayedNounlet } =
-    useDisplayedNounlet()
+  const {
+    isLoading,
+    vaultAddress,
+    nounletTokenAddress,
+    backendLatestNounletTokenId,
+    latestNounletTokenId
+  } = useVaultMetadataStore()
+  const { setData } = useAuctionInfoStore()
+  const { nid, swrQueryKey, auctionInfo, mutateDisplayedNounletAuctionInfo } = useDisplayedNounlet()
+
+  // when should we fetch nid data
+  const canFireSWR = useMemo(() => {
+    if (nid == null) return false
+    if (sdk == null) return false
+    if (vaultAddress == null) return false
+    if (nounletTokenAddress == null) return false
+
+    return true
+  }, [nid, sdk, vaultAddress, nounletTokenAddress])
+
+  const queryKey = useMemo(() => {
+    return canFireSWR && swrQueryKey
+  }, [canFireSWR, swrQueryKey])
+
+  const requiresRevalidation = useMemo(() => {
+    return !auctionInfo?.auction?.settled
+  }, [auctionInfo])
+
+  useSWR(
+    queryKey,
+    async (key) => {
+      console.log('🌎🌎🌎🌎🌎🌎🌎🌎🌎')
+      let response
+      if (key.nounletId == backendLatestNounletTokenId || key.nounletId === latestNounletTokenId) {
+        response = await getNounletAuctionDataBC(
+          key.vaultAddress,
+          key.nounletTokenAddress,
+          key.nounletId,
+          sdk!.NounletAuction
+        )
+
+        if (
+          key.nounletId == backendLatestNounletTokenId &&
+          key.nounletId !== latestNounletTokenId
+        ) {
+          console.log('Data for unsynced auction should now be fixed')
+          response.auction!.settled = true
+        }
+      } else {
+        response = await getNounletAuctionData(
+          key.vaultAddress,
+          key.nounletTokenAddress,
+          key.nounletId as string
+        )
+      }
+
+      return response
+    },
+    {
+      revalidateIfStale: requiresRevalidation, // TODO
+      errorRetryCount: 0, // TODO change,
+      onError: (error) => {
+        console.error(error)
+      },
+      onSuccess: (data) => {
+        setData(nid as string, data)
+        console.log(data, 'requires revalidation?:', !data.auction?.settled)
+      }
+    }
+  )
 
   // const { vaultAddress, isLoading } = useAuctionStateStore()
   // const nid = +(router.query?.nid || 0)
@@ -150,27 +224,22 @@ const Home: NextPage<{ vault: any }> = ({ vault }: { vault: any }) => {
               isLoading,
               latestNounletTokenId,
               nid,
-              auctionInfo
+              data
             },
             null,
             4
           )}
-        </pre>
+        </pre> */}
         <button
           onClick={() => {
-            refreshDisplayedNounlet()
+            mutateDisplayedNounletAuctionInfo()
           }}
         >
-          refreshDisplayedNounlet
-        </button> */}
-        {/* <p>{isLoading || data == null ? 'loading' : 'loaded'}</p>
-        <p>{latestNounletId}</p>
-        <p>{nid}</p>
-        <p>{data?.auctionInfo?.bidder}</p>
-        <pre>{JSON.stringify(data?.auctionInfo, null, 4)}</pre> */}
+          mutateAuctionInfo
+        </button>
       </div>
       <HomeHero />
-      <HomeLeaderboard />
+      {/* <HomeLeaderboard /> */}
       {/* {nid === latestNounletId ? <HomeLeaderboard /> : <HomeVotesFromNounlet />} */}
       {/* <HomeCollectiveOwnership /> */}
       {/* <HomeWTF /> */}

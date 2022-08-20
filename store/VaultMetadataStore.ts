@@ -1,11 +1,13 @@
 import { RinkebySdk } from '@dethcrypto/eth-sdk-client'
-import { BigNumber } from 'ethers'
+import { BigNumber, ethers } from 'ethers'
 import create from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 
 interface StoreState {
   isLoading: boolean
   vaultAddress: string
+  vaultCuratorAddress: string
+  currentDelegate: string
   nounletTokenAddress: string
   backendLatestNounletTokenId: string
   latestNounletTokenId: string
@@ -15,6 +17,8 @@ interface StoreState {
 interface StoreActions {
   setIsLoading: (flag: boolean) => void
   setVaultAddress: (address: string) => void
+  setVaultCuratorAddress: (address: string) => void
+  setCurrentDelegate: (address: string) => void
   setNounletTokenAddress: (address: string) => void
   setBackendLatestNounletTokenId: (id: string) => void
   setLatestNounletTokenId: (id: string) => void
@@ -23,6 +27,8 @@ interface StoreActions {
 const initialState: StoreState = {
   isLoading: true,
   vaultAddress: process.env.NEXT_PUBLIC_NOUN_VAULT_ADDRESS || '',
+  vaultCuratorAddress: ethers.constants.AddressZero,
+  currentDelegate: ethers.constants.AddressZero,
   nounletTokenAddress: '',
   backendLatestNounletTokenId: '',
   latestNounletTokenId: '',
@@ -40,6 +46,16 @@ export const useVaultMetadataStore = create(
     setVaultAddress: (address) => {
       set((state) => {
         state.vaultAddress = address
+      })
+    },
+    setVaultCuratorAddress: (address) => {
+      set((state) => {
+        state.vaultCuratorAddress = address
+      })
+    },
+    setCurrentDelegate: (address) => {
+      set((state) => {
+        state.currentDelegate = address
       })
     },
     setNounletTokenAddress: (address) => {

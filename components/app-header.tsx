@@ -4,7 +4,7 @@ import IconCaretDropdown from './icons/icon-caret-dropdown'
 import IconDiscord from './icons/icon-discord'
 import IconFractionalLogo from './icons/icon-fractional-logo'
 import IconPeople from '../public/img/icon-people.png'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import IconMedium from './icons/icon-medium'
 import IconHeartHollow from './icons/icon-heart-hollow'
 import IconTwitter from './icons/icon-twitter'
@@ -21,6 +21,9 @@ import Link from 'next/link'
 import VoteForDelegateModal from './modals/vote-for-delegate-modal'
 import toast from 'react-hot-toast'
 import IconNounletsLogo from './icons/icon-nounlets-logo'
+import { useVaultMetadataStore } from 'store/vaultMetadataStore'
+import SimpleAddress from './simple-address'
+import { ethers } from 'ethers'
 
 export default function AppHeader(): JSX.Element {
   const [isMobileMenuOpen, setIsModalMenuOpen] = useState(false)
@@ -28,6 +31,7 @@ export default function AppHeader(): JSX.Element {
   const mobileMenuRef = useRef<HTMLDivElement>(null)
   const { setConnectModalOpen } = useAppStore()
   const { account } = useEthers()
+  const { currentDelegate } = useVaultMetadataStore()
 
   useEffect(() => {
     if (mobileMenuRef.current == null) return
@@ -51,6 +55,14 @@ export default function AppHeader(): JSX.Element {
     toast('Hello!')
   }
 
+  const currentDelegateRC = useMemo(() => {
+    return currentDelegate === ethers.constants.AddressZero ? (
+      <p className="font-500 ml-2">no one :(</p>
+    ) : (
+      <SimpleAddress className="font-500 ml-2" address={currentDelegate} />
+    )
+  }, [currentDelegate])
+
   return (
     <div className="app-header bg-gray-1">
       <div className="lg:container mx-auto px-4">
@@ -58,14 +70,15 @@ export default function AppHeader(): JSX.Element {
         <VoteForDelegateModal />
         <div className="flex items-center h-full space-x-4 min-h-[88px]">
           <Link href="/">
-            <a>
-              <IconNounletsLogo className="flex-shrink-0 h-8 w-auto text-[#D63C5E] mt-1" />
+            <a className="h-[88px] overflow-visible pt-2">
+              <IconNounletsLogo className="flex-shrink-0 w-auto" />
             </a>
           </Link>
           <div className="flex-1">
             <div className="hidden md:inline-flex items-center px-4 h-12 rounded-px10 bg-white space-x-2">
               <span className="hidden lg:inline">Current delegate</span>
-              <span className="font-500 ml-2">hot.gabrielayuso.eth</span>
+              {currentDelegateRC}
+
               <SimplePopover>
                 <h1 className="font-700 text-px18 text-gray-4">
                   <span className="text-secondary-orange">⚠</span>
@@ -100,10 +113,10 @@ export default function AppHeader(): JSX.Element {
         </div>
         <div className="md:hidden pb-4">
           <div className="flex items-center px-4 h-12 rounded-px10 bg-white space-x-2 justify-center">
-            <p className="truncate font-500">
+            <div className="truncate font-500">
               <span className="hidden sm:inline">Current delegate</span>
-              <span className="font-700 ml-2">hot.gabrielayuso.eth</span>
-            </p>
+              {currentDelegateRC}
+            </div>
             <SimplePopover>
               <h1 className="font-700 text-px18 text-gray-4">
                 <span className="text-secondary-orange">⚠</span>

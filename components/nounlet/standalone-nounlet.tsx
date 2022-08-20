@@ -1,21 +1,21 @@
 // import {INounSeed, useNounletSeed} from "../../lib/wrappers/nounletToken";
-import {BigNumber} from "ethers";
-import Link from "next/link";
-import {useDisplayAuction} from "../../store/onDisplayAuction";
+import { BigNumber } from 'ethers'
+import Link from 'next/link'
+import { useDisplayAuctionStore } from '../../store/onDisplayAuctionStore'
 // import Nounlet from "./nounlet";
-import {useMemo} from "react";
+import { useMemo } from 'react'
 
 interface StandaloneNounletProps {
-    nounId: BigNumber;
+  nounId: BigNumber
 }
 interface StandaloneCircularNounletProps {
-    nounId: BigNumber;
+  nounId: BigNumber
 }
 
 interface StandaloneNounletWithSeedProps {
-    nounId: BigNumber;
-    onLoadSeed?: (seed: any) => void;
-    shouldLinkToProfile: boolean;
+  nounId: BigNumber
+  onLoadSeed?: (seed: any) => void
+  shouldLinkToProfile: boolean
 }
 //
 // const getNounlet = (nounId: string | BigNumber | number, seed: INounSeed) => {

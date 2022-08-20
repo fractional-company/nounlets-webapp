@@ -15,14 +15,16 @@ import VoteForCustomWalletModal from 'components/modals/vote-for-custom-wallet.m
 import { useAuctionStateStore } from 'store/auctionStateStore'
 import Link from 'next/link'
 import useLeaderboard from 'hooks/useLeaderboard'
+import SimpleAddress from 'components/simple-address'
+import { useVaultMetadataStore } from 'store/vaultMetadataStore'
+import { ethers } from 'ethers'
+import { useResolveName } from '@usedapp/core'
+import { useDebounced } from 'hooks/useDebounced'
+import IconSpinner from 'components/icons/icon-spinner'
 
 const Governance: NextPage = () => {
-  const { leaderboardListData, myNounlets, myNounletsVotes } = useLeaderboard()
   const [isVoteForDelegateModalShown, setIsVoteForDelegateModalShown] = useState(false)
-
-  const areMyVotesSplit = useMemo(() => {
-    return Object.keys(myNounletsVotes).length > 1
-  }, [myNounletsVotes])
+  const { leaderboardListData, myNounlets, myNounletsVotes } = useLeaderboard()
 
   return (
     <div className="page-governance lg:container mx-auto w-screen">
@@ -60,130 +62,9 @@ const Governance: NextPage = () => {
               Each Nounlet has 1 vote on the delegate.
             </p>
 
-            <div className="mt-10 border rounded-px16 p-4 lg:p-8 border-gray-2">
-              <div className="flex flex-col lg:flex-row gap-8">
-                <div className="flex flex-col flex-1">
-                  <div className="flex flex-col xs:flex-row items-center xs:gap-3">
-                    <p className="font-londrina text-px24 text-gray-4 leading-px36">
-                      Current delegate
-                    </p>
+            <GovernanceCurrentDelegate myNounlets={myNounlets} myNounletsVotes={myNounletsVotes} />
 
-                    <div className="flex items-center">
-                      <SimplePopover>
-                        <h1 className="font-700 text-px18 text-gray-4">
-                          <span className="text-secondary-orange">⚠</span> Out of sync
-                        </h1>
-                        <div>
-                          This delegate is currently out of sync. There is another wallet with more
-                          votes. You can update the delegate with a transaction.
-                        </div>
-                      </SimplePopover>
-
-                      <p className="font-700 text-px18 text-secondary-blue ml-2">Update</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center mt-4">
-                    <div className="overflow-hidden rounded-full flex-shrink-0 w-10 h-10">
-                      <Image src={userIcon} alt="icon" width="40" height="40" />
-                    </div>
-                    <p className="text-px36 font-londrina leading-px42 ml-3 truncate">
-                      hot.gabrielayusogabrielayuso.eth
-                    </p>
-                  </div>
-                </div>
-
-                <div className="hidden lg:block lg:-my-8 border-r border-gray-2"></div>
-
-                <div className="flex flex-col lg:max-w-[300px]">
-                  <div className="flex flex-col xs:flex-row items-center xs:gap-3">
-                    <p className="font-londrina text-px24 text-gray-4 leading-px36">My nounlets</p>
-
-                    {areMyVotesSplit && (
-                      <div className="flex items-center">
-                        <SimplePopover>
-                          <h1 className="font-700 text-px18 text-gray-4">
-                            <span className="text-secondary-orange">⚠</span> Multiple votes
-                          </h1>
-                          <div>
-                            Your nounlets are voting for multiple addresses. We recommend you update
-                            your votes to only be for one address.
-                          </div>
-                        </SimplePopover>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex items-center mt-4">
-                    <p className="text-px36 font-londrina leading-px42 mr-3 truncate w-10 text-center flex-shrink-0">
-                      {myNounlets.length}
-                    </p>
-                    <div className="flex items-center gap-2 flex-wrap">
-                      {myNounlets.map((nounlet) => {
-                        return (
-                          <div
-                            className="overflow-hidden rounded-sm flex-shrink-0 w-10 h-10"
-                            key={nounlet.id}
-                          >
-                            <Image src={nounletIcon} alt="icon" width="40" height="40" />
-                          </div>
-                        )
-                      })}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="leaderboard mt-14">
-              <div className="flex flex-col md:flex-row items-center gap-2">
-                <h2 className="font-londrina text-[40px] leading-[47px] flex-1">Leaderboard</h2>
-                <div className="flex flex-col xs:flex-row items-center gap-2">
-                  <p className="font-500 text-px14 text-gray-3">Connect wallet to cast a vote</p>
-                  <Button className="primary --sm">Connect wallet</Button>
-                </div>
-              </div>
-
-              <div
-                className="lg:grid leading-[38px] mt-10"
-                style={{ gridTemplateColumns: 'auto 100px 140px 160px' }}
-              >
-                <div className="flex">
-                  <div className="flex items-center focus-within:outline-dashed rounded-px10 px-2 gap-2 w-full lg:w-10/12">
-                    <IconMagnify className="w-5 h-5 flex-shrink-0" />
-                    <input
-                      className="outline-none font-500 text-px20 flex-1"
-                      type="text"
-                      placeholder="Search by wallet or ENS"
-                    />
-                  </div>
-                </div>
-                <h4 className="hidden lg:block text-right text-px18 text-gray-4 font-500">
-                  Nounlets
-                </h4>
-                <div className="hidden lg:flex items-center justify-end text-px18 text-gray-4 font-500">
-                  <span className="mr-1">Votes</span>
-                  <SimplePopover>
-                    <IconQuestionCircle className="text-gray-3" />
-                    <div>Total power that this wallet has.</div>
-                  </SimplePopover>
-                </div>
-                <div className="hidden lg:block"></div>
-              </div>
-
-              <div className="leaderboard-list mt-8 space-y-2">
-                {leaderboardListData.map((data, index) => (
-                  <LeaderboardListTile key={index} data={data} />
-                ))}
-
-                <Button
-                  onClick={() => setIsVoteForDelegateModalShown(true)}
-                  className="border border-gray-2 hover:border-secondary-blue h-12 sm:h-[74px] rounded-px16 text-secondary-blue w-full text-px20 font-700"
-                >
-                  Vote for a custom wallet
-                </Button>
-              </div>
-            </div>
+            <GovernanceLeaderboard leaderboardListData={leaderboardListData} />
           </>
         )}
       </div>
@@ -198,3 +79,188 @@ const Governance: NextPage = () => {
 }
 
 export default Governance
+
+function GovernanceCurrentDelegate(props: {
+  myNounletsVotes: ReturnType<typeof useLeaderboard>['myNounletsVotes']
+  myNounlets: ReturnType<typeof useLeaderboard>['myNounlets']
+}) {
+  const { currentDelegate } = useVaultMetadataStore()
+
+  const areMyVotesSplit = useMemo(() => {
+    return Object.keys(props.myNounletsVotes).length > 1
+  }, [props.myNounletsVotes])
+
+  const currentDelegateRC = useMemo(() => {
+    return currentDelegate === ethers.constants.AddressZero ? (
+      <p className="text-px36 font-londrina leading-px42">no one :(</p>
+    ) : (
+      <SimpleAddress
+        avatarSize={40}
+        className="text-px36 font-londrina leading-px42 ml-3"
+        address={currentDelegate}
+      />
+    )
+  }, [currentDelegate])
+
+  return (
+    <div className="mt-10 border rounded-px16 p-4 lg:p-8 border-gray-2">
+      <div className="flex flex-col lg:flex-row gap-8">
+        <div className="flex flex-col flex-1">
+          <div className="flex flex-col xs:flex-row items-center xs:gap-3">
+            <p className="font-londrina text-px24 text-gray-4 leading-px36">Current delegate</p>
+
+            <div className="flex items-center">
+              <SimplePopover>
+                <h1 className="font-700 text-px18 text-gray-4">
+                  <span className="text-secondary-orange">⚠</span> Out of sync
+                </h1>
+                <div>
+                  This delegate is currently out of sync. There is another wallet with more votes.
+                  You can update the delegate with a transaction.
+                </div>
+              </SimplePopover>
+
+              <p className="font-700 text-px18 text-secondary-blue ml-2">Update</p>
+            </div>
+          </div>
+
+          <div className="flex items-center mt-4">{currentDelegateRC}</div>
+        </div>
+
+        <div className="hidden lg:block lg:-my-8 border-r border-gray-2"></div>
+
+        <div className="flex flex-col lg:max-w-[300px]">
+          <div className="flex flex-col xs:flex-row items-center xs:gap-3">
+            <p className="font-londrina text-px24 text-gray-4 leading-px36">My nounlets</p>
+
+            {areMyVotesSplit && (
+              <div className="flex items-center">
+                <SimplePopover>
+                  <h1 className="font-700 text-px18 text-gray-4">
+                    <span className="text-secondary-orange">⚠</span> Multiple votes
+                  </h1>
+                  <div>
+                    Your nounlets are voting for multiple addresses. We recommend you update your
+                    votes to only be for one address.
+                  </div>
+                </SimplePopover>
+              </div>
+            )}
+          </div>
+
+          <div className="flex items-center mt-4">
+            <p className="text-px36 font-londrina leading-px42 mr-3 truncate w-10 text-center flex-shrink-0">
+              {props.myNounlets.length}
+            </p>
+            <div className="flex items-center gap-2 flex-wrap">
+              {props.myNounlets.map((nounlet) => {
+                return (
+                  <div
+                    className="overflow-hidden rounded-sm flex-shrink-0 w-10 h-10"
+                    key={nounlet.id}
+                  >
+                    <Image src={nounletIcon} alt="icon" width="40" height="40" />
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function GovernanceLeaderboard(props: {
+  leaderboardListData: ReturnType<typeof useLeaderboard>['leaderboardListData']
+}) {
+  const [isVoteForDelegateModalShown, setIsVoteForDelegateModalShown] = useState(false)
+  const [searchInputValue, setSearchinputValue] = useState('')
+  const debouncedSearchInputValue = useDebounced(searchInputValue, 500)
+  const { address: ensAddress, isLoading: isLoadingENSName } =
+    useResolveName(debouncedSearchInputValue)
+
+  const filterByText = useMemo(() => {
+    if (ensAddress != null) {
+      return ensAddress || ''
+    }
+
+    if (debouncedSearchInputValue.match(/^0x[a-fA-F0-9]{1,40}$/) != null) {
+      return debouncedSearchInputValue
+    }
+
+    return ''
+  }, [debouncedSearchInputValue, ensAddress])
+
+  const filteredLeaderboardListData = useMemo(() => {
+    if (filterByText === '') return props.leaderboardListData
+    return props.leaderboardListData.filter((item) => {
+      return item.walletAddress.startsWith(filterByText.toLowerCase())
+    })
+  }, [filterByText, props.leaderboardListData])
+
+  return (
+    <div className="leaderboard mt-14">
+      <div className="flex flex-col md:flex-row items-center gap-2">
+        <h2 className="font-londrina text-[40px] leading-[47px] flex-1">Leaderboard</h2>
+        <div className="flex flex-col xs:flex-row items-center gap-2">
+          <p className="font-500 text-px14 text-gray-3">Connect wallet to cast a vote</p>
+          <Button className="primary --sm">Connect wallet</Button>
+        </div>
+      </div>
+
+      <div
+        className="lg:grid leading-[38px] mt-10 items-center"
+        style={{ gridTemplateColumns: 'auto 100px 140px 160px' }}
+      >
+        <div className="flex">
+          <div className="flex h-12 items-center bg-gray-1 focus-within:outline-dashed rounded-px10 px-2 gap-2 w-full lg:w-10/12">
+            <IconMagnify className="w-5 h-5 flex-shrink-0" />
+            <input
+              value={searchInputValue}
+              onChange={(event) => setSearchinputValue(event.target.value.trim())}
+              className="outline-none font-500 text-px20 flex-1 bg-transparent"
+              type="text"
+              placeholder="Search by wallet or ENS"
+            />
+            {isLoadingENSName && (
+              <IconSpinner className="flex-shrink-0 h-5 text-gray-3 animate-spin" />
+            )}
+          </div>
+        </div>
+        <h4 className="hidden lg:block text-right text-px18 text-gray-4 font-500">Nounlets</h4>
+        <div className="hidden lg:flex items-center justify-end text-px18 text-gray-4 font-500">
+          <span className="mr-1">Votes</span>
+          <SimplePopover>
+            <IconQuestionCircle className="text-gray-3" />
+            <div>Total power that this wallet has.</div>
+          </SimplePopover>
+        </div>
+        <div className="hidden lg:block"></div>
+      </div>
+
+      <div className="leaderboard-list mt-8 space-y-2">
+        {filteredLeaderboardListData.length === 0 ? (
+          <>
+            {filterByText.length === 0 ? (
+              <p>No auctions finished yet</p>
+            ) : (
+              <p>Wallet not found :(</p>
+            )}
+          </>
+        ) : (
+          filteredLeaderboardListData.map((data, index) => (
+            <LeaderboardListTile key={index} data={data} />
+          ))
+        )}
+
+        <Button
+          onClick={() => setIsVoteForDelegateModalShown(true)}
+          className="border border-gray-2 hover:border-secondary-blue h-12 sm:h-[74px] rounded-px16 text-secondary-blue w-full text-px20 font-700"
+        >
+          Vote for a custom wallet
+        </Button>
+      </div>
+    </div>
+  )
+}
