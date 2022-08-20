@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "npm run prepare && next build",
-    "prepare": "typechain --target=ethers-v5 --out-dir typechain/interfaces \"**/*.abi.json\" && eth-sdk",
+    "bkpprepare": "typechain --target=ethers-v5 --out-dir typechain/interfaces \"**/*.abi.json\" && eth-sdk",
+    "prepare": "eth-sdk",
     "contracts": "\n",
     "start": "next start",
     "lint": "next lint"
