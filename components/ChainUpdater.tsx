@@ -7,7 +7,6 @@ import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import { useVaultMetadataStore } from 'store/vaultMetadataStore'
 import useSWR, { useSWRConfig } from 'swr'
-// import { SettledEvent } from 'typechain/interfaces/NounletAuctionAbi'
 
 export default function ChainUpdater() {
   const router = useRouter()

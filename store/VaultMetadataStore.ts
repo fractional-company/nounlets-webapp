@@ -1,5 +1,4 @@
-import { RinkebySdk } from '@dethcrypto/eth-sdk-client'
-import { BigNumber, ethers } from 'ethers'
+import { ethers } from 'ethers'
 import create from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 

@@ -1,9 +1,6 @@
 // import {INounSeed, useNounletSeed} from "../../lib/wrappers/nounletToken";
 import { BigNumber } from 'ethers'
-import Link from 'next/link'
-import { useDisplayAuctionStore } from '../../store/onDisplayAuctionStore'
 // import Nounlet from "./nounlet";
-import { useMemo } from 'react'
 
 interface StandaloneNounletProps {
   nounId: BigNumber

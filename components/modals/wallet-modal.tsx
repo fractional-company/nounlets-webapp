@@ -8,7 +8,7 @@ import WalletConnectProvider from '@walletconnect/web3-provider'
 import { FortmaticConnector } from '@web3-react/fortmatic-connector'
 import { WalletConnectConnector } from '@web3-react/walletconnect-connector'
 import { WalletLinkConnector } from '@web3-react/walletlink-connector'
-import { TrezorConnector } from '@web3-react/trezor-connector'
+// import { TrezorConnector } from '@web3-react/trezor-connector'
 import WalletButton, { WALLET_TYPE } from '../wallet-button'
 import SimpleModal from '../simple-modal'
 import SimpleCheckbox from 'components/simple-checkbox'
@@ -103,7 +103,7 @@ export default function WalletModal(): JSX.Element {
         walletType={WALLET_TYPE.ledger}
       /> */}
 
-      <WalletButton
+      {/* <WalletButton
         onClick={() => {
           const trezor = new TrezorConnector({
             chainId: CHAIN_ID,
@@ -114,7 +114,7 @@ export default function WalletModal(): JSX.Element {
           activate(trezor)
         }}
         walletType={WALLET_TYPE.trezor}
-      />
+      /> */}
     </div>
   )
 

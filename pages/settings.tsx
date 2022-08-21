@@ -1,4 +1,3 @@
-import { getMainnetSdk, getRinkebySdk } from '@dethcrypto/eth-sdk-client'
 import { useEthers } from '@usedapp/core'
 import Button from 'components/buttons/button'
 import {
