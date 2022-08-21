@@ -17,7 +17,7 @@ export default function useLeaderboard() {
   } = useVaultStore()
   const sdk = useSdk()
 
-  const { data } = useSWR(
+  const { data, mutate: mutateLeaderboard } = useSWR(
     'Leaderboard',
     async (key) => {
       const result = await getLeaderboardData()
@@ -32,11 +32,7 @@ export default function useLeaderboard() {
     if (account == null) return []
     if (data == null) return []
 
-    console.log('mu nounlets')
-
-    // const myAccount = data.find((acc) => acc.id.toLowerCase() === account?.toLowerCase())
     const myAccount = data.find((acc) => {
-      console.log({ acc })
       return acc.id.toLowerCase() === account?.toLowerCase()
     })
 
@@ -112,6 +108,7 @@ export default function useLeaderboard() {
     leaderboardListData,
     myNounlets,
     myNounletsVotes,
-    delegateVotes
+    delegateVotes,
+    mutateLeaderboard
   }
 }

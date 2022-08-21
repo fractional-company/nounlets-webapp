@@ -1,10 +1,11 @@
-import classNames from 'classnames'
 import Davatar from '@davatar/react'
+import { useEthers } from '@usedapp/core'
+import classNames from 'classnames'
+import { ethers } from 'ethers'
 import { shortenAddress } from 'lib/utils/common'
 import { useReverseENSLookUp } from 'lib/utils/ensLookup'
-import OnMounted from './utils/on-mounted'
-import { useEthers } from '@usedapp/core'
 import { buildEtherscanAddressLink } from '../lib/utils/etherscan'
+import OnMounted from './utils/on-mounted'
 
 type ComponentProps = {
   className?: string
@@ -15,7 +16,7 @@ type ComponentProps = {
 export default function SimpleAddress(props: ComponentProps): JSX.Element {
   const { library: provider } = useEthers()
   const { avatarSize = 0 } = props
-  const address = props.address || '0x0000000000000000000000000000000000000000'
+  const address = props.address || ethers.constants.AddressZero
   const shortenedAddres = shortenAddress(address).toLowerCase()
   const ens = useReverseENSLookUp(address, false)
 
@@ -27,7 +28,12 @@ export default function SimpleAddress(props: ComponentProps): JSX.Element {
     >
       <OnMounted>
         {!!avatarSize && (
-          <a href={buildEtherscanAddressLink(address)} target="_blank" rel="noreferrer">
+          <a
+            href={buildEtherscanAddressLink(address)}
+            target="_blank"
+            rel="noreferrer"
+            className="overflow-hidden"
+          >
             <div
               className="overflow-hidden rounded-full flex-shrink-0"
               style={{ width: avatarSize, height: avatarSize }}

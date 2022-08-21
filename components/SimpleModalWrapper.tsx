@@ -9,12 +9,13 @@ type ComponentProps = {
   isShown?: boolean
   onClose?: () => void
   className?: string
+  preventCloseOnBackdrop?: boolean
 }
 
-const SimpleModal = function (props: ComponentProps): JSX.Element {
+const SimpleModalWrapper = function (props: ComponentProps): JSX.Element {
   return (
     <Transition show={props.isShown} as={Fragment}>
-      <Dialog onClose={() => props?.onClose?.()}>
+      <Dialog onClose={() => !props.preventCloseOnBackdrop && props?.onClose?.()}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -59,4 +60,4 @@ const SimpleModal = function (props: ComponentProps): JSX.Element {
   )
 }
 
-export default SimpleModal
+export default SimpleModalWrapper

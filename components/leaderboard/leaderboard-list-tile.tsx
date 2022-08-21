@@ -1,3 +1,4 @@
+import { useEthers } from '@usedapp/core'
 import classNames from 'classnames'
 import Button from 'components/buttons/button'
 import IconUpdateDelegate from 'components/icons/icon-update-delegate'
@@ -22,6 +23,7 @@ export type LeaderboardListTileProps = {
 export default function LeaderboardListTile(props: {
   data: LeaderboardListTileProps
 }): JSX.Element {
+  const { account } = useEthers()
   const { setVoteForDelegateModalForAddress } = useAppStore()
   const {
     isMe,
@@ -47,10 +49,12 @@ export default function LeaderboardListTile(props: {
     [currentDelegateWalletAddress, walletAddress]
   )
   const isUpdateDelegateActionShown = useMemo(() => {
+    if (account == null) return false
+
     return (
       mostVotesWalletAddress === walletAddress && walletAddress !== currentDelegateWalletAddress
     )
-  }, [walletAddress, currentDelegateWalletAddress, mostVotesWalletAddress])
+  }, [account, walletAddress, currentDelegateWalletAddress, mostVotesWalletAddress])
 
   const handleCastVote = (address: string) => {
     console.log('casting vote for!', address)
@@ -60,7 +64,7 @@ export default function LeaderboardListTile(props: {
   return (
     <div className="leaderboard-list-tile">
       <div
-        className={classNames('border rounded-px16 px-4 py-4', {
+        className={classNames('border-2 rounded-px16 px-4 py-4', {
           'border-gray-2': !isDelegate,
           'border-transparent outline-dashed outline-secondary-green': isDelegate
         })}
@@ -78,14 +82,6 @@ export default function LeaderboardListTile(props: {
             >
               {percentageString}
             </div>
-            {/* <Image
-              src={userIcon}
-              alt="icon"
-              width="32"
-              height="32"
-              className="overflow-hidden rounded-full flex-shrink-0"
-            />
-            <p className="text-px20 leading-px20 font-700 ml-2 flex-1 truncate">{walletAddress}</p> */}
             <SimpleAddress
               avatarSize={32}
               address={walletAddress}
@@ -150,14 +146,16 @@ export default function LeaderboardListTile(props: {
             </Button>
           )}
 
-          <div className="flex lg:justify-end lg:pr-4">
-            <Button
-              className="primary --sm flex-auto lg:flex-none"
-              onClick={() => handleCastVote(walletAddress)}
-            >
-              <span>Cast Votes</span>
-            </Button>
-          </div>
+          {account && (
+            <div className="flex lg:justify-end lg:pr-4">
+              <Button
+                className="primary --sm flex-auto lg:flex-none"
+                onClick={() => handleCastVote(walletAddress)}
+              >
+                <span>Cast Votes</span>
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </div>

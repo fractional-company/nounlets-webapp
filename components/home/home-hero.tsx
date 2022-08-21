@@ -90,11 +90,6 @@ export default function HomeHero(): JSX.Element {
                 </h1>
 
                 {/* <pre>{JSON.stringify(auctionInfo, null, 4)}</pre> */}
-                <div>
-                  <Button onClick={() => mutateDisplayedNounletAuctionInfo()}>
-                    refresh parent
-                  </Button>
-                </div>
 
                 {hasAuctionEnded ? <HomeHeroAuctionCompleted /> : <HomeHeroAuctionProgress />}
               </>

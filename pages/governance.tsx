@@ -18,9 +18,11 @@ import useLeaderboard from 'hooks/useLeaderboard'
 import SimpleAddress from 'components/simple-address'
 import { useVaultStore } from 'store/vaultStore'
 import { ethers } from 'ethers'
-import { useResolveName } from '@usedapp/core'
+import { useEthers, useResolveName } from '@usedapp/core'
 import { useDebounced } from 'hooks/useDebounced'
 import IconSpinner from 'components/icons/icon-spinner'
+import { useAppStore } from 'store/application'
+import SimpleModalWrapper from 'components/SimpleModalWrapper'
 
 const Governance: NextPage = () => {
   const [isVoteForDelegateModalShown, setIsVoteForDelegateModalShown] = useState(false)
@@ -68,12 +70,6 @@ const Governance: NextPage = () => {
           </>
         )}
       </div>
-      <>
-        <VoteForCustomWalletModal
-          isShown={isVoteForDelegateModalShown}
-          onClose={() => setIsVoteForDelegateModalShown(false)}
-        />
-      </>
     </div>
   )
 }
@@ -84,6 +80,7 @@ function GovernanceCurrentDelegate(props: {
   myNounletsVotes: ReturnType<typeof useLeaderboard>['myNounletsVotes']
   myNounlets: ReturnType<typeof useLeaderboard>['myNounlets']
 }) {
+  const { account } = useEthers()
   const { currentDelegate } = useVaultStore()
 
   const areMyVotesSplit = useMemo(() => {
@@ -103,7 +100,7 @@ function GovernanceCurrentDelegate(props: {
   }, [currentDelegate])
 
   return (
-    <div className="mt-10 border rounded-px16 p-4 lg:p-8 border-gray-2">
+    <div className="mt-10 border-2 rounded-px16 p-4 lg:p-8 border-gray-2">
       <div className="flex flex-col lg:flex-row gap-8">
         <div className="flex flex-col flex-1">
           <div className="flex flex-col xs:flex-row items-center xs:gap-3">
@@ -127,45 +124,49 @@ function GovernanceCurrentDelegate(props: {
           <div className="flex items-center mt-4">{currentDelegateRC}</div>
         </div>
 
-        <div className="hidden lg:block lg:-my-8 border-r border-gray-2"></div>
+        {account && (
+          <>
+            <div className="hidden lg:block lg:-my-8 border-r-2 border-gray-2"></div>
 
-        <div className="flex flex-col lg:max-w-[300px]">
-          <div className="flex flex-col xs:flex-row items-center xs:gap-3">
-            <p className="font-londrina text-px24 text-gray-4 leading-px36">My nounlets</p>
+            <div className="flex flex-col lg:max-w-[300px]">
+              <div className="flex flex-col xs:flex-row items-center xs:gap-3">
+                <p className="font-londrina text-px24 text-gray-4 leading-px36">My nounlets</p>
 
-            {areMyVotesSplit && (
-              <div className="flex items-center">
-                <SimplePopover>
-                  <h1 className="font-700 text-px18 text-gray-4">
-                    <span className="text-secondary-orange">⚠</span> Multiple votes
-                  </h1>
-                  <div>
-                    Your nounlets are voting for multiple addresses. We recommend you update your
-                    votes to only be for one address.
+                {areMyVotesSplit && (
+                  <div className="flex items-center">
+                    <SimplePopover>
+                      <h1 className="font-700 text-px18 text-gray-4">
+                        <span className="text-secondary-orange">⚠</span> Multiple votes
+                      </h1>
+                      <div>
+                        Your nounlets are voting for multiple addresses. We recommend you update
+                        your votes to only be for one address.
+                      </div>
+                    </SimplePopover>
                   </div>
-                </SimplePopover>
+                )}
               </div>
-            )}
-          </div>
 
-          <div className="flex items-center mt-4">
-            <p className="text-px36 font-londrina leading-px42 mr-3 truncate w-10 text-center flex-shrink-0">
-              {props.myNounlets.length}
-            </p>
-            <div className="flex items-center gap-2 flex-wrap">
-              {props.myNounlets.map((nounlet) => {
-                return (
-                  <div
-                    className="overflow-hidden rounded-sm flex-shrink-0 w-10 h-10"
-                    key={nounlet.id}
-                  >
-                    <Image src={nounletIcon} alt="icon" width="40" height="40" />
-                  </div>
-                )
-              })}
+              <div className="flex items-center mt-4">
+                <p className="text-px36 font-londrina leading-px42 mr-3 truncate w-10 text-center flex-shrink-0">
+                  {props.myNounlets.length}
+                </p>
+                <div className="flex items-center gap-2 flex-wrap">
+                  {props.myNounlets.map((nounlet) => {
+                    return (
+                      <div
+                        className="overflow-hidden rounded-sm flex-shrink-0 w-10 h-10"
+                        key={nounlet.id}
+                      >
+                        <Image src={nounletIcon} alt="icon" width="40" height="40" />
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          </>
+        )}
       </div>
     </div>
   )
@@ -174,6 +175,8 @@ function GovernanceCurrentDelegate(props: {
 function GovernanceLeaderboard(props: {
   leaderboardListData: ReturnType<typeof useLeaderboard>['leaderboardListData']
 }) {
+  const { account } = useEthers()
+  const { setConnectModalOpen } = useAppStore()
   const [isVoteForDelegateModalShown, setIsVoteForDelegateModalShown] = useState(false)
   const [searchInputValue, setSearchinputValue] = useState('')
   const debouncedSearchInputValue = useDebounced(searchInputValue, 500)
@@ -203,10 +206,16 @@ function GovernanceLeaderboard(props: {
     <div className="leaderboard mt-14">
       <div className="flex flex-col md:flex-row items-center gap-2">
         <h2 className="font-londrina text-[40px] leading-[47px] flex-1">Leaderboard</h2>
-        <div className="flex flex-col xs:flex-row items-center gap-2">
-          <p className="font-500 text-px14 text-gray-3">Connect wallet to cast a vote</p>
-          <Button className="primary --sm">Connect wallet</Button>
-        </div>
+        {account == null ? (
+          <div className="flex flex-col xs:flex-row items-center gap-2">
+            <p className="font-500 text-px14 text-gray-3">Connect wallet to cast a vote</p>
+            <Button className="primary --sm" onClick={() => setConnectModalOpen(true)}>
+              Connect wallet
+            </Button>
+          </div>
+        ) : (
+          <p className="font-500 text-px14 text-gray-3">You can change your cast votes below</p>
+        )}
       </div>
 
       <div
@@ -249,17 +258,32 @@ function GovernanceLeaderboard(props: {
             )}
           </>
         ) : (
-          filteredLeaderboardListData.map((data, index) => (
-            <LeaderboardListTile key={index} data={data} />
-          ))
-        )}
+          <>
+            {filteredLeaderboardListData.map((data, index) => (
+              <LeaderboardListTile key={index} data={data} />
+            ))}
 
-        <Button
-          onClick={() => setIsVoteForDelegateModalShown(true)}
-          className="border border-gray-2 hover:border-secondary-blue h-12 sm:h-[74px] rounded-px16 text-secondary-blue w-full text-px20 font-700"
-        >
-          Vote for a custom wallet
-        </Button>
+            {account && (
+              <>
+                <Button
+                  onClick={() => setIsVoteForDelegateModalShown(true)}
+                  className="border-2 border-gray-2 hover:border-secondary-blue h-12 sm:h-[74px] rounded-px16 text-secondary-blue w-full text-px20 font-700"
+                >
+                  Vote for a custom wallet
+                </Button>
+
+                <SimpleModalWrapper
+                  preventCloseOnBackdrop
+                  className="vote-for-custom-wallet-modal"
+                  isShown={isVoteForDelegateModalShown}
+                  onClose={() => setIsVoteForDelegateModalShown(false)}
+                >
+                  <VoteForCustomWalletModal onClose={() => setIsVoteForDelegateModalShown(false)} />
+                </SimpleModalWrapper>
+              </>
+            )}
+          </>
+        )}
       </div>
     </div>
   )

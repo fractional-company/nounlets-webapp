@@ -1,5 +1,5 @@
 import { useEthers } from '@usedapp/core'
-import { BigNumber } from 'ethers'
+import { BigNumber, ethers } from 'ethers'
 import { useRouter } from 'next/router'
 import { useCallback, useMemo } from 'react'
 import { useAuctionInfoStore } from 'store/auctionInfoStore'
@@ -34,6 +34,7 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
     isLoading,
     vaultAddress,
     nounletTokenAddress,
+    vaultCuratorAddress,
     backendLatestNounletTokenId,
     latestNounletTokenId
   } = useVaultStore()
@@ -58,6 +59,29 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
       nounletId: nid
     }
   }, [nid, vaultAddress, nounletTokenAddress])
+
+  const shouldCheckForHolder = useMemo(() => {
+    if (sdk == null) return false
+    if (auctionInfo == null) return false
+    if (auctionInfo.auction?.settled !== true) return false
+    return true
+  }, [sdk, auctionInfo])
+  const { data: nounletHolderAddress } = useSWR(
+    shouldCheckForHolder && { ...swrQueryKey, name: 'NounletHolder' },
+    async () => {
+      console.log('🍅 geting nounlet holder')
+      const ownerAddress = await sdk!.NounletToken.attach(nounletTokenAddress).ownerOf(
+        nid as string
+      )
+      console.log('🍅 GOTEM')
+      return ownerAddress || ethers.constants.AddressZero
+    },
+    {
+      revalidateIfStale: false,
+      dedupingInterval: 60 * 1000, // 1 minute
+      refreshInterval: 5 * 60 * 1000 // 5 minutes
+    }
+  )
 
   const historicBids = useMemo(() => {
     // console.log('historic bids')
@@ -85,14 +109,33 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
   const endedAuctionInfo = useMemo(() => {
     if (auctionInfo == null || nid == null) return null
 
+    let heldByAddress = nounletHolderAddress || ethers.constants.AddressZero
+    let wonByAddress = auctionInfo.auction!.bidder?.id || ethers.constants.AddressZero
+
+    if (heldByAddress === ethers.constants.AddressZero && !hasAuctionSettled) {
+      heldByAddress = vaultCuratorAddress
+    }
+
+    if (wonByAddress === ethers.constants.AddressZero) {
+      wonByAddress = vaultCuratorAddress
+    }
+
     return {
       isSettled: +nid < +latestNounletTokenId,
       winningBid: auctionInfo.auction!.amount.toString(),
-      heldByAddress: auctionInfo.auction!.bidder?.id,
+      heldByAddress,
       endedOn: auctionEndTime,
-      wonByAddress: auctionInfo.auction!.bidder?.id
+      wonByAddress
     }
-  }, [auctionEndTime, auctionInfo, nid, latestNounletTokenId])
+  }, [
+    hasAuctionSettled,
+    auctionEndTime,
+    auctionInfo,
+    nid,
+    latestNounletTokenId,
+    vaultCuratorAddress,
+    nounletHolderAddress
+  ])
 
   const bid = async (bidAmount: BigNumber) => {
     if (sdk == null) throw new Error('no sdk')

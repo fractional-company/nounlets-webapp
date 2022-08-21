@@ -10,7 +10,7 @@ import { WalletConnectConnector } from '@web3-react/walletconnect-connector'
 import { WalletLinkConnector } from '@web3-react/walletlink-connector'
 // import { TrezorConnector } from '@web3-react/trezor-connector'
 import WalletButton, { WALLET_TYPE } from '../wallet-button'
-import SimpleModal from '../simple-modal'
+import SimpleModalWrapper from '../SimpleModalWrapper'
 import SimpleCheckbox from 'components/simple-checkbox'
 import Link from 'next/link'
 import classNames from 'classnames'
@@ -121,7 +121,7 @@ export default function WalletModal(): JSX.Element {
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
 
   return (
-    <SimpleModal
+    <SimpleModalWrapper
       className="wallet-modal !max-w-[454px]"
       isShown={isConnectModalOpen}
       onClose={() => setConnectModalOpen(false)}
@@ -164,7 +164,10 @@ export default function WalletModal(): JSX.Element {
           Clear WalletConnect Data
         </Button>
 
-        <SimpleModal isShown={isSuccessModalOpen} onClose={() => setIsSuccessModalOpen(false)}>
+        <SimpleModalWrapper
+          isShown={isSuccessModalOpen}
+          onClose={() => setIsSuccessModalOpen(false)}
+        >
           <h2 className="font-700 text-px32 leading-px36 text-center">Data cleared!</h2>
           <div className="mt-8 flex flex-col gap-6">
             <Button
@@ -176,8 +179,8 @@ export default function WalletModal(): JSX.Element {
               Yay!
             </Button>
           </div>
-        </SimpleModal>
+        </SimpleModalWrapper>
       </div>
-    </SimpleModal>
+    </SimpleModalWrapper>
   )
 }

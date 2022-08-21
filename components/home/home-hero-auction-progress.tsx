@@ -17,7 +17,7 @@ import { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { useVaultStore } from 'store/vaultStore'
 import { Auction } from '../../lib/wrappers/nounsAuction'
 import { useAppStore } from '../../store/application'
-import SimpleModal from '../simple-modal'
+import SimpleModalWrapper from '../SimpleModalWrapper'
 
 type ComponentProps = {
   auction?: Auction
@@ -231,7 +231,7 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
         </p>
       </div>
 
-      <SimpleModal
+      <SimpleModalWrapper
         className="vote-for-custom-wallet-modal !max-w-[472px]"
         isShown={showWrongBidModal}
         onClose={() => setShowWrongBidModal(false)}
@@ -243,7 +243,7 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
             <span className="font-900 text-black text-px22">{formattedValues.minNextBid} ETH</span>
           </p>
         </div>
-      </SimpleModal>
+      </SimpleModalWrapper>
     </div>
   )
 }

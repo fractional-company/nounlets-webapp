@@ -6,7 +6,7 @@ import HomeHero from 'components/home/home-hero'
 import useDisplayedNounlet from 'hooks/useDisplayedNounlet'
 import { useRouter } from 'next/router'
 import BidHistoryModal from '../components/modals/bid-history-modal'
-import SimpleModal from '../components/simple-modal'
+import SimpleModalWrapper from '../components/SimpleModalWrapper'
 import { useAppStore } from '../store/application'
 import { CHAIN_ID } from './_app'
 import HomeLeaderboard from 'components/home/home-leaderboard'
@@ -214,9 +214,9 @@ const Home: NextPage<{ vault: any }> = ({ vault }: { vault: any }) => {
 
   return (
     <div className="page-home w-screen">
-      <SimpleModal onClose={() => setBidModalOpen(false)} isShown={isBidModalOpen}>
+      <SimpleModalWrapper onClose={() => setBidModalOpen(false)} isShown={isBidModalOpen}>
         <BidHistoryModal />
-      </SimpleModal>
+      </SimpleModalWrapper>
       <div>
         {/* <pre className="bg-gray-5 text-white p-4">
           {JSON.stringify(
@@ -230,13 +230,13 @@ const Home: NextPage<{ vault: any }> = ({ vault }: { vault: any }) => {
             4
           )}
         </pre> */}
-        <button
+        {/* <button
           onClick={() => {
             mutateDisplayedNounletAuctionInfo()
           }}
         >
           mutateAuctionInfo
-        </button>
+        </button> */}
       </div>
       <HomeHero />
       {/* <HomeLeaderboard /> */}

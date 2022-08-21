@@ -24,13 +24,14 @@ import IconNounletsLogo from './icons/icon-nounlets-logo'
 import { useVaultStore } from 'store/vaultStore'
 import SimpleAddress from './simple-address'
 import { ethers } from 'ethers'
+import classNames from 'classnames'
 
 export default function AppHeader(): JSX.Element {
   const [isMobileMenuOpen, setIsModalMenuOpen] = useState(false)
   const [mobileMenuMaxHeight, setMobileMenuMaxHeight] = useState(0)
   const mobileMenuRef = useRef<HTMLDivElement>(null)
   const { setConnectModalOpen } = useAppStore()
-  const { account } = useEthers()
+  const { account, deactivate } = useEthers()
   const { currentDelegate } = useVaultStore()
 
   useEffect(() => {
@@ -43,11 +44,34 @@ export default function AppHeader(): JSX.Element {
     }
   }, [isMobileMenuOpen])
 
-  const shortAddress = useShortAddress(account || '')
+  const handleConnectButtonClick = () => {
+    if (account == null) {
+      setConnectModalOpen(true)
+    } else {
+      deactivate()
+    }
+  }
 
   const connectButton = (
-    <Button className="primary space-x-2" onClick={() => setConnectModalOpen(true)}>
-      <span>{account ? shortAddress : 'Connect'}</span>
+    <Button
+      className={classNames(account ? 'basic hover:!bg-secondary-red' : 'primary', 'group')}
+      onClick={() => handleConnectButtonClick()}
+    >
+      {account ? (
+        <div className="relative flex items-center space-x-2">
+          <SimpleAddress
+            avatarSize={16}
+            address={account}
+            className="space-x-2 pointer-events-none group-hover:invisible"
+          />
+          <p className="absolute inset-0 pointer-events-none invisible group-hover:visible text-white">
+            Disconnect
+          </p>
+          {/* <IconCaretDropdown /> */}
+        </div>
+      ) : (
+        <span>Connect</span>
+      )}
     </Button>
   )
 
@@ -57,9 +81,9 @@ export default function AppHeader(): JSX.Element {
 
   const currentDelegateRC = useMemo(() => {
     return currentDelegate === ethers.constants.AddressZero ? (
-      <p className="font-500 ml-2">no one :(</p>
+      <span className="font-500 ml-2">no one :(</span>
     ) : (
-      <SimpleAddress className="font-500 ml-2" address={currentDelegate} />
+      <SimpleAddress className="inline-flex font-500 ml-2" address={currentDelegate} />
     )
   }, [currentDelegate])
 

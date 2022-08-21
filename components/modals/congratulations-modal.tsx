@@ -1,5 +1,5 @@
 import Button from 'components/buttons/button'
-import SimpleModal from 'components/simple-modal'
+import SimpleModalWrapper from 'components/SimpleModalWrapper'
 
 type ComponentProps = {
   isShown: boolean
@@ -8,7 +8,7 @@ type ComponentProps = {
 
 export default function CongratulationsModal(props: ComponentProps): JSX.Element {
   return (
-    <SimpleModal
+    <SimpleModalWrapper
       className="congratulations-modal !max-w-[454px]"
       isShown={props.isShown}
       onClose={() => props?.onClose?.()}
@@ -34,6 +34,6 @@ export default function CongratulationsModal(props: ComponentProps): JSX.Element
           </Button>
         </div>
       </div>
-    </SimpleModal>
+    </SimpleModalWrapper>
   )
 }

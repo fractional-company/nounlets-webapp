@@ -1,5 +1,5 @@
 .button {
-  @apply cursor-pointer transition-all;
+  @apply cursor-pointer transition-colors;
   -webkit-appearance: none !important;
 
   &:global(.--sm.--sm) {
@@ -24,7 +24,7 @@
 
   &:global(.basic) {
     @apply inline-flex items-center justify-center h-12 px-4 box-border rounded-px10 bg-white;
-    @apply font-700 text-px16 leading-px16;
+    @apply font-700 text-px16 leading-px16 border-white;
     @apply border-0 hover:bg-gray-2;
   }
 

@@ -12,7 +12,7 @@ import Image from 'next/image'
 import userIcon from 'public/img/user-icon.jpg'
 import { useMemo, useState } from 'react'
 import BidHistoryModal from '../modals/bid-history-modal'
-import SimpleModal from '../simple-modal'
+import SimpleModalWrapper from '../SimpleModalWrapper'
 import IconLock from '../icons/icon-lock'
 import IconHeart from '../icons/icon-heart'
 import IconBidHistory from '../icons/icon-bid-history'
@@ -25,6 +25,7 @@ import { Auction } from '../../lib/wrappers/nounsAuction'
 import useDisplayedNounlet from 'hooks/useDisplayedNounlet'
 import { NEXT_PUBLIC_BID_DECIMALS } from 'config'
 import { useEthers } from '@usedapp/core'
+import IconSpinner from 'components/icons/icon-spinner'
 
 export default function HomeHeroAuctionCompleted(): JSX.Element {
   const { account } = useEthers()
@@ -70,6 +71,10 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
     // setIsSettlingAuction(false) // dont set it here since it stops the spinner to early
   }
 
+  const isLoadingHeldByAddress = useMemo(() => {
+    return formattedData.heldByAddress === ethers.constants.AddressZero
+  }, [formattedData.heldByAddress])
+
   return (
     <div className="home-hero-auction lg:min-h-[21.875rem]">
       {/* <pre>{JSON.stringify(endedAuctionInfo, null, 2)}</pre> */}
@@ -86,11 +91,15 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
         <div className="flex flex-col space-y-3 cursor-pointer">
           <p className="text-px18 leading-px22 font-500 text-gray-4">Nounlet held by</p>
           <div className="flex items-center">
-            <SimpleAddress
-              avatarSize={32}
-              address={formattedData.heldByAddress}
-              className="text-px32 leading-[38px] font-700 gap-2 flex-1"
-            />
+            {isLoadingHeldByAddress ? (
+              <IconSpinner className="animate-spin text-gray-3" />
+            ) : (
+              <SimpleAddress
+                avatarSize={32}
+                address={formattedData.heldByAddress}
+                className="text-px32 leading-[38px] font-700 gap-2 flex-1"
+              />
+            )}
           </div>
         </div>
       </div>
