@@ -3,7 +3,7 @@ import { BigNumber } from 'ethers'
 import { useRouter } from 'next/router'
 import { useCallback, useMemo } from 'react'
 import { useAuctionInfoStore } from 'store/auctionInfoStore'
-import { useVaultMetadataStore } from 'store/vaultMetadataStore'
+import { useVaultStore } from 'store/vaultStore'
 import useSWR, { unstable_serialize, useSWRConfig } from 'swr'
 import useSdk from './useSdk'
 
@@ -36,7 +36,7 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
     nounletTokenAddress,
     backendLatestNounletTokenId,
     latestNounletTokenId
-  } = useVaultMetadataStore()
+  } = useVaultStore()
   const sdk = useSdk()
 
   const { data: auctionInfoMap } = useAuctionInfoStore()
@@ -60,7 +60,7 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
   }, [nid, vaultAddress, nounletTokenAddress])
 
   const historicBids = useMemo(() => {
-    console.log('historic bids')
+    // console.log('historic bids')
     return [...(auctionInfo?.auction!.bids ?? [])].sort((a, b) => {
       return BigNumber.from(b.amount).sub(BigNumber.from(a.amount)).toNumber()
     })

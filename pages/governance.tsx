@@ -16,7 +16,7 @@ import { useAuctionStateStore } from 'store/auctionStateStore'
 import Link from 'next/link'
 import useLeaderboard from 'hooks/useLeaderboard'
 import SimpleAddress from 'components/simple-address'
-import { useVaultMetadataStore } from 'store/vaultMetadataStore'
+import { useVaultStore } from 'store/vaultStore'
 import { ethers } from 'ethers'
 import { useResolveName } from '@usedapp/core'
 import { useDebounced } from 'hooks/useDebounced'
@@ -84,7 +84,7 @@ function GovernanceCurrentDelegate(props: {
   myNounletsVotes: ReturnType<typeof useLeaderboard>['myNounletsVotes']
   myNounlets: ReturnType<typeof useLeaderboard>['myNounlets']
 }) {
-  const { currentDelegate } = useVaultMetadataStore()
+  const { currentDelegate } = useVaultStore()
 
   const areMyVotesSplit = useMemo(() => {
     return Object.keys(props.myNounletsVotes).length > 1

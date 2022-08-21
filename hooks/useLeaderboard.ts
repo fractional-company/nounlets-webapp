@@ -2,7 +2,7 @@ import { useEthers } from '@usedapp/core'
 import { ethers } from 'ethers'
 import { getLeaderboardData } from 'lib/graphql/queries'
 import { useMemo } from 'react'
-import { useVaultMetadataStore } from 'store/vaultMetadataStore'
+import { useVaultStore } from 'store/vaultStore'
 import useSWR from 'swr'
 import useSdk from './useSdk'
 
@@ -14,7 +14,7 @@ export default function useLeaderboard() {
     nounletTokenAddress,
     backendLatestNounletTokenId,
     latestNounletTokenId
-  } = useVaultMetadataStore()
+  } = useVaultStore()
   const sdk = useSdk()
 
   const { data } = useSWR(

@@ -21,7 +21,7 @@ import Link from 'next/link'
 import VoteForDelegateModal from './modals/vote-for-delegate-modal'
 import toast from 'react-hot-toast'
 import IconNounletsLogo from './icons/icon-nounlets-logo'
-import { useVaultMetadataStore } from 'store/vaultMetadataStore'
+import { useVaultStore } from 'store/vaultStore'
 import SimpleAddress from './simple-address'
 import { ethers } from 'ethers'
 
@@ -31,7 +31,7 @@ export default function AppHeader(): JSX.Element {
   const mobileMenuRef = useRef<HTMLDivElement>(null)
   const { setConnectModalOpen } = useAppStore()
   const { account } = useEthers()
-  const { currentDelegate } = useVaultMetadataStore()
+  const { currentDelegate } = useVaultStore()
 
   useEffect(() => {
     if (mobileMenuRef.current == null) return

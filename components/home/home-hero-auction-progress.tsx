@@ -5,21 +5,19 @@ import IconQuestionCircle from 'components/icons/icon-question-circle'
 import { formatEther, parseEther } from 'ethers/lib/utils'
 import useDisplayedNounlet from 'hooks/useDisplayedNounlet'
 
-import { getExplorerTransactionLink, useEthers } from '@usedapp/core'
+import { useEthers } from '@usedapp/core'
+import IconLinkOffsite from 'components/icons/icon-link-offsite'
+import SimpleAddress from 'components/simple-address'
 import OnMounted from 'components/utils/on-mounted'
+import { NEXT_PUBLIC_BID_DECIMALS } from 'config'
 import { BigNumber, FixedNumber } from 'ethers'
+import useSdk from 'hooks/useSdk'
+import { calculateNextBid } from 'lib/utils/nextBidCalculator'
 import { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react'
+import { useVaultStore } from 'store/vaultStore'
 import { Auction } from '../../lib/wrappers/nounsAuction'
 import { useAppStore } from '../../store/application'
 import SimpleModal from '../simple-modal'
-import useSdk from 'hooks/useSdk'
-import SimpleAddress from 'components/simple-address'
-import IconLinkOffsite from 'components/icons/icon-link-offsite'
-import { useAuctionStateStore } from 'store/auctionStateStore'
-import { BidEvent } from 'typechain/interfaces/NounletAuctionAbi'
-import { NEXT_PUBLIC_BID_DECIMALS } from 'config'
-import { calculateNextBid } from 'lib/utils/nextBidCalculator'
-import { useVaultMetadataStore } from 'store/vaultMetadataStore'
 
 type ComponentProps = {
   auction?: Auction
@@ -30,7 +28,7 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
   const sdk = useSdk()
 
   const { isLoading, vaultAddress, nounletTokenAddress, latestNounletTokenId, minBidIncrease } =
-    useVaultMetadataStore()
+    useVaultStore()
   const {
     nid: nounletId,
     auctionInfo,

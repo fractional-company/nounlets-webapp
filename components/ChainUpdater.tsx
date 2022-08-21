@@ -2,10 +2,10 @@ import Button from 'components/buttons/button'
 import { BigNumber } from 'ethers'
 import useDisplayedNounlet from 'hooks/useDisplayedNounlet'
 import useSdk from 'hooks/useSdk'
-import { getVaultMetadata } from 'lib/graphql/queries'
+import { getVaultData } from 'lib/graphql/queries'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
-import { useVaultMetadataStore } from 'store/vaultMetadataStore'
+import { useVaultStore } from 'store/vaultStore'
 import useSWR, { useSWRConfig } from 'swr'
 
 export default function ChainUpdater() {
@@ -24,7 +24,7 @@ export default function ChainUpdater() {
     setNounletTokenAddress,
     setBackendLatestNounletTokenId,
     setLatestNounletTokenId
-  } = useVaultMetadataStore()
+  } = useVaultStore()
 
   // url nid listener
   const { nid } = useDisplayedNounlet()
@@ -57,7 +57,7 @@ export default function ChainUpdater() {
       console.groupEnd()
 
       const [vaultMetadata, vaultInfo, currentDelegate] = await Promise.all([
-        getVaultMetadata(key.vaultAddress),
+        getVaultData(key.vaultAddress),
         sdk.NounletAuction.vaultInfo(vaultAddress),
         sdk.NounletGovernance.currentDelegate(vaultAddress)
       ])

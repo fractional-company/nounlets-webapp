@@ -34,7 +34,7 @@ const initialState: StoreState = {
   minBidIncrease: '0.05'
 }
 
-export const useVaultMetadataStore = create(
+export const useVaultStore = create(
   immer<StoreState & StoreActions>((set) => ({
     ...initialState,
     setIsLoading: (flag) => {

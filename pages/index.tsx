@@ -11,7 +11,7 @@ import { useAppStore } from '../store/application'
 import { CHAIN_ID } from './_app'
 import HomeLeaderboard from 'components/home/home-leaderboard'
 import { useEffect, useMemo, useState } from 'react'
-import { useVaultMetadataStore } from 'store/vaultMetadataStore'
+import { useVaultStore } from 'store/vaultStore'
 import useSWR from 'swr'
 import useSdk from 'hooks/useSdk'
 import { getNounletAuctionData, getNounletAuctionDataBC } from 'lib/graphql/queries'
@@ -32,7 +32,7 @@ const Home: NextPage<{ vault: any }> = ({ vault }: { vault: any }) => {
     nounletTokenAddress,
     backendLatestNounletTokenId,
     latestNounletTokenId
-  } = useVaultMetadataStore()
+  } = useVaultStore()
   const { setData } = useAuctionInfoStore()
   const { nid, swrQueryKey, auctionInfo, mutateDisplayedNounletAuctionInfo } = useDisplayedNounlet()
 

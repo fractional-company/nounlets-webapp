@@ -9,7 +9,7 @@ import useLeaderboard from 'hooks/useLeaderboard'
 import useSdk from 'hooks/useSdk'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { useVaultMetadataStore } from 'store/vaultMetadataStore'
+import { useVaultStore } from 'store/vaultStore'
 
 const Settings: NextPage<{}, {}> = () => {
   const router = useRouter()
@@ -24,7 +24,7 @@ const Settings: NextPage<{}, {}> = () => {
     vaultAddress,
     nounletTokenAddress,
     latestNounletTokenId
-  } = useVaultMetadataStore()
+  } = useVaultStore()
 
   const { delegateVotes } = useLeaderboard()
 

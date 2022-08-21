@@ -1,19 +1,15 @@
-import { GetServerSideProps } from 'next'
-import client from '../../apollo-client'
 import { gql } from '@apollo/client'
-import { NounletAuctionAbiInterface } from 'typechain/interfaces/NounletAuctionAbi'
-import { RinkebySdk } from '@dethcrypto/eth-sdk-client'
-import { BigNumber, ethers } from 'ethers'
 import { NEXT_PUBLIC_BLOCKS_PER_DAY } from 'config'
-import { Account, Nounlet, Vault } from './graphql.models'
 import { NounletsSDK } from 'hooks/useSdk'
+import client from '../../apollo-client'
+import { Account, Vault } from './graphql.models'
 
 interface VaultResponse {
   vault: Vault
 }
 
 // get the vault nounlets that BE knows about
-export const getVaultMetadata = async (vaultAddress: string) => {
+export const getVaultData = async (vaultAddress: string) => {
   const { data } = await client.query<VaultResponse>({
     query: gql`
       {
@@ -30,7 +26,7 @@ export const getVaultMetadata = async (vaultAddress: string) => {
     `
   })
 
-  console.log('getVaultMetadata', data)
+  console.log('getVaultData', data)
 
   // this should not happen
   if (data.vault == null || data.vault.noun == null) {
