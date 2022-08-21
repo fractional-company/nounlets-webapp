@@ -3,8 +3,8 @@ import { useEthers } from '@usedapp/core'
 import config, { CHAIN_ID } from '../../config'
 import { WebSocketProvider } from '@ethersproject/providers'
 
-type NounletAuction = RinkebySdk['NounletAuction']
-type NounletToken = RinkebySdk['NounletToken']
+// type NounletAuction = RinkebySdk['NounletAuction']
+// type NounletToken = RinkebySdk['NounletToken']
 
 // export const useNounletTokenContract = (isWrite = false) => {
 //   const { library } = useEthers()

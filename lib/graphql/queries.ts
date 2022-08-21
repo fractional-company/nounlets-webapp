@@ -6,6 +6,7 @@ import { RinkebySdk } from '@dethcrypto/eth-sdk-client'
 import { BigNumber, ethers } from 'ethers'
 import { NEXT_PUBLIC_BLOCKS_PER_DAY } from 'config'
 import { Account, Nounlet, Vault } from './graphql.models'
+import { NounletsSDK } from 'hooks/useSdk'
 
 interface VaultResponse {
   vault: Vault
@@ -103,7 +104,7 @@ export const getNounletAuctionDataBC = async (
   vaultAddress: string,
   nounletTokenAddress: string,
   nounletTokenId: string,
-  nounletAuction: RinkebySdk['NounletAuction']
+  nounletAuction: NounletsSDK['NounletAuction']
 ) => {
   console.groupCollapsed('🔩 Fetching auction data from Blockchain')
   console.table({ vaultAddress, nounletTokenAddress, nounletTokenId })

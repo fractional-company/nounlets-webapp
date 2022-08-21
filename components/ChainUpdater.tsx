@@ -7,7 +7,7 @@ import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import { useVaultMetadataStore } from 'store/vaultMetadataStore'
 import useSWR, { useSWRConfig } from 'swr'
-import { SettledEvent } from 'typechain/interfaces/NounletAuctionAbi'
+// import { SettledEvent } from 'typechain/interfaces/NounletAuctionAbi'
 
 export default function ChainUpdater() {
   const router = useRouter()
@@ -114,7 +114,7 @@ export default function ChainUpdater() {
       id: BigNumber,
       winner: string,
       amount: BigNumber,
-      event: SettledEvent
+      event: any
     ) => {
       console.log('settled event!', vault, token, id, winner, amount, event)
       nounletAuction.off(settledFilter, listener)

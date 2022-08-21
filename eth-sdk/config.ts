@@ -20,7 +20,7 @@ export default defineConfig({
     //   optimisticBid: '0x9c841a5b5604351c52ab6df48ef5bf6bb14471c9'
     // }
     rinkeby: {
-      sdk: {
+      nounlets: {
         // NFTDescriptorV2: '0x6533246189393c88b36fbea6999fcc9e29e431eb',
         // MintHelper: '0x335a2bd49edf256e17782f096440ab5133597b4e',
         // MockProxyRegistry: '0xb777a5f00c4a1dcd781841c7df3de12db303ef71',

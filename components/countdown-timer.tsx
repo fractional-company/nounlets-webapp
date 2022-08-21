@@ -10,7 +10,7 @@ type ComponentProps = {
 }
 
 export default function CountdownTimer(props: ComponentProps): JSX.Element {
-  const { showEndTime, auctionEnd } = props
+  const { showEndTime, auctionEnd, onTimerFinished } = props
   const [auctionTimer, setAuctionTimer] = useState(0)
 
   useEffect(() => {
@@ -20,7 +20,7 @@ export default function CountdownTimer(props: ComponentProps): JSX.Element {
     if (timeLeft <= 0) {
       console.log('⏱ Timer ended!')
       setAuctionTimer(0)
-      props.onTimerFinished?.()
+      onTimerFinished?.()
     } else {
       const timer = setTimeout(() => {
         setAuctionTimer((v) => v - 1)
@@ -30,7 +30,7 @@ export default function CountdownTimer(props: ComponentProps): JSX.Element {
         clearTimeout(timer)
       }
     }
-  }, [auctionEnd, auctionTimer, props.onTimerFinished])
+  }, [auctionEnd, auctionTimer, onTimerFinished])
 
   const formattedTime = useMemo(() => {
     console.log('auctione nd', auctionEnd)
