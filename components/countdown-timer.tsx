@@ -30,7 +30,7 @@ export default function CountdownTimer(props: ComponentProps): JSX.Element {
         clearTimeout(timer)
       }
     }
-  }, [auctionEnd, auctionTimer])
+  }, [auctionEnd, auctionTimer, props.onTimerFinished])
 
   const formattedTime = useMemo(() => {
     console.log('auctione nd', auctionEnd)

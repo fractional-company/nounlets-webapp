@@ -56,7 +56,7 @@ const BidHistoryModal = (): JSX.Element => {
     <div className="sm:w-[370px]">
       <Dialog.Title className="p-4 text-px24 font-500">
         <div className="flex -mt-10">
-          <img src="" alt="" />
+          {/* <img src="" alt="" /> */}
           <div className="flex flex-col font-londrina">
             <h4 className="text-px24 text-gray-4">Bids for</h4>
             <h2 className="text-px42 font-900 leading-px42">Nounlet {nid}/100</h2>

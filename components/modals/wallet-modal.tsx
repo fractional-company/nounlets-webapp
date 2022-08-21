@@ -38,7 +38,7 @@ export default function WalletModal(): JSX.Element {
     if (account) {
       setConnectModalOpen(false)
     }
-  }, [account])
+  }, [account, setConnectModalOpen])
 
   const wallets = (
     <div className="wallet-buttons-list grid grid-cols-1 md:grid-cols-2 gap-3 justify-items-stretch md:justify-items-start">
