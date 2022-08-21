@@ -115,6 +115,19 @@ module.exports = {
         px42: '42px',
         px48: '48px',
         px64: '64px'
+      },
+      animation: {
+        wiggle: 'wiggle 10s linear infinite'
+      },
+      keyframes: {
+        wiggle: {
+          '0%': { backgroundPosition: 'center left 0px' },
+          '89.999%': { backgroundPosition: 'center left 0px' },
+          '90%': { backgroundPosition: 'center left -109px' },
+          '91.999%': { backgroundPosition: 'center left -109px' },
+          '92%': { backgroundPosition: 'center left 0px' },
+          '100%': { backgroundPosition: 'center left 0px' }
+        }
       }
     }
   },

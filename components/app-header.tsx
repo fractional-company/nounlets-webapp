@@ -70,8 +70,8 @@ export default function AppHeader(): JSX.Element {
         <VoteForDelegateModal />
         <div className="flex items-center h-full space-x-4 min-h-[88px]">
           <Link href="/">
-            <a className="h-[88px] overflow-visible pt-2">
-              <IconNounletsLogo className="flex-shrink-0 w-auto" />
+            <a className="relative h-[88px] overflow-visible pt-2">
+              <IconNounletsLogo className="flex-shrink-0 w-auto h-16" />
             </a>
           </Link>
           <div className="flex-1">
