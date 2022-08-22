@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "prepare": "typechain --target=ethers-v5 --out-dir typechain/interfaces \"**/*.abi.json\" && eth-sdk",
-    "asdprepare": "eth-sdk",
+    "build": "eth-sdk && next build",
+    "prepare_bkp": "typechain --target=ethers-v5 --out-dir typechain/interfaces \"**/*.abi.json\" && eth-sdk",
+    "prepare": "eth-sdk",
     "contracts": "\n",
     "start": "next start",
     "lint": "next lint"
