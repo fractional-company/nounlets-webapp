@@ -5,6 +5,7 @@ import { immer } from 'zustand/middleware/immer'
 interface StoreState {
   isLoading: boolean
   vaultAddress: string
+  nounTokenId: string
   vaultCuratorAddress: string
   currentDelegate: string
   nounletTokenAddress: string
@@ -16,6 +17,7 @@ interface StoreState {
 interface StoreActions {
   setIsLoading: (flag: boolean) => void
   setVaultAddress: (address: string) => void
+  setNounTokenId: (id: string) => void
   setVaultCuratorAddress: (address: string) => void
   setCurrentDelegate: (address: string) => void
   setNounletTokenAddress: (address: string) => void
@@ -26,6 +28,7 @@ interface StoreActions {
 const initialState: StoreState = {
   isLoading: true,
   vaultAddress: process.env.NEXT_PUBLIC_NOUN_VAULT_ADDRESS || '',
+  nounTokenId: '',
   vaultCuratorAddress: ethers.constants.AddressZero,
   currentDelegate: ethers.constants.AddressZero,
   nounletTokenAddress: '',
@@ -45,6 +48,11 @@ export const useVaultStore = create(
     setVaultAddress: (address) => {
       set((state) => {
         state.vaultAddress = address
+      })
+    },
+    setNounTokenId: (id) => {
+      set((state) => {
+        state.nounTokenId = id
       })
     },
     setVaultCuratorAddress: (address) => {

@@ -4,6 +4,7 @@ import { getLeaderboardData } from 'lib/graphql/queries'
 import { useMemo } from 'react'
 import { useVaultStore } from 'store/vaultStore'
 import useSWR from 'swr'
+import useDisplayedNounlet from './useDisplayedNounlet'
 import useSdk from './useSdk'
 
 export default function useLeaderboard() {
@@ -11,28 +12,22 @@ export default function useLeaderboard() {
   const {
     isLoading,
     vaultAddress,
+    nounTokenId,
     nounletTokenAddress,
     backendLatestNounletTokenId,
     latestNounletTokenId
   } = useVaultStore()
   const sdk = useSdk()
 
-  const { data, mutate: mutateLeaderboard } = useSWR(
-    'Leaderboard',
-    async (key) => {
-      const result = await getLeaderboardData()
-      return result.accounts || []
-    },
-    {
-      dedupingInterval: 60 * 1000 // 1 min
-    }
+  const { data } = useSWR<Awaited<ReturnType<typeof getLeaderboardData>>>(
+    nounTokenId !== '' && { name: 'Leaderboard' }
   )
 
   const myNounlets = useMemo(() => {
     if (account == null) return []
     if (data == null) return []
 
-    const myAccount = data.find((acc) => {
+    const myAccount = data.accounts.find((acc) => {
       return acc.id.toLowerCase() === account?.toLowerCase()
     })
 
@@ -56,7 +51,7 @@ export default function useLeaderboard() {
     if (data == null) return []
     const myAddress = account?.toLowerCase() || ''
 
-    const mapped = data.map((acc) => {
+    const mapped = data.accounts.map((acc) => {
       const accAddress = acc.id.toLowerCase()
       return {
         isMe: accAddress === myAddress,
@@ -79,7 +74,7 @@ export default function useLeaderboard() {
 
     console.log('delegating votes to:', toAddress)
     if (sdk == null || account == null || library == null) return
-    if (nounletTokenAddress == null) return
+    if (nounletTokenAddress == '') return
     try {
       const nounletToken = sdk.NounletToken.connect(library.getSigner()).attach(nounletTokenAddress)
       // console.log(await nounletToken.NOUNS_TOKEN_ID())
@@ -108,7 +103,7 @@ export default function useLeaderboard() {
     leaderboardListData,
     myNounlets,
     myNounletsVotes,
-    delegateVotes,
-    mutateLeaderboard
+    delegateVotes
+    // mutateLeaderboard
   }
 }

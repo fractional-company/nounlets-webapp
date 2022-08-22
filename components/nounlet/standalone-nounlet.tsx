@@ -14,6 +14,23 @@ interface StandaloneNounletWithSeedProps {
   onLoadSeed?: (seed: any) => void
   shouldLinkToProfile: boolean
 }
+
+// const getNounlet = async (nounId: string, nounletId: string) => {
+//     const name = `Noun ${nounId}`;
+//     const description = `Noun ${nounId} is a member of the Nouns DAO`;
+//     const { parts, background } = getBigNounData(seed);
+//     const svg = buildSVG(parts, bigNounData.palette, background);
+//     const image = `data:image/svg+xml;base64,${btoa(svg)}`;
+
+//     return {
+//         name,
+//         svg,
+//         description,
+//         image,
+//         parts,
+//     };
+// };
+
 //
 // const getNounlet = (nounId: string | BigNumber | number, seed: INounSeed) => {
 //     const id = nounId.toString();

@@ -24,8 +24,6 @@ export function generateNounletAuctionInfoKey({
   }
 }
 
-// let prev: any = null
-
 export default function useDisplayedNounlet(ignoreUpdate = false) {
   const router = useRouter()
   const { mutate: mutateSWRGlobal, cache: cacheSWRGlobal } = useSWRConfig()
@@ -77,14 +75,12 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
       return ownerAddress || ethers.constants.AddressZero
     },
     {
-      revalidateIfStale: false,
-      dedupingInterval: 60 * 1000, // 1 minute
-      refreshInterval: 5 * 60 * 1000 // 5 minutes
+      revalidateIfStale: true,
+      dedupingInterval: 60 * 1000 // 1 minute
     }
   )
 
   const historicBids = useMemo(() => {
-    // console.log('historic bids')
     return [...(auctionInfo?.auction!.bids ?? [])].sort((a, b) => {
       return BigNumber.from(b.amount).sub(BigNumber.from(a.amount)).toNumber()
     })

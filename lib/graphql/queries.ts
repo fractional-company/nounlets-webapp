@@ -2,7 +2,14 @@ import { gql } from '@apollo/client'
 import { NEXT_PUBLIC_BLOCKS_PER_DAY } from 'config'
 import { NounletsSDK } from 'hooks/useSdk'
 import client from '../../apollo-client'
-import { Account, Vault } from './graphql.models'
+import { Account, Nounlet, Vault } from './graphql.models'
+
+interface _META {
+  block: {
+    hash: string
+    number: number
+  }
+}
 
 interface VaultResponse {
   vault: Vault
@@ -17,6 +24,7 @@ export const getVaultData = async (vaultAddress: string) => {
           id,
           tokenAddress,
           noun {
+            id,
             nounlets {
               id,
             }
@@ -33,6 +41,7 @@ export const getVaultData = async (vaultAddress: string) => {
     console.log('no auction started')
     return {
       vaultAddress: vaultAddress.toLowerCase(),
+      nounTokenId: '',
       nounletTokenAddress: '0xf84c41e7b15df8c6e218ccc701f7b3be87e6b8c4', // ethers.constants.AddressZero
       nounletCount: 1
     }
@@ -41,6 +50,7 @@ export const getVaultData = async (vaultAddress: string) => {
   return {
     vaultAddress: data.vault.id.toLowerCase(),
     nounletTokenAddress: data.vault.tokenAddress.toLowerCase(),
+    nounTokenId: data.vault.noun.id,
     nounletCount: data.vault.noun.nounlets.length
   }
 }
@@ -156,44 +166,24 @@ export const getNounletAuctionDataBC = async (
   return shape as Awaited<ReturnType<typeof getNounletAuctionData>>
 }
 
-export const getNounletBids = async (id: string, nounletId: string) => {
-  const { data } = await client.query<VaultResponse>({
+// nounlets.holder = current holder
+// nounlets.delegate = current delegate (who this nounlet votes for)
+// nounlets.delegateVotes = history of delegates (who this nounlet voted for)
+export const getLeaderboardData = async (nounTokenId: string) => {
+  console.log('🥏 Fetching leaderoabr data')
+  const { data } = await client.query<{ accounts: Account[]; _meta: _META }>({
     query: gql`
       {
-        vault(id: "${id.toLowerCase()}") {
-          noun {
-            nounlets (where: { id: "${nounletId}"}) {
-              auction {
-                bids(orderBy: blockTimestamp, orderDirection: desc) {
-                  id
-                  bidder {
-                    id
-                  }
-                  amount
-                  blockNumber
-                  blockTimestamp
-                  txIndex
-                }
-              }
-            }
-          }
-        }
-      }
-    `
-  })
-
-  return data
-}
-
-export const getLeaderboardData = async () => {
-  const { data } = await client.query<{ accounts: Account[] }>({
-    query: gql`
-      {
-        accounts(orderBy: totalNounletsHeld, orderDirection: desc) {
+        accounts(where: {nounlets_: {noun: "${nounTokenId}"}}) {
           id
-          totalNounletsHeld
           nounlets {
             id
+            holder {
+              id
+            }
+            delegate {
+              id
+            }
             delegateVotes {
               delegate {
                 id
@@ -202,10 +192,48 @@ export const getLeaderboardData = async () => {
               id
             }
           }
+        },
+        _meta {
+          block {
+            number
+          }
         }
       }
     `
   })
 
+  console.log('LOLOLOL', data)
+
+  // sort and append totalNounletsHeld
+  const newData = data.accounts
+    .map((account) => {
+      return {
+        ...account,
+        totalNounletsHeld: account.nounlets.length
+      }
+    })
+    .sort((a, b) => b.totalNounletsHeld - a.totalNounletsHeld)
+
+  return { accounts: newData, _meta: data._meta }
+}
+
+export const getNounletVotes = async (nounletTokenAddress: string, nounletTokenId: string) => {
+  console.log('trying!')
+
+  const { data } = await client.query<{ nounlet: Nounlet }>({
+    query: gql`
+    {
+      nounlet (id: "${nounletTokenAddress.toLowerCase()}-${nounletTokenId}") {
+        id
+        delegateVotes {
+          id,
+          delegate {id}
+          timestamp
+        }
+      }
+    }`
+  })
+
+  console.log('got data', data)
   return data
 }
