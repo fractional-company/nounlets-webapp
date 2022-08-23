@@ -2,6 +2,7 @@ import { useEthers } from '@usedapp/core'
 import { ethers } from 'ethers'
 import { getLeaderboardData } from 'lib/graphql/queries'
 import { useMemo } from 'react'
+import { useLeaderboardStore } from 'store/leaderboardStore'
 import { useVaultStore } from 'store/vaultStore'
 import useSWR from 'swr'
 import useDisplayedNounlet from './useDisplayedNounlet'
@@ -19,9 +20,7 @@ export default function useLeaderboard() {
   } = useVaultStore()
   const sdk = useSdk()
 
-  const { data } = useSWR<Awaited<ReturnType<typeof getLeaderboardData>>>(
-    nounTokenId !== '' && { name: 'Leaderboard' }
-  )
+  const { data } = useLeaderboardStore()
 
   const myNounlets = useMemo(() => {
     if (account == null) return []

@@ -214,7 +214,7 @@ export const getLeaderboardData = async (nounTokenId: string) => {
     })
     .sort((a, b) => b.totalNounletsHeld - a.totalNounletsHeld)
 
-  return { accounts: newData, _meta: data._meta }
+  return { ...data, accounts: newData }
 }
 
 export const getNounletVotes = async (nounletTokenAddress: string, nounletTokenId: string) => {

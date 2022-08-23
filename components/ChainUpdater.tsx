@@ -9,6 +9,7 @@ import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useVaultStore } from 'store/vaultStore'
 import useSWR, { useSWRConfig } from 'swr'
 import debounce from 'lodash/debounce'
+import { useLeaderboardStore } from 'store/leaderboardStore'
 
 export default function ChainUpdater() {
   const router = useRouter()
@@ -29,6 +30,7 @@ export default function ChainUpdater() {
     setBackendLatestNounletTokenId,
     setLatestNounletTokenId
   } = useVaultStore()
+  const { setData } = useLeaderboardStore()
 
   // url nid listener
   const { nid } = useDisplayedNounlet()
@@ -138,23 +140,10 @@ export default function ChainUpdater() {
     nounletAuction.on(settledFilter, listener)
 
     return () => {
-      console.log('🍂 removing SETTLED listener for', latestNounletTokenId)
+      console.log('🍂 removing SETTLED listener for11', latestNounletTokenId)
       nounletAuction.off(settledFilter, listener)
     }
   }, [vaultAddress, nounletTokenAddress, latestNounletTokenId, sdk, debouncedMutateVaultMetadata])
-
-  const handleTest = async () => {
-    if (sdk == null) return
-
-    // refreshVaultMetadata()
-    console.log('dedup?')
-    debouncedMutateVaultMetadata()
-    console.log('handling test')
-    // const nounletAuction = sdk.NounletAuction
-    // const settledFilter = sdk.NounletAuction.filters.Settled(vaultAddress, vaultTokenAddress, '1')
-
-    // console.log('result', await NounletAuction.queryFilter(settledFilter))
-  }
 
   //11247688 //11247688
 
@@ -172,29 +161,23 @@ export default function ChainUpdater() {
       return result
     },
     {
-      onSuccess(data, key, config) {
-        console.log('sucess', data)
-        if (data == null) return
+      onSuccess(data) {
+        setData(data)
+      },
+      refreshInterval(latestData) {
+        const beBlockNumber = latestData?._meta.block.number || 0
 
-        const beBlockNumber = data?._meta.block.number
-        if (beBlockNumber != null) {
-          if (lastEventBlockNumber.current === 0) {
-            // first time fire, check again in 20 seconds
-            console.log('🥝 first check')
-            lastEventBlockNumber.current = 1
-            debouncedMutateLeaderboard()
-            return
-          }
-
-          if (lastEventBlockNumber.current > beBlockNumber) {
-            console.log('🥝 out of sync', lastEventBlockNumber.current, beBlockNumber)
-            // if there was an event since the last BE check, check in 20 seconds
-            debouncedMutateLeaderboard()
-            return
-          }
+        if (lastEventBlockNumber.current === 0) {
+          lastEventBlockNumber.current = 1
+          return 15000
         }
 
-        console.log('🥝🥝🥝 Data is in sync!!')
+        if (lastEventBlockNumber.current > beBlockNumber) {
+          console.log('🥒 Leadeboard data out of sync')
+          return 15000
+        }
+
+        return 0
       }
     }
   )
@@ -234,15 +217,11 @@ export default function ChainUpdater() {
   return (
     <>
       <Button className="primary" onClick={() => debouncedMutateVaultMetadata()}>
-        debouncedMutateVaultMetadata
-      </Button>
-
-      <Button className="primary" onClick={() => mutateLeaderboard()}>
-        mutateLeaderboard!
+        debounced MutateVaultMetadata
       </Button>
 
       <Button className="primary" onClick={() => debouncedMutateLeaderboard()}>
-        debouncedMutateLeaderboard!
+        debounced MutateLeaderboard!
       </Button>
     </>
   )
