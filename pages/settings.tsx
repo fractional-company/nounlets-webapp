@@ -16,6 +16,7 @@ const Settings: NextPage<{}, {}> = () => {
   const { account, library } = useEthers()
   const sdk = useSdk()
   const {
+    isLive,
     isLoading,
     setNounletTokenAddress,
     setBackendLatestNounletTokenId,
@@ -35,6 +36,7 @@ const Settings: NextPage<{}, {}> = () => {
   }
 
   const vaultMetadata = {
+    isLive,
     isLoading,
     vaultAddress, // VaultContract
     nounletTokenAddress, // NouneltTokenContract (proxy?)
@@ -106,7 +108,7 @@ const Settings: NextPage<{}, {}> = () => {
       [],
       mintProof,
       sdk.NounsDescriptorV2.address,
-      4
+      1
     )
 
     return tx

@@ -29,39 +29,39 @@ const initialState: StoreState = {
   minBidIncrease: '0.05'
 }
 
-export const useAuctionStateStore = create(
-  immer<StoreState & StoreActions>((set) => ({
-    ...initialState,
-    setIsLoading: (flag) => {
-      set((state) => {
-        state.isLoading = flag
-      })
-    },
-    setVaultAddress: (address) => {
-      set((state) => {
-        state.vaultAddress = address
-      })
-    },
-    setVaultTokenAddress: (address) => {
-      set((state) => {
-        state.vaultTokenAddress = address
-      })
-    },
-    setVaultTokenId: (id) => {
-      set((state) => {
-        state.vaultTokenId = id
-      })
-    },
-    setLatestNounletId: (id) => {
-      set((state) => {
-        console.log('setCurredntId', id)
-        if (id === '0') {
-          console.log('Its before the first auction')
-          state.latestNounletId = '1'
-        } else {
-          state.latestNounletId = id
-        }
-      })
-    }
-  }))
-)
+// export const useAuctionStateStore = create(
+//   immer<StoreState & StoreActions>((set) => ({
+//     ...initialState,
+//     setIsLoading: (flag) => {
+//       set((state) => {
+//         state.isLoading = flag
+//       })
+//     },
+//     setVaultAddress: (address) => {
+//       set((state) => {
+//         state.vaultAddress = address
+//       })
+//     },
+//     setVaultTokenAddress: (address) => {
+//       set((state) => {
+//         state.vaultTokenAddress = address
+//       })
+//     },
+//     setVaultTokenId: (id) => {
+//       set((state) => {
+//         state.vaultTokenId = id
+//       })
+//     },
+//     setLatestNounletId: (id) => {
+//       set((state) => {
+//         console.log('setCurredntId', id)
+//         if (id === '0') {
+//           console.log('Its before the first auction')
+//           state.latestNounletId = '1'
+//         } else {
+//           state.latestNounletId = id
+//         }
+//       })
+//     }
+//   }))
+// )

@@ -12,7 +12,6 @@ import IconQuestionCircle from 'components/icons/icon-question-circle'
 import { useMemo, useState } from 'react'
 import VoteForDelegateModal from 'components/modals/vote-for-delegate-modal'
 import VoteForCustomWalletModal from 'components/modals/vote-for-custom-wallet.modal'
-import { useAuctionStateStore } from 'store/auctionStateStore'
 import Link from 'next/link'
 import useLeaderboard from 'hooks/useLeaderboard'
 import SimpleAddress from 'components/simple-address'
@@ -26,6 +25,7 @@ import SimpleModalWrapper from 'components/SimpleModalWrapper'
 
 const Governance: NextPage = () => {
   const [isVoteForDelegateModalShown, setIsVoteForDelegateModalShown] = useState(false)
+  const { isLive, latestNounletTokenId } = useVaultStore()
   const { leaderboardListData, myNounlets, myNounletsVotes } = useLeaderboard()
 
   return (
@@ -45,9 +45,9 @@ const Governance: NextPage = () => {
         <h4 className="font-londrina text-px24 leading-px36 text-gray-4">Governance</h4>
         <h1 className="font-londrina text-[56px] leading-[68px] mt-3">Vote for a delegate</h1>
 
-        {false ? (
+        {!isLive || latestNounletTokenId === '1' ? (
           <>
-            <p className="text-px20 leading-px28 text-gray-4 mt-6">
+            <p className="font-500 text-px20 leading-px28 text-gray-4 mt-6">
               The governance page has no activity yet, since the auction for the first Nounlet did
               not finish yet. Check back soon!
             </p>
@@ -93,7 +93,7 @@ function GovernanceCurrentDelegate(props: {
     ) : (
       <SimpleAddress
         avatarSize={40}
-        className="text-px36 font-londrina leading-px42 ml-3"
+        className="text-px36 font-londrina leading-px42 space-x-3"
         address={currentDelegate}
       />
     )

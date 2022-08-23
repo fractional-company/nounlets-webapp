@@ -38,16 +38,11 @@ export const getVaultData = async (vaultAddress: string) => {
 
   // this should not happen
   if (data.vault == null || data.vault.noun == null) {
-    console.log('no auction started')
-    return {
-      vaultAddress: vaultAddress.toLowerCase(),
-      nounTokenId: '',
-      nounletTokenAddress: '0xf84c41e7b15df8c6e218ccc701f7b3be87e6b8c4', // ethers.constants.AddressZero
-      nounletCount: 1
-    }
+    throw 'vault not found'
   }
 
   return {
+    isLive: true,
     vaultAddress: data.vault.id.toLowerCase(),
     nounletTokenAddress: data.vault.tokenAddress.toLowerCase(),
     nounTokenId: data.vault.noun.id,
@@ -170,7 +165,7 @@ export const getNounletAuctionDataBC = async (
 // nounlets.delegate = current delegate (who this nounlet votes for)
 // nounlets.delegateVotes = history of delegates (who this nounlet voted for)
 export const getLeaderboardData = async (nounTokenId: string) => {
-  console.log('🥏 Fetching leaderoabr data')
+  console.log('🥏 fetching leaderboard data')
   const { data } = await client.query<{ accounts: Account[]; _meta: _META }>({
     query: gql`
       {

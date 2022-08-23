@@ -3,6 +3,7 @@ import classNames from 'classnames'
 import Button from 'components/buttons/button'
 import IconUpdateDelegate from 'components/icons/icon-update-delegate'
 import SimpleAddress from 'components/simple-address'
+import useLeaderboard from 'hooks/useLeaderboard'
 import Image from 'next/image'
 import userIcon from 'public/img/user-icon.jpg'
 import { useMemo } from 'react'
@@ -24,6 +25,7 @@ export default function LeaderboardListTile(props: {
   data: LeaderboardListTileProps
 }): JSX.Element {
   const { account } = useEthers()
+  const { claimDelegate } = useLeaderboard()
   const { setVoteForDelegateModalForAddress } = useAppStore()
   const {
     isMe,
@@ -50,6 +52,7 @@ export default function LeaderboardListTile(props: {
   )
   const isUpdateDelegateActionShown = useMemo(() => {
     if (account == null) return false
+    return true // TODO REMOVE
 
     return (
       mostVotesWalletAddress === walletAddress && walletAddress !== currentDelegateWalletAddress
@@ -61,6 +64,11 @@ export default function LeaderboardListTile(props: {
     setVoteForDelegateModalForAddress(true, address)
   }
 
+  const handleClaimDelegate = async (address: string) => {
+    console.log('aliming delegate handler', address)
+    const response = await claimDelegate(address)
+    console.log('yasss', response)
+  }
   return (
     <div className="leaderboard-list-tile">
       <div
@@ -98,7 +106,10 @@ export default function LeaderboardListTile(props: {
               </p>
             )}
             {isUpdateDelegateActionShown && (
-              <Button className="hidden lg:flex ml-2 items-center justify-center text-secondary-blue text-px18 font-700 border-2 border-transparent px-2 h-10 rounded-px10">
+              <Button
+                onClick={() => handleClaimDelegate(walletAddress)}
+                className="hidden lg:flex ml-2 items-center justify-center text-secondary-blue text-px18 font-700 border-2 border-transparent px-2 h-10 rounded-px10"
+              >
                 <IconUpdateDelegate />
                 <span className="ml-2">Update delegate</span>
               </Button>

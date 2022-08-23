@@ -1,5 +1,5 @@
 import { ChainId } from '@usedapp/core'
-import { BigNumber } from 'ethers'
+import { BigNumber, ethers } from 'ethers'
 
 interface AppConfig {
   jsonRpcUri: string
@@ -11,7 +11,7 @@ type SupportedChains = ChainId.Rinkeby | ChainId.Mainnet
 
 export const CHAIN_ID: SupportedChains = parseInt(process.env.NEXT_PUBLIC_CHAIN_ID ?? '1')
 export const NEXT_PUBLIC_NOUN_VAULT_ADDRESS =
-  process.env.NEXT_PUBLIC_NOUN_VAULT_ADDRESS || '0x34f67ab3458ec703ebc2bd2683b117d8f0764614'
+  process.env.NEXT_PUBLIC_NOUN_VAULT_ADDRESS || ethers.constants.AddressZero
 export const NEXT_PUBLIC_BLOCKS_PER_DAY = 7_000
 export const NEXT_PUBLIC_BID_DECIMALS = +(process.env.NEXT_PUBLIC_BID_DECIMALS || 2)
 // OLD

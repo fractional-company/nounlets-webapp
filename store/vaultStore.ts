@@ -3,6 +3,7 @@ import create from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 
 interface StoreState {
+  isLive: boolean // Has BE picked up the vault yet?
   isLoading: boolean
   vaultAddress: string
   nounTokenId: string
@@ -15,6 +16,7 @@ interface StoreState {
 }
 
 interface StoreActions {
+  setIsLive: (flag: boolean) => void
   setIsLoading: (flag: boolean) => void
   setVaultAddress: (address: string) => void
   setNounTokenId: (id: string) => void
@@ -26,6 +28,7 @@ interface StoreActions {
 }
 
 const initialState: StoreState = {
+  isLive: false,
   isLoading: true,
   vaultAddress: process.env.NEXT_PUBLIC_NOUN_VAULT_ADDRESS || '',
   nounTokenId: '',
@@ -40,6 +43,11 @@ const initialState: StoreState = {
 export const useVaultStore = create(
   immer<StoreState & StoreActions>((set) => ({
     ...initialState,
+    setIsLive: (flag) => {
+      set((state) => {
+        state.isLive = flag
+      })
+    },
     setIsLoading: (flag) => {
       set((state) => {
         state.isLoading = flag

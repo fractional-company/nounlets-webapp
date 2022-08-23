@@ -15,7 +15,6 @@ import { useVaultStore } from 'store/vaultStore'
 import useSWR from 'swr'
 import useSdk from 'hooks/useSdk'
 import { getNounletAuctionData, getNounletAuctionDataBC } from 'lib/graphql/queries'
-import { useAuctionStateStore } from 'store/auctionStateStore'
 import { useAuctionInfoStore } from 'store/auctionInfoStore'
 import HomeVotesFromNounlet from 'components/home/home-votes-from-nounlet'
 
@@ -28,7 +27,7 @@ const Home: NextPage<{ vault: any }> = ({ vault }: { vault: any }) => {
   const sdk = useSdk()
   const { setBidModalOpen, isBidModalOpen } = useAppStore()
   const {
-    isLoading,
+    isLive,
     vaultAddress,
     nounletTokenAddress,
     backendLatestNounletTokenId,
@@ -240,7 +239,9 @@ const Home: NextPage<{ vault: any }> = ({ vault }: { vault: any }) => {
         </button> */}
       </div>
       <HomeHero />
-      {nid === latestNounletTokenId ? <HomeLeaderboard /> : <HomeVotesFromNounlet />}
+      {isLive && (
+        <>{nid === latestNounletTokenId ? <HomeLeaderboard /> : <HomeVotesFromNounlet />}</>
+      )}
       {/* <HomeCollectiveOwnership /> */}
       {/* <HomeWTF /> */}
     </div>

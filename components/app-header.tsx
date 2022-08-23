@@ -25,6 +25,7 @@ import { useVaultStore } from 'store/vaultStore'
 import SimpleAddress from './simple-address'
 import { ethers } from 'ethers'
 import classNames from 'classnames'
+import IconCrown from './icons/icon-crown'
 
 export default function AppHeader(): JSX.Element {
   const [isMobileMenuOpen, setIsModalMenuOpen] = useState(false)
@@ -32,7 +33,7 @@ export default function AppHeader(): JSX.Element {
   const mobileMenuRef = useRef<HTMLDivElement>(null)
   const { setConnectModalOpen } = useAppStore()
   const { account, deactivate } = useEthers()
-  const { currentDelegate } = useVaultStore()
+  const { isLive, currentDelegate } = useVaultStore()
 
   useEffect(() => {
     if (mobileMenuRef.current == null) return
@@ -52,19 +53,32 @@ export default function AppHeader(): JSX.Element {
     }
   }
 
+  const isCrownShown = useMemo(() => {
+    if (account == null) return false
+    if (currentDelegate == null || currentDelegate === ethers.constants.AddressZero) return false
+    if (account !== currentDelegate) return false
+    return true
+  }, [account, currentDelegate])
+
   const connectButton = (
     <Button
-      className={classNames(account ? 'basic hover:!bg-secondary-red' : 'primary', 'group')}
+      className={classNames(
+        account ? 'basic hover:!bg-secondary-red' : 'primary',
+        'relative group'
+      )}
       onClick={() => handleConnectButtonClick()}
     >
       {account ? (
-        <div className="relative flex items-center space-x-2">
+        <div className="flex items-center">
+          {isCrownShown && (
+            <IconCrown className="absolute w-[30px] h-auto left-[-12px] top-[-12px] rotate-[-40deg] text-[#fa8f2f]" />
+          )}
           <SimpleAddress
             avatarSize={16}
             address={account}
             className="space-x-2 pointer-events-none group-hover:invisible"
           />
-          <p className="absolute inset-0 pointer-events-none invisible group-hover:visible text-white">
+          <p className="absolute inset-0 pointer-events-none invisible group-hover:visible text-white leading-px48">
             Disconnect
           </p>
           {/* <IconCaretDropdown /> */}
@@ -81,9 +95,9 @@ export default function AppHeader(): JSX.Element {
 
   const currentDelegateRC = useMemo(() => {
     return currentDelegate === ethers.constants.AddressZero ? (
-      <span className="font-500 ml-2">no one :(</span>
+      <span className="font-700 ml-2">no one :(</span>
     ) : (
-      <SimpleAddress className="inline-flex font-500 ml-2" address={currentDelegate} />
+      <SimpleAddress className="inline-flex font-700 ml-2" address={currentDelegate} />
     )
   }, [currentDelegate])
 
@@ -99,17 +113,19 @@ export default function AppHeader(): JSX.Element {
             </a>
           </Link>
           <div className="flex-1">
-            <div className="hidden md:inline-flex items-center px-4 h-12 rounded-px10 bg-white space-x-2">
-              <span className="hidden lg:inline">Current delegate</span>
-              {currentDelegateRC}
+            {isLive && (
+              <div className="hidden md:inline-flex items-center px-4 h-12 rounded-px10 bg-white space-x-2">
+                <span className="hidden lg:inline">Current delegate</span>
+                {currentDelegateRC}
 
-              <SimplePopover>
-                <h1 className="font-700 text-px18 text-gray-4">
-                  <span className="text-secondary-orange">⚠</span>
-                </h1>
-                <div>Delegate is out of sync. You can update it on the vote page.</div>
-              </SimplePopover>
-            </div>
+                <SimplePopover>
+                  <h1 className="font-700 text-px18 text-gray-4">
+                    <span className="text-secondary-orange">⚠</span>
+                  </h1>
+                  <div>Delegate is out of sync. You can update it on the vote page.</div>
+                </SimplePopover>
+              </div>
+            )}
           </div>
           <div className="hidden lg:flex items-center space-x-4">
             <Link href="/governance">
@@ -135,20 +151,22 @@ export default function AppHeader(): JSX.Element {
             </Button>
           </div>
         </div>
-        <div className="md:hidden pb-4">
-          <div className="flex items-center px-4 h-12 rounded-px10 bg-white space-x-2 justify-center">
-            <div className="truncate font-500">
-              <span className="hidden sm:inline">Current delegate</span>
-              {currentDelegateRC}
+        {isLive && (
+          <div className="md:hidden pb-4">
+            <div className="flex items-center px-4 h-12 rounded-px10 bg-white space-x-2 justify-center">
+              <div className="truncate font-500">
+                <span className="hidden sm:inline">Current delegate</span>
+                {currentDelegateRC}
+              </div>
+              <SimplePopover>
+                <h1 className="font-700 text-px18 text-gray-4">
+                  <span className="text-secondary-orange">⚠</span>
+                </h1>
+                <div>Delegate is out of sync. You can update it on the vote page.</div>
+              </SimplePopover>
             </div>
-            <SimplePopover>
-              <h1 className="font-700 text-px18 text-gray-4">
-                <span className="text-secondary-orange">⚠</span>
-              </h1>
-              <div>Delegate is out of sync. You can update it on the vote page.</div>
-            </SimplePopover>
           </div>
-        </div>
+        )}
         <div
           className="lg:hidden mobile-menu overflow-hidden transition-all ease-in-out"
           style={{ maxHeight: mobileMenuMaxHeight }}

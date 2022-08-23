@@ -9,7 +9,19 @@ import { useAppStore } from 'store/application'
 
 export default function VoteForDelegateModal(): JSX.Element {
   const { voteForDelegateModal, setVoteForDelegateModalForAddress } = useAppStore()
-  const { myNounlets } = useLeaderboard()
+  const { myNounlets, delegateVotes } = useLeaderboard()
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleVoteForDelegate = async () => {
+    if (voteForDelegateModal.address == null) return
+    setIsLoading(true)
+    try {
+      const response = await delegateVotes(voteForDelegateModal.address)
+    } catch (error) {
+      console.log('error!', error)
+    }
+    setIsLoading(false)
+  }
 
   return (
     <SimpleModalWrapper
@@ -36,8 +48,10 @@ export default function VoteForDelegateModal(): JSX.Element {
           <p className="font-londrina text-px36 leading-px42 text-center">{myNounlets.length}</p>
           <Button
             className="primary"
+            loading={isLoading}
             onClick={() => {
               console.log('Vote for delegate')
+              handleVoteForDelegate()
             }}
           >
             Vote

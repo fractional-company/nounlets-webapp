@@ -33,6 +33,7 @@ export default function HomeHero(): JSX.Element {
   const isButtonNextDisabled = useMemo(() => {
     if (nid == null) return true
     if (+nid >= +latestNounletTokenId) return true
+    if (+nid === 100) return true
     return false
   }, [nid, latestNounletTokenId])
 

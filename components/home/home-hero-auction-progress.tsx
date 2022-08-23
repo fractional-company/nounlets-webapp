@@ -27,8 +27,7 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
   const { account } = useEthers()
   const sdk = useSdk()
 
-  const { isLoading, vaultAddress, nounletTokenAddress, latestNounletTokenId, minBidIncrease } =
-    useVaultStore()
+  const { vaultAddress, nounletTokenAddress, minBidIncrease } = useVaultStore()
   const {
     nid: nounletId,
     auctionInfo,

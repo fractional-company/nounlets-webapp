@@ -67,6 +67,20 @@ export default function useLeaderboard() {
     return mapped
   }, [data, account, myNounletsVotes])
 
+  const claimDelegate = async (toAddress: string) => {
+    console.log('update delegate', toAddress)
+    if (sdk == null || account == null || library == null) return
+    if (nounletTokenAddress == '') return
+
+    try {
+      const nounletGovernance = sdk.NounletGovernance.connect(library.getSigner())
+      const tx = await nounletGovernance.claimDelegate(vaultAddress, toAddress)
+      console.log(await tx.wait())
+    } catch (error) {
+      console.log('error', error)
+    }
+  }
+
   const delegateVotes = async (toAddress: string) => {
     const primary = '0x497F34f8A6EaB10652f846fD82201938e58d72E0'
     const secondary = '0x6d2343bEecEd0E805f3ccCfF870ccB974B5795E6'
@@ -76,6 +90,7 @@ export default function useLeaderboard() {
     if (nounletTokenAddress == '') return
     try {
       const nounletToken = sdk.NounletToken.connect(library.getSigner()).attach(nounletTokenAddress)
+
       // console.log(await nounletToken.NOUNS_TOKEN_ID())
 
       // console.log(await nounletToken.balanceOf(account, 4))
@@ -91,7 +106,7 @@ export default function useLeaderboard() {
       // console.log(await nounletToken.getCurrentVotes(secondary))
       // console.log(await nounletToken.numCheckpoints(secondary))
 
-      const tx = await nounletToken.delegate(primary)
+      const tx = await nounletToken.delegate(toAddress)
       console.log(await tx.wait())
     } catch (error) {
       console.log('error', error)
@@ -102,7 +117,8 @@ export default function useLeaderboard() {
     leaderboardListData,
     myNounlets,
     myNounletsVotes,
-    delegateVotes
+    delegateVotes,
+    claimDelegate
     // mutateLeaderboard
   }
 }

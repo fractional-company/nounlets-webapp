@@ -16,12 +16,14 @@ export default function ChainUpdater() {
   const sdk = useSdk()
   const { mutate: mutateSWRGlobal } = useSWRConfig()
   const {
+    isLive,
     isLoading,
     vaultAddress,
     nounTokenId,
     nounletTokenAddress,
     currentDelegate,
     latestNounletTokenId,
+    setIsLive,
     setIsLoading,
     setVaultCuratorAddress,
     setNounTokenId,
@@ -37,13 +39,14 @@ export default function ChainUpdater() {
 
   // If overshoot, redirect to "/"
   useEffect(() => {
+    if (!isLive) return
     if (nid == null) return
     const targetNid = +nid
     if (targetNid <= 0 || targetNid > +latestNounletTokenId) {
-      console.log('Not in range')
-      router.replace('/')
+      console.log('Not in range', router.asPath)
+      // router.replace('/')
     }
-  }, [nid, isLoading, latestNounletTokenId, router])
+  }, [isLive, nid, isLoading, latestNounletTokenId, router])
 
   // ====================================================
   // Vault metadata
@@ -75,27 +78,37 @@ export default function ChainUpdater() {
       }
     },
     {
-      focusThrottleInterval: 5000,
       dedupingInterval: 5000,
       errorRetryCount: 0, // TODO change to 2
-      onError: (error) => {
-        console.error(error)
+      onErrorRetry: (error, key, config, revalidate, { retryCount }) => {
+        console.log(error, retryCount)
+        if (error.status === 404) return
+        if (error === 'vault not found') {
+          console.log('🐉 Checking for vault again in 30 seconds 🐉')
+          setTimeout(() => revalidate({ retryCount }), 30000)
+          return
+        }
+        if (retryCount >= 3) return
+
+        // Retry after 2 seconds.
+        setTimeout(() => revalidate({ retryCount }), 2000)
       },
       onSuccess: (data) => {
         console.groupCollapsed('🏴 fetched vault metadata ...')
         console.table(data)
         console.groupEnd()
 
-        if (data.nounletCount > 0) {
+        if (data.isLive) {
           setNounletTokenAddress(data.nounletTokenAddress)
           setNounTokenId(data.nounTokenId)
           setVaultCuratorAddress(data.curator)
           setCurrentDelegate(data.currentDelegate)
           setBackendLatestNounletTokenId(`${data.nounletCount}`)
           setLatestNounletTokenId(`${data.currentId.toString()}`)
+          setIsLive(true)
           setIsLoading(false)
         } else {
-          console.log('an auction should already be running')
+          console.log('Server returned null')
         }
       }
     }
@@ -115,7 +128,7 @@ export default function ChainUpdater() {
 
   useEffect(() => {
     if (sdk == null) return
-    if (latestNounletTokenId === '') return
+    if (!isLive) return
 
     console.log('🍁 setting SETTLED listener for ', latestNounletTokenId)
     const nounletAuction = sdk.NounletAuction
@@ -143,7 +156,14 @@ export default function ChainUpdater() {
       console.log('🍂 removing SETTLED listener for11', latestNounletTokenId)
       nounletAuction.off(settledFilter, listener)
     }
-  }, [vaultAddress, nounletTokenAddress, latestNounletTokenId, sdk, debouncedMutateVaultMetadata])
+  }, [
+    isLive,
+    vaultAddress,
+    nounletTokenAddress,
+    latestNounletTokenId,
+    sdk,
+    debouncedMutateVaultMetadata
+  ])
 
   //11247688 //11247688
 
@@ -153,18 +173,34 @@ export default function ChainUpdater() {
   // ====================================================
 
   const lastEventBlockNumber = useRef(0)
+  const canFetchLeaderboard = useMemo(() => {
+    return isLive && sdk != null && nounTokenId !== ''
+  }, [isLive, sdk, nounTokenId])
+
   const { mutate: mutateLeaderboard } = useSWR(
-    nounTokenId !== '' && { name: 'Leaderboard' },
+    canFetchLeaderboard && { name: 'Leaderboard' },
     async () => {
-      const result = await getLeaderboardData(nounTokenId)
-      console.log('fetched new data', result)
-      return result
+      console.log('Run now?')
+
+      const [leaderboardData, currentDelegate] = await Promise.all([
+        getLeaderboardData(nounTokenId),
+        sdk!.NounletGovernance.currentDelegate(vaultAddress)
+      ])
+
+      // const result = await getLeaderboardData(nounTokenId)
+      console.log('fetched new data', leaderboardData, currentDelegate)
+      return {
+        ...leaderboardData,
+        currentDelegate
+      }
     },
     {
       onSuccess(data) {
+        setCurrentDelegate(data.currentDelegate)
         setData(data)
       },
       refreshInterval(latestData) {
+        if (latestData == null) return 0
         const beBlockNumber = latestData?._meta.block.number || 0
 
         if (lastEventBlockNumber.current === 0) {
@@ -173,10 +209,11 @@ export default function ChainUpdater() {
         }
 
         if (lastEventBlockNumber.current > beBlockNumber) {
-          console.log('🥒 Leadeboard data out of sync')
+          console.log('🥒 Leadeboard data out of sync', nounTokenId)
           return 15000
         }
 
+        console.log('🥒🥒🥒 Leaderboard in sync')
         return 0
       }
     }
@@ -191,8 +228,9 @@ export default function ChainUpdater() {
   ])
 
   useEffect(() => {
-    if (sdk == null || nounletTokenAddress == '') return
+    if (!isLive || sdk == null) return
     console.log('🍉 listen to any event on NounletToken', vaultAddress, nounletTokenAddress)
+    const nounletToken = sdk.NounletToken.attach(nounletTokenAddress)
 
     const listener = (...eventData: any) => {
       console.log('🍉🍉🍉 any event', eventData)
@@ -204,24 +242,40 @@ export default function ChainUpdater() {
       debouncedMutateLeaderboard()
     }
 
-    // sdk.NounletToken.on(sdk.NounletToken, listener)
-    sdk.NounletAuction.on(sdk.NounletAuction, listener)
+    nounletToken.on(nounletToken, listener)
+    // nounletAuction.on(nounletAuction, listener)
 
     return () => {
       console.log('🍉 stop listening to any event on NounletToken')
-      // sdk.NounletToken.off(sdk.NounletToken, listener)
-      sdk.NounletAuction.off(sdk.NounletAuction, listener)
+      nounletToken.off(nounletToken, listener)
+      // nounletAuction.off(nounletAuction, listener)
     }
-  }, [sdk, vaultAddress, nounletTokenAddress, debouncedMutateLeaderboard])
+  }, [isLive, sdk, vaultAddress, nounletTokenAddress, debouncedMutateLeaderboard])
+
+  const vaultMetadata = {
+    isLive,
+    isLoading,
+    vaultAddress, // VaultContract
+    nounletTokenAddress, // NouneltTokenContract (proxy?)
+    nounTokenId,
+    latestNounletTokenId
+  }
+
+  const asd = async () => {
+    console.log('asd', canFetchLeaderboard)
+    const dataa = await mutateLeaderboard()
+    console.log('sda', dataa)
+  }
 
   return (
     <>
-      <Button className="primary" onClick={() => debouncedMutateVaultMetadata()}>
-        debounced MutateVaultMetadata
+      <pre>{JSON.stringify(vaultMetadata, null, 4)}</pre>
+      <Button className="primary" onClick={() => mutateVaultMetadata()}>
+        mutateVaultMetadata
       </Button>
 
-      <Button className="primary" onClick={() => debouncedMutateLeaderboard()}>
-        debounced MutateLeaderboard!
+      <Button className="primary" onClick={() => asd()}>
+        mutateLeaderboard!
       </Button>
     </>
   )
