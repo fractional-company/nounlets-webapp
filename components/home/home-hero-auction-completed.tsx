@@ -105,7 +105,7 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
       </div>
 
       <div className="flex items-center !mt-6">
-        <IconLock />
+        <IconLock className="mb-1" />
         <p className="text-px18 font-500 ml-1.5">
           Ended on <span className="font-700 text-gray-3">{formattedData.endedOn}</span>
         </p>

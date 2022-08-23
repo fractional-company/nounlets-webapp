@@ -268,7 +268,7 @@ export default function ChainUpdater() {
   }
 
   return (
-    <>
+    <div className="overflow-hidden">
       <pre>{JSON.stringify(vaultMetadata, null, 4)}</pre>
       <Button className="primary" onClick={() => mutateVaultMetadata()}>
         mutateVaultMetadata
@@ -277,6 +277,6 @@ export default function ChainUpdater() {
       <Button className="primary" onClick={() => asd()}>
         mutateLeaderboard!
       </Button>
-    </>
+    </div>
   )
 }

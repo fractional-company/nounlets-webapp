@@ -72,7 +72,7 @@ export default function SimpleAccordion(props: {
         style={{ maxHeight: contentMaxHeight, opacity: isOpen ? 1.0 : 0.0 }}
       >
         <div ref={contentRef}>
-          <div className="py-4">{props.children}</div>
+          <div className="pt-6">{props.children}</div>
         </div>
       </div>
     </div>

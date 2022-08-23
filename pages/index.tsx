@@ -17,6 +17,7 @@ import useSdk from 'hooks/useSdk'
 import { getNounletAuctionData, getNounletAuctionDataBC } from 'lib/graphql/queries'
 import { useAuctionInfoStore } from 'store/auctionInfoStore'
 import HomeVotesFromNounlet from 'components/home/home-votes-from-nounlet'
+import HomeWTF from 'components/home/home-wtf'
 
 /*
 Token ID    | Vault
@@ -238,12 +239,14 @@ const Home: NextPage<{ vault: any }> = ({ vault }: { vault: any }) => {
           mutateAuctionInfo
         </button> */}
       </div>
-      <HomeHero />
-      {isLive && (
-        <>{nid === latestNounletTokenId ? <HomeLeaderboard /> : <HomeVotesFromNounlet />}</>
-      )}
-      {/* <HomeCollectiveOwnership /> */}
-      {/* <HomeWTF /> */}
+      <div className="space-y-16">
+        <HomeHero />
+        {isLive && (
+          <>{nid === latestNounletTokenId ? <HomeLeaderboard /> : <HomeVotesFromNounlet />}</>
+        )}
+        {/* <HomeCollectiveOwnership /> */}
+        <HomeWTF />
+      </div>
     </div>
   )
 }
