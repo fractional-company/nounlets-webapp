@@ -1,5 +1,6 @@
 import Button from 'components/buttons/button'
 import IconArrow from 'components/icons/icon-arrow'
+import NounletImage from 'components/NounletImage'
 import useDisplayedNounlet from 'hooks/useDisplayedNounlet'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
@@ -47,53 +48,45 @@ export default function HomeHero(): JSX.Element {
     <div className="home-hero bg-gray-1">
       <div className="lg:container mx-auto px-4">
         <div className="lg:grid lg:grid-cols-2">
-          <div className="flex flex-col justify-end lg:pr-4">
+          <div className="flex flex-col justify-end lg:pr-4 lg:min-h-[600px]">
             <div className="w-full aspect-square max-w-[512px] mx-auto">
-              {isLoading ? (
-                <Image src={nounLoadingImage} layout="responsive" alt="nounlet loading" />
-              ) : (
-                <Image src={nounImage} layout="responsive" alt="nounlet 1" />
-              )}
+              <NounletImage id={nid} />
             </div>
           </div>
 
           <div className="px-4 py-12 md:p-12 lg:pl-6 lg:pr-10 -mx-4 lg:-mx-0 bg-white lg:bg-transparent space-y-3">
-            {/* <pre>assas: {JSON.stringify(auctionInfo, null, 4)}</pre> */}
+            {/* <pre>{JSON.stringify(auctionInfo, null, 4)}</pre> */}
+            <div className="navigation flex items-center space-x-1">
+              <Button
+                disabled={isButtonPreviousDisabled}
+                onClick={() => moveToNounletDirection(-1)}
+                className="flex items-center justify-center rounded-full w-10 h-10 cursor-pointer bg-gray-2 lg:bg-white hover:bg-gray-2"
+              >
+                <IconArrow />
+              </Button>
+
+              <Button
+                onClick={() => moveToNounletDirection(+1)}
+                disabled={isButtonNextDisabled}
+                className="flex items-center justify-center rounded-full w-10 h-10 cursor-pointer bg-gray-2 lg:bg-white hover:bg-gray-2"
+              >
+                <IconArrow className="rotate-180" />
+              </Button>
+
+              <p className="text-px18 font-700 pl-2">
+                {nounletNumberString}
+                <span className="text-gray-4">/100</span>
+              </p>
+            </div>
+
+            <h1 className="font-londrina text-px64 leading-[82px]">
+              Nounlet {nounletNumberString}
+            </h1>
+
             {auctionInfo == null || isLoading ? (
               <>Ahhh Im loading</>
             ) : (
-              <>
-                <div className="navigation flex items-center space-x-1">
-                  <Button
-                    disabled={isButtonPreviousDisabled}
-                    onClick={() => moveToNounletDirection(-1)}
-                    className="flex items-center justify-center rounded-full w-10 h-10 cursor-pointer bg-gray-2 lg:bg-white hover:bg-gray-2"
-                  >
-                    <IconArrow />
-                  </Button>
-
-                  <Button
-                    onClick={() => moveToNounletDirection(+1)}
-                    disabled={isButtonNextDisabled}
-                    className="flex items-center justify-center rounded-full w-10 h-10 cursor-pointer bg-gray-2 lg:bg-white hover:bg-gray-2"
-                  >
-                    <IconArrow className="rotate-180" />
-                  </Button>
-
-                  <p className="text-px18 font-700 pl-2">
-                    {nounletNumberString}
-                    <span className="text-gray-4">/100</span>
-                  </p>
-                </div>
-
-                <h1 className="font-londrina text-px64 leading-[82px]">
-                  Nounlet {nounletNumberString}
-                </h1>
-
-                {/* <pre>{JSON.stringify(auctionInfo, null, 4)}</pre> */}
-
-                {hasAuctionEnded ? <HomeHeroAuctionCompleted /> : <HomeHeroAuctionProgress />}
-              </>
+              <>{hasAuctionEnded ? <HomeHeroAuctionCompleted /> : <HomeHeroAuctionProgress />}</>
             )}
           </div>
         </div>

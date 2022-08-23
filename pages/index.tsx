@@ -18,6 +18,7 @@ import { getNounletAuctionData, getNounletAuctionDataBC } from 'lib/graphql/quer
 import { useAuctionInfoStore } from 'store/auctionInfoStore'
 import HomeVotesFromNounlet from 'components/home/home-votes-from-nounlet'
 import HomeWTF from 'components/home/home-wtf'
+import NounletImage from 'components/NounletImage'
 
 /*
 Token ID    | Vault
@@ -58,7 +59,7 @@ const Home: NextPage<{ vault: any }> = ({ vault }: { vault: any }) => {
   useSWR(
     queryKey,
     async (key) => {
-      console.log('🌎🌎🌎🌎🌎🌎🌎🌎🌎')
+      console.log('🌎🌎🌎🌎🌎🌎🌎🌎🌎', auctionInfo)
       let response
       if (key.nounletId == backendLatestNounletTokenId || key.nounletId === latestNounletTokenId) {
         response = await getNounletAuctionDataBC(

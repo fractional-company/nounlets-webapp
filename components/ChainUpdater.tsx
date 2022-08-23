@@ -153,7 +153,7 @@ export default function ChainUpdater() {
     nounletAuction.on(settledFilter, listener)
 
     return () => {
-      console.log('🍂 removing SETTLED listener for11', latestNounletTokenId)
+      console.log('🍂 removing SETTLED listener for ', latestNounletTokenId)
       nounletAuction.off(settledFilter, listener)
     }
   }, [
@@ -213,7 +213,7 @@ export default function ChainUpdater() {
           return 15000
         }
 
-        console.log('🥒🥒🥒 Leaderboard in sync')
+        // console.log('🥒🥒🥒 Leaderboard in sync')
         return 0
       }
     }
