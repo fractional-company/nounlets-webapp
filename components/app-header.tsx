@@ -26,6 +26,8 @@ import SimpleAddress from './simple-address'
 import { ethers } from 'ethers'
 import classNames from 'classnames'
 import IconCrown from './icons/icon-crown'
+import useDisplayedNounlet from 'hooks/useDisplayedNounlet'
+import useCurrentBackground from 'hooks/useCurrentBackground'
 
 export default function AppHeader(): JSX.Element {
   const [isMobileMenuOpen, setIsModalMenuOpen] = useState(false)
@@ -33,7 +35,9 @@ export default function AppHeader(): JSX.Element {
   const mobileMenuRef = useRef<HTMLDivElement>(null)
   const { setConnectModalOpen } = useAppStore()
   const { account, deactivate } = useEthers()
-  const { isLive, currentDelegate } = useVaultStore()
+  const { isLive, currentDelegate, backgrounds } = useVaultStore()
+  const { nid, nounletImageData, nounletBackground } = useDisplayedNounlet()
+  const { currentBackground } = useCurrentBackground()
 
   useEffect(() => {
     if (mobileMenuRef.current == null) return
@@ -102,7 +106,7 @@ export default function AppHeader(): JSX.Element {
   }, [currentDelegate])
 
   return (
-    <div className="app-header bg-gray-1">
+    <div className="app-header" style={{ background: currentBackground }}>
       <div className="lg:container mx-auto px-4">
         <WalletModal />
         <VoteForDelegateModal />

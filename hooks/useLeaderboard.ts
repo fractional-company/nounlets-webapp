@@ -2,6 +2,7 @@ import { useEthers } from '@usedapp/core'
 import { ethers } from 'ethers'
 import { getLeaderboardData } from 'lib/graphql/queries'
 import { useMemo } from 'react'
+import { useBlockCheckpointStore } from 'store/blockCheckpoint'
 import { useLeaderboardStore } from 'store/leaderboardStore'
 import { useVaultStore } from 'store/vaultStore'
 import useSWR from 'swr'
@@ -10,17 +11,75 @@ import useSdk from './useSdk'
 
 export default function useLeaderboard() {
   const { account, library } = useEthers()
-  const {
-    isLoading,
-    vaultAddress,
-    nounTokenId,
-    nounletTokenAddress,
-    backendLatestNounletTokenId,
-    latestNounletTokenId
-  } = useVaultStore()
+  const { leaderboardBlockNumber, setLeaderboardBlockNumber } = useBlockCheckpointStore()
+  const { isLive, vaultAddress, nounTokenId, nounletTokenAddress } = useVaultStore()
   const sdk = useSdk()
 
-  const { data } = useLeaderboardStore()
+  // const { data } = useLeaderboardStore()
+  const canFetchLeaderboard = useMemo(() => {
+    return isLive && sdk != null && nounTokenId !== ''
+  }, [isLive, sdk, nounTokenId])
+
+  const { data, mutate } = useSWR(
+    canFetchLeaderboard && { name: 'Leaderboard' },
+    async (key) => {
+      console.log('🌽🌽🌽🌽🌽 Fetching new leaderboard data')
+      const [leaderboardData, currentDelegate] = await Promise.all([
+        getLeaderboardData(nounTokenId),
+        sdk!.NounletGovernance.currentDelegate(vaultAddress)
+      ])
+
+      console.log('🌽🌽🌽🌽🌽 Fetched new leaderboard data', leaderboardData, currentDelegate)
+      return {
+        ...leaderboardData,
+        currentDelegate
+      }
+    },
+    {
+      revalidateIfStale: false,
+      refreshInterval: (latestData) => {
+        if (latestData == null) return 15000
+        if (latestData._meta.block.number < leaderboardBlockNumber) {
+          console.log(
+            '🍆🍆🍆🍆🍆🍆 Leaderboard is behind',
+            latestData._meta.block.number,
+            'vs',
+            leaderboardBlockNumber
+          )
+          return 15000
+        }
+
+        // console.log('🌽🌽🌽🌽🌽 Leaderboard is in sync. Dont update until events')
+        return 0
+      },
+      onSuccess: (data, key, config) => {
+        if (data == null || leaderboardBlockNumber === 0) {
+          console.log(
+            '🌽🌽🌽🌽🌽 First load or data null, check again in 15 just to be sure',
+            data == null
+          )
+          setTimeout(() => {
+            console.log('🌽🌽🌽', 'Forced mutate', '🌽🌽🌽')
+            mutate()
+          }, 15000)
+        }
+        if (data._meta.block.number > leaderboardBlockNumber) {
+          console.log('🌽🌽🌽🌽🌽', 'block number is higher on BE. Update it!')
+          setLeaderboardBlockNumber(data._meta.block.number)
+        }
+      },
+      onError(err, key, config) {
+        console.log('error?', err)
+        debugger
+      }
+    }
+  )
+
+  // const {} = useSWR('Leaderboard', () => {
+
+  // }, {
+  //   revalidateIfStale: false
+  // })
 
   const myNounlets = useMemo(() => {
     if (account == null) return []
@@ -114,6 +173,8 @@ export default function useLeaderboard() {
   }
 
   return {
+    data,
+    mutate,
     leaderboardListData,
     myNounlets,
     myNounletsVotes,

@@ -1,4 +1,5 @@
 import { getLeaderboardData } from 'lib/graphql/queries'
+import { createTrackedSelector } from 'react-tracked'
 import create from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 
@@ -14,13 +15,15 @@ const initialState: StoreState = {
   data: null
 }
 
-export const useLeaderboardStore = create(
-  immer<StoreState & StoreActions>((set) => ({
-    ...initialState,
-    setData: (data) => {
-      set((state) => {
-        state.data = data
-      })
-    }
-  }))
+export const useLeaderboardStore = createTrackedSelector(
+  create(
+    immer<StoreState & StoreActions>((set) => ({
+      ...initialState,
+      setData: (data) => {
+        set((state) => {
+          state.data = data
+        })
+      }
+    }))
+  )
 )

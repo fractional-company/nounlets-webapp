@@ -42,7 +42,7 @@ export default function HomeLeaderboard(): JSX.Element {
               <LeaderboardListTile key={index} data={data} />
             ))}
             <Link href="/governance">
-              <Button className="border border-gray-2 hover:border-secondary-blue h-12 sm:h-[74px] rounded-px16 text-secondary-blue w-full text-px20 font-700">
+              <Button className="border-2 border-gray-2 hover:border-secondary-blue h-12 sm:h-[74px] rounded-px16 text-secondary-blue w-full text-px20 font-700">
                 See full leaderboard
               </Button>
             </Link>

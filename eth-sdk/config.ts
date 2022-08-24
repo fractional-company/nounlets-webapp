@@ -69,7 +69,6 @@ export default defineConfig({
         // NounletToken: '0x92F2880d6D22dd87cECeAD9015C3f6Ab04202432',
 
         // NFTDescriptorV2: '0x1edd23e381a4c313b8c4224a0cc58d0185d0c9d2',
-        // MintHelper: '0x99b6a99d26366ba169dba72754408cbd69ac810e',
         // MockProxyRegistry: '0xa019b8dd22d4ebf183122644138d86045b816d14',
         // SVGRenderer: '0xa7ded038f8bfd412e7c5bfc47772fabeb00755c1',
         // Inflator: '0xd67cf22914051a3fc70cdc538b9c1f235cd8f674',

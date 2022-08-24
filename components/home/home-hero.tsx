@@ -1,6 +1,7 @@
 import Button from 'components/buttons/button'
 import IconArrow from 'components/icons/icon-arrow'
-import NounletImage from 'components/NounletImage'
+import { NounletImage } from 'components/NounletImage'
+import useCurrentBackground from 'hooks/useCurrentBackground'
 import useDisplayedNounlet from 'hooks/useDisplayedNounlet'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
@@ -18,8 +19,9 @@ export default function HomeHero(): JSX.Element {
     latestNounletTokenId,
     hasAuctionEnded,
     auctionInfo,
-    mutateDisplayedNounletAuctionInfo
+    mutateAuctionInfo: mutateDisplayedNounletAuctionInfo
   } = useDisplayedNounlet()
+  const { currentBackground } = useCurrentBackground()
 
   const nounletNumberString = useMemo(() => {
     return nid ?? '???'
@@ -45,7 +47,7 @@ export default function HomeHero(): JSX.Element {
   }
 
   return (
-    <div className="home-hero bg-gray-1">
+    <div className="home-hero" style={{ background: currentBackground }}>
       <div className="lg:container mx-auto px-4">
         <div className="lg:grid lg:grid-cols-2">
           <div className="flex flex-col justify-end lg:pr-4 lg:min-h-[600px]">

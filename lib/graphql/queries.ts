@@ -34,9 +34,6 @@ export const getVaultData = async (vaultAddress: string) => {
     `
   })
 
-  console.log('getVaultData', data)
-
-  // this should not happen
   if (data.vault == null || data.vault.noun == null) {
     throw 'vault not found'
   }
@@ -197,8 +194,6 @@ export const getLeaderboardData = async (nounTokenId: string) => {
     `
   })
 
-  console.log('LOLOLOL', data)
-
   // sort and append totalNounletsHeld
   const newData = data.accounts
     .map((account) => {
@@ -213,8 +208,6 @@ export const getLeaderboardData = async (nounTokenId: string) => {
 }
 
 export const getNounletVotes = async (nounletTokenAddress: string, nounletTokenId: string) => {
-  console.log('trying!')
-
   const { data } = await client.query<{ nounlet: Nounlet }>({
     query: gql`
     {
@@ -228,7 +221,5 @@ export const getNounletVotes = async (nounletTokenAddress: string, nounletTokenI
       }
     }`
   })
-
-  console.log('got data', data)
   return data
 }

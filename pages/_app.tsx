@@ -12,6 +12,7 @@ import ChainUpdater from '../components/ChainUpdater'
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
 import utc from 'dayjs/plugin/utc'
+import { NEXT_PUBLIC_CACHE_VERSION, NEXT_PUBLIC_NOUN_VAULT_ADDRESS } from 'config'
 
 dayjs.extend(duration)
 dayjs.extend(utc)
@@ -31,14 +32,40 @@ const useDappConfig: Config = {
   autoConnect: true
 }
 
+const cacheVersion = NEXT_PUBLIC_CACHE_VERSION
+const cacheKey = `nounlets-cache/v${cacheVersion}/${NEXT_PUBLIC_NOUN_VAULT_ADDRESS}`
+function localStorageProvider() {
+  return new Map()
+  if (typeof window === 'undefined') return new Map([])
+  if (cacheVersion === -1) {
+    // escape hatch if something goes wrong with the cache entirely
+    return new Map([])
+  }
+
+  // When initializing, we restore the data from `localStorage` into a map.
+  const map = new Map(JSON.parse(localStorage.getItem(cacheKey) || '[]'))
+
+  // Before unloading the app, we write back all the data into `localStorage`.
+  if (cacheVersion !== -1) {
+    window.addEventListener('beforeunload', () => {
+      const appCache = JSON.stringify(Array.from(map.entries()))
+      localStorage.setItem(cacheKey, appCache)
+    })
+  }
+
+  // We still use the map for write & read for performance.
+  return map
+}
+
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <SWRConfig
       value={{
         refreshInterval: 0,
-        dedupingInterval: 2000, // 10 * 60 * 1000, // 10 min dedup
+        dedupingInterval: 2000,
         revalidateOnFocus: false,
-        revalidateOnReconnect: false
+        revalidateOnReconnect: false,
+        provider: localStorageProvider
       }}
     >
       <DAppProvider config={useDappConfig}>

@@ -1,5 +1,6 @@
 import { Dialog } from '@headlessui/react'
 import { Mainnet, Rinkeby } from '@usedapp/core'
+import { NounletImage } from 'components/NounletImage'
 import { NEXT_PUBLIC_BID_DECIMALS } from 'config'
 import { FixedNumber } from 'ethers'
 import { formatEther } from 'ethers/lib/utils'
@@ -53,10 +54,12 @@ const BidHistoryModal = (): JSX.Element => {
   )
 
   return (
-    <div className="sm:w-[370px]">
-      <Dialog.Title className="p-4 text-px24 font-500">
-        <div className="flex -mt-10">
-          {/* <img src="" alt="" /> */}
+    <div className="sm:w-[400px]">
+      <Dialog.Title className="p-4 pl-0 text-px24 font-500">
+        <div className="flex items-center -mt-10 space-x-4">
+          <div className="w-[84px]">
+            <NounletImage id={nid} />
+          </div>
           <div className="flex flex-col font-londrina">
             <h4 className="text-px24 text-gray-4">Bids for</h4>
             <h2 className="text-px42 font-900 leading-px42">Nounlet {nid}/100</h2>

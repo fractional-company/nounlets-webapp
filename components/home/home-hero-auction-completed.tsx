@@ -1,37 +1,26 @@
 import Button from 'components/buttons/button'
-import CountdownTimer from 'components/countdown-timer'
 import IconEth from 'components/icons/icon-eth'
-import IconLinkOffsite from 'components/icons/icon-link-offsite'
-import IconQuestionCircle from 'components/icons/icon-question-circle'
-import CongratulationsModal from 'components/modals/congratulations-modal'
 import SimpleAddress from 'components/simple-address'
-import { BigNumberish, ethers, FixedNumber } from 'ethers'
-import { formatEther, formatUnits } from 'ethers/lib/utils'
-import Image from 'next/image'
+import { ethers, FixedNumber } from 'ethers'
+import { formatEther } from 'ethers/lib/utils'
 
-import userIcon from 'public/img/user-icon.jpg'
-import { useMemo, useState } from 'react'
-import BidHistoryModal from '../modals/bid-history-modal'
-import SimpleModalWrapper from '../SimpleModalWrapper'
-import IconLock from '../icons/icon-lock'
-import IconHeart from '../icons/icon-heart'
-import IconBidHistory from '../icons/icon-bid-history'
-import IconVerified from '../icons/icon-verified'
-import { buildEtherscanAddressLink } from '../../lib/utils/etherscan'
-import { useAppStore } from '../../store/application'
-import dayjs from 'dayjs'
-import useOnDisplayAuction, { useAuctionBids } from '../../lib/wrappers/onDisplayAuction'
-import { Auction } from '../../lib/wrappers/nounsAuction'
-import useDisplayedNounlet from 'hooks/useDisplayedNounlet'
-import { NEXT_PUBLIC_BID_DECIMALS } from 'config'
 import { useEthers } from '@usedapp/core'
 import IconSpinner from 'components/icons/icon-spinner'
+import { NEXT_PUBLIC_BID_DECIMALS } from 'config'
+import dayjs from 'dayjs'
+import useDisplayedNounlet from 'hooks/useDisplayedNounlet'
+import { useMemo, useState } from 'react'
+import { buildEtherscanAddressLink } from '../../lib/utils/etherscan'
+import { useAppStore } from '../../store/application'
+import IconBidHistory from '../icons/icon-bid-history'
+import IconHeart from '../icons/icon-heart'
+import IconLock from '../icons/icon-lock'
+import IconVerified from '../icons/icon-verified'
 
 export default function HomeHeroAuctionCompleted(): JSX.Element {
   const { account } = useEthers()
   const { setBidModalOpen } = useAppStore()
-  const { endedAuctionInfo, settleAuction, historicBids, mutateDisplayedNounletAuctionInfo } =
-    useDisplayedNounlet()
+  const { endedAuctionInfo, settleAuction, historicBids } = useDisplayedNounlet()
 
   const formattedData = useMemo(() => {
     const isLoading = endedAuctionInfo == null
@@ -87,7 +76,7 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
             <p className="text-px32 leading-[38px] font-700">{formattedData.winningBid}</p>
           </div>
         </div>
-        <div className="sm:border-r-2 border-gray-2"></div>
+        <div className="sm:border-r-2 border-black/20"></div>
         <div className="flex flex-col space-y-3 cursor-pointer">
           <p className="text-px18 leading-px22 font-500 text-gray-4">Nounlet held by</p>
           <div className="flex items-center">

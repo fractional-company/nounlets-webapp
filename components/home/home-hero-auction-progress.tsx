@@ -13,11 +13,12 @@ import { NEXT_PUBLIC_BID_DECIMALS } from 'config'
 import { BigNumber, FixedNumber } from 'ethers'
 import useSdk from 'hooks/useSdk'
 import { calculateNextBid } from 'lib/utils/nextBidCalculator'
-import { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react'
+import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useVaultStore } from 'store/vaultStore'
 import { Auction } from '../../lib/wrappers/nounsAuction'
 import { useAppStore } from '../../store/application'
 import SimpleModalWrapper from '../SimpleModalWrapper'
+import { debounce } from 'lodash'
 
 type ComponentProps = {
   auction?: Auction
@@ -33,7 +34,7 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
     auctionInfo,
     auctionEndTime,
     historicBids,
-    mutateDisplayedNounletAuctionInfo,
+    mutateAuctionInfo,
     bid
   } = useDisplayedNounlet(false)
   const { setBidModalOpen } = useAppStore()
@@ -89,6 +90,20 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
     })
   }, [historicBids])
 
+  // const memoedMutateAuctionInfo = useMemo(() => {
+  //   return debounce(mutateAuctionInfo, 200)
+  // }, [mutateAuctionInfo])
+
+  // const debouncedMutateAuctionInfo2 = useCallback(memoedMutateAuctionInfo, [memoedMutateAuctionInfo])
+
+  const debouncedMutateAuctionInfo = useMemo(() => {
+    console.log('new debouncedMutateAuctionInfo')
+    return debounce(() => {
+      console.log('🍓🍓🍓🍓🍓 calling debouncedMutateAuctionInfo')
+      return mutateAuctionInfo()
+    }, 1000)
+  }, [mutateAuctionInfo])
+
   useEffect(() => {
     if (sdk == null) return
     if (nounletId === '0') return
@@ -113,7 +128,7 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
       event: any // IDK why this isnt BidEvent
     ) => {
       console.log('🖐 bid event!', vault, token, id, bidder, amount, extendedTime, event)
-      mutateDisplayedNounletAuctionInfo()
+      debouncedMutateAuctionInfo()
     }
     nounletAuction.on(bidFilter, listener)
 
@@ -121,12 +136,12 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
       console.log('👎 removing listener for', nounletId)
       nounletAuction.off(bidFilter, listener)
     }
-  }, [vaultAddress, nounletTokenAddress, nounletId, sdk, mutateDisplayedNounletAuctionInfo])
+  }, [vaultAddress, nounletTokenAddress, nounletId, sdk, debouncedMutateAuctionInfo])
 
-  const handleTimerFinished = () => {
-    mutateDisplayedNounletAuctionInfo()
+  const handleTimerFinished = useCallback(() => {
+    debouncedMutateAuctionInfo()
     console.log('finished timer!')
-  }
+  }, [debouncedMutateAuctionInfo])
 
   const handleBidInputValue = (event: ChangeEvent<HTMLInputElement>) => {
     const onlyNumbers = new RegExp(`^\\d+\\.?\\d{0,${NEXT_PUBLIC_BID_DECIMALS}}$`)
@@ -169,7 +184,7 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
             <p className="text-px32 leading-[38px] font-700">{formattedValues.currrentBid}</p>
           </div>
         </div>
-        <div className="sm:border-r-2 border-gray-2"></div>
+        <div className="sm:border-r-2 border-black/20"></div>
         <div
           className="flex flex-col space-y-3 cursor-pointer"
           onClick={() => setShowEndTime(!showEndTime)}

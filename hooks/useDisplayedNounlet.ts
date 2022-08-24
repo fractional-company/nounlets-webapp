@@ -2,9 +2,10 @@ import { useEthers } from '@usedapp/core'
 import { BigNumber, ethers } from 'ethers'
 import { useRouter } from 'next/router'
 import { useCallback, useMemo } from 'react'
-import { useAuctionInfoStore } from 'store/auctionInfoStore'
 import { useVaultStore } from 'store/vaultStore'
 import useSWR, { unstable_serialize, useSWRConfig } from 'swr'
+import useNounletAuctionInfo from './useNounletAuctionInfo'
+import useNounletImageData from './useNounletImageData'
 import useSdk from './useSdk'
 
 export function generateNounletAuctionInfoKey({
@@ -26,6 +27,7 @@ export function generateNounletAuctionInfoKey({
 
 export default function useDisplayedNounlet(ignoreUpdate = false) {
   const router = useRouter()
+  const { backgrounds } = useVaultStore()
   const { mutate: mutateSWRGlobal, cache: cacheSWRGlobal } = useSWRConfig()
   const { account, library } = useEthers()
   const {
@@ -38,25 +40,35 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
   } = useVaultStore()
   const sdk = useSdk()
 
-  const { data: auctionInfoMap } = useAuctionInfoStore()
   const nid = useMemo(() => {
     if (isLoading) return null
     if (!router.isReady) return null
     if (router.query?.nid == null) return latestNounletTokenId
-    return router.query.nid as string
-  }, [isLoading, router.isReady, router.query, latestNounletTokenId])
-
-  const auctionInfo = nid ? auctionInfoMap[nid] : null
-
-  const swrQueryKey = useMemo(() => {
-    if (nid == null) return null
-    return {
-      name: 'NounletAuctionData',
-      vaultAddress,
-      nounletTokenAddress,
-      nounletId: nid
+    if (typeof router.query.nid !== 'string') {
+      router.replace('/')
+      return null
     }
-  }, [nid, vaultAddress, nounletTokenAddress])
+
+    const id = parseInt(router.query.nid as string)
+    if (isNaN(id)) {
+      router.replace('/')
+      return null
+    }
+
+    if (id <= 0 || id > +latestNounletTokenId) {
+      router.replace('/')
+      return null
+    }
+    return router.query.nid as string
+  }, [isLoading, router, latestNounletTokenId])
+
+  const { data: nounletImageData } = useNounletImageData(nid)
+  const nounletBackground = useMemo(() => {
+    if (nounletImageData == null) return null
+    return backgrounds[nounletImageData.seed.background] || null
+  }, [nounletImageData, backgrounds])
+
+  const { data: auctionInfo, swrKey, mutate: mutateAuctionInfo } = useNounletAuctionInfo(nid)
 
   const shouldCheckForHolder = useMemo(() => {
     if (sdk == null) return false
@@ -65,13 +77,11 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
     return true
   }, [sdk, auctionInfo])
   const { data: nounletHolderAddress } = useSWR(
-    shouldCheckForHolder && { ...swrQueryKey, name: 'NounletHolder' },
+    shouldCheckForHolder && { ...swrKey, name: 'NounletHolder' },
     async () => {
-      console.log('🍅 geting nounlet holder')
       const ownerAddress = await sdk!.NounletToken.attach(nounletTokenAddress).ownerOf(
         nid as string
       )
-      console.log('🍅 GOTEM')
       return ownerAddress || ethers.constants.AddressZero
     },
     {
@@ -172,19 +182,14 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
       })
   }
 
-  const mutateDisplayedNounletAuctionInfo = useCallback(async () => {
-    if (swrQueryKey != null) {
-      console.log('🔨 force mutate', swrQueryKey.nounletId)
-      return mutateSWRGlobal(swrQueryKey)
-    }
-  }, [swrQueryKey, mutateSWRGlobal])
-
   return {
-    swrQueryKey,
     nid,
+    isLatestNounlet: nid === latestNounletTokenId,
     isLoading: auctionInfo == null || isLoading,
     vaultAddress,
     nounletTokenAddress,
+    nounletImageData,
+    nounletBackground,
     latestNounletTokenId,
     hasAuctionEnded,
     hasAuctionSettled,
@@ -193,7 +198,7 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
     endedAuctionInfo,
     historicBids,
     // methods
-    mutateDisplayedNounletAuctionInfo,
+    mutateAuctionInfo,
     bid,
     settleAuction
   }
