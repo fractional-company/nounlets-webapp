@@ -3,10 +3,8 @@ import { ethers } from 'ethers'
 import { getLeaderboardData } from 'lib/graphql/queries'
 import { useMemo } from 'react'
 import { useBlockCheckpointStore } from 'store/blockCheckpoint'
-import { useLeaderboardStore } from 'store/leaderboardStore'
 import { useVaultStore } from 'store/vaultStore'
 import useSWR from 'swr'
-import useDisplayedNounlet from './useDisplayedNounlet'
 import useSdk from './useSdk'
 
 export default function useLeaderboard() {
@@ -15,7 +13,6 @@ export default function useLeaderboard() {
   const { isLive, vaultAddress, nounTokenId, nounletTokenAddress } = useVaultStore()
   const sdk = useSdk()
 
-  // const { data } = useLeaderboardStore()
   const canFetchLeaderboard = useMemo(() => {
     return isLive && sdk != null && nounTokenId !== ''
   }, [isLive, sdk, nounTokenId])

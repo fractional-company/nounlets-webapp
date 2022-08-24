@@ -1,3 +1,4 @@
+import { createTrackedSelector } from 'react-tracked'
 import create from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 import { grey } from '../lib/utils/nounBgColors'
@@ -48,37 +49,39 @@ const initialState: ApplicationState = {
   }
 }
 
-export const useAppStore = create(
-  immer<ApplicationState & ApplicationSetters>((set) => ({
-    ...initialState,
-    setStateBackgroundColor: (bgColor: string) => {
-      set((state) => {
-        state.stateBackgroundColor = bgColor
-        state.isCoolBackground = bgColor === grey
-      })
-    },
-    setAlertModal: (alertModal: AlertModal) => {
-      set((state) => {
-        state.alertModal = alertModal
-      })
-    },
-    setConnectModalOpen: (isOpen: boolean) => {
-      set((state) => {
-        state.isConnectModalOpen = isOpen
-      })
-    },
-    setBidModalOpen: (isOpen: boolean) => {
-      set((state) => {
-        state.isBidModalOpen = isOpen
-      })
-    },
-    setVoteForDelegateModalForAddress(isOpen: boolean, address?: string) {
-      set((state) => {
-        state.voteForDelegateModal.show = isOpen
-        if (address != null) {
-          state.voteForDelegateModal.address = address
-        }
-      })
-    }
-  }))
+export const useAppStore = createTrackedSelector(
+  create(
+    immer<ApplicationState & ApplicationSetters>((set) => ({
+      ...initialState,
+      setStateBackgroundColor: (bgColor: string) => {
+        set((state) => {
+          state.stateBackgroundColor = bgColor
+          state.isCoolBackground = bgColor === grey
+        })
+      },
+      setAlertModal: (alertModal: AlertModal) => {
+        set((state) => {
+          state.alertModal = alertModal
+        })
+      },
+      setConnectModalOpen: (isOpen: boolean) => {
+        set((state) => {
+          state.isConnectModalOpen = isOpen
+        })
+      },
+      setBidModalOpen: (isOpen: boolean) => {
+        set((state) => {
+          state.isBidModalOpen = isOpen
+        })
+      },
+      setVoteForDelegateModalForAddress(isOpen: boolean, address?: string) {
+        set((state) => {
+          state.voteForDelegateModal.show = isOpen
+          if (address != null) {
+            state.voteForDelegateModal.address = address
+          }
+        })
+      }
+    }))
+  )
 )

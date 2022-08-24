@@ -9,7 +9,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useVaultStore } from 'store/vaultStore'
 import useSWR, { useSWRConfig } from 'swr'
 import debounce from 'lodash/debounce'
-import { useLeaderboardStore } from 'store/leaderboardStore'
 import OnMounted from './utils/on-mounted'
 import useLeaderboard from 'hooks/useLeaderboard'
 import { useBlockCheckpointStore } from 'store/blockCheckpoint'
@@ -40,123 +39,6 @@ export default function ChainUpdater() {
       router.replace('/')
     }
   }, [isLive, nid, isLoading, latestNounletTokenId, router])
-
-  // ====================================================
-  // Vault metadata
-  // ====================================================
-
-  // const { mutate: mutateVaultMetadata } = useSWR(
-  //   router.isReady &&
-  //     sdk != null && {
-  //       name: 'VaultMetadata',
-  //       vaultAddress: vaultAddress
-  //     },
-  //   async (key) => {
-  //     if (sdk == null) throw new Error('sdk not initialized')
-
-  //     console.groupCollapsed('🏳️ fetching vault metadata ...')
-  //     console.log({ ...key })
-  //     console.groupEnd()
-
-  //     const [vaultMetadata, vaultInfo, currentDelegate] = await Promise.all([
-  //       getVaultData(key.vaultAddress),
-  //       sdk.NounletAuction.vaultInfo(vaultAddress),
-  //       sdk.NounletGovernance.currentDelegate(vaultAddress)
-  //     ])
-
-  //     return {
-  //       ...vaultMetadata,
-  //       ...vaultInfo,
-  //       currentDelegate
-  //     }
-  //   },
-  //   {
-  //     dedupingInterval: 5000,
-  //     errorRetryCount: 0, // TODO change to 2
-  //     onErrorRetry: (error, key, config, revalidate, { retryCount }) => {
-  //       console.log(error, retryCount)
-  //       if (error.status === 404) return
-  //       if (error === 'vault not found') {
-  //         console.log('🐉 Checking for vault again in 30 seconds 🐉')
-  //         setTimeout(() => revalidate({ retryCount }), 30000)
-  //         return
-  //       }
-  //       if (retryCount >= 3) return
-
-  //       // Retry after 2 seconds.
-  //       setTimeout(() => revalidate({ retryCount }), 2000)
-  //     },
-  //     onSuccess: (data) => {
-  //       console.groupCollapsed('🏴 fetched vault metadata ...')
-  //       console.table(data)
-  //       console.groupEnd()
-
-  //       if (data.isLive) {
-  //         setNounletTokenAddress(data.nounletTokenAddress)
-  //         setNounTokenId(data.nounTokenId)
-  //         setVaultCuratorAddress(data.curator)
-  //         setCurrentDelegate(data.currentDelegate)
-  //         setBackendLatestNounletTokenId(`${data.nounletCount}`)
-  //         setLatestNounletTokenId(`${data.currentId.toString()}`)
-  //         setIsLive(true)
-  //         setIsLoading(false)
-  //       } else {
-  //         console.log('Server returned null')
-  //       }
-  //     }
-  //   }
-  // )
-
-  // const memoedMutateVaultMetadataDebounce = useMemo(
-  //   () => debounce(mutateVaultMetadata, 2000),
-  //   [mutateVaultMetadata]
-  // )
-  // const debouncedMutateVaultMetadata = useCallback(memoedMutateVaultMetadataDebounce, [
-  //   memoedMutateVaultMetadataDebounce
-  // ])
-
-  // // ====================================================
-  // // Settled event
-  // // ====================================================
-
-  // useEffect(() => {
-  //   if (sdk == null) return
-  //   if (!isLive) return
-
-  //   console.log('🍁 setting SETTLED listener for ', latestNounletTokenId)
-  //   const nounletAuction = sdk.NounletAuction
-  //   const settledFilter = sdk.NounletAuction.filters.Settled(
-  //     vaultAddress,
-  //     nounletTokenAddress,
-  //     latestNounletTokenId
-  //   )
-  //   const listener = (
-  //     vault: string,
-  //     token: string,
-  //     id: BigNumber,
-  //     winner: string,
-  //     amount: BigNumber,
-  //     event: any
-  //   ) => {
-  //     console.log('settled event!', vault, token, id, winner, amount, event)
-  //     nounletAuction.off(settledFilter, listener)
-  //     debouncedMutateVaultMetadata()
-  //   }
-
-  //   nounletAuction.on(settledFilter, listener)
-
-  //   return () => {
-  //     console.log('🍂 removing SETTLED listener for ', latestNounletTokenId)
-  //     nounletAuction.off(settledFilter, listener)
-  //   }
-  // }, [
-  //   isLive,
-  //   vaultAddress,
-  //   nounletTokenAddress,
-  //   latestNounletTokenId,
-  //   sdk,
-  //   debouncedMutateVaultMetadata
-  // ])
 
   const vaultMetadata = {
     isLive,
@@ -302,7 +184,13 @@ function VaultUpdater() {
     }
   }, [isLive, vaultAddress, nounletTokenAddress, latestNounletTokenId, sdk, debouncedMutate])
 
-  return <></>
+  return (
+    <>
+      <Button className="primary" onClick={() => debouncedMutate()}>
+        VaultUpdater!
+      </Button>
+    </>
+  )
 }
 
 function LeaderboardUpdater() {

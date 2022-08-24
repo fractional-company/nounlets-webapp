@@ -89,14 +89,9 @@ export default function useNounletAuctionInfo(nounletId: string | null) {
     }
   )
 
-  const handleMutate = useCallback(async () => {
-    console.log('handling muatret!')
-    return await mutate()
-  }, [mutate])
-
   return {
     swrKey,
     data,
-    mutate: handleMutate
+    mutate
   }
 }
