@@ -71,7 +71,7 @@ export default function LeaderboardListTile(props: {
     try {
       const response = await claimDelegate(address)
       console.log('yasss', response)
-      toastSuccess('Delegate updated 🎊', 'Leaderboard will refresh momentarily.')
+      toastSuccess('Delegate updated 👑', 'Leaderboard will refresh momentarily.')
     } catch (error) {
       toastError('Update delegate failed', 'Please try again.')
     }

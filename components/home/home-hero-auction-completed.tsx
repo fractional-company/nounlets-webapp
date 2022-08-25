@@ -16,10 +16,13 @@ import IconBidHistory from '../icons/icon-bid-history'
 import IconHeart from '../icons/icon-heart'
 import IconLock from '../icons/icon-lock'
 import IconVerified from '../icons/icon-verified'
+import { WrappedTransactionReceiptState } from 'lib/utils/tx-with-error-handling'
+import useToasts from 'hooks/useToasts'
 
 export default function HomeHeroAuctionCompleted(): JSX.Element {
   const { account } = useEthers()
   const { setBidModalOpen } = useAppStore()
+  const { toastSuccess, toastError } = useToasts()
   const { endedAuctionInfo, settleAuction, historicBids } = useDisplayedNounlet()
 
   const formattedData = useMemo(() => {
@@ -47,17 +50,28 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
     setIsSettlingAuction(true)
 
     try {
-      const result = await settleAuction()
-      console.log('result of settling', result)
-      if (formattedData.heldByAddress.toLowerCase() === account?.toLowerCase()) {
-        // setIsCongratulationsModalShown(true)
+      const response = await settleAuction()
+      console.log('result of settling', response)
+
+      if (
+        response.status === WrappedTransactionReceiptState.SUCCESS ||
+        response.status === WrappedTransactionReceiptState.SPEDUP
+      ) {
+        if (formattedData.heldByAddress.toLowerCase() === account?.toLowerCase()) {
+          // setIsCongratulationsModalShown(true)
+        }
+        toastSuccess('Auction settled 🎊', 'On to the next one!')
+        // await mutateDisplayedNounletAuctionInfo() // not needed since there is no new events
+      } else {
+        throw response
       }
-      // await mutateDisplayedNounletAuctionInfo() // not needed since there is no new events
     } catch (error) {
       console.error('settling auction failed', error)
-      setIsSettlingAuction(false) // only stop the spinner if it errors
+      toastError('Settling failed', 'Please try again.')
+      // Only stop the spinner if it errors, since if it succedes
+      // the vault refresh will update the UI
+      setIsSettlingAuction(false)
     }
-    // setIsSettlingAuction(false) // dont set it here since it stops the spinner to early
   }
 
   const isLoadingHeldByAddress = useMemo(() => {
@@ -138,6 +152,7 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
               className="primary !h-[52px] w-full"
               loading={isSettlingAuction}
               onClick={() => handleSettleAuction()}
+              disabled={account == null}
             >
               Settle & start next auction
             </Button>

@@ -1,5 +1,6 @@
 import { useEthers } from '@usedapp/core'
 import { BigNumber, ethers } from 'ethers'
+import txWithErrorHandling from 'lib/utils/tx-with-error-handling'
 import { useRouter } from 'next/router'
 import { useCallback, useMemo } from 'react'
 import { useVaultStore } from 'store/vaultStore'
@@ -151,7 +152,7 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
     const tx = await sdk.NounletAuction.connect(library.getSigner()).bid(vaultAddress, {
       value: bidAmount
     })
-    return tx.wait()
+    return txWithErrorHandling(tx)
   }
 
   const settleAuction = async () => {
@@ -171,14 +172,7 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
       vaultAddress,
       mintProof
     )
-    return tx
-      .wait()
-      .then((res: any) => {
-        console.log('SETTLED!', res)
-      })
-      .catch((e: any) => {
-        console.log(e)
-      })
+    return txWithErrorHandling(tx)
   }
 
   return {

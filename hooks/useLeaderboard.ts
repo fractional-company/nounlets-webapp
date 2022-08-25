@@ -1,6 +1,7 @@
 import { useEthers } from '@usedapp/core'
 import { ethers } from 'ethers'
 import { getLeaderboardData } from 'lib/graphql/queries'
+import txWithErrorHandling from 'lib/utils/tx-with-error-handling'
 import { useMemo } from 'react'
 import { useBlockCheckpointStore } from 'store/blockCheckpoint'
 import { useVaultStore } from 'store/vaultStore'
@@ -26,7 +27,9 @@ export default function useLeaderboard() {
         sdk!.NounletGovernance.currentDelegate(vaultAddress)
       ])
 
-      console.log('🌽🌽🌽🌽🌽 Fetched new leaderboard data', leaderboardData, currentDelegate)
+      console.groupCollapsed('🌽🌽🌽🌽🌽 Fetched new leaderboard data')
+      console.log({ currentDelegate, leaderboardData })
+      console.groupEnd()
       return {
         ...leaderboardData,
         currentDelegate
@@ -51,12 +54,8 @@ export default function useLeaderboard() {
       },
       onSuccess: (data, key, config) => {
         if (data == null || leaderboardBlockNumber === 0) {
-          console.log(
-            '🌽🌽🌽🌽🌽 First load or data null, check again in 15 just to be sure',
-            data == null
-          )
           setTimeout(() => {
-            console.log('🌽🌽🌽', 'Forced mutate', '🌽🌽🌽')
+            console.log('🌽🌽🌽', 'First load or data null, forced mutate', '🌽🌽🌽')
             mutate()
           }, 15000)
         }
@@ -125,45 +124,22 @@ export default function useLeaderboard() {
 
   const claimDelegate = async (toAddress: string) => {
     console.log('update delegate', vaultAddress, toAddress)
-    if (sdk == null || account == null || library == null) return
-    if (nounletTokenAddress == '') return
+    if (sdk == null || account == null || library == null) throw new Error('No signer')
+    if (nounletTokenAddress == '') throw new Error('No nounlet token address')
 
     const nounletGovernance = sdk.NounletGovernance.connect(library.getSigner())
     const tx = await nounletGovernance.claimDelegate(vaultAddress, toAddress)
-    return tx.wait()
+    return txWithErrorHandling(tx)
   }
 
   const delegateVotes = async (toAddress: string) => {
-    const primary = '0x497F34f8A6EaB10652f846fD82201938e58d72E0'
-    const secondary = '0x6d2343bEecEd0E805f3ccCfF870ccB974B5795E6'
-
     console.log('delegating votes to:', toAddress)
-    if (sdk == null || account == null || library == null) return
-    if (nounletTokenAddress == '') return
-    // try {
+    if (sdk == null || account == null || library == null) throw new Error('No signer')
+    if (nounletTokenAddress == '') throw new Error('No nounlet token address')
+
     const nounletToken = sdk.NounletToken.connect(library.getSigner()).attach(nounletTokenAddress)
-
-    // console.log(await nounletToken.NOUNS_TOKEN_ID())
-
-    // console.log(await nounletToken.balanceOf(account, 4))
-    // console.log(await nounletToken.maxSupply())
-    // console.log(await nounletToken.ownerOf(4)) // NounletAuction contract
-    // console.log(await nounletToken.votesToDelegate(account))
-    // console.log(await nounletToken.delegates(account))
-    // console.log(await nounletToken.getCurrentVotes(account))
-
-    // console.log(await nounletToken.balanceOf(secondary, 4))
-    // console.log(await nounletToken.votesToDelegate(secondary))
-    // console.log(await nounletToken.delegates(secondary))
-    // console.log(await nounletToken.getCurrentVotes(secondary))
-    // console.log(await nounletToken.numCheckpoints(secondary))
-
     const tx = await nounletToken.delegate(toAddress)
-    return tx.wait()
-    //   console.log(await tx.wait())
-    // } catch (error) {
-    //   console.log('error', error)
-    // }
+    return txWithErrorHandling(tx)
   }
 
   return {

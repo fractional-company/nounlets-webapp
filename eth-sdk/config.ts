@@ -46,28 +46,6 @@ export default defineConfig({
     // }
     rinkeby: {
       nounlets: {
-        // // NFTDescriptorV2: '0x6533246189393c88b36fbea6999fcc9e29e431eb',
-        // // MintHelper: '0x335a2bd49edf256e17782f096440ab5133597b4e',
-        // // MockProxyRegistry: '0xb777a5f00c4a1dcd781841c7df3de12db303ef71',
-        // // SVGRenderer: '0xae8009026fcd585f7076103e110990b07fd67a0d',
-        // // Inflator: '0x8a83cb3fa09391a75f993e70c9abeb3cf6993ffe',
-        // NounsDescriptorV2: '0x239f28c4b6c9afa591d9435dc9521c8483ab4737',
-        // // NounsArt: '0x51d2b47e2fd397e3b738a991bce2b6e86f4a27cb',
-        // // NounsSeeder: '0x6a1a654e42c40442897bdf3e9807583534317e4a',
-        // NounsToken: '0xa1e43eb6373e4c8d5f42a2b93d412f06a37af25e',
-        // // NounsDAOLogicV1: '0x162960bea246ab372f4153a329035c16e59dc1c5',
-        // // NounsDAOExecutor: '0xde26dbd3035e5b1305b672d538758d5896238ed8',
-        // // NounsDAOProxy: '0x03811b269697e1d624351174abc7bdcd7c7b6e91',
-        // // TransferReference: '0x1e6bf95f6bdd57eeb7fbce0437142f4640e1fa96',
-        // NounletRegistry: '0xedf9beddc7805c041ce0d17fe84b2b448590f129',
-        // // NounletSupply: '0xbe412dd3529d9690a2094d15c6c0282f8ac6bcd3',
-        // NounletAuction: '0x7915259bdef8f419dc733ae661c283855a904413',
-        // NounletProtoform: '0x7d684e5a7651ba51b701d0436e245e9825f38e5a',
-        // OptimisticBid: '0xede6130d27f19043245a12fc2dd325a17e43784e',
-        // // NounletProposal: '0xe1354a401015ab229791d0f509bdbd0c71751549',
-        // NounletGovernance: '0x19c92f9bccc414f1d691974535bf903f619e2fa2',
-        // NounletToken: '0x92F2880d6D22dd87cECeAD9015C3f6Ab04202432',
-
         // NFTDescriptorV2: '0x1edd23e381a4c313b8c4224a0cc58d0185d0c9d2',
         // MockProxyRegistry: '0xa019b8dd22d4ebf183122644138d86045b816d14',
         // SVGRenderer: '0xa7ded038f8bfd412e7c5bfc47772fabeb00755c1',
@@ -89,6 +67,29 @@ export default defineConfig({
         // NounletProposal: '0x11082607598af80f3534d85f8d956b9bd8682f56',
         NounletGovernance: '0x771344829ad3fbf4023c1d92dcf9908419c2bc88',
         NounletToken: '0x44aebB139ae4a3Ba542b950A638C5182e6706B06'
+
+        // // NFTDescriptorV2: '0x8d76266ca663fca0d4440c09f8e8fd0fe9e6276c',
+        // // MintHelper: '0xd56bb57449454ce300fd3daaa4bb2119a4ff6660',
+        // // MockProxyRegistry: '0xc717a8970db3acb4ab1588bf078f3d157b89b187',
+        // // SVGRenderer: '0x9c9fcbd9e8d1db25ac7e4119f9837eee69a14fe5',
+        // // Inflator: '0xa877bff7f3a154ebc2aa107739c82b7b3f90a3d9',
+        // NounsDescriptorV2: '0x9fb9d67bb7996689c33500b3306f0ba46a9de877',
+        // // NounsArt: '0x71e23e67fb0c732fb37d5fd802efef2bc8f4c165',
+        // // NounsSeeder: '0xf5a1400e325daae78e5fc48456528a17621efb28',
+        // NounsToken: '0x5f4b0a9264246c0c8d4baf1d108a42051f4cc564',
+        // // MintHelper: '0xd56bb57449454ce300fd3daaa4bb2119a4ff6660',
+        // // NounsDAOLogicV1: '0x7c7c56ccb5a57cd5e507b292c9fd46a6a52afb15',
+        // // NounsDAOExecutor: '0x4729eafff14b0cb7203248c7fa7a9e75c7065bb2',
+        // // NounsDAOProxy: '0x2a7983d3fe27e91b778428640956fbb8e87158ff',
+        // // TransferReference: '0x34265fe65898cd7672c777b0a9aa640d620517eb',
+        // NounletRegistry: '0x53ef8e35e34cb874339889c0c0d5345e3a76379b',
+        // // NounletSupply: '0x690579ed2ada99ee95f328d14cd307a1e9da7443',
+        // NounletAuction: '0xa144440dfc9fa662c32981505f39ccf8e47c5fad',
+        // NounletProtoform: '0xcd29cd577c965d128b5e8f9d24173ef521173a3d',
+        // OptimisticBid: '0x1c70df511de53a2b55b0bd1a94cf31394cbfaed1',
+        // // NounletProposal: '0x7f36ec778f2daf9017483c7cea509ae174fbe892',
+        // NounletGovernance: '0x419ccce46c915c6df3c246bae260433b16211ce1',
+        // NounletToken: '0xA5A3Bec0D125C88f2DD409d2f6a79209A49Df771'
       }
     }
   }

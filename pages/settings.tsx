@@ -54,7 +54,6 @@ const Settings: NextPage<{}, {}> = () => {
 
     console.log('creating vault')
 
-    // Approve protoform: 0xa9fA8E3e9ea15c37Ec6b65C8d754987bad679820
     const isApprovedForAll = await sdk.NounsToken.isApprovedForAll(
       account,
       sdk.NounletProtoform.address

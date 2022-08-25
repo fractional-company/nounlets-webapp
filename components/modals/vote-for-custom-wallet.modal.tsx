@@ -3,9 +3,13 @@ import Button from 'components/buttons/button'
 import SimpleModalWrapper from 'components/SimpleModalWrapper'
 import { ethers } from 'ethers'
 import { useDebounced } from 'hooks/useDebounced'
+import useLeaderboard from 'hooks/useLeaderboard'
 import { useResolveNameFixed } from 'hooks/useResolveNameFixed'
+import useToasts from 'hooks/useToasts'
 import { shortenAddress } from 'lib/utils/common'
+import { WrappedTransactionReceiptState } from 'lib/utils/tx-with-error-handling'
 import { useMemo, useState } from 'react'
+import { useAppStore } from 'store/application'
 
 type ComponentProps = {
   onClose?: () => void
@@ -13,6 +17,11 @@ type ComponentProps = {
 
 export default function VoteForCustomWalletModal(props: ComponentProps): JSX.Element {
   const [searchInputValue, setSearchinputValue] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const { setVoteForDelegateModalForAddress } = useAppStore()
+  const { toastSuccess, toastError } = useToasts()
+  const { myNounlets, delegateVotes } = useLeaderboard()
+
   const debouncedSearchInputValue = useDebounced(searchInputValue, 500)
   const {
     address: ensAddress,
@@ -31,6 +40,28 @@ export default function VoteForCustomWalletModal(props: ComponentProps): JSX.Ele
     if (ensAddress == null || ensAddress === debouncedSearchInputValue) return ''
     return shortenAddress(ensAddress, 6).toLowerCase()
   }, [ensAddress, debouncedSearchInputValue])
+
+  const handleVoteForDelegate = async () => {
+    if (ensAddress == null) return
+    setIsLoading(true)
+    try {
+      const response = await delegateVotes(ensAddress)
+      if (
+        response.status === WrappedTransactionReceiptState.SUCCESS ||
+        response.status === WrappedTransactionReceiptState.SPEDUP
+      ) {
+        props.onClose?.()
+        toastSuccess('Votes cast 🎉', 'Leaderboard will refresh momentarily.')
+      } else {
+        throw response
+      }
+    } catch (error) {
+      console.log('error!', error)
+      toastError('Votes cast failed', 'Please try again.')
+    }
+
+    setIsLoading(false)
+  }
 
   return (
     <div>
@@ -54,10 +85,10 @@ export default function VoteForCustomWalletModal(props: ComponentProps): JSX.Ele
         <Button
           className="primary"
           onClick={() => {
-            console.log('Vote for delegate')
+            handleVoteForDelegate()
           }}
           disabled={!isValidAddressOrEns}
-          loading={isLoadingENSName}
+          loading={isLoadingENSName || isLoading}
         >
           Vote for delegate
         </Button>

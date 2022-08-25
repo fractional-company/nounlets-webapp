@@ -16,8 +16,6 @@ export const NEXT_PUBLIC_BLOCKS_PER_DAY = 7_000
 export const NEXT_PUBLIC_BID_DECIMALS = +(process.env.NEXT_PUBLIC_BID_DECIMALS || 2)
 export const NEXT_PUBLIC_CACHE_VERSION = +(process.env.NEXT_PUBLIC_CACHE_VERSION || 0)
 // OLD
-
-export const auctionStart: BigNumber = BigNumber.from(process.env.NEXT_PUBLIC_AUCTION_START || 0)
 export const ETHERSCAN_API_KEY = process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY ?? ''
 
 const INFURA_PROJECT_ID = process.env.NEXT_PUBLIC_INFURA_ID

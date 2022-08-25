@@ -6,6 +6,7 @@ import { ErrorToast, SuccessToast } from 'components/toasts/CustomToasts'
 import { useDebounced } from 'hooks/useDebounced'
 import useLeaderboard from 'hooks/useLeaderboard'
 import useToasts from 'hooks/useToasts'
+import { WrappedTransactionReceiptState } from 'lib/utils/tx-with-error-handling'
 import { useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useAppStore } from 'store/application'
@@ -21,12 +22,20 @@ export default function VoteForDelegateModal(): JSX.Element {
     setIsLoading(true)
     try {
       const response = await delegateVotes(voteForDelegateModal.address)
-      setVoteForDelegateModalForAddress(false)
-      toastSuccess('Votes cast 🎉', 'Leaderboard will refresh momentarily.')
+      if (
+        response.status === WrappedTransactionReceiptState.SUCCESS ||
+        response.status === WrappedTransactionReceiptState.SPEDUP
+      ) {
+        setVoteForDelegateModalForAddress(false)
+        toastSuccess('Votes cast 🎉', 'Leaderboard will refresh momentarily.')
+      } else {
+        throw response
+      }
     } catch (error) {
       console.log('error!', error)
       toastError('Votes cast failed', 'Please try again.')
     }
+
     setIsLoading(false)
   }
 
@@ -39,7 +48,8 @@ export default function VoteForDelegateModal(): JSX.Element {
       <div className="font-londrina">
         <h2 className="text-px24 leading-px30 text-gray-4">Vote for delegate</h2>
         <SimpleAddress
-          className="mt-2 text-px42 leading-px36 hover:text-secondary-green"
+          className="mt-2 text-px42 leading-px44 hover:text-secondary-green"
+          textClassName="pl-2"
           address={voteForDelegateModal.address || ''}
         />
       </div>

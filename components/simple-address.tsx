@@ -11,6 +11,7 @@ type ComponentProps = {
   className?: string
   address: string
   avatarSize?: number
+  textClassName?: string // Used to fix londrina font clipping
 }
 
 export default function SimpleAddress(props: ComponentProps): JSX.Element {
@@ -43,7 +44,7 @@ export default function SimpleAddress(props: ComponentProps): JSX.Element {
           </a>
         )}
         <a href={buildEtherscanAddressLink(address)} target="_blank" rel="noreferrer">
-          <p className="truncate">{ens || shortenedAddres}</p>
+          <p className={classNames('truncate ', props.textClassName)}>{ens || shortenedAddres}</p>
         </a>
       </OnMounted>
     </div>
