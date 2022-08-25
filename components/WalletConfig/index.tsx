@@ -31,22 +31,29 @@ export default function WalletConfig(props: { children: ReactNode }) {
   useEffect(() => {
     if (library) {
       if (chainId === CHAIN_ID) {
-        console.log('Setting SDK')
         if (wasWrongChainAlertShown) {
           console.log('refresh page')
           if (typeof window !== 'undefined') {
             window.location.reload()
           }
         }
-        setSdk(
-          (CHAIN_ID === 4 ? getRinkebySdk(library) : (getMainnetSdk(library) as RinkebySdk))
-            .nounlets
-        )
       } else {
         setWasWrongChainAlertShown(true)
       }
     }
   }, [library, chainId, wasWrongChainAlertShown])
+
+  useEffect(() => {
+    if (library) {
+      if (chainId === CHAIN_ID) {
+        console.log('Setting SDK')
+        setSdk(
+          (CHAIN_ID === 4 ? getRinkebySdk(library) : (getMainnetSdk(library) as RinkebySdk))
+            .nounlets
+        )
+      }
+    }
+  }, [library, chainId])
 
   return (
     <SDKContext.Provider value={sdk}>

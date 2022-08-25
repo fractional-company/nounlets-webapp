@@ -24,22 +24,23 @@ export default function ChainUpdater() {
     nounTokenId,
     nounletTokenAddress,
     currentDelegate,
+    backendLatestNounletTokenId,
     latestNounletTokenId
   } = useVaultStore()
 
   // url nid listener
   const { nid } = useDisplayedNounlet()
 
-  // If overshoot, redirect to "/"
-  useEffect(() => {
-    if (!isLive) return
-    if (nid == null) return
-    const targetNid = +nid
-    if (targetNid <= 0 || targetNid > +latestNounletTokenId) {
-      console.log('Not in range', router.asPath)
-      router.replace('/')
-    }
-  }, [isLive, nid, isLoading, latestNounletTokenId, router])
+  // // If overshoot, redirect to "/"
+  // useEffect(() => {
+  //   if (!isLive) return
+  //   if (nid == null) return
+  //   const targetNid = +nid
+  //   if (targetNid <= 0 || targetNid > +latestNounletTokenId) {
+  //     console.log('Not in range', router.asPath)
+  //     router.replace('/')
+  //   }
+  // }, [isLive, nid, isLoading, latestNounletTokenId, router])
 
   const vaultMetadata = {
     isLive,
@@ -47,7 +48,9 @@ export default function ChainUpdater() {
     vaultAddress, // VaultContract
     nounletTokenAddress, // NouneltTokenContract (proxy?)
     nounTokenId,
-    latestNounletTokenId
+    backendLatestNounletTokenId,
+    latestNounletTokenId,
+    currentDelegate
   }
 
   const asd = async () => {
@@ -64,10 +67,10 @@ export default function ChainUpdater() {
         {/* <Button className="primary" onClick={() => mutateVaultMetadata()}>
           mutateVaultMetadata
         </Button> */}
-
+        {/* 
         <Button className="primary" onClick={() => asd()}>
           mutateLeaderboard!
-        </Button>
+        </Button> */}
       </div>
 
       <VaultUpdater />
@@ -131,10 +134,10 @@ function VaultUpdater() {
         }
         if (retryCount >= 3) return
 
-        // Retry after 2 seconds.
-        setTimeout(() => revalidate({ retryCount }), 2000)
+        // Retry after 5 seconds.
+        setTimeout(() => revalidate({ retryCount }), 5000)
       },
-      onSuccess: (data) => {
+      onSuccess: (data, key, config) => {
         console.groupCollapsed('🏴 fetched vault metadata ...')
         console.table(data)
         console.groupEnd()
@@ -150,6 +153,8 @@ function VaultUpdater() {
           setIsLoading(false)
         } else {
           console.log('Server returned null')
+          // Retry after 15 seconds.
+          setTimeout(() => mutate(), 15000)
         }
       }
     }
@@ -173,7 +178,6 @@ function VaultUpdater() {
       const event = eventData.at(-1)
       console.log('🍁🍁🍁 Settled event', eventData)
       console.log('event data', event)
-      // setLeaderboardBlockNumber(event?.blockNumber || 0)
       debouncedMutate()
     }
 

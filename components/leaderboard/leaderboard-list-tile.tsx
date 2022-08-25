@@ -4,6 +4,7 @@ import Button from 'components/buttons/button'
 import IconUpdateDelegate from 'components/icons/icon-update-delegate'
 import SimpleAddress from 'components/simple-address'
 import useLeaderboard from 'hooks/useLeaderboard'
+import useToasts from 'hooks/useToasts'
 import Image from 'next/image'
 import userIcon from 'public/img/user-icon.jpg'
 import { useMemo } from 'react'
@@ -27,6 +28,7 @@ export default function LeaderboardListTile(props: {
   const { account } = useEthers()
   const { claimDelegate } = useLeaderboard()
   const { setVoteForDelegateModalForAddress } = useAppStore()
+  const { toastSuccess, toastError } = useToasts()
   const {
     isMe,
     percentage,
@@ -66,8 +68,13 @@ export default function LeaderboardListTile(props: {
 
   const handleClaimDelegate = async (address: string) => {
     console.log('aliming delegate handler', address)
-    const response = await claimDelegate(address)
-    console.log('yasss', response)
+    try {
+      const response = await claimDelegate(address)
+      console.log('yasss', response)
+      toastSuccess('Delegate updated 🎊', 'Leaderboard will refresh momentarily.')
+    } catch (error) {
+      toastError('Update delegate failed', 'Please try again.')
+    }
   }
   return (
     <div className="leaderboard-list-tile">
@@ -108,7 +115,7 @@ export default function LeaderboardListTile(props: {
             {isUpdateDelegateActionShown && (
               <Button
                 onClick={() => handleClaimDelegate(walletAddress)}
-                className="hidden lg:flex ml-2 items-center justify-center text-secondary-blue text-px18 font-700 border-2 border-transparent px-2 h-10 rounded-px10"
+                className="hidden lg:flex ml-2 items-center justify-center text-secondary-blue hover:text-secondary-green text-px18 font-700 border-2 border-transparent px-2 h-10 rounded-px10"
               >
                 <IconUpdateDelegate />
                 <span className="ml-2">Update delegate</span>

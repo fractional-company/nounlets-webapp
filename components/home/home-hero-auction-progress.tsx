@@ -90,14 +90,7 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
     })
   }, [historicBids])
 
-  // const memoedMutateAuctionInfo = useMemo(() => {
-  //   return debounce(mutateAuctionInfo, 200)
-  // }, [mutateAuctionInfo])
-
-  // const debouncedMutateAuctionInfo2 = useCallback(memoedMutateAuctionInfo, [memoedMutateAuctionInfo])
-
   const debouncedMutateAuctionInfo = useMemo(() => {
-    console.log('new debouncedMutateAuctionInfo')
     return debounce(() => {
       console.log('🍓🍓🍓🍓🍓 calling debouncedMutateAuctionInfo')
       return mutateAuctionInfo()
@@ -163,6 +156,7 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
       if (bidAmount.gte(parseEther(formattedValues.minNextBid))) {
         console.log('Proceed with bid!', bidAmount)
         const result = await bid(bidAmount)
+        await mutateAuctionInfo() // TODO maybe remove this
         console.log('yas bid!', result)
         setBidInputValue('')
       } else {

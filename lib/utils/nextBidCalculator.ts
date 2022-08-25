@@ -19,7 +19,6 @@ export function calculateNextBid(
     .divUnsafe(decimalsFX)
 
   if (BigNumber.from(bidFX).lt(BigNumber.from(minBidFX))) {
-    console.log('bid is smaller than allowed')
     return minBidFX.addUnsafe(amountFX)
   }
 

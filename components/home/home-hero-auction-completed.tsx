@@ -95,13 +95,13 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
 
       <div className="flex items-center !mt-6">
         <IconLock className="mb-1" />
-        <p className="text-px18 font-500 ml-1.5">
-          Ended on <span className="font-700 text-gray-3">{formattedData.endedOn}</span>
+        <p className="text-px18 font-500 ml-2">
+          Ended on <span className="font-700 text-black/60">{formattedData.endedOn}</span>
         </p>
       </div>
       <div className="flex items-center mt-3">
         <IconHeart />
-        <div className="text-px18 font-500 ml-1.5">
+        <div className="text-px18 font-500 ml-2">
           Won by{' '}
           <SimpleAddress
             address={formattedData.wonByAddress}

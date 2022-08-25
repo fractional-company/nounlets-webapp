@@ -124,17 +124,13 @@ export default function useLeaderboard() {
   }, [data, account, myNounletsVotes])
 
   const claimDelegate = async (toAddress: string) => {
-    console.log('update delegate', toAddress)
+    console.log('update delegate', vaultAddress, toAddress)
     if (sdk == null || account == null || library == null) return
     if (nounletTokenAddress == '') return
 
-    try {
-      const nounletGovernance = sdk.NounletGovernance.connect(library.getSigner())
-      const tx = await nounletGovernance.claimDelegate(vaultAddress, toAddress)
-      console.log(await tx.wait())
-    } catch (error) {
-      console.log('error', error)
-    }
+    const nounletGovernance = sdk.NounletGovernance.connect(library.getSigner())
+    const tx = await nounletGovernance.claimDelegate(vaultAddress, toAddress)
+    return tx.wait()
   }
 
   const delegateVotes = async (toAddress: string) => {
@@ -144,29 +140,30 @@ export default function useLeaderboard() {
     console.log('delegating votes to:', toAddress)
     if (sdk == null || account == null || library == null) return
     if (nounletTokenAddress == '') return
-    try {
-      const nounletToken = sdk.NounletToken.connect(library.getSigner()).attach(nounletTokenAddress)
+    // try {
+    const nounletToken = sdk.NounletToken.connect(library.getSigner()).attach(nounletTokenAddress)
 
-      // console.log(await nounletToken.NOUNS_TOKEN_ID())
+    // console.log(await nounletToken.NOUNS_TOKEN_ID())
 
-      // console.log(await nounletToken.balanceOf(account, 4))
-      // console.log(await nounletToken.maxSupply())
-      // console.log(await nounletToken.ownerOf(4)) // NounletAuction contract
-      // console.log(await nounletToken.votesToDelegate(account))
-      // console.log(await nounletToken.delegates(account))
-      // console.log(await nounletToken.getCurrentVotes(account))
+    // console.log(await nounletToken.balanceOf(account, 4))
+    // console.log(await nounletToken.maxSupply())
+    // console.log(await nounletToken.ownerOf(4)) // NounletAuction contract
+    // console.log(await nounletToken.votesToDelegate(account))
+    // console.log(await nounletToken.delegates(account))
+    // console.log(await nounletToken.getCurrentVotes(account))
 
-      // console.log(await nounletToken.balanceOf(secondary, 4))
-      // console.log(await nounletToken.votesToDelegate(secondary))
-      // console.log(await nounletToken.delegates(secondary))
-      // console.log(await nounletToken.getCurrentVotes(secondary))
-      // console.log(await nounletToken.numCheckpoints(secondary))
+    // console.log(await nounletToken.balanceOf(secondary, 4))
+    // console.log(await nounletToken.votesToDelegate(secondary))
+    // console.log(await nounletToken.delegates(secondary))
+    // console.log(await nounletToken.getCurrentVotes(secondary))
+    // console.log(await nounletToken.numCheckpoints(secondary))
 
-      const tx = await nounletToken.delegate(toAddress)
-      console.log(await tx.wait())
-    } catch (error) {
-      console.log('error', error)
-    }
+    const tx = await nounletToken.delegate(toAddress)
+    return tx.wait()
+    //   console.log(await tx.wait())
+    // } catch (error) {
+    //   console.log('error', error)
+    // }
   }
 
   return {

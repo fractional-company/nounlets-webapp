@@ -48,11 +48,11 @@ export default function useNounletAuctionInfo(nounletId: string | null) {
     canFetch && swrKey,
     async (key) => {
       const isAuctionOld = +key.nounletId < +latestNounletTokenId
-      console.log('🌎🌎🌎🌎🌎🌎🌎🌎🌎', { isAuctionOld, key })
+      console.log('👩‍⚖️ Fetching auction', { isAuctionOld, key })
       let response
 
       if (isAuctionOld) {
-        console.log('🧊 Old auction')
+        console.log('👩‍⚖️ Old auction')
         try {
           response = await getNounletAuctionData(
             key.vaultAddress,
@@ -61,7 +61,7 @@ export default function useNounletAuctionInfo(nounletId: string | null) {
           )
 
           if (!!response.auction?.settled !== true) {
-            console.log('🧊🧊 Old auction not yet synced. get from BC')
+            console.log('👩‍⚖️👩‍⚖️ Old auction not yet synced. get from BC')
           } else {
             return { ...response, fetchedAt: Date.now() }
           }
@@ -78,7 +78,7 @@ export default function useNounletAuctionInfo(nounletId: string | null) {
       )
 
       if (isAuctionOld) {
-        console.log('🧊🧊 Data for unsynced auction should now be fixed')
+        console.log('👩‍⚖️👩‍⚖️ Data for unsynced auction should now be fixed')
         response.auction!.settled = true
       }
 

@@ -14,9 +14,17 @@ export function NounletImage(props: { id: string | null }) {
       width={320}
       height={320}
       alt="nounlet loading"
+      className="image-pixelated"
     />
   ) : (
-    <Image src={nouneltData.image} alt="nounelt" layout="responsive" width={320} height={320} />
+    <Image
+      src={nouneltData.image}
+      alt="nounelt"
+      layout="responsive"
+      width={320}
+      height={320}
+      className="image-pixelated"
+    />
   )
 }
 
@@ -25,8 +33,22 @@ export function NounImage() {
   const { data: nounData } = useNounImageData(nounTokenId)
 
   return nounData == null ? (
-    <Image src={nounLoadingImage} layout="responsive" width={320} height={320} alt="noun loading" />
+    <Image
+      src={nounLoadingImage}
+      layout="responsive"
+      width={320}
+      height={320}
+      className="image-pixelated"
+      alt="noun loading"
+    />
   ) : (
-    <Image src={nounData.image} alt="noun" layout="responsive" width={320} height={320} />
+    <Image
+      className="image-pixelated"
+      src={nounData.image}
+      alt="noun"
+      layout="responsive"
+      width={320}
+      height={320}
+    />
   )
 }

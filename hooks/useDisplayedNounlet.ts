@@ -28,7 +28,6 @@ export function generateNounletAuctionInfoKey({
 export default function useDisplayedNounlet(ignoreUpdate = false) {
   const router = useRouter()
   const { backgrounds } = useVaultStore()
-  const { mutate: mutateSWRGlobal, cache: cacheSWRGlobal } = useSWRConfig()
   const { account, library } = useEthers()
   const {
     isLoading,

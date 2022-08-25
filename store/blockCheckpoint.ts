@@ -22,16 +22,11 @@ export const useBlockCheckpointStore = createTrackedSelector(
       ...initialState,
       setLeaderboardBlockNumber: (data) => {
         set((state) => {
-          console.log(
-            '💦💦💦',
-            'Setting new leaderboard number',
-            data,
-            get().leaderboardBlockNumber
-          )
+          console.log('🥇 Setting new leaderboard number', data, get().leaderboardBlockNumber)
           if (data > get().leaderboardBlockNumber) {
             state.leaderboardBlockNumber = data
           } else {
-            console.log('💦💦💦', 'Whoops, number too small :(')
+            // console.log('💦💦💦', 'Whoops, number too small :(')
           }
         })
       }

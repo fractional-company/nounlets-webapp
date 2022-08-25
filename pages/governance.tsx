@@ -260,7 +260,7 @@ function GovernanceLeaderboard(props: {
         ) : (
           <>
             {filteredLeaderboardListData.map((data, index) => (
-              <LeaderboardListTile key={index} data={data} />
+              <LeaderboardListTile key={data.walletAddress} data={data} />
             ))}
 
             {account && (

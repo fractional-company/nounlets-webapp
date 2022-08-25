@@ -28,6 +28,8 @@ import classNames from 'classnames'
 import IconCrown from './icons/icon-crown'
 import useDisplayedNounlet from 'hooks/useDisplayedNounlet'
 import useCurrentBackground from 'hooks/useCurrentBackground'
+import IconCheckmark from './icons/icon-checkmark'
+import { ErrorToast, SuccessToast } from './toasts/CustomToasts'
 
 export default function AppHeader(): JSX.Element {
   const [isMobileMenuOpen, setIsModalMenuOpen] = useState(false)
@@ -94,7 +96,14 @@ export default function AppHeader(): JSX.Element {
   )
 
   const handleShowNotification = () => {
-    toast('Hello!')
+    toast.custom(
+      (t) => (
+        <ErrorToast t={t} title="Votes cast 🎉" message="Leaderboard will refresh momentarily." />
+      ),
+      {
+        duration: 3000
+      }
+    )
   }
 
   const currentDelegateRC = useMemo(() => {

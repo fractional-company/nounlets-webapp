@@ -2,23 +2,30 @@ import { useResolveName } from '@usedapp/core'
 import Button from 'components/buttons/button'
 import SimpleAddress from 'components/simple-address'
 import SimpleModalWrapper from 'components/SimpleModalWrapper'
+import { ErrorToast, SuccessToast } from 'components/toasts/CustomToasts'
 import { useDebounced } from 'hooks/useDebounced'
 import useLeaderboard from 'hooks/useLeaderboard'
+import useToasts from 'hooks/useToasts'
 import { useMemo, useState } from 'react'
+import toast from 'react-hot-toast'
 import { useAppStore } from 'store/application'
 
 export default function VoteForDelegateModal(): JSX.Element {
   const { voteForDelegateModal, setVoteForDelegateModalForAddress } = useAppStore()
   const { myNounlets, delegateVotes } = useLeaderboard()
   const [isLoading, setIsLoading] = useState(false)
+  const { toastSuccess, toastError } = useToasts()
 
   const handleVoteForDelegate = async () => {
     if (voteForDelegateModal.address == null) return
     setIsLoading(true)
     try {
       const response = await delegateVotes(voteForDelegateModal.address)
+      setVoteForDelegateModalForAddress(false)
+      toastSuccess('Votes cast 🎉', 'Leaderboard will refresh momentarily.')
     } catch (error) {
       console.log('error!', error)
+      toastError('Votes cast failed', 'Please try again.')
     }
     setIsLoading(false)
   }
@@ -50,7 +57,6 @@ export default function VoteForDelegateModal(): JSX.Element {
             className="primary"
             loading={isLoading}
             onClick={() => {
-              console.log('Vote for delegate')
               handleVoteForDelegate()
             }}
           >
