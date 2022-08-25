@@ -5,17 +5,18 @@ import useSdk from 'hooks/useSdk'
 import { getLeaderboardData, getVaultData } from 'lib/graphql/queries'
 import { BidEvent } from 'lib/utils/types'
 import { useRouter } from 'next/router'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { useVaultStore } from 'store/vaultStore'
 import useSWR, { useSWRConfig } from 'swr'
 import debounce from 'lodash/debounce'
 import OnMounted from './utils/on-mounted'
 import useLeaderboard from 'hooks/useLeaderboard'
 import { useBlockCheckpointStore } from 'store/blockCheckpoint'
+import { SDKContext } from './WalletConfig'
 
 export default function ChainUpdater() {
   const router = useRouter()
-  const sdk = useSdk()
+  const sdk = useContext(SDKContext)
   const {
     isLive,
     isLoading,
@@ -50,6 +51,7 @@ export default function ChainUpdater() {
   }
 
   const asd = async () => {
+    console.log(sdk)
     // console.log('asd', canFetchLeaderboard)
     // const dataa = await mutateLeaderboard()
     // console.log('sda', dataa)
@@ -101,7 +103,6 @@ function VaultUpdater() {
       },
     async (key) => {
       if (sdk == null) throw new Error('sdk not initialized')
-
       console.groupCollapsed('🏳️ fetching vault metadata ...')
       console.log({ ...key })
       console.groupEnd()

@@ -18,7 +18,6 @@ interface NounletImageData {
 
 export default function useNounletImageData(nounletId: string | null) {
   const sdk = useSdk()
-  const { cache } = useSWRConfig()
   const { isLive, vaultAddress, nounletTokenAddress } = useVaultStore()
 
   const nid = useMemo(() => {
@@ -35,11 +34,6 @@ export default function useNounletImageData(nounletId: string | null) {
     return `vault/${vaultAddress}/nounlet/${nounletTokenAddress}/image/${nid}`
   }, [isLive, nid, vaultAddress, nounletTokenAddress])
 
-  // const cachedData = useMemo(() => {
-  //   if (swrKey == null) return null
-  //   return cache.get(swrKey)
-  // }, [cache, swrKey])
-
   const canFetch = useMemo(() => {
     if (!isLive) return false
     if (sdk == null) return false
@@ -51,6 +45,7 @@ export default function useNounletImageData(nounletId: string | null) {
   const { data } = useSWR<NounletImageData>(
     canFetch && swrKey,
     async (key) => {
+      console.log('🍧🍧🍧🍧 fetcheing image data', nid)
       const nounletToken = sdk!.NounletToken.attach(nounletTokenAddress)
       try {
         const [data, seed] = await Promise.all([
@@ -70,7 +65,7 @@ export default function useNounletImageData(nounletId: string | null) {
         console.log('🍧🍧🍧🍧 fetched image data', nid, json.seed)
         return json
       } catch (error) {
-        console.log('error while fetching nounlet image', error)
+        console.error('error while fetching nounlet image', error)
       }
       return null
     },

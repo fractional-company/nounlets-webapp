@@ -1,6 +1,6 @@
 import { Dialog, Transition } from '@headlessui/react'
 import classNames from 'classnames'
-import { Fragment } from 'react'
+import { CSSProperties, Fragment } from 'react'
 import Button from './buttons/button'
 import IconClose from './icons/icon-close'
 
@@ -10,6 +10,7 @@ type ComponentProps = {
   onClose?: () => void
   className?: string
   preventCloseOnBackdrop?: boolean
+  style?: CSSProperties
 }
 
 const SimpleModalWrapper = function (props: ComponentProps): JSX.Element {
@@ -43,6 +44,7 @@ const SimpleModalWrapper = function (props: ComponentProps): JSX.Element {
                   'relative bg-gray-1 rounded-px24 py-10 p-4 xs:px-10 w-full sm:w-auto max-w-screen-md',
                   props.className
                 )}
+                style={props.style}
               >
                 <Button
                   className="absolute top-2 right-2 p-2 rounded-full text-gray-4 hover:bg-gray-1"

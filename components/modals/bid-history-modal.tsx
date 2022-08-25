@@ -4,6 +4,7 @@ import { NounletImage } from 'components/NounletImage'
 import { NEXT_PUBLIC_BID_DECIMALS } from 'config'
 import { FixedNumber } from 'ethers'
 import { formatEther } from 'ethers/lib/utils'
+import useCurrentBackground from 'hooks/useCurrentBackground'
 import useDisplayedNounlet from 'hooks/useDisplayedNounlet'
 import { useMemo } from 'react'
 import { CHAIN_ID } from '../../pages/_app'
@@ -54,10 +55,10 @@ const BidHistoryModal = (): JSX.Element => {
   )
 
   return (
-    <div className="sm:w-[400px]">
+    <div className="sm:w-[400px">
       <Dialog.Title className="p-4 pl-0 text-px24 font-500">
-        <div className="flex items-center -mt-10 space-x-4">
-          <div className="w-[84px]">
+        <div className="flex items-center -mt-10 space-x-2">
+          <div className="w-[84px] -ml-4">
             <NounletImage id={nid} />
           </div>
           <div className="flex flex-col font-londrina">
@@ -66,7 +67,7 @@ const BidHistoryModal = (): JSX.Element => {
           </div>
         </div>
       </Dialog.Title>
-      <div className="py-4 pl-4 pr-2 bg-gray-2 rounded-px10 h-[17.25rem]">
+      <div className="py-4 pl-4 pr-2 bg-black/20 rounded-px10 h-[17.25rem]">
         <div className="flex flex-col overflow-y-scroll gap-2 h-full custom-scrollbar pr-2">
           {bidHistory}
         </div>

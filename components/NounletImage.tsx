@@ -6,6 +6,7 @@ import { useVaultStore } from 'store/vaultStore'
 
 export function NounletImage(props: { id: string | null }) {
   const { data: nouneltData } = useNounletImageData(props.id)
+
   return nouneltData == null ? (
     <Image
       src={nounLoadingImage}

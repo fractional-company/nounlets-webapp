@@ -1,4 +1,4 @@
-import { ChainId, Config, DAppProvider } from '@usedapp/core'
+import { ChainId, Config, DAppProvider, useEthers } from '@usedapp/core'
 import AppFooter from 'components/app-footer'
 import AppHeader from 'components/app-header'
 import type { AppProps } from 'next/app'
@@ -12,10 +12,12 @@ import ChainUpdater from '../components/ChainUpdater'
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
 import utc from 'dayjs/plugin/utc'
+import relativeTime from 'dayjs/plugin/relativeTime'
 import { NEXT_PUBLIC_CACHE_VERSION, NEXT_PUBLIC_NOUN_VAULT_ADDRESS } from 'config'
 
 dayjs.extend(duration)
 dayjs.extend(utc)
+dayjs.extend(relativeTime)
 
 type SupportedChains = ChainId.Rinkeby | ChainId.Mainnet
 
@@ -69,8 +71,8 @@ function MyApp({ Component, pageProps }: AppProps) {
       }}
     >
       <DAppProvider config={useDappConfig}>
-        <ChainUpdater />
         <WalletConfig>
+          <ChainUpdater />
           <Toaster />
           <div className="bg-gray-1">
             <AppHeader />
@@ -83,16 +85,6 @@ function MyApp({ Component, pageProps }: AppProps) {
       </DAppProvider>
     </SWRConfig>
   )
-
-  // return (
-  //     <DAppProvider config={useDappConfig}>
-  //         <div id="backdrop-root"></div>
-  //         <div id="overlay-root"></div>
-  //         <WalletConfig>
-  //             <Component {...pageProps} />
-  //         </WalletConfig>
-  //     </DAppProvider>
-  // )
 }
 
 export default MyApp

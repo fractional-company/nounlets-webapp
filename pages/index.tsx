@@ -10,6 +10,7 @@ import { useVaultStore } from 'store/vaultStore'
 import BidHistoryModal from '../components/modals/bid-history-modal'
 import SimpleModalWrapper from '../components/SimpleModalWrapper'
 import { useAppStore } from '../store/application'
+import useCurrentBackground from 'hooks/useCurrentBackground'
 
 /*
 Token ID    | Vault
@@ -17,6 +18,7 @@ Token ID    | Vault
 */
 
 const Home: NextPage<{ vault: any }> = ({ vault }: { vault: any }) => {
+  const { currentBackground } = useCurrentBackground()
   const { setBidModalOpen, isBidModalOpen } = useAppStore()
   const { isLive } = useVaultStore()
 
@@ -24,7 +26,11 @@ const Home: NextPage<{ vault: any }> = ({ vault }: { vault: any }) => {
 
   return (
     <div className="page-home w-screen">
-      <SimpleModalWrapper onClose={() => setBidModalOpen(false)} isShown={isBidModalOpen}>
+      <SimpleModalWrapper
+        onClose={() => setBidModalOpen(false)}
+        isShown={isBidModalOpen}
+        style={{ backgroundColor: currentBackground }}
+      >
         <BidHistoryModal />
       </SimpleModalWrapper>
       <div className="space-y-16">
