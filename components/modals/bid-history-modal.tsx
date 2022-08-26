@@ -2,6 +2,7 @@ import { Dialog } from '@headlessui/react'
 import { Mainnet, Rinkeby } from '@usedapp/core'
 import { NounletImage } from 'components/NounletImage'
 import { NEXT_PUBLIC_BID_DECIMALS } from 'config'
+import dayjs from 'dayjs'
 import { FixedNumber } from 'ethers'
 import { formatEther } from 'ethers/lib/utils'
 import useCurrentBackground from 'hooks/useCurrentBackground'
@@ -21,7 +22,11 @@ const BidHistoryModal = (): JSX.Element => {
         const ethValue = FixedNumber.from(formatEther(bid.amount.toString()))
           .round(NEXT_PUBLIC_BID_DECIMALS)
           .toString()
-        //   const formttedTimestamp = dayjs.unix(+bid.blockTimestamp).format('MMM D, YYYY, h:mmA')
+
+        let formattedTimestamp = 'rencetly'
+        if (bid.blockTimestamp) {
+          formattedTimestamp = dayjs.unix(+bid.blockTimestamp).format('MMM D, YYYY, h:mmA')
+        }
         const explorerLink =
           CHAIN_ID === 1
             ? Mainnet.getExplorerTransactionLink(bid.id)
@@ -33,13 +38,17 @@ const BidHistoryModal = (): JSX.Element => {
               index === 0 ? 'opacity-100' : 'opacity-50'
             }`}
           >
-            <div className="flex flex-col">
+            <div className="flex flex-col min-w-0">
               <SimpleAddress
-                avatarSize={24}
+                avatarSize={40}
                 address={bid.bidder?.id || '0x0'}
-                className="text-px18 leading-px28 font-700 gap-2 flex-1"
+                className="text-px18 leading-px24 font-700 gap-3 flex-1"
+                subtitle={
+                  <div className="text-px14 leading-px20 font-500 text-gray-4 truncate">
+                    {formattedTimestamp}
+                  </div>
+                }
               />
-              {/* <div className="text-px14 leading-px24">{formttedTimestamp}</div> */}
             </div>
             <div className="flex items-center">
               <IconEth className="flex-shrink-0 h-[12px]" />
@@ -55,10 +64,10 @@ const BidHistoryModal = (): JSX.Element => {
   )
 
   return (
-    <div className="sm:w-[400px">
+    <div className="sm:w-[400px]">
       <Dialog.Title className="p-4 pl-0 text-px24 font-500">
         <div className="flex items-center -mt-10 space-x-2">
-          <div className="w-[84px] -ml-4">
+          <div className="w-[84px] -ml-4 flex-shrink-0">
             <NounletImage id={nid} />
           </div>
           <div className="flex flex-col font-londrina">
@@ -68,9 +77,7 @@ const BidHistoryModal = (): JSX.Element => {
         </div>
       </Dialog.Title>
       <div className="py-4 pl-4 pr-2 bg-black/20 rounded-px10 h-[17.25rem]">
-        <div className="flex flex-col overflow-y-scroll gap-2 h-full custom-scrollbar pr-2">
-          {bidHistory}
-        </div>
+        <div className="flex flex-col overflow-auto gap-2 h-full pr-2">{bidHistory}</div>
       </div>
     </div>
   )
