@@ -252,14 +252,16 @@ function GovernanceLeaderboard(props: {
         {filteredLeaderboardListData.length === 0 ? (
           <>
             {filterByText.length === 0 ? (
-              <p>No auctions finished yet</p>
+              <p className="font-500 text-px20 leading-px28 text-gray-4">
+                No auctions finished yet
+              </p>
             ) : (
-              <p>Wallet not found :(</p>
+              <p className="font-500 text-px20 leading-px28 text-gray-4">Wallet not found :(</p>
             )}
           </>
         ) : (
           <>
-            {filteredLeaderboardListData.map((data, index) => (
+            {filteredLeaderboardListData.map((data) => (
               <LeaderboardListTile key={data.walletAddress} data={data} />
             ))}
 

@@ -49,7 +49,7 @@ export default function useNounletAuctionInfo(nounletId: string | null) {
     async (key) => {
       const isAuctionOld = +key.nounletId < +latestNounletTokenId
       console.log('👩‍⚖️ Fetching auction', { isAuctionOld, key })
-      let response
+      let response: Awaited<ReturnType<typeof getNounletAuctionData>>
 
       if (isAuctionOld) {
         console.log('👩‍⚖️ Old auction')
@@ -60,10 +60,10 @@ export default function useNounletAuctionInfo(nounletId: string | null) {
             key.nounletId as string
           )
 
-          if (!!response.auction?.settled !== true) {
+          if (!response.settled) {
             console.log('👩‍⚖️👩‍⚖️ Old auction not yet synced. get from BC')
           } else {
-            return { ...response, fetchedAt: Date.now() }
+            return { auction: response, fetchedAt: Date.now() }
           }
         } catch (error) {
           console.log('Error in subgraph', error)
@@ -79,10 +79,10 @@ export default function useNounletAuctionInfo(nounletId: string | null) {
 
       if (isAuctionOld) {
         console.log('👩‍⚖️👩‍⚖️ Data for unsynced auction should now be fixed')
-        response.auction!.settled = true
+        response.settled = true
       }
 
-      return { ...response, fetchedAt: Date.now() }
+      return { auction: response, fetchedAt: Date.now() }
     },
     {
       revalidateIfStale: !cachedDataAuctionSettled

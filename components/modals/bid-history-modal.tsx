@@ -23,7 +23,7 @@ const BidHistoryModal = (): JSX.Element => {
           .round(NEXT_PUBLIC_BID_DECIMALS)
           .toString()
 
-        let formattedTimestamp = 'rencetly'
+        let formattedTimestamp = 'Recently'
         if (bid.blockTimestamp) {
           formattedTimestamp = dayjs.unix(+bid.blockTimestamp).format('MMM D, YYYY, h:mmA')
         }

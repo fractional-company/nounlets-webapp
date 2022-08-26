@@ -50,8 +50,8 @@ export default function useNounletImageData(nounletId: string | null) {
       try {
         const [data, seed] = await Promise.all([
           nounletToken.uri(nid as string),
-          // nounletToken.seeds(nid as string)
-          nounletToken.generateSeed(nid as string)
+          nounletToken.seeds(nid as string)
+          // nounletToken.generateSeed(nid as string)
         ])
         const base = data.split(',')[1]
         const json = JSON.parse(atob(base))

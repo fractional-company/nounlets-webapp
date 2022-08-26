@@ -91,9 +91,10 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
   )
 
   const historicBids = useMemo(() => {
-    return [...(auctionInfo?.auction!.bids ?? [])].sort((a, b) => {
-      return BigNumber.from(b.amount).sub(BigNumber.from(a.amount)).toNumber()
-    })
+    return auctionInfo?.auction!.bids ?? []
+    // return [...(auctionInfo?.auction!.bids ?? [])].sort((a, b) => {
+    //   return BigNumber.from(b.amount).sub(BigNumber.from(a.amount)).toNumber()
+    // })
   }, [auctionInfo])
 
   const auctionEndTime = useMemo(() => {
@@ -116,7 +117,7 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
     if (auctionInfo == null || nid == null) return null
 
     let heldByAddress = nounletHolderAddress || ethers.constants.AddressZero
-    let wonByAddress = auctionInfo.auction!.bidder?.id || ethers.constants.AddressZero
+    let wonByAddress = auctionInfo.auction!.highestBidder?.id || ethers.constants.AddressZero
 
     if (heldByAddress === ethers.constants.AddressZero && !hasAuctionSettled) {
       heldByAddress = vaultCuratorAddress
@@ -128,7 +129,7 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
 
     return {
       isSettled: +nid < +latestNounletTokenId,
-      winningBid: auctionInfo.auction!.amount.toString(),
+      winningBid: auctionInfo.auction!.highestBidAmount.toString(),
       heldByAddress,
       endedOn: auctionEndTime,
       wonByAddress
