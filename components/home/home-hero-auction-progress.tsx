@@ -10,7 +10,7 @@ import IconLinkOffsite from 'components/icons/icon-link-offsite'
 import SimpleAddress from 'components/simple-address'
 import OnMounted from 'components/utils/on-mounted'
 import { NEXT_PUBLIC_BID_DECIMALS } from 'config'
-import { BigNumber, FixedNumber } from 'ethers'
+import { BigNumber, ethers, FixedNumber } from 'ethers'
 import useSdk from 'hooks/useSdk'
 import { calculateNextBid } from 'lib/utils/nextBidCalculator'
 import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -44,7 +44,7 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
   const [showWrongBidModal, setShowWrongBidModal] = useState(false)
 
   const currentBid = useMemo(() => {
-    return BigNumber.from(auctionInfo?.auction!.amount ?? 0)
+    return BigNumber.from(auctionInfo?.auction!.highestBidAmount ?? 0)
   }, [auctionInfo])
 
   const currentBidFX = useMemo(() => FixedNumber.from(formatEther(currentBid)), [currentBid])
@@ -77,7 +77,7 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
         <div key={bid.id.toString()} className="flex items-center flex-1 py-2 overflow-hidden">
           <SimpleAddress
             avatarSize={24}
-            address={bid.bidder?.id || '0x0'}
+            address={bid.bidder?.id || ethers.constants.AddressZero}
             className="text-px18 leading-px28 font-700 gap-2 flex-1"
           />
           <IconEth className="flex-shrink-0 h-[12px]" />

@@ -30,6 +30,16 @@ export type Scalars = {
   BigInt: any
 }
 
+export type Token = {
+  __typename?: 'Token'
+  /** The Token Address */
+  id: Scalars['ID']
+  /** Accounts that belong to this vault */
+  accounts: Array<Account>
+  /** Delegates that belong to this vault */
+  delegates: Array<Delegate>
+}
+
 export type Vault = {
   __typename?: 'Vault'
   /** The Vault's address */
@@ -37,7 +47,7 @@ export type Vault = {
   /** A Noun that the Vault holds */
   noun?: Maybe<Noun>
   /** Token address associated with the vault */
-  tokenAddress: Scalars['String']
+  token: Token
 }
 
 export type Noun = {
@@ -54,6 +64,8 @@ export type Account = {
   __typename?: 'Account'
   /** Token Address + Wallet Address */
   id: Scalars['ID']
+  /** The Token that the Delegate depends on */
+  token: Token
   /** The sum of the nounlets held by the Account */
   nounletsHeldCount: Scalars['Int']
   /** The Nounlets held by this account */
@@ -66,6 +78,8 @@ export type Delegate = {
   __typename?: 'Delegate'
   /** Token Address + Wallet Address */
   id: Scalars['ID']
+  /** The Token that the Delegate depends on */
+  token: Token
   /** The sum of the nounlets represented by the Delegate */
   nounletsRepresentedCount: Scalars['Int']
   /** Nounlets that this delegate represents */

@@ -2,7 +2,7 @@ import Button from 'components/buttons/button'
 import { BigNumber } from 'ethers'
 import useDisplayedNounlet from 'hooks/useDisplayedNounlet'
 import useSdk from 'hooks/useSdk'
-import { getLeaderboardData, getVaultData } from 'lib/graphql/queries'
+import { getVaultData } from 'lib/graphql/queries'
 import { BidEvent } from 'lib/utils/types'
 import { useRouter } from 'next/router'
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
@@ -13,8 +13,11 @@ import OnMounted from './utils/on-mounted'
 import useLeaderboard from 'hooks/useLeaderboard'
 import { useBlockCheckpointStore } from 'store/blockCheckpoint'
 import { SDKContext } from './WalletConfig'
+import IconBug from './icons/icon-bug'
+import { NEXT_PUBLIC_SHOW_DEBUG } from 'config'
 
 export default function ChainUpdater() {
+  const [showDebugInfo, setShowDebugInfo] = useState(false)
   const router = useRouter()
   const sdk = useContext(SDKContext)
   const {
@@ -29,18 +32,7 @@ export default function ChainUpdater() {
   } = useVaultStore()
 
   // url nid listener
-  const { nid } = useDisplayedNounlet()
-
-  // // If overshoot, redirect to "/"
-  // useEffect(() => {
-  //   if (!isLive) return
-  //   if (nid == null) return
-  //   const targetNid = +nid
-  //   if (targetNid <= 0 || targetNid > +latestNounletTokenId) {
-  //     console.log('Not in range', router.asPath)
-  //     router.replace('/')
-  //   }
-  // }, [isLive, nid, isLoading, latestNounletTokenId, router])
+  const { nid, auctionInfo } = useDisplayedNounlet()
 
   const vaultMetadata = {
     isLive,
@@ -53,25 +45,23 @@ export default function ChainUpdater() {
     currentDelegate
   }
 
-  const asd = async () => {
-    console.log(sdk)
-    // console.log('asd', canFetchLeaderboard)
-    // const dataa = await mutateLeaderboard()
-    // console.log('sda', dataa)
-  }
-
   return (
     <>
-      <div className="overflow-hidden">
-        <pre>{JSON.stringify(vaultMetadata, null, 4)}</pre>
-        {/* <Button className="primary" onClick={() => mutateVaultMetadata()}>
-          mutateVaultMetadata
-        </Button> */}
-        {/* 
-        <Button className="primary" onClick={() => asd()}>
-          mutateLeaderboard!
-        </Button> */}
-      </div>
+      {NEXT_PUBLIC_SHOW_DEBUG && (
+        <>
+          <div
+            className="absolute cursor-pointer p-1"
+            onClick={() => setShowDebugInfo(!showDebugInfo)}
+          >
+            <IconBug className={showDebugInfo ? 'animate-spin' : ''} />
+          </div>
+          {showDebugInfo && (
+            <div className="overflow-hidden p-1 pt-8 text-px14 bg-secondary-red/25">
+              <pre>{JSON.stringify({ nid, vaultMetadata, auctionInfo }, null, 4)}</pre>
+            </div>
+          )}
+        </>
+      )}
 
       <VaultUpdater />
       <LeaderboardUpdater />
@@ -189,13 +179,7 @@ function VaultUpdater() {
     }
   }, [isLive, vaultAddress, nounletTokenAddress, latestNounletTokenId, sdk, debouncedMutate])
 
-  return (
-    <>
-      <Button className="primary" onClick={() => debouncedMutate()}>
-        VaultUpdater!
-      </Button>
-    </>
-  )
+  return <></>
 }
 
 function LeaderboardUpdater() {
@@ -233,15 +217,5 @@ function LeaderboardUpdater() {
     }
   }, [isLive, sdk, vaultAddress, nounletTokenAddress, debouncedMutate, setLeaderboardBlockNumber])
 
-  return (
-    <>
-      <OnMounted>
-        {/* <pre>{JSON.stringify(data, null, 4)}</pre> */}
-
-        <Button className="default" onClick={() => debouncedMutate()}>
-          Can i mutate?
-        </Button>
-      </OnMounted>
-    </>
-  )
+  return <></>
 }

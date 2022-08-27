@@ -1,6 +1,6 @@
 import { useEthers } from '@usedapp/core'
-import { ethers } from 'ethers'
-import { getLeaderboardData } from 'lib/graphql/queries'
+import { ethers, FixedNumber } from 'ethers'
+import { getLeaderboardData, getAllNounlets } from 'lib/graphql/queries'
 import txWithErrorHandling from 'lib/utils/tx-with-error-handling'
 import { useMemo } from 'react'
 import { useBlockCheckpointStore } from 'store/blockCheckpoint'
@@ -23,7 +23,7 @@ export default function useLeaderboard() {
     async (key) => {
       console.log('🌽🌽🌽🌽🌽 Fetching new leaderboard data')
       const [leaderboardData, currentDelegate] = await Promise.all([
-        getLeaderboardData(nounTokenId),
+        getAllNounlets(vaultAddress),
         sdk!.NounletGovernance.currentDelegate(vaultAddress)
       ])
 
@@ -32,7 +32,7 @@ export default function useLeaderboard() {
       console.groupEnd()
       return {
         ...leaderboardData,
-        currentDelegate
+        currentDelegateLive: currentDelegate
       }
     },
     {
@@ -58,6 +58,14 @@ export default function useLeaderboard() {
             console.log('🌽🌽🌽', 'First load or data null, forced mutate', '🌽🌽🌽')
             mutate()
           }, 15000)
+          return
+        }
+        if (data.currentDelegate.toLowerCase() !== data.currentDelegateLive.toLowerCase()) {
+          setTimeout(() => {
+            console.log('🌽🌽🌽', 'Delegates not in sync, update in 15', '🌽🌽🌽')
+            mutate()
+          }, 15000)
+          return
         }
         if (data._meta.block.number > leaderboardBlockNumber) {
           console.log('🌽🌽🌽🌽🌽', 'block number is higher on BE. Update it!')
@@ -81,43 +89,71 @@ export default function useLeaderboard() {
     if (account == null) return []
     if (data == null) return []
 
-    const myAccount = data.accounts.find((acc) => {
-      return acc.id.toLowerCase() === account?.toLowerCase()
-    })
-
-    return myAccount?.nounlets || []
+    const myAccount = data.accounts[account.toLowerCase()]
+    return myAccount?.holding || []
   }, [data, account])
 
   const myNounletsVotes = useMemo(() => {
     if (account == null) return {}
-    return myNounlets
-      .map((vote) => vote.delegateVotes.at(0)?.delegate.id.toLowerCase() || account.toLowerCase())
-      .reduce((p: Record<string, number>, address: string) => {
-        if (p[address] == null) {
-          p[address] = 0
-        }
-        p[address] += 1
-        return p
-      }, {})
+    const votesFor: Record<string, number> = {}
+
+    myNounlets.forEach((nounlet) => {
+      if (votesFor[nounlet.delegate] == null) {
+        votesFor[nounlet.delegate] = 0
+      }
+
+      votesFor[nounlet.delegate] += 1
+    })
+
+    return votesFor
+    // return myNounlets
+    //   .map((vote) => vote.delegateVotes.at(0)?.delegate.id.toLowerCase() || account.toLowerCase())
+    //   .reduce((p: Record<string, number>, address: string) => {
+    //     if (p[address] == null) {
+    //       p[address] = 0
+    //     }
+    //     p[address] += 1
+    //     return p
+    //   }, {})
   }, [myNounlets, account])
 
   const leaderboardListData = useMemo(() => {
     if (data == null) return []
     const myAddress = account?.toLowerCase() || ''
 
-    const mapped = data.accounts.map((acc) => {
-      const accAddress = acc.id.toLowerCase()
-      return {
-        isMe: accAddress === myAddress,
-        percentage: 0.69,
-        walletAddress: acc.id.toLowerCase(),
-        currentDelegateWalletAddress: ethers.constants.AddressZero,
-        mostVotesWalletAddress: ethers.constants.AddressZero,
-        numberOfOwnedNounlets: +acc.totalNounletsHeld,
-        numberOfVotes: -1,
-        numberOfMyVotes: myNounletsVotes[accAddress] ?? 0
-      }
-    })
+    const totalVotes = data.totalVotes
+    const delegateVotes = data.accounts[data.currentDelegate.toLowerCase()]?.votes || 0
+    const mapped = Object.entries(data.accounts)
+      .map(([address, acc]) => {
+        const accVotes = +acc.votes
+        const accAddress = address.toLowerCase()
+        let percentage = 0.0
+        if (totalVotes > 0 && accVotes > 0) {
+          percentage = FixedNumber.from(accVotes)
+            .divUnsafe(FixedNumber.from(totalVotes))
+            .round(2)
+            .toUnsafeFloat()
+        }
+        return {
+          isMe: accAddress === myAddress,
+          isDelegate: address.toLowerCase() === data.currentDelegate.toLowerCase(),
+          hasMoreVotesThanDelegate: accVotes > delegateVotes,
+          walletAddress: address.toLowerCase(),
+          percentage,
+          currentDelegateWalletAddress: data.currentDelegate,
+          mostVotesWalletAddress: ethers.constants.AddressZero,
+          numberOfOwnedNounlets: +acc.holding.length,
+          numberOfVotes: accVotes,
+          numberOfMyVotes: myNounletsVotes[accAddress] ?? 0
+        }
+      })
+      // Filter out accounts with no votes
+      .filter((acc) => {
+        if (acc.isMe) return true
+        if (acc.numberOfVotes === 0) return false
+        return true
+      })
+      .sort((a, b) => b.numberOfVotes - a.numberOfVotes)
 
     return mapped
   }, [data, account, myNounletsVotes])

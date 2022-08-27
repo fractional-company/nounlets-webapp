@@ -85,6 +85,7 @@ export default function useNounletAuctionInfo(nounletId: string | null) {
       return { auction: response, fetchedAt: Date.now() }
     },
     {
+      dedupingInterval: 2000,
       revalidateIfStale: !cachedDataAuctionSettled
     }
   )

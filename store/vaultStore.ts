@@ -32,7 +32,7 @@ interface StoreActions {
 const initialState: StoreState = {
   isLive: false,
   isLoading: true,
-  vaultAddress: process.env.NEXT_PUBLIC_NOUN_VAULT_ADDRESS || '',
+  vaultAddress: (process.env.NEXT_PUBLIC_NOUN_VAULT_ADDRESS || '').toLowerCase(),
   nounTokenId: '',
   vaultCuratorAddress: ethers.constants.AddressZero,
   currentDelegate: ethers.constants.AddressZero,

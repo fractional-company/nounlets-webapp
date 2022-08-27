@@ -13,6 +13,8 @@ import LeaderboardVotesDots from './leaderboard-votes-dots'
 
 export type LeaderboardListTileProps = {
   isMe: boolean
+  isDelegate: boolean
+  hasMoreVotesThanDelegate: boolean
   percentage: number
   walletAddress: string
   currentDelegateWalletAddress: string
@@ -31,6 +33,8 @@ export default function LeaderboardListTile(props: {
   const { toastSuccess, toastError } = useToasts()
   const {
     isMe,
+    isDelegate,
+    hasMoreVotesThanDelegate,
     percentage,
     walletAddress,
     currentDelegateWalletAddress,
@@ -48,18 +52,22 @@ export default function LeaderboardListTile(props: {
     }
   }, [percentage])
 
-  const isDelegate = useMemo(
-    () => currentDelegateWalletAddress === walletAddress,
-    [currentDelegateWalletAddress, walletAddress]
-  )
+  // const isDelegate = useMemo(
+  //   () => currentDelegateWalletAddress === walletAddress,
+  //   [currentDelegateWalletAddress, walletAddress]
+  // )
+  // const isUpdateDelegateActionShown = useMemo(() => {
+  //   if (account == null) return false
+  //   return true // TODO REMOVE
+
+  //   return (
+  //     mostVotesWalletAddress === walletAddress && walletAddress !== currentDelegateWalletAddress
+  //   )
+  // }, [account, walletAddress, currentDelegateWalletAddress, mostVotesWalletAddress])
   const isUpdateDelegateActionShown = useMemo(() => {
     if (account == null) return false
-    return true // TODO REMOVE
-
-    return (
-      mostVotesWalletAddress === walletAddress && walletAddress !== currentDelegateWalletAddress
-    )
-  }, [account, walletAddress, currentDelegateWalletAddress, mostVotesWalletAddress])
+    return hasMoreVotesThanDelegate && !isDelegate
+  }, [account, hasMoreVotesThanDelegate, isDelegate])
 
   const handleCastVote = (address: string) => {
     console.log('casting vote for!', address)

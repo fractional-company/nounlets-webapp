@@ -15,6 +15,7 @@ export const NEXT_PUBLIC_NOUN_VAULT_ADDRESS =
 export const NEXT_PUBLIC_BLOCKS_PER_DAY = 7_000
 export const NEXT_PUBLIC_BID_DECIMALS = +(process.env.NEXT_PUBLIC_BID_DECIMALS || 2)
 export const NEXT_PUBLIC_CACHE_VERSION = +(process.env.NEXT_PUBLIC_CACHE_VERSION || 0)
+export const NEXT_PUBLIC_SHOW_DEBUG = (process.env.NEXT_PUBLIC_SHOW_DEBUG || '0') === '1'
 // OLD
 export const ETHERSCAN_API_KEY = process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY ?? ''
 
