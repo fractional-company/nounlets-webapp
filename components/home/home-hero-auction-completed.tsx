@@ -10,7 +10,7 @@ import { NEXT_PUBLIC_BID_DECIMALS } from 'config'
 import dayjs from 'dayjs'
 import useDisplayedNounlet from 'hooks/useDisplayedNounlet'
 import { useMemo, useState } from 'react'
-import { buildEtherscanAddressLink } from '../../lib/utils/etherscan'
+import { buildEtherscanAddressLink, buildEtherscanTxLink } from '../../lib/utils/etherscan'
 import { useAppStore } from '../../store/application'
 import IconBidHistory from '../icons/icon-bid-history'
 import IconHeart from '../icons/icon-heart'
@@ -21,9 +21,9 @@ import useToasts from 'hooks/useToasts'
 
 export default function HomeHeroAuctionCompleted(): JSX.Element {
   const { account } = useEthers()
-  const { setBidModalOpen } = useAppStore()
+  const { setBidModalOpen, setCongratulationsModalForNounletId } = useAppStore()
   const { toastSuccess, toastError } = useToasts()
-  const { endedAuctionInfo, settleAuction, historicBids } = useDisplayedNounlet()
+  const { nid, endedAuctionInfo, settleAuction, historicBids } = useDisplayedNounlet()
 
   const formattedData = useMemo(() => {
     const isLoading = endedAuctionInfo == null
@@ -34,9 +34,12 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
     const endedOn = dayjs((endedAuctionInfo?.endedOn ?? 0) * 1000).format('h:mmA, MMMM D, YYYY')
     const wonByAddress = endedAuctionInfo?.wonByAddress || ethers.constants.AddressZero
 
+    console.log({ endedAuctionInfo })
     return {
       isLoading,
       isSettled: !!endedAuctionInfo?.isSettled,
+      settledTransactionHash:
+        endedAuctionInfo?.settledTransactionHash || ethers.constants.AddressZero,
       winningBid,
       heldByAddress,
       endedOn,
@@ -50,6 +53,7 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
     setIsSettlingAuction(true)
 
     try {
+      const nounletId = '' + nid
       const response = await settleAuction()
       console.log('result of settling', response)
 
@@ -57,7 +61,8 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
         response.status === WrappedTransactionReceiptState.SUCCESS ||
         response.status === WrappedTransactionReceiptState.SPEDUP
       ) {
-        if (formattedData.heldByAddress.toLowerCase() === account?.toLowerCase()) {
+        if (formattedData.wonByAddress.toLowerCase() === account?.toLowerCase()) {
+          setCongratulationsModalForNounletId(true, nounletId)
           // setIsCongratulationsModalShown(true)
         }
         toastSuccess('Auction settled 🎊', 'On to the next one!')
@@ -78,9 +83,22 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
     return formattedData.heldByAddress === ethers.constants.AddressZero
   }, [formattedData.heldByAddress])
 
+  const isSettledTransactionIndexing = useMemo(() => {
+    return formattedData.settledTransactionHash === ethers.constants.AddressZero
+  }, [formattedData.settledTransactionHash])
+
+  const test = () => {
+    setCongratulationsModalForNounletId(true, '10')
+  }
   return (
     <div className="home-hero-auction lg:min-h-[21.875rem]">
-      {/* <pre>{JSON.stringify(endedAuctionInfo, null, 2)}</pre> */}
+      {/* <pre
+        onClick={() => {
+          test()
+        }}
+      >
+        {JSON.stringify(endedAuctionInfo, null, 2)}
+      </pre> */}
 
       <div className="flex flex-col sm:flex-row space-y-2 sm:space-x-14 lg:space-x-10 xl:space-x-14 sm:space-y-0">
         <div className="flex flex-col space-y-3">
@@ -136,12 +154,22 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
               <IconBidHistory className="mr-2.5" /> Bid history
             </Button>
             <a
-              href={buildEtherscanAddressLink('0x0000000000000000000000000000000000000000 ')}
+              href={buildEtherscanTxLink(formattedData.settledTransactionHash)}
               target="_blank"
               rel="noreferrer"
+              className={isSettledTransactionIndexing ? 'pointer-events-none' : ''}
             >
-              <Button className="text-px18 leading-px26 basic default !h-11">
-                <IconVerified className="mr-2.5" /> Etherscan
+              <Button
+                className="text-px18 leading-px26 basic default !h-11"
+                disabled={isSettledTransactionIndexing}
+              >
+                {isSettledTransactionIndexing ? (
+                  <span>Indexing...</span>
+                ) : (
+                  <>
+                    <IconVerified className="mr-2.5" /> <span>Etherscan</span>
+                  </>
+                )}
               </Button>
             </a>
           </>

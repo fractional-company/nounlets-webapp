@@ -14,6 +14,8 @@ import duration from 'dayjs/plugin/duration'
 import utc from 'dayjs/plugin/utc'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { NEXT_PUBLIC_CACHE_VERSION, NEXT_PUBLIC_NOUN_VAULT_ADDRESS } from 'config'
+import { useAppStore } from 'store/application'
+import CongratulationsModal from 'components/modals/congratulations-modal'
 
 dayjs.extend(duration)
 dayjs.extend(utc)
@@ -60,6 +62,7 @@ function localStorageProvider() {
 }
 
 function MyApp({ Component, pageProps }: AppProps) {
+  const { congratulationsModal, setCongratulationsModalForNounletId } = useAppStore()
   return (
     <SWRConfig
       value={{
@@ -81,6 +84,12 @@ function MyApp({ Component, pageProps }: AppProps) {
           <div id="overlay-root"></div>
           <Component {...pageProps} />
           <AppFooter />
+          <CongratulationsModal
+            isShown={congratulationsModal.show}
+            onClose={() => {
+              setCongratulationsModalForNounletId(false)
+            }}
+          />
         </WalletConfig>
       </DAppProvider>
     </SWRConfig>

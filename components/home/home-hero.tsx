@@ -1,5 +1,6 @@
 import Button from 'components/buttons/button'
 import IconArrow from 'components/icons/icon-arrow'
+import CongratulationsModal from 'components/modals/congratulations-modal'
 import { NounletImage } from 'components/NounletImage'
 import useCurrentBackground from 'hooks/useCurrentBackground'
 import useDisplayedNounlet from 'hooks/useDisplayedNounlet'
@@ -8,6 +9,7 @@ import { useRouter } from 'next/router'
 import nounLoadingImage from 'public/img/loading-skull.gif'
 import nounImage from 'public/img/noun.png'
 import { useMemo } from 'react'
+import { useAppStore } from 'store/application'
 import HomeHeroAuctionCompleted from './home-hero-auction-completed'
 import HomeHeroAuctionProgress from './home-hero-auction-progress'
 
@@ -93,13 +95,6 @@ export default function HomeHero(): JSX.Element {
           </div>
         </div>
       </div>
-
-      {/* <CongratulationsModal
-        isShown={isCongratulationsModalShown}
-        onClose={() => {
-          setIsCongratulationsModalShown(false)
-        }}
-      /> */}
     </div>
   )
 }

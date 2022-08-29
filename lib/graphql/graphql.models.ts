@@ -11,8 +11,7 @@ export type _Meta = {
 }
 
 // Manually generated from https://transform.tools/graphql-to-typescript
-// with "./nounlets.schema.graphql"
-// NOTE: uncomment first five lines in nounlets.schema.graphql when usin the above tool
+// using "./nounlets.schema.graphql"
 
 export type Maybe<T> = T | null
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -66,8 +65,8 @@ export type Account = {
   id: Scalars['ID']
   /** The Token that the Delegate depends on */
   token: Token
-  /** The sum of the nounlets held by the Account */
-  nounletsHeldCount: Scalars['Int']
+  /** IDs of Nounlets held (subgraph cannot fetch them from derived fields) */
+  nounletsHeldIDs: Array<Scalars['String']>
   /** The Nounlets held by this account */
   nounletsHeld: Array<Nounlet>
   /** Bids the Account has offered */
@@ -80,8 +79,8 @@ export type Delegate = {
   id: Scalars['ID']
   /** The Token that the Delegate depends on */
   token: Token
-  /** The sum of the nounlets represented by the Delegate */
-  nounletsRepresentedCount: Scalars['Int']
+  /** IDs of the represented Nounlets (subgraph cannot fetch them from derived fields) */
+  nounletsRepresentedIDs: Array<Scalars['String']>
   /** Nounlets that this delegate represents */
   nounletsRepresented: Array<Nounlet>
   /** Historic data about the votes for this delegate */
@@ -116,6 +115,8 @@ export type Auction = {
   highestBidder?: Maybe<Account>
   /** Whether or not the auction has been settled */
   settled: Scalars['Boolean']
+  /** The transaction hash the auction was settled in */
+  settledTransactionHash: Scalars['String']
   /** The time that the auction started */
   startTime: Scalars['BigInt']
   /** The time that the auction is scheduled to end */

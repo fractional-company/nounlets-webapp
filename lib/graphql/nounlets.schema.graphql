@@ -1,8 +1,17 @@
-#scalar BigInt
-#directive @entity repeatable on OBJECT
-#directive @derivedFrom(
-#  field: String!
-#) on FIELD_DEFINITION
+scalar BigInt
+directive @entity repeatable on OBJECT
+directive @derivedFrom(field: String!) on FIELD_DEFINITION
+
+type Token @entity {
+  "The Token Address"
+  id: ID!
+
+  "Accounts that belong to this vault"
+  accounts: [Account!]! @derivedFrom(field: "token")
+
+  "Delegates that belong to this vault"
+  delegates: [Delegate!]! @derivedFrom(field: "token")
+}
 
 type Vault @entity {
   "The Vault's address"
@@ -12,7 +21,7 @@ type Vault @entity {
   noun: Noun
 
   "Token address associated with the vault"
-  tokenAddress: String!
+  token: Token!
 }
 
 type Noun @entity {
@@ -30,8 +39,11 @@ type Account @entity {
   "Token Address + Wallet Address"
   id: ID!
 
-  "The sum of the nounlets held by the Account"
-  nounletsHeldCount: Int!
+  "The Token that the Delegate depends on"
+  token: Token!
+
+  "IDs of Nounlets held (subgraph cannot fetch them from derived fields)"
+  nounletsHeldIDs: [String!]!
 
   "The Nounlets held by this account"
   nounletsHeld: [Nounlet!]! @derivedFrom(field: "holder")
@@ -44,8 +56,11 @@ type Delegate @entity {
   "Token Address + Wallet Address"
   id: ID!
 
-  "The sum of the nounlets represented by the Delegate"
-  nounletsRepresentedCount: Int!
+  "The Token that the Delegate depends on"
+  token: Token!
+
+  "IDs of the represented Nounlets (subgraph cannot fetch them from derived fields)"
+  nounletsRepresentedIDs: [String!]!
 
   "Nounlets that this delegate represents"
   nounletsRepresented: [Nounlet!]! @derivedFrom(field: "delegate")
@@ -89,6 +104,9 @@ type Auction @entity {
 
   "Whether or not the auction has been settled"
   settled: Boolean!
+
+  "The transaction hash the auction was settled in"
+  settledTransactionHash: String!
 
   "The time that the auction started"
   startTime: BigInt!

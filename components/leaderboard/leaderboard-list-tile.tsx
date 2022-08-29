@@ -7,7 +7,7 @@ import useLeaderboard from 'hooks/useLeaderboard'
 import useToasts from 'hooks/useToasts'
 import Image from 'next/image'
 import userIcon from 'public/img/user-icon.jpg'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useAppStore } from 'store/application'
 import LeaderboardVotesDots from './leaderboard-votes-dots'
 
@@ -43,6 +43,7 @@ export default function LeaderboardListTile(props: {
     numberOfVotes,
     numberOfMyVotes
   } = props.data
+  const [isClaiming, setIsClaiming] = useState(false)
 
   const percentageString = useMemo(() => {
     try {
@@ -76,12 +77,14 @@ export default function LeaderboardListTile(props: {
 
   const handleClaimDelegate = async (address: string) => {
     console.log('aliming delegate handler', address)
+    setIsClaiming(true)
     try {
       const response = await claimDelegate(address)
       console.log('yasss', response)
       toastSuccess('Delegate updated 👑', 'Leaderboard will refresh momentarily.')
     } catch (error) {
       toastError('Update delegate failed', 'Please try again.')
+      setIsClaiming(false)
     }
   }
   return (
@@ -122,6 +125,7 @@ export default function LeaderboardListTile(props: {
             )}
             {isUpdateDelegateActionShown && (
               <Button
+                loading={isClaiming}
                 onClick={() => handleClaimDelegate(walletAddress)}
                 className="hidden lg:flex ml-2 items-center justify-center text-secondary-blue hover:text-secondary-green text-px18 font-700 border-2 border-transparent px-2 h-10 rounded-px10"
               >

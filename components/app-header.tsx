@@ -4,7 +4,7 @@ import IconCaretDropdown from './icons/icon-caret-dropdown'
 import IconDiscord from './icons/icon-discord'
 import IconFractionalLogo from './icons/icon-fractional-logo'
 import IconPeople from '../public/img/icon-people.png'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import IconMedium from './icons/icon-medium'
 import IconHeartHollow from './icons/icon-heart-hollow'
 import IconTwitter from './icons/icon-twitter'
@@ -38,7 +38,6 @@ export default function AppHeader(): JSX.Element {
   const { setConnectModalOpen } = useAppStore()
   const { account, deactivate } = useEthers()
   const { isLive, currentDelegate, backgrounds, isCurrentDelegateOutOfSync } = useVaultStore()
-  const { nid, nounletImageData, nounletBackground } = useDisplayedNounlet()
   const { currentBackground } = useCurrentBackground()
 
   useEffect(() => {
@@ -51,59 +50,55 @@ export default function AppHeader(): JSX.Element {
     }
   }, [isMobileMenuOpen])
 
-  const handleConnectButtonClick = () => {
+  const handleConnectButtonClick = useCallback(() => {
     if (account == null) {
       setConnectModalOpen(true)
     } else {
       deactivate()
     }
-  }
+  }, [account, setConnectModalOpen, deactivate])
 
   const isCrownShown = useMemo(() => {
     if (account == null) return false
     if (currentDelegate == null || currentDelegate === ethers.constants.AddressZero) return false
-    if (account !== currentDelegate) return false
+    if (account.toLowerCase() !== currentDelegate.toLowerCase()) return false
     return true
   }, [account, currentDelegate])
 
-  const connectButton = (
-    <Button
-      className={classNames(
-        account ? 'basic hover:!bg-secondary-red' : 'primary',
-        'relative group'
-      )}
-      onClick={() => handleConnectButtonClick()}
-    >
-      {account ? (
-        <div className="flex items-center">
-          {isCrownShown && (
-            <IconCrown className="absolute w-[30px] h-auto left-[-12px] top-[-12px] rotate-[-40deg] text-[#fa8f2f]" />
-          )}
-          <SimpleAddress
-            avatarSize={16}
-            address={account}
-            className="space-x-2 pointer-events-none group-hover:invisible"
-          />
-          <p className="absolute inset-0 pointer-events-none invisible group-hover:visible text-white leading-px48">
-            Disconnect
-          </p>
-          {/* <IconCaretDropdown /> */}
-        </div>
-      ) : (
-        <span>Connect</span>
-      )}
-    </Button>
+  const connectButton = useMemo(
+    () => (
+      <Button
+        className={classNames(
+          account ? 'basic hover:!bg-secondary-red' : 'primary',
+          'relative group'
+        )}
+        onClick={() => handleConnectButtonClick()}
+      >
+        {account ? (
+          <div className="flex items-center">
+            {isCrownShown && (
+              <IconCrown className="absolute w-[30px] h-auto left-[-12px] top-[-12px] rotate-[-40deg] text-[#fa8f2f]" />
+            )}
+            <SimpleAddress
+              avatarSize={16}
+              address={account}
+              className="space-x-2 pointer-events-none group-hover:invisible"
+            />
+            <p className="absolute inset-0 pointer-events-none invisible group-hover:visible text-white leading-px48">
+              Disconnect
+            </p>
+            {/* <IconCaretDropdown /> */}
+          </div>
+        ) : (
+          <span>Connect</span>
+        )}
+      </Button>
+    ),
+    [account, isCrownShown, handleConnectButtonClick]
   )
 
   const handleShowNotification = () => {
-    toast.custom(
-      (t) => (
-        <ErrorToast t={t} title="Votes cast 🎉" message="Leaderboard will refresh momentarily." />
-      ),
-      {
-        duration: 3000
-      }
-    )
+    console.log('link to discord')
   }
 
   const currentDelegateRC = useMemo(() => {

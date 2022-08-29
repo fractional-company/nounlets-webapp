@@ -129,6 +129,7 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
 
     return {
       isSettled: +nid < +latestNounletTokenId,
+      settledTransactionHash: auctionInfo.auction.settledTransactionHash,
       winningBid: auctionInfo.auction!.highestBidAmount.toString(),
       heldByAddress,
       endedOn: auctionEndTime,

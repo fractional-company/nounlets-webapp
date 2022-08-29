@@ -1,3 +1,4 @@
+import { ethers } from 'ethers'
 import { Nounlet } from 'lib/graphql/graphql.models'
 import { getNounletAuctionData, getNounletAuctionDataBC } from 'lib/graphql/queries'
 import { useCallback, useMemo } from 'react'
@@ -33,7 +34,15 @@ export default function useNounletAuctionInfo(nounletId: string | null) {
     if (swrKey == null) return false
     const data: Nounlet | null = cache.get(unstable_serialize(swrKey))
     if (data == null) return false
-    return !!data.auction?.settled
+
+    // Is settled is manually set if the auction has settled on the BC but BE hasn't
+    // caught up yet. This is so we can show the "settled" state on the home-hero.
+    // But until the BE has cought up, the transaction hash is ZeroAddress
+    // so we show a "indexing..." button
+    return (
+      !!data.auction?.settled &&
+      data.auction.settledTransactionHash !== ethers.constants.AddressZero
+    )
   }, [cache, swrKey])
 
   const canFetch = useMemo(() => {

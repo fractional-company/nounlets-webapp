@@ -11,7 +11,7 @@ import useSWR, { useSWRConfig } from 'swr'
 import debounce from 'lodash/debounce'
 import OnMounted from './utils/on-mounted'
 import useLeaderboard from 'hooks/useLeaderboard'
-import { useBlockCheckpointStore } from 'store/blockCheckpoint'
+import { useBlockNumberCheckpointStore } from 'store/blockNumberCheckpointStore'
 import { SDKContext } from './WalletConfig'
 import IconBug from './icons/icon-bug'
 import { NEXT_PUBLIC_SHOW_DEBUG } from 'config'
@@ -100,16 +100,16 @@ function VaultUpdater() {
       console.log({ ...key })
       console.groupEnd()
 
-      const [vaultMetadata, vaultInfo, currentDelegate] = await Promise.all([
+      const [vaultMetadata, vaultInfo /*, currentDelegate*/] = await Promise.all([
         getVaultData(key.vaultAddress),
-        sdk.NounletAuction.vaultInfo(vaultAddress),
-        sdk.NounletGovernance.currentDelegate(vaultAddress)
+        sdk.NounletAuction.vaultInfo(vaultAddress)
+        // sdk.NounletGovernance.currentDelegate(vaultAddress)
       ])
 
       return {
         ...vaultMetadata,
-        ...vaultInfo,
-        currentDelegate
+        ...vaultInfo
+        // currentDelegate
       }
     },
     {
@@ -136,7 +136,7 @@ function VaultUpdater() {
           setNounletTokenAddress(data.nounletTokenAddress)
           setNounTokenId(data.nounTokenId)
           setVaultCuratorAddress(data.curator)
-          setCurrentDelegate(data.currentDelegate)
+          setCurrentDelegate(data.backendCurrentDelegate)
           setBackendLatestNounletTokenId(`${data.nounletCount}`)
           setLatestNounletTokenId(`${data.currentId.toString()}`)
           setIsLive(true)
@@ -185,7 +185,7 @@ function VaultUpdater() {
 function LeaderboardUpdater() {
   const sdk = useSdk()
   const { isLive, vaultAddress, nounletTokenAddress } = useVaultStore()
-  const { setLeaderboardBlockNumber } = useBlockCheckpointStore()
+  const { setLeaderboardBlockNumber } = useBlockNumberCheckpointStore()
   const { mutate } = useLeaderboard()
 
   const debouncedMutate = useMemo(() => {
@@ -205,8 +205,10 @@ function LeaderboardUpdater() {
 
     const listener = (...eventData: any) => {
       const event = eventData.at(-1)
-      console.log('🍉🍉🍉 any event', eventData)
+      console.groupCollapsed('🍉🍉🍉 any event', event?.blockNumber, eventData)
       console.log('event data', event)
+      console.groupEnd()
+
       setLeaderboardBlockNumber(event?.blockNumber || 0)
       debouncedMutate()
     }

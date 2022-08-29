@@ -4,7 +4,7 @@ import LeaderboardListTile, {
 } from 'components/leaderboard/leaderboard-list-tile'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
-import useLeaderboard from 'hooks/useLeaderboard'
+import useLeaderboard, { constructLeaderboardListData } from 'hooks/useLeaderboard'
 import { useEthers } from '@usedapp/core'
 import { useMemo } from 'react'
 import { ethers } from 'ethers'
@@ -16,7 +16,11 @@ export default function HomeLeaderboard(): JSX.Element {
   const { account, library } = useEthers()
   const router = useRouter()
   const { latestNounletTokenId } = useVaultStore()
-  const { isOutOfSync, leaderboardListData } = useLeaderboard()
+  const { data, myNounletsVotes, isOutOfSync } = useLeaderboard()
+
+  const leaderboardListData = useMemo(() => {
+    return constructLeaderboardListData(data, myNounletsVotes, account).slice(0, 3)
+  }, [data, myNounletsVotes, account])
 
   const hasFirstAuctionSettled = latestNounletTokenId !== '0' && latestNounletTokenId !== '1'
 

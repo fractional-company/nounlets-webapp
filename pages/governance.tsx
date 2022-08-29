@@ -9,11 +9,11 @@ import LeaderboardListTile, {
 } from 'components/leaderboard/leaderboard-list-tile'
 import IconMagnify from 'components/icons/icon-magnify'
 import IconQuestionCircle from 'components/icons/icon-question-circle'
-import { useMemo, useState } from 'react'
+import { ChangeEvent, useMemo, useState } from 'react'
 import VoteForDelegateModal from 'components/modals/vote-for-delegate-modal'
 import VoteForCustomWalletModal from 'components/modals/vote-for-custom-wallet.modal'
 import Link from 'next/link'
-import useLeaderboard from 'hooks/useLeaderboard'
+import useLeaderboard, { constructLeaderboardListData } from 'hooks/useLeaderboard'
 import SimpleAddress from 'components/simple-address'
 import { useVaultStore } from 'store/vaultStore'
 import { ethers } from 'ethers'
@@ -25,9 +25,7 @@ import SimpleModalWrapper from 'components/SimpleModalWrapper'
 import { NounletImage } from 'components/NounletImage'
 
 const Governance: NextPage = () => {
-  const [isVoteForDelegateModalShown, setIsVoteForDelegateModalShown] = useState(false)
   const { isLive, latestNounletTokenId } = useVaultStore()
-  const { leaderboardListData, myNounlets, myNounletsVotes } = useLeaderboard()
 
   return (
     <div className="page-governance lg:container mx-auto w-screen">
@@ -65,9 +63,9 @@ const Governance: NextPage = () => {
               Each Nounlet has 1 vote on the delegate.
             </p>
 
-            <GovernanceCurrentDelegate myNounlets={myNounlets} myNounletsVotes={myNounletsVotes} />
+            <GovernanceCurrentDelegate />
 
-            <GovernanceLeaderboard leaderboardListData={leaderboardListData} />
+            <GovernanceLeaderboard />
           </>
         )}
       </div>
@@ -77,16 +75,14 @@ const Governance: NextPage = () => {
 
 export default Governance
 
-function GovernanceCurrentDelegate(props: {
-  myNounletsVotes: ReturnType<typeof useLeaderboard>['myNounletsVotes']
-  myNounlets: ReturnType<typeof useLeaderboard>['myNounlets']
-}) {
+function GovernanceCurrentDelegate() {
   const { account } = useEthers()
   const { currentDelegate, isCurrentDelegateOutOfSync } = useVaultStore()
+  const { data, isOutOfSync, myNounlets, myNounletsVotes } = useLeaderboard()
 
   const areMyVotesSplit = useMemo(() => {
-    return Object.keys(props.myNounletsVotes).length > 1
-  }, [props.myNounletsVotes])
+    return Object.keys(myNounletsVotes).length > 1
+  }, [myNounletsVotes])
 
   const currentDelegateRC = useMemo(() => {
     return currentDelegate === ethers.constants.AddressZero ? (
@@ -152,10 +148,10 @@ function GovernanceCurrentDelegate(props: {
 
               <div className="flex items-center mt-4">
                 <p className="text-px36 font-londrina leading-px42 mr-3 truncate w-10 text-center flex-shrink-0">
-                  {props.myNounlets.length}
+                  {myNounlets.length}
                 </p>
                 <div className="flex items-center gap-2 flex-wrap">
-                  {props.myNounlets.map((nounlet) => {
+                  {myNounlets.map((nounlet) => {
                     return (
                       <Link href={`/nounlet/${nounlet.id}`} key={nounlet.id}>
                         <div className="overflow-hidden flex-shrink-0 w-10 h-10 rounded-px8 cursor-pointer hover:scale-110 transition-transform">
@@ -176,9 +172,8 @@ function GovernanceCurrentDelegate(props: {
   )
 }
 
-function GovernanceLeaderboard(props: {
-  leaderboardListData: ReturnType<typeof useLeaderboard>['leaderboardListData']
-}) {
+function GovernanceLeaderboard() {
+  const { data, isOutOfSync, myNounletsVotes } = useLeaderboard()
   const { account } = useEthers()
   const { setConnectModalOpen } = useAppStore()
   const [isVoteForDelegateModalShown, setIsVoteForDelegateModalShown] = useState(false)
@@ -192,24 +187,38 @@ function GovernanceLeaderboard(props: {
       return ensAddress || ''
     }
 
-    if (debouncedSearchInputValue.match(/^0x[a-fA-F0-9]{1,40}$/) != null) {
-      return debouncedSearchInputValue
-    }
+    // if (debouncedSearchInputValue.match(/^0x[a-fA-F0-9]{1,40}$/) != null) {
+    //   return debouncedSearchInputValue
+    // }
 
-    return ''
+    return debouncedSearchInputValue
   }, [debouncedSearchInputValue, ensAddress])
 
   const filteredLeaderboardListData = useMemo(() => {
-    if (filterByText === '') return props.leaderboardListData
-    return props.leaderboardListData.filter((item) => {
-      return item.walletAddress.startsWith(filterByText.toLowerCase())
-    })
-  }, [filterByText, props.leaderboardListData])
+    return constructLeaderboardListData(
+      data,
+      myNounletsVotes,
+      account,
+      debouncedSearchInputValue.toLowerCase()
+    )
+  }, [debouncedSearchInputValue, data, myNounletsVotes, account])
+
+  const handleInput = (event: ChangeEvent<HTMLInputElement>) => {
+    setSearchinputValue(event.target.value.trim())
+  }
 
   return (
     <div className="leaderboard mt-14">
       <div className="flex flex-col md:flex-row items-center gap-2">
-        <h2 className="font-londrina text-[40px] leading-[47px] flex-1">Leaderboard</h2>
+        <div className="flex items-center flex-1 gap-3">
+          <h2 className="font-londrina text-[40px] leading-[47px]">Leaderboard</h2>
+          {isOutOfSync && (
+            <SimplePopover>
+              <IconSpinner className="animate-spin h-6" />
+              <div>Leaderboard is syncing.</div>
+            </SimplePopover>
+          )}
+        </div>
         {account == null ? (
           <div className="flex flex-col xs:flex-row items-center gap-2">
             <p className="font-500 text-px14 text-gray-3">Connect wallet to cast a vote</p>
@@ -231,7 +240,7 @@ function GovernanceLeaderboard(props: {
             <IconMagnify className="w-5 h-5 flex-shrink-0" />
             <input
               value={searchInputValue}
-              onChange={(event) => setSearchinputValue(event.target.value.trim())}
+              onChange={handleInput}
               className="outline-none font-500 text-px20 flex-1 bg-transparent"
               type="text"
               placeholder="Search by wallet or ENS"

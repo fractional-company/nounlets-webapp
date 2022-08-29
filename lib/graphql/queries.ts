@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client'
 import { NEXT_PUBLIC_BLOCKS_PER_DAY } from 'config'
-import { BigNumber } from 'ethers'
+import { BigNumber, ethers } from 'ethers'
 import { NounletsSDK } from 'hooks/useSdk'
 import client from '../../apollo-client'
 import { Account, Auction, Bid, Nounlet, Scalars, Vault, _Meta } from './graphql.models'
@@ -76,6 +76,7 @@ type AuctionDataResponse = {
         auction: {
           id: Scalars['ID']
           settled: Scalars['Boolean']
+          settledTransactionHash: Scalars['String']
           highestBidAmount: Scalars['BigInt']
           highestBidder?: {
             id: Scalars['ID']
@@ -116,6 +117,7 @@ export const getNounletAuctionData = async (
             auction {
               id
               settled
+              settledTransactionHash
               highestBidAmount
               highestBidder {
                 id
@@ -214,6 +216,7 @@ export const getNounletAuctionDataBC = async (
   const auction: AuctionBC = {
     id: nounletTokenId,
     settled: false,
+    settledTransactionHash: ethers.constants.AddressZero,
     highestBidAmount: highestBidAmount,
     highestBidder: highestBidder,
     endTime: auctionInfo.endTime,
@@ -296,7 +299,6 @@ export const getAllNounlets = async (vaultAddress: string) => {
     accounts[holder].holding.push({ id, delegate })
     accounts[delegate].votes += 1
     if (accounts[delegate].votes > mostVotes) {
-      console.log('most votes', mostVotes, accounts[delegate].votes)
       mostVotes = accounts[delegate].votes
     }
   })
@@ -315,98 +317,6 @@ export const getAllNounlets = async (vaultAddress: string) => {
     totalVotes: nounlets.length,
     _meta: data._meta
   }
-}
-
-// nounlets.holder = current holder
-// nounlets.delegate = current delegate (who this nounlet votes for)
-// nounlets.delegateVotes = history of delegates (who this nounlet voted for)
-
-type LeaderboardDataResponse = {
-  vault: {
-    token: {
-      accounts: {
-        id: Scalars['ID']
-        nounletsHeldCount: Scalars['Int']
-        nounletsHeld: {
-          id: Scalars['ID']
-          delegate: {
-            id: Scalars['ID']
-          }
-        }
-      }[]
-      delegates: {
-        id: Scalars['ID']
-        nounletsRepresentedCount: Scalars['Int']
-      }[]
-    }
-  }
-  _meta: _Meta
-}
-
-export const getLeaderboardData = async (vaultAddress: string) => {
-  console.log('🥏 fetching leaderboard data', vaultAddress)
-
-  const { data } = await client.query<LeaderboardDataResponse>({
-    query: gql`
-    {
-      vault(id:"${vaultAddress}") {
-        token {
-          id
-          accounts {
-            id
-            nounletsHeldCount
-            nounletsHeld {
-              id
-              delegate {
-                id
-              }
-            }
-          }
-          delegates {
-            id
-            nounletsRepresentedCount
-          }
-        }
-      }
-      _meta {
-        block {
-          number,
-          timestamp
-        }
-      }
-    }
-    `
-  })
-
-  console.log(data)
-
-  return {
-    accounts: [],
-    _meta: {
-      block: {
-        number: 12270204
-      }
-    }
-  } as {
-    accounts: any[]
-    _meta: {
-      block: {
-        number: number
-      }
-    }
-  }
-
-  // // sort and append totalNounletsHeld
-  // const newData = data.accounts
-  //   .map((account) => {
-  //     return {
-  //       ...account,
-  //       totalNounletsHeld: account.nounlets.length
-  //     }
-  //   })
-  //   .sort((a, b) => b.totalNounletsHeld - a.totalNounletsHeld)
-
-  // return { ...data, accounts: newData }
 }
 
 export const getNounletVotes = async (nounletTokenAddress: string, nounletTokenId: string) => {
