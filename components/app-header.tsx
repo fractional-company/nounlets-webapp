@@ -37,7 +37,7 @@ export default function AppHeader(): JSX.Element {
   const mobileMenuRef = useRef<HTMLDivElement>(null)
   const { setConnectModalOpen } = useAppStore()
   const { account, deactivate } = useEthers()
-  const { isLive, currentDelegate, backgrounds } = useVaultStore()
+  const { isLive, currentDelegate, backgrounds, isCurrentDelegateOutOfSync } = useVaultStore()
   const { nid, nounletImageData, nounletBackground } = useDisplayedNounlet()
   const { currentBackground } = useCurrentBackground()
 
@@ -131,12 +131,14 @@ export default function AppHeader(): JSX.Element {
                 <span className="hidden lg:inline">Current delegate</span>
                 {currentDelegateRC}
 
-                <SimplePopover>
-                  <h1 className="font-700 text-px18 text-gray-4">
-                    <span className="text-secondary-orange">⚠</span>
-                  </h1>
-                  <div>Delegate is out of sync. You can update it on the vote page.</div>
-                </SimplePopover>
+                {isCurrentDelegateOutOfSync && (
+                  <SimplePopover>
+                    <h1 className="font-700 text-px18 text-gray-4">
+                      <span className="text-secondary-orange">⚠</span>
+                    </h1>
+                    <div>Delegate is out of sync. You can update it on the vote page.</div>
+                  </SimplePopover>
+                )}
               </div>
             )}
           </div>
@@ -171,12 +173,14 @@ export default function AppHeader(): JSX.Element {
                 <span className="hidden sm:inline">Current delegate</span>
                 {currentDelegateRC}
               </div>
-              <SimplePopover>
-                <h1 className="font-700 text-px18 text-gray-4">
-                  <span className="text-secondary-orange">⚠</span>
-                </h1>
-                <div>Delegate is out of sync. You can update it on the vote page.</div>
-              </SimplePopover>
+              {isCurrentDelegateOutOfSync && (
+                <SimplePopover>
+                  <h1 className="font-700 text-px18 text-gray-4">
+                    <span className="text-secondary-orange">⚠</span>
+                  </h1>
+                  <div>Delegate is out of sync. You can update it on the vote page.</div>
+                </SimplePopover>
+              )}
             </div>
           </div>
         )}

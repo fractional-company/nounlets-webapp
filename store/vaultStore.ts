@@ -6,6 +6,7 @@ import { createTrackedSelector } from 'react-tracked'
 interface StoreState {
   isLive: boolean // Has BE picked up the vault yet?
   isLoading: boolean
+  isCurrentDelegateOutOfSync: boolean
   vaultAddress: string
   nounTokenId: string
   vaultCuratorAddress: string
@@ -20,6 +21,7 @@ interface StoreState {
 interface StoreActions {
   setIsLive: (flag: boolean) => void
   setIsLoading: (flag: boolean) => void
+  setIsCurrentDelegateOutOfSync: (flag: boolean) => void
   setVaultAddress: (address: string) => void
   setNounTokenId: (id: string) => void
   setVaultCuratorAddress: (address: string) => void
@@ -32,6 +34,7 @@ interface StoreActions {
 const initialState: StoreState = {
   isLive: false,
   isLoading: true,
+  isCurrentDelegateOutOfSync: false,
   vaultAddress: (process.env.NEXT_PUBLIC_NOUN_VAULT_ADDRESS || '').toLowerCase(),
   nounTokenId: '',
   vaultCuratorAddress: ethers.constants.AddressZero,
@@ -60,6 +63,11 @@ export const useVaultStore = createTrackedSelector(
       setIsLoading: (flag) => {
         set((state) => {
           state.isLoading = flag
+        })
+      },
+      setIsCurrentDelegateOutOfSync: (flag) => {
+        set((state) => {
+          state.isCurrentDelegateOutOfSync = flag
         })
       },
       setVaultAddress: (address) => {

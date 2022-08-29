@@ -114,7 +114,6 @@ const Settings: NextPage<{}, {}> = () => {
       .wait()
       .then((res: any) => {
         console.log('Vault deployed', res)
-        // debugger
         // nounletAuction.createAuction()
       })
       .catch((e: any) => {

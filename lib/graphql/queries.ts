@@ -279,25 +279,39 @@ export const getAllNounlets = async (vaultAddress: string) => {
   const accounts: Record<string, { holding: { id: string; delegate: string }[]; votes: number }> =
     {}
 
+  let mostVotes = 0
   nounlets.forEach((nounlet) => {
     const id = splitKey(nounlet.id)
-    const holder = splitKey(nounlet.delegate.id)
+    const holder = splitKey(nounlet.holder.id)
     const delegate = splitKey(nounlet.delegate.id)
 
-    if (accounts[holder] == null || accounts[delegate] == null) {
+    if (accounts[holder] == null) {
       accounts[holder] = { holding: [], votes: 0 }
+    }
+
+    if (accounts[delegate] == null) {
+      accounts[delegate] = { holding: [], votes: 0 }
     }
 
     accounts[holder].holding.push({ id, delegate })
     accounts[delegate].votes += 1
+    if (accounts[delegate].votes > mostVotes) {
+      console.log('most votes', mostVotes, accounts[delegate].votes)
+      mostVotes = accounts[delegate].votes
+    }
   })
 
+  const currentDelegate = data.vault.noun.currentDelegate
+  const doesDelegateHaveMostVotes =
+    (accounts[data.vault.noun.currentDelegate]?.votes || 0) >= mostVotes
+
   // console.log({ data })
-  // console.log({ accounts })
+  console.log({ accounts, currentDelegate, doesDelegateHaveMostVotes })
 
   return {
     accounts,
-    currentDelegate: data.vault.noun.currentDelegate,
+    currentDelegate,
+    doesDelegateHaveMostVotes,
     totalVotes: nounlets.length,
     _meta: data._meta
   }

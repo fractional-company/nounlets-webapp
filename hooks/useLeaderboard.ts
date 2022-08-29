@@ -2,7 +2,7 @@ import { useEthers } from '@usedapp/core'
 import { ethers, FixedNumber } from 'ethers'
 import { getLeaderboardData, getAllNounlets } from 'lib/graphql/queries'
 import txWithErrorHandling from 'lib/utils/tx-with-error-handling'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useBlockCheckpointStore } from 'store/blockCheckpoint'
 import { useVaultStore } from 'store/vaultStore'
 import useSWR from 'swr'
@@ -11,7 +11,8 @@ import useSdk from './useSdk'
 export default function useLeaderboard() {
   const { account, library } = useEthers()
   const { leaderboardBlockNumber, setLeaderboardBlockNumber } = useBlockCheckpointStore()
-  const { isLive, vaultAddress, nounTokenId, nounletTokenAddress } = useVaultStore()
+  const { isLive, vaultAddress, nounTokenId, nounletTokenAddress, setIsCurrentDelegateOutOfSync } =
+    useVaultStore()
   const sdk = useSdk()
 
   const canFetchLeaderboard = useMemo(() => {
@@ -22,17 +23,18 @@ export default function useLeaderboard() {
     canFetchLeaderboard && { name: 'Leaderboard' },
     async (key) => {
       console.log('🌽🌽🌽🌽🌽 Fetching new leaderboard data')
-      const [leaderboardData, currentDelegate] = await Promise.all([
-        getAllNounlets(vaultAddress),
-        sdk!.NounletGovernance.currentDelegate(vaultAddress)
-      ])
+      const leaderboardData = await getAllNounlets(vaultAddress)
+      // const [leaderboardData, currentDelegate] = await Promise.all([
+      //   getAllNounlets(vaultAddress),
+      //   sdk!.NounletGovernance.currentDelegate(vaultAddress)
+      // ])
 
       console.groupCollapsed('🌽🌽🌽🌽🌽 Fetched new leaderboard data')
-      console.log({ currentDelegate, leaderboardData })
+      console.log({ leaderboardData })
       console.groupEnd()
+
       return {
-        ...leaderboardData,
-        currentDelegateLive: currentDelegate
+        ...leaderboardData
       }
     },
     {
@@ -49,41 +51,47 @@ export default function useLeaderboard() {
           return 15000
         }
 
-        // console.log('🌽🌽🌽🌽🌽 Leaderboard is in sync. Dont update until events')
         return 0
       },
       onSuccess: (data, key, config) => {
-        if (data == null || leaderboardBlockNumber === 0) {
+        if (data == null) {
           setTimeout(() => {
-            console.log('🌽🌽🌽', 'First load or data null, forced mutate', '🌽🌽🌽')
+            console.log('🌽🌽🌽', 'Data null, forced mutate', '🌽🌽🌽')
             mutate()
           }, 15000)
           return
         }
-        if (data.currentDelegate.toLowerCase() !== data.currentDelegateLive.toLowerCase()) {
-          setTimeout(() => {
-            console.log('🌽🌽🌽', 'Delegates not in sync, update in 15', '🌽🌽🌽')
-            mutate()
-          }, 15000)
-          return
+
+        if (!data.doesDelegateHaveMostVotes) {
+          console.log('🌽🌽🌽🌽🌽🌽🌽🌽🌽 delegate out of sync')
         }
+        console.log('🌽🌽🌽🌽🌽🌽🌽🌽🌽 delegate out of sync', data.doesDelegateHaveMostVotes)
+        setIsCurrentDelegateOutOfSync(!data.doesDelegateHaveMostVotes)
+
         if (data._meta.block.number > leaderboardBlockNumber) {
           console.log('🌽🌽🌽🌽🌽', 'block number is higher on BE. Update it!')
           setLeaderboardBlockNumber(data._meta.block.number)
+          return
+        }
+
+        if (leaderboardBlockNumber === 0) {
+          setTimeout(() => {
+            console.log('🌽🌽🌽', 'First load, forced mutate', '🌽🌽🌽')
+            mutate()
+          }, 15000)
+          return
         }
       },
       onError(err, key, config) {
-        console.log('error?', err)
-        debugger
+        console.log('Leaderboard error', err)
+        //debugger
       }
     }
   )
 
-  // const {} = useSWR('Leaderboard', () => {
-
-  // }, {
-  //   revalidateIfStale: false
-  // })
+  const isOutOfSync = useMemo(() => {
+    return (data?._meta.block.number || 0) < leaderboardBlockNumber
+  }, [data, leaderboardBlockNumber])
 
   const myNounlets = useMemo(() => {
     if (account == null) return []
@@ -106,15 +114,6 @@ export default function useLeaderboard() {
     })
 
     return votesFor
-    // return myNounlets
-    //   .map((vote) => vote.delegateVotes.at(0)?.delegate.id.toLowerCase() || account.toLowerCase())
-    //   .reduce((p: Record<string, number>, address: string) => {
-    //     if (p[address] == null) {
-    //       p[address] = 0
-    //     }
-    //     p[address] += 1
-    //     return p
-    //   }, {})
   }, [myNounlets, account])
 
   const leaderboardListData = useMemo(() => {
@@ -158,6 +157,12 @@ export default function useLeaderboard() {
     return mapped
   }, [data, account, myNounletsVotes])
 
+  useEffect(() => {
+    if (leaderboardListData.some((acc) => acc.hasMoreVotesThanDelegate)) {
+      console.log('Out of sync delegate')
+    }
+  }, [leaderboardListData])
+
   const claimDelegate = async (toAddress: string) => {
     console.log('update delegate', vaultAddress, toAddress)
     if (sdk == null || account == null || library == null) throw new Error('No signer')
@@ -179,6 +184,7 @@ export default function useLeaderboard() {
   }
 
   return {
+    isOutOfSync,
     data,
     mutate,
     leaderboardListData,

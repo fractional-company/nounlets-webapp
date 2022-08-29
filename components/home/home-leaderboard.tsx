@@ -9,12 +9,14 @@ import { useEthers } from '@usedapp/core'
 import { useMemo } from 'react'
 import { ethers } from 'ethers'
 import { useVaultStore } from 'store/vaultStore'
+import SimplePopover from 'components/simple-popover'
+import IconSpinner from 'components/icons/icon-spinner'
 
 export default function HomeLeaderboard(): JSX.Element {
   const { account, library } = useEthers()
   const router = useRouter()
   const { latestNounletTokenId } = useVaultStore()
-  const { leaderboardListData } = useLeaderboard()
+  const { isOutOfSync, leaderboardListData } = useLeaderboard()
 
   const hasFirstAuctionSettled = latestNounletTokenId !== '0' && latestNounletTokenId !== '1'
 
@@ -25,7 +27,15 @@ export default function HomeLeaderboard(): JSX.Element {
           className="lg:grid leading-[38px]"
           style={{ gridTemplateColumns: 'auto 100px 140px 160px' }}
         >
-          <h3 className="text-px32 font-londrina">Leaderboard</h3>
+          <div className="flex items-center gap-3">
+            <h3 className="text-px32 font-londrina">Leaderboard</h3>
+            {isOutOfSync && (
+              <SimplePopover>
+                <IconSpinner className="animate-spin h-6" />
+                <div>Leaderboard is syncing.</div>
+              </SimplePopover>
+            )}
+          </div>
           {hasFirstAuctionSettled && (
             <>
               <h4 className="hidden lg:block text-right text-px18 text-gray-4 font-500">

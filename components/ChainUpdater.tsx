@@ -197,8 +197,12 @@ function LeaderboardUpdater() {
   useEffect(() => {
     if (!isLive || sdk == null) return
 
+    // TODO Maybe be more specific with the events?
     console.log('🍉 listen to any event on NounletToken', vaultAddress, nounletTokenAddress)
     const nounletToken = sdk.NounletToken.attach(nounletTokenAddress)
+    const nounletAuction = sdk.NounletAuction
+    const nounletGovernance = sdk.NounletGovernance
+
     const listener = (...eventData: any) => {
       const event = eventData.at(-1)
       console.log('🍉🍉🍉 any event', eventData)
@@ -208,14 +212,27 @@ function LeaderboardUpdater() {
     }
 
     nounletToken.on(nounletToken, listener)
-    sdk.NounletAuction.on(sdk.NounletAuction, listener)
+    nounletAuction.on(nounletAuction, listener)
+    nounletGovernance.on(nounletGovernance, listener)
 
     return () => {
       console.log('🍉 stop listening to any event on NounletToken')
       nounletToken.off(nounletToken, listener)
-      sdk.NounletAuction.off(sdk.NounletAuction, listener)
+      nounletAuction.off(nounletAuction, listener)
+      nounletGovernance.off(nounletGovernance, listener)
     }
   }, [isLive, sdk, vaultAddress, nounletTokenAddress, debouncedMutate, setLeaderboardBlockNumber])
 
-  return <></>
+  return (
+    <>
+      <Button
+        className="primary"
+        onClick={() => {
+          mutate()
+        }}
+      >
+        Update leaderboard
+      </Button>
+    </>
+  )
 }

@@ -22,6 +22,7 @@ import { useDebounced } from 'hooks/useDebounced'
 import IconSpinner from 'components/icons/icon-spinner'
 import { useAppStore } from 'store/application'
 import SimpleModalWrapper from 'components/SimpleModalWrapper'
+import { NounletImage } from 'components/NounletImage'
 
 const Governance: NextPage = () => {
   const [isVoteForDelegateModalShown, setIsVoteForDelegateModalShown] = useState(false)
@@ -81,7 +82,7 @@ function GovernanceCurrentDelegate(props: {
   myNounlets: ReturnType<typeof useLeaderboard>['myNounlets']
 }) {
   const { account } = useEthers()
-  const { currentDelegate } = useVaultStore()
+  const { currentDelegate, isCurrentDelegateOutOfSync } = useVaultStore()
 
   const areMyVotesSplit = useMemo(() => {
     return Object.keys(props.myNounletsVotes).length > 1
@@ -106,19 +107,21 @@ function GovernanceCurrentDelegate(props: {
           <div className="flex flex-col xs:flex-row items-center xs:gap-3">
             <p className="font-londrina text-px24 text-gray-4 leading-px36">Current delegate</p>
 
-            <div className="flex items-center">
-              <SimplePopover>
-                <h1 className="font-700 text-px18 text-gray-4">
-                  <span className="text-secondary-orange">⚠</span> Out of sync
-                </h1>
-                <div>
-                  This delegate is currently out of sync. There is another wallet with more votes.
-                  You can update the delegate with a transaction.
-                </div>
-              </SimplePopover>
+            {isCurrentDelegateOutOfSync && (
+              <div className="flex items-center">
+                <SimplePopover>
+                  <h1 className="font-700 text-px18 text-gray-4">
+                    <span className="text-secondary-orange">⚠</span> Out of sync
+                  </h1>
+                  <div>
+                    This delegate is currently out of sync. There is another wallet with more votes.
+                    You can update the delegate with a transaction.
+                  </div>
+                </SimplePopover>
 
-              <p className="font-700 text-px18 text-secondary-blue ml-2">Update</p>
-            </div>
+                {/* <p className="font-700 text-px18 text-secondary-blue ml-2">Update</p> */}
+              </div>
+            )}
           </div>
 
           <div className="flex items-center mt-4">{currentDelegateRC}</div>
@@ -154,12 +157,13 @@ function GovernanceCurrentDelegate(props: {
                 <div className="flex items-center gap-2 flex-wrap">
                   {props.myNounlets.map((nounlet) => {
                     return (
-                      <div
-                        className="overflow-hidden rounded-sm flex-shrink-0 w-10 h-10"
-                        key={nounlet.id}
-                      >
-                        <Image src={nounletIcon} alt="icon" width="40" height="40" />
-                      </div>
+                      <Link href={`/nounlet/${nounlet.id}`} key={nounlet.id}>
+                        <div className="overflow-hidden flex-shrink-0 w-10 h-10 rounded-px8 cursor-pointer hover:scale-110 transition-transform">
+                          <NounletImage id={nounlet.id} />
+
+                          {/* <Image src={nounletIcon} alt="icon" width="40" height="40" /> */}
+                        </div>
+                      </Link>
                     )
                   })}
                 </div>

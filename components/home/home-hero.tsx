@@ -86,7 +86,7 @@ export default function HomeHero(): JSX.Element {
             </h1>
 
             {auctionInfo == null || isLoading ? (
-              <>Ahhh Im loading</>
+              <></>
             ) : (
               <>{hasAuctionEnded ? <HomeHeroAuctionCompleted /> : <HomeHeroAuctionProgress />}</>
             )}
