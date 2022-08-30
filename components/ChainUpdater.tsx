@@ -33,7 +33,7 @@ export default function ChainUpdater() {
 
   // url nid listener
   const { nid, auctionInfo } = useDisplayedNounlet()
-  const { isOutOfSync } = useLeaderboard()
+  const { isOutOfSync, leaderboardData } = useLeaderboard()
 
   const vaultMetadata = {
     isLive,
@@ -47,7 +47,8 @@ export default function ChainUpdater() {
   }
 
   const leaderboard = {
-    isOutOfSync
+    isOutOfSync,
+    ...leaderboardData
   }
 
   return (

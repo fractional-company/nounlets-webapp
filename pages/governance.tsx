@@ -1,28 +1,23 @@
-import SimplePopover from 'components/simple-popover'
-import { NextPage } from 'next'
-import Image from 'next/image'
-import userIcon from 'public/img/user-icon.jpg'
-import nounletIcon from 'public/img/nounlet.png'
+import { useEthers, useResolveName } from '@usedapp/core'
 import Button from 'components/buttons/button'
-import LeaderboardListTile, {
-  LeaderboardListTileProps
-} from 'components/leaderboard/leaderboard-list-tile'
 import IconMagnify from 'components/icons/icon-magnify'
 import IconQuestionCircle from 'components/icons/icon-question-circle'
-import { ChangeEvent, useMemo, useState } from 'react'
-import VoteForDelegateModal from 'components/modals/vote-for-delegate-modal'
-import VoteForCustomWalletModal from 'components/modals/vote-for-custom-wallet.modal'
-import Link from 'next/link'
-import useLeaderboard, { constructLeaderboardListData } from 'hooks/useLeaderboard'
-import SimpleAddress from 'components/simple-address'
-import { useVaultStore } from 'store/vaultStore'
-import { ethers } from 'ethers'
-import { useEthers, useResolveName } from '@usedapp/core'
-import { useDebounced } from 'hooks/useDebounced'
 import IconSpinner from 'components/icons/icon-spinner'
-import { useAppStore } from 'store/application'
-import SimpleModalWrapper from 'components/SimpleModalWrapper'
+import LeaderboardListTile from 'components/leaderboard/leaderboard-list-tile'
+import VoteForCustomWalletModal from 'components/modals/vote-for-custom-wallet.modal'
 import { NounletImage } from 'components/NounletImage'
+import SimpleAddress from 'components/simple-address'
+import SimplePopover from 'components/simple-popover'
+import SimpleModalWrapper from 'components/SimpleModalWrapper'
+import { ethers } from 'ethers'
+import { useDebounced } from 'hooks/useDebounced'
+import useLeaderboard from 'hooks/useLeaderboard'
+import useToasts from 'hooks/useToasts'
+import { NextPage } from 'next'
+import Link from 'next/link'
+import { ChangeEvent, useCallback, useMemo, useState } from 'react'
+import { useAppStore } from 'store/application'
+import { useVaultStore } from 'store/vaultStore'
 
 const Governance: NextPage = () => {
   const { isLive, latestNounletTokenId } = useVaultStore()
@@ -30,17 +25,6 @@ const Governance: NextPage = () => {
   return (
     <div className="page-governance lg:container mx-auto w-screen">
       <div className="px-4 md:px-12 lg:px-4 mt-12 lg:mt-16">
-        {/* <pre>
-          {JSON.stringify(
-            {
-              leaderboardListData,
-              myNounlets,
-              myNounletsVotes
-            },
-            null,
-            4
-          )}
-        </pre> */}
         <h4 className="font-londrina text-px24 leading-px36 text-gray-4">Governance</h4>
         <h1 className="font-londrina text-[56px] leading-[68px] mt-3">Vote for a delegate</h1>
 
@@ -78,7 +62,9 @@ export default Governance
 function GovernanceCurrentDelegate() {
   const { account } = useEthers()
   const { currentDelegate, isCurrentDelegateOutOfSync } = useVaultStore()
-  const { data, isOutOfSync, myNounlets, myNounletsVotes } = useLeaderboard()
+  const { myNounlets, myNounletsVotes, mostVotesAcc, claimDelegate } = useLeaderboard()
+  const { toastSuccess, toastError } = useToasts()
+  const [isClaiming, setIsClaiming] = useState(false)
 
   const areMyVotesSplit = useMemo(() => {
     return Object.keys(myNounletsVotes).length > 1
@@ -96,12 +82,25 @@ function GovernanceCurrentDelegate() {
     )
   }, [currentDelegate])
 
+  const handleUpdateDelegate = useCallback(async () => {
+    console.log('handlee', mostVotesAcc)
+    if (mostVotesAcc.address !== ethers.constants.AddressZero) setIsClaiming(true)
+    try {
+      const response = await claimDelegate(mostVotesAcc.address)
+      console.log('yasss', response)
+      toastSuccess('Delegate updated 👑', 'Leaderboard will refresh momentarily.')
+    } catch (error) {
+      toastError('Update delegate failed', 'Please try again.')
+      setIsClaiming(false)
+    }
+  }, [mostVotesAcc, claimDelegate, toastError, toastSuccess])
+
   return (
     <div className="mt-10 border-2 rounded-px16 p-4 lg:p-8 border-gray-2">
       <div className="flex flex-col lg:flex-row gap-8">
         <div className="flex flex-col flex-1">
           <div className="flex flex-col xs:flex-row items-center xs:gap-3">
-            <p className="font-londrina text-px24 text-gray-4 leading-px36">Current delegate</p>
+            <p className="font-londrina text-px24 text-gray-4 leading-[40px]">Current delegate</p>
 
             {isCurrentDelegateOutOfSync && (
               <div className="flex items-center">
@@ -115,7 +114,13 @@ function GovernanceCurrentDelegate() {
                   </div>
                 </SimplePopover>
 
-                {/* <p className="font-700 text-px18 text-secondary-blue ml-2">Update</p> */}
+                <Button
+                  loading={isClaiming}
+                  onClick={() => handleUpdateDelegate()}
+                  className="hidden lg:flex ml-4 items-center justify-center text-secondary-blue hover:text-secondary-green text-px18 font-700 border-2 border-transparent h-10 rounded-px10"
+                >
+                  <span>Update</span>
+                </Button>
               </div>
             )}
           </div>
@@ -147,10 +152,10 @@ function GovernanceCurrentDelegate() {
               </div>
 
               <div className="flex items-center mt-4">
-                <p className="text-px36 font-londrina leading-px42 mr-3 truncate w-10 text-center flex-shrink-0">
-                  {myNounlets.length}
-                </p>
                 <div className="flex items-center gap-2 flex-wrap">
+                  <p className="text-px36 font-londrina leading-px42 w-10 h-10 flex-shrink-0 overflow-visible text-center">
+                    {myNounlets.length}
+                  </p>
                   {myNounlets.map((nounlet) => {
                     return (
                       <Link href={`/nounlet/${nounlet.id}`} key={nounlet.id}>
@@ -171,7 +176,7 @@ function GovernanceCurrentDelegate() {
 }
 
 function GovernanceLeaderboard() {
-  const { data, isOutOfSync, myNounletsVotes, myNounlets } = useLeaderboard()
+  const { data, isOutOfSync, myNounletsVotes, myNounlets, leaderboardData } = useLeaderboard()
   const { account } = useEthers()
   const { setConnectModalOpen } = useAppStore()
   const [isVoteForDelegateModalShown, setIsVoteForDelegateModalShown] = useState(false)
@@ -180,11 +185,10 @@ function GovernanceLeaderboard() {
   const { address: ensAddress, isLoading: isLoadingENSName } =
     useResolveName(debouncedSearchInputValue)
 
-  const canIVote = useMemo(() => myNounlets.length > 0, [myNounlets])
-
   const filterByText = useMemo(() => {
+    if (debouncedSearchInputValue.trim() === '') return debouncedSearchInputValue.trim()
     if (ensAddress != null) {
-      return ensAddress || ''
+      return (ensAddress || '').toLowerCase()
     }
 
     // if (debouncedSearchInputValue.match(/^0x[a-fA-F0-9]{1,40}$/) != null) {
@@ -195,13 +199,16 @@ function GovernanceLeaderboard() {
   }, [debouncedSearchInputValue, ensAddress])
 
   const filteredLeaderboardListData = useMemo(() => {
-    return constructLeaderboardListData(
-      data,
-      myNounletsVotes,
-      account,
-      debouncedSearchInputValue.toLowerCase()
-    )
-  }, [debouncedSearchInputValue, data, myNounletsVotes, account])
+    if (filterByText === '') {
+      return leaderboardData.list.filter((acc) => {
+        return acc.isMe || acc.isDelegate || acc.percentage > 0.019
+      })
+    }
+
+    return leaderboardData.list.filter((acc) => {
+      return acc.walletAddress.toLowerCase().includes(filterByText)
+    })
+  }, [leaderboardData, filterByText])
 
   const handleInput = (event: ChangeEvent<HTMLInputElement>) => {
     setSearchinputValue(event.target.value.trim())
@@ -230,7 +237,6 @@ function GovernanceLeaderboard() {
           <p className="font-500 text-px14 text-gray-3">You can change your cast votes below</p>
         )}
       </div>
-
       <div
         className="lg:grid leading-[38px] mt-10 items-center"
         style={{ gridTemplateColumns: 'auto 100px 140px 160px' }}
@@ -275,7 +281,7 @@ function GovernanceLeaderboard() {
         ) : (
           <>
             {filteredLeaderboardListData.map((data) => (
-              <LeaderboardListTile key={data.walletAddress} data={data} canIVote={canIVote} />
+              <LeaderboardListTile key={data.walletAddress} data={data} />
             ))}
 
             {account && (

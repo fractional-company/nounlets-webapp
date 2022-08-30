@@ -283,6 +283,8 @@ export const getAllNounlets = async (vaultAddress: string) => {
     {}
 
   let mostVotes = 0
+  let mostVotesAddress = ethers.constants.AddressZero
+
   nounlets.forEach((nounlet) => {
     const id = splitKey(nounlet.id)
     const holder = splitKey(nounlet.holder.id)
@@ -300,20 +302,24 @@ export const getAllNounlets = async (vaultAddress: string) => {
     accounts[delegate].votes += 1
     if (accounts[delegate].votes > mostVotes) {
       mostVotes = accounts[delegate].votes
+      mostVotesAddress = delegate
     }
   })
 
   const currentDelegate = data.vault.noun.currentDelegate
-  const doesDelegateHaveMostVotes =
-    (accounts[data.vault.noun.currentDelegate]?.votes || 0) >= mostVotes
 
   // console.log({ data })
-  console.log({ accounts, currentDelegate, doesDelegateHaveMostVotes })
+  console.log({
+    accounts,
+    currentDelegate,
+    doesDelegateHaveMostVotes: currentDelegate === mostVotesAddress
+  })
 
   return {
     accounts,
     currentDelegate,
-    doesDelegateHaveMostVotes,
+    mostVotes,
+    mostVotesAddress,
     totalVotes: nounlets.length,
     _meta: data._meta
   }

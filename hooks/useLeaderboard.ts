@@ -61,7 +61,7 @@ export default function useLeaderboard() {
         }
 
         setCurrentDelegate(data.currentDelegate)
-        setIsCurrentDelegateOutOfSync(!data.doesDelegateHaveMostVotes)
+        setIsCurrentDelegateOutOfSync(data.mostVotesAddress !== data.currentDelegate)
 
         if (data._meta.block.number > leaderboardBlockNumber) {
           setLeaderboardBlockNumber(data._meta.block.number)
@@ -87,91 +87,25 @@ export default function useLeaderboard() {
     return (data?._meta.block.number || 0) < leaderboardBlockNumber
   }, [data, leaderboardBlockNumber])
 
-  const myNounlets = useMemo(() => {
-    if (account == null) return []
-    if (data == null) return []
-
-    const myAccount = data.accounts[account.toLowerCase()]
-    return myAccount?.holding || []
+  const leaderboardData = useMemo(() => {
+    const formattedData = constructLeaderboardData(data, account)
+    return formattedData
   }, [data, account])
 
+  const myNounlets = useMemo(() => {
+    return leaderboardData.myNounlets
+  }, [leaderboardData])
+
   const myNounletsVotes = useMemo(() => {
-    if (account == null) return {}
-    const votesFor: Record<string, number> = {}
+    return leaderboardData.myVotes
+  }, [leaderboardData])
 
-    myNounlets.forEach((nounlet) => {
-      if (votesFor[nounlet.delegate] == null) {
-        votesFor[nounlet.delegate] = 0
-      }
-
-      votesFor[nounlet.delegate] += 1
-    })
-
-    return votesFor
-  }, [myNounlets, account])
-
-  // const leaderboardListData = useMemo(() => {
-  //   if (data == null) return []
-  //   const myAddress = account?.toLowerCase() || ''
-
-  //   const totalVotes = data.totalVotes
-  //   const delegateVotes = data.accounts[data.currentDelegate.toLowerCase()]?.votes || 0
-  //   let wasDelegateFound = false
-  //   const mapped = Object.entries(data.accounts)
-  //     .map(([address, acc]) => {
-  //       const accVotes = +acc.votes
-  //       const accAddress = address.toLowerCase()
-  //       let percentage = 0.0
-  //       if (totalVotes > 0 && accVotes > 0) {
-  //         percentage = FixedNumber.from(accVotes)
-  //           .divUnsafe(FixedNumber.from(totalVotes))
-  //           .round(2)
-  //           .toUnsafeFloat()
-  //       }
-  //       const isDelegate = address.toLowerCase() === data.currentDelegate.toLowerCase()
-  //       if (isDelegate) {
-  //         wasDelegateFound = true
-  //       }
-  //       return {
-  //         isMe: accAddress === myAddress,
-  //         isDelegate,
-  //         hasMoreVotesThanDelegate: accVotes > delegateVotes,
-  //         walletAddress: address.toLowerCase(),
-  //         percentage,
-  //         currentDelegateWalletAddress: data.currentDelegate,
-  //         mostVotesWalletAddress: ethers.constants.AddressZero,
-  //         numberOfOwnedNounlets: +acc.holding.length,
-  //         numberOfVotes: accVotes,
-  //         numberOfMyVotes: myNounletsVotes[accAddress] ?? 0
-  //       }
-  //     })
-  //     // Filter out accounts with no votes
-  //     .filter((acc) => {
-  //       if (acc.isMe) return true
-  //       if (acc.isDelegate) return true
-  //       if (acc.numberOfVotes === 0) return false
-  //       return true
-  //     })
-  //     .sort((a, b) => b.numberOfVotes - a.numberOfVotes)
-
-  //   // Delegate was not found, so we insert it manually
-  //   if (!wasDelegateFound) {
-  //     mapped.push({
-  //       isMe: data.currentDelegate.toLowerCase() === myAddress,
-  //       isDelegate: true,
-  //       hasMoreVotesThanDelegate: false,
-  //       walletAddress: data.currentDelegate.toLowerCase(),
-  //       percentage: 0,
-  //       currentDelegateWalletAddress: data.currentDelegate,
-  //       mostVotesWalletAddress: ethers.constants.AddressZero,
-  //       numberOfOwnedNounlets: 0,
-  //       numberOfVotes: 0,
-  //       numberOfMyVotes: 0
-  //     })
-  //   }
-
-  //   return mapped
-  // }, [data, account, myNounletsVotes])
+  const mostVotesAcc = useMemo(() => {
+    return {
+      address: leaderboardData.mostVotesAddress,
+      votes: leaderboardData.mostVotes
+    }
+  }, [leaderboardData])
 
   const claimDelegate = async (toAddress: string) => {
     console.log('🔔 claimDelegate', vaultAddress, toAddress)
@@ -196,85 +130,156 @@ export default function useLeaderboard() {
   return {
     isOutOfSync,
     data,
-    mutate,
-    // leaderboardListData,
     myNounlets,
     myNounletsVotes,
+    mostVotesAcc,
+    leaderboardData,
+    mutate,
     delegateVotes,
     claimDelegate
-    // mutateLeaderboard
   }
 }
 
-export const constructLeaderboardListData = (
-  data: ReturnType<typeof useLeaderboard>['data'],
-  myNounletsVotes: ReturnType<typeof useLeaderboard>['myNounletsVotes'],
-  account?: string,
-  filterText?: string
-) => {
-  if (data == null) return []
-  const myAddress = account?.toLowerCase() || ''
+export interface LeaderboardListTileData {
+  isMe: boolean
+  isDelegate: boolean
+  isDelegateCandidate: boolean
+  walletAddress: string
+  percentage: number
+  numberOfOwnedNounlets: number
+  numberOfVotes: number
+  numberOfMyVotes: number
+  canIVote: boolean
+}
 
+interface ConstructLeaderboardData {
+  totalVotes: number
+  currentDelegate: string
+  currentDelegateVotes: number
+  mostVotes: number
+  mostVotesAddress: string
+  myNounlets: { id: string; delegate: string }[]
+  myVotes: Record<string, number>
+  areMyVotesSplit: boolean
+  list: LeaderboardListTileData[]
+}
+
+export const constructLeaderboardData = (
+  data?: Awaited<ReturnType<typeof getAllNounlets>>,
+  account?: string
+) => {
+  const leaderboardData: ConstructLeaderboardData = {
+    totalVotes: 0,
+    currentDelegate: ethers.constants.AddressZero,
+    currentDelegateVotes: 0,
+    mostVotes: 0,
+    mostVotesAddress: ethers.constants.AddressZero,
+    myNounlets: new Array(),
+    myVotes: {},
+    areMyVotesSplit: false,
+    list: new Array()
+  }
+
+  if (data == null) return leaderboardData
+
+  const myAddress = account?.toLowerCase() || ''
   const totalVotes = data.totalVotes
-  const delegateVotes = data.accounts[data.currentDelegate.toLowerCase()]?.votes || 0
+  const currentDelegateVotesCount = data.accounts[data.currentDelegate.toLowerCase()]?.votes || 0
+
+  if (myAddress !== '') {
+    const myNounlets = data.accounts[myAddress]?.holding || []
+    const myVotes: Record<string, number> = {}
+
+    myNounlets.forEach((nounlet) => {
+      if (myVotes[nounlet.delegate] == null) {
+        myVotes[nounlet.delegate] = 0
+      }
+      myVotes[nounlet.delegate] += 1
+    })
+
+    leaderboardData.myNounlets = myNounlets
+    leaderboardData.myVotes = myVotes
+    leaderboardData.areMyVotesSplit = Object.keys(myVotes).length > 1
+  }
+
+  leaderboardData.totalVotes = data.totalVotes
+  leaderboardData.currentDelegate = data.currentDelegate.toLowerCase()
+  leaderboardData.currentDelegateVotes = data.accounts[leaderboardData.currentDelegate]?.votes || 0
+
   let wasDelegateFound = false
   const mapped = Object.entries(data.accounts)
     .map(([address, acc]) => {
       const accVotes = +acc.votes
       const accAddress = address.toLowerCase()
       let percentage = 0.0
-      if (totalVotes > 0 && accVotes > 0) {
+      if (data.totalVotes > 0 && accVotes > 0) {
         percentage = FixedNumber.from(accVotes)
           .divUnsafe(FixedNumber.from(totalVotes))
           .round(2)
           .toUnsafeFloat()
       }
-      const isDelegate = address.toLowerCase() === data.currentDelegate.toLowerCase()
+      const canIVote =
+        leaderboardData.myNounlets.length > 0 &&
+        (leaderboardData.areMyVotesSplit || leaderboardData.myNounlets[0]?.delegate !== accAddress)
+      const isDelegate = address.toLowerCase() === leaderboardData.currentDelegate
       if (isDelegate) {
         wasDelegateFound = true
       }
       return {
         isMe: accAddress === myAddress,
         isDelegate,
-        hasMoreVotesThanDelegate: accVotes > delegateVotes,
+        isDelegateCandidate: false,
         walletAddress: address.toLowerCase(),
         percentage,
-        currentDelegateWalletAddress: data.currentDelegate,
-        mostVotesWalletAddress: ethers.constants.AddressZero,
         numberOfOwnedNounlets: +acc.holding.length,
         numberOfVotes: accVotes,
-        numberOfMyVotes: myNounletsVotes[accAddress] ?? 0
+        numberOfMyVotes: leaderboardData.myVotes[accAddress] ?? 0,
+        canIVote
       }
     })
     // Filter out accounts with no votes
-    .filter((acc) => {
-      if (filterText != null && filterText.trim() != '') {
-        console.log({ filterText })
-        return acc.walletAddress.toLowerCase().includes(filterText.toLowerCase())
-      }
+    // .filter((acc) => {
+    //   if (filterText != null && filterText.trim() != '') {
+    //     console.log({ filterText })
+    //     return acc.walletAddress.toLowerCase().includes(filterText.toLowerCase())
+    //   }
 
-      if (acc.isMe) return true
-      if (acc.isDelegate) return true
-      if (acc.numberOfVotes === 0) return false
-      return true
-    })
+    //   if (acc.isMe) return true
+    //   if (acc.isDelegate) return true
+    //   if (acc.numberOfVotes === 0) return false
+    //   return true
+    // })
     .sort((a, b) => b.numberOfVotes - a.numberOfVotes)
 
   // Delegate was not found, so we insert it manually
-  if (!wasDelegateFound) {
+  if (!wasDelegateFound && data.currentDelegate !== ethers.constants.AddressZero) {
     mapped.push({
       isMe: data.currentDelegate.toLowerCase() === myAddress,
       isDelegate: true,
-      hasMoreVotesThanDelegate: false,
+      isDelegateCandidate: false,
       walletAddress: data.currentDelegate.toLowerCase(),
       percentage: 0,
-      currentDelegateWalletAddress: data.currentDelegate,
-      mostVotesWalletAddress: ethers.constants.AddressZero,
       numberOfOwnedNounlets: 0,
       numberOfVotes: 0,
-      numberOfMyVotes: 0
+      numberOfMyVotes: 0,
+      canIVote: leaderboardData.myNounlets.length > 0
     })
   }
 
-  return mapped
+  // Find curator candidate by taking the most votes account
+  // and checking if it has more votes than the current delegate
+  // (and is not the current delegate)
+  const mostVotesAcc = mapped[0]
+  if (mostVotesAcc != null) {
+    leaderboardData.mostVotes = mostVotesAcc.numberOfVotes
+    leaderboardData.mostVotesAddress = mostVotesAcc.walletAddress
+    if (!mostVotesAcc.isDelegate) {
+      if (mostVotesAcc.numberOfVotes > currentDelegateVotesCount) {
+        mostVotesAcc.isDelegateCandidate = true
+      }
+    }
+  }
+
+  leaderboardData.list = mapped
+  return leaderboardData
 }

@@ -5,8 +5,6 @@ import IconUpdateDelegate from 'components/icons/icon-update-delegate'
 import SimpleAddress from 'components/simple-address'
 import useLeaderboard from 'hooks/useLeaderboard'
 import useToasts from 'hooks/useToasts'
-import Image from 'next/image'
-import userIcon from 'public/img/user-icon.jpg'
 import { useMemo, useState } from 'react'
 import { useAppStore } from 'store/application'
 import LeaderboardVotesDots from './leaderboard-votes-dots'
@@ -14,19 +12,17 @@ import LeaderboardVotesDots from './leaderboard-votes-dots'
 export type LeaderboardListTileProps = {
   isMe: boolean
   isDelegate: boolean
-  hasMoreVotesThanDelegate: boolean
-  percentage: number
+  isDelegateCandidate: boolean
   walletAddress: string
-  currentDelegateWalletAddress: string
-  mostVotesWalletAddress: string
+  percentage: number
   numberOfOwnedNounlets: number
   numberOfVotes: number
   numberOfMyVotes?: number
+  canIVote: boolean
 }
 
 export default function LeaderboardListTile(props: {
   data: LeaderboardListTileProps
-  canIVote?: boolean
 }): JSX.Element {
   const { account } = useEthers()
   const { claimDelegate } = useLeaderboard()
@@ -35,14 +31,13 @@ export default function LeaderboardListTile(props: {
   const {
     isMe,
     isDelegate,
-    hasMoreVotesThanDelegate,
-    percentage,
+    isDelegateCandidate,
     walletAddress,
-    currentDelegateWalletAddress,
-    mostVotesWalletAddress,
+    percentage,
     numberOfOwnedNounlets,
     numberOfVotes,
-    numberOfMyVotes
+    numberOfMyVotes,
+    canIVote
   } = props.data
   const [isClaiming, setIsClaiming] = useState(false)
 
@@ -54,22 +49,9 @@ export default function LeaderboardListTile(props: {
     }
   }, [percentage])
 
-  // const isDelegate = useMemo(
-  //   () => currentDelegateWalletAddress === walletAddress,
-  //   [currentDelegateWalletAddress, walletAddress]
-  // )
-  // const isUpdateDelegateActionShown = useMemo(() => {
-  //   if (account == null) return false
-  //   return true // TODO REMOVE
-
-  //   return (
-  //     mostVotesWalletAddress === walletAddress && walletAddress !== currentDelegateWalletAddress
-  //   )
-  // }, [account, walletAddress, currentDelegateWalletAddress, mostVotesWalletAddress])
   const isUpdateDelegateActionShown = useMemo(() => {
-    if (account == null) return false
-    return hasMoreVotesThanDelegate && !isDelegate
-  }, [account, hasMoreVotesThanDelegate, isDelegate])
+    return account && isDelegateCandidate
+  }, [account, isDelegateCandidate])
 
   const handleCastVote = (address: string) => {
     console.log('casting vote for!', address)
@@ -85,9 +67,10 @@ export default function LeaderboardListTile(props: {
       toastSuccess('Delegate updated 👑', 'Leaderboard will refresh momentarily.')
     } catch (error) {
       toastError('Update delegate failed', 'Please try again.')
-      setIsClaiming(false)
     }
+    setIsClaiming(false)
   }
+
   return (
     <div className="leaderboard-list-tile">
       <div
@@ -103,7 +86,7 @@ export default function LeaderboardListTile(props: {
           <div className="flex items-center flex-grow-1 overflow-hidden lg:flex-grow-0 lg:pl-4">
             <div
               className={classNames(
-                'hidden lg:block text-px26 font-700 mr-2 leading-px32',
+                'hidden lg:block text-px26 font-700 mr-4 leading-px32',
                 isDelegate ? 'text-secondary-green' : 'text-gray-3'
               )}
             >
@@ -112,15 +95,15 @@ export default function LeaderboardListTile(props: {
             <SimpleAddress
               avatarSize={32}
               address={walletAddress}
-              className="text-px18 leading-px28 font-700 gap-2 flex-1"
+              className="text-px18 leading-px28 font-700 gap-4"
             />
             {isMe && (
-              <p className="text-px14 leading-px26 font-700 ml-2 border-2 border-t-secondary-blue text-secondary-blue px-3 rounded-px8">
+              <p className="text-px14 leading-px26 font-700 ml-4 border-2 border-t-secondary-blue text-secondary-blue px-3 rounded-px8">
                 You
               </p>
             )}
             {isDelegate && (
-              <p className="text-px14 leading-px30 font-700 ml-2 bg-secondary-green text-white px-3 rounded-px8">
+              <p className="text-px14 leading-px30 font-700 ml-4 bg-secondary-green text-white px-3 rounded-px8">
                 Delegate
               </p>
             )}
@@ -128,7 +111,7 @@ export default function LeaderboardListTile(props: {
               <Button
                 loading={isClaiming}
                 onClick={() => handleClaimDelegate(walletAddress)}
-                className="hidden lg:flex ml-2 items-center justify-center text-secondary-blue hover:text-secondary-green text-px18 font-700 border-2 border-transparent px-2 h-10 rounded-px10"
+                className="hidden lg:flex ml-4 items-center justify-center text-secondary-blue hover:text-secondary-green text-px18 font-700 border-2 border-transparent h-10 rounded-px10"
               >
                 <IconUpdateDelegate />
                 <span className="ml-2">Update delegate</span>
@@ -177,7 +160,7 @@ export default function LeaderboardListTile(props: {
             </Button>
           )}
 
-          {account && props.canIVote && (
+          {canIVote && (
             <div className="flex lg:justify-end lg:pr-4">
               <Button
                 className="primary --sm flex-auto lg:flex-none"

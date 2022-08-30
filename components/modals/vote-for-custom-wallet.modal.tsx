@@ -20,7 +20,7 @@ export default function VoteForCustomWalletModal(props: ComponentProps): JSX.Ele
   const [isLoading, setIsLoading] = useState(false)
   const { setVoteForDelegateModalForAddress } = useAppStore()
   const { toastSuccess, toastError } = useToasts()
-  const { myNounlets, delegateVotes } = useLeaderboard()
+  const { delegateVotes } = useLeaderboard()
 
   const debouncedSearchInputValue = useDebounced(searchInputValue, 500)
   const {
