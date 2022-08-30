@@ -6,7 +6,7 @@ class MyDocument extends Document {
     return (
       <Html lang="en">
         <Head>
-          <Script
+          {/* TODO: Uncomment before launch <Script
             src="https://www.googletagmanager.com/gtag/js?id=G-T3PEPVT1PH"
             strategy="afterInteractive"
           />
@@ -18,7 +18,7 @@ class MyDocument extends Document {
 
            gtag('config', 'G-T3PEPVT1PH');
         `}
-          </Script>
+          </Script> */}
         </Head>
         <body className="font-ptRootUI">
           <Main />

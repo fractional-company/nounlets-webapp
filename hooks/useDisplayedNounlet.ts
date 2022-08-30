@@ -1,140 +1,200 @@
-import { BigNumber } from 'ethers'
+import { useEthers } from '@usedapp/core'
+import { BigNumber, ethers } from 'ethers'
+import txWithErrorHandling from 'lib/utils/tx-with-error-handling'
 import { useRouter } from 'next/router'
-import { useEffect, useMemo, useState } from 'react'
-import dayjs from "dayjs";
+import { useCallback, useMemo } from 'react'
+import { useVaultStore } from 'store/vaultStore'
+import useSWR, { unstable_serialize, useSWRConfig } from 'swr'
+import useNounletAuctionInfo from './useNounletAuctionInfo'
+import useNounletImageData from './useNounletImageData'
+import useSdk from './useSdk'
 
-export type NounletAuction = {
-  id?: number
-  nounlet?: { id: number }
-  amount: BigNumber
-  startTime: BigNumber
-  endTime: BigNumber
-  bidder?: string
-  ended?: boolean
-  settled: boolean
-  bids?: Bid[]
-}
-
-export interface Bid {
-  vault: string;
-  token: string;
-  id: BigNumber;
-  sender: string;
-  value: BigNumber;
-  extended: boolean;
-  timestamp: dayjs.Dayjs,
-  txHash: string;
-}
-
-type MockData = {
-  id: string
-  noun: {
-    id: number
-    nounlets: {
-      id: number
-      holder?: string
-      delegate?: string
-      auction: NounletAuction
-    }[]
+export function generateNounletAuctionInfoKey({
+  vaultAddress,
+  vaultTokenId,
+  nounletId
+}: {
+  vaultAddress?: string
+  vaultTokenId?: string
+  nounletId?: string
+}) {
+  return {
+    name: 'NounletAuctionInfo',
+    vaultAddress,
+    vaultTokenId: vaultTokenId,
+    nounletId: nounletId
   }
 }
 
-// const mockResponse: MockData = {
-//   id: '0x067b73fbc3accf78b4b8ebfb7964a03fb4554a0e',
-//   noun: {
-//     id: 0,
-//     nounlets: [
-//       {
-//         id: 0,
-//         auction: {
-//           id: 0,
-//           nounlet: { id: 0 },
-//           amount: BigNumber.from('910000000000000000'),
-//           startTime: BigNumber.from('1658743102000'),
-//           endTime: BigNumber.from('1658749102000'),
-//           settled: false,
-//           bids: []
-//         }
-//       }
-//     ]
-//   }
-// }
-
-const mockLiveNounletId = 13
-const now = Math.floor(Date.now() / 1000)
-
-function generateMockNounlets(id: number) {
-  const nounlets = []
-  for (let i = 0; i <= mockLiveNounletId; i++) {
-    const finalBid = Math.floor(10 + Math.random() * 200)
-    const auctionDuration = 60 * 60 * 16 // 16 hours
-    const dayOffset = 60 * 60 * 24 * (mockLiveNounletId - i)
-    const randomHourOffset = Math.floor(60 * 60 * Math.random() * 5)
-    const auctionStart = now - dayOffset - randomHourOffset
-    const auctionEnd = auctionStart + auctionDuration
-    const currentDate = dayjs(new Date())
-    const ended = currentDate.isAfter(auctionEnd * 1000)
-    const bids: Bid[] = [1, 2, 3, 4, 5, 6].map(bid => {
-      return {
-        id: BigNumber.from(bid),
-        vault: '0x067b73fbc3accf78b4b8ebfb7964a03fb4554a0e',
-        sender: bid % 2 === 0 ? '0x7e2082bDD377E2184266f58c104f1eFBd2b59Fc5' : '0x2D631a9C0FF16B57E6c85789341ef2C1BC7d0a2b',
-        token: '0x1bFa0347683E7e8774D2208Ccd884609478f7De1',
-        extended: bid === 6,
-        value: BigNumber.from('920000000000000000').mul(bid),
-        timestamp: dayjs(new Date()).subtract(bid * 6, 'hour'),
-        txHash: '0xe0bf8f9e5c849e8481c48eef312dfe34b94796dff44b2705a6a8fe5f717a1c3d'
-      }
-    })
-
-    nounlets.push({
-      id: i,
-      auction: {
-        id: i,
-        nounlet: { id: i },
-        amount: BigNumber.from(finalBid + '0000000000000000'),
-        startTime: BigNumber.from(`${auctionStart}`),
-        endTime: BigNumber.from(`${auctionEnd}`),
-        settled: i < mockLiveNounletId,
-        ended,
-        bids,
-      }
-    })
-  }
-
-  return nounlets
-}
-
-const mockResponse: MockData = {
-  id: '0x067b73fbc3accf78b4b8ebfb7964a03fb4554a0e',
-  noun: {
-    id: 0,
-    nounlets: [...generateMockNounlets(mockLiveNounletId)]
-  }
-}
-
-export default function useDisplayedNounlet() {
+export default function useDisplayedNounlet(ignoreUpdate = false) {
   const router = useRouter()
-  const liveNounletId = mockLiveNounletId
-  const nid = +(router.query?.nid || 0)
-  const [isLoading, setIsLoading] = useState(true)
-  const [auctionData, setAuctionData] = useState<NounletAuction | null>(null)
+  const { backgrounds } = useVaultStore()
+  const { account, library } = useEthers()
+  const {
+    isLoading,
+    vaultAddress,
+    nounletTokenAddress,
+    vaultCuratorAddress,
+    backendLatestNounletTokenId,
+    latestNounletTokenId
+  } = useVaultStore()
+  const sdk = useSdk()
 
-  useEffect(() => {
-    console.log('nid change!')
-    const data = mockResponse.noun.nounlets[nid].auction
-    setAuctionData(data)
-  }, [nid])
+  const nid = useMemo(() => {
+    if (isLoading) return null
+    if (!router.isReady) return null
+    if (router.query?.nid == null) return latestNounletTokenId
+    if (typeof router.query.nid !== 'string') {
+      router.replace('/')
+      return null
+    }
+
+    const id = parseInt(router.query.nid as string)
+    if (isNaN(id)) {
+      router.replace('/')
+      return null
+    }
+
+    if (id <= 0 || id > +latestNounletTokenId) {
+      router.replace('/')
+      return null
+    }
+    return router.query.nid as string
+  }, [isLoading, router, latestNounletTokenId])
+
+  const { data: nounletImageData } = useNounletImageData(nid)
+  const nounletBackground = useMemo(() => {
+    if (nounletImageData == null) return null
+    return backgrounds[nounletImageData.seed.background] || null
+  }, [nounletImageData, backgrounds])
+
+  const { data: auctionInfo, swrKey, mutate: mutateAuctionInfo } = useNounletAuctionInfo(nid)
+
+  const shouldCheckForHolder = useMemo(() => {
+    if (sdk == null) return false
+    if (auctionInfo == null) return false
+    if (auctionInfo.auction?.settled !== true) return false
+    return true
+  }, [sdk, auctionInfo])
+  const { data: nounletHolderAddress } = useSWR(
+    shouldCheckForHolder && { ...swrKey, name: 'NounletHolder' },
+    async () => {
+      const ownerAddress = await sdk!.NounletToken.attach(nounletTokenAddress).ownerOf(
+        nid as string
+      )
+      return ownerAddress || ethers.constants.AddressZero
+    },
+    {
+      revalidateIfStale: true,
+      dedupingInterval: 60 * 1000 // 1 minute
+    }
+  )
+
+  const historicBids = useMemo(() => {
+    return auctionInfo?.auction!.bids ?? []
+    // return [...(auctionInfo?.auction!.bids ?? [])].sort((a, b) => {
+    //   return BigNumber.from(b.amount).sub(BigNumber.from(a.amount)).toNumber()
+    // })
+  }, [auctionInfo])
+
+  const auctionEndTime = useMemo(() => {
+    if (auctionInfo == null) return 0
+
+    const seconds = BigNumber.from(auctionInfo.auction!.endTime).toNumber()
+    return seconds
+  }, [auctionInfo])
 
   const hasAuctionEnded = useMemo(() => {
-    return auctionData?.endTime.mul(1000).lt(Date.now())
-  }, [auctionData])
+    const now = Date.now() + 5000 // add 5 second buffer
+    return auctionInfo != null && auctionEndTime * 1000 <= now
+  }, [auctionInfo, auctionEndTime])
+
+  const hasAuctionSettled = useMemo(() => {
+    return !!auctionInfo?.auction!.settled
+  }, [auctionInfo])
+
+  const endedAuctionInfo = useMemo(() => {
+    if (auctionInfo == null || nid == null) return null
+
+    let heldByAddress = nounletHolderAddress || ethers.constants.AddressZero
+    let wonByAddress = auctionInfo.auction!.highestBidder?.id || ethers.constants.AddressZero
+
+    if (heldByAddress === ethers.constants.AddressZero && !hasAuctionSettled) {
+      heldByAddress = vaultCuratorAddress
+    }
+
+    if (wonByAddress === ethers.constants.AddressZero) {
+      wonByAddress = vaultCuratorAddress
+    }
+
+    return {
+      isSettled: +nid < +latestNounletTokenId,
+      settledTransactionHash: auctionInfo.auction.settledTransactionHash,
+      winningBid: auctionInfo.auction!.highestBidAmount.toString(),
+      heldByAddress,
+      endedOn: auctionEndTime,
+      wonByAddress
+    }
+  }, [
+    hasAuctionSettled,
+    auctionEndTime,
+    auctionInfo,
+    nid,
+    latestNounletTokenId,
+    vaultCuratorAddress,
+    nounletHolderAddress
+  ])
+
+  const bid = async (bidAmount: BigNumber) => {
+    if (sdk == null) throw new Error('no sdk')
+    if (account == null) throw new Error('no signer')
+    if (library == null) throw new Error('no library')
+    if (vaultAddress == null) throw new Error('no vault')
+
+    const tx = await sdk.NounletAuction.connect(library.getSigner()).bid(vaultAddress, {
+      value: bidAmount
+    })
+    return txWithErrorHandling(tx)
+  }
+
+  const settleAuction = async () => {
+    if (sdk == null) throw new Error('no sdk')
+    if (account == null) throw new Error('no signer')
+    if (library == null) throw new Error('no library')
+    if (vaultAddress == null) throw new Error('no vault')
+
+    const merkleTree = await sdk.NounletProtoform.generateMerkleTree([
+      sdk.NounletAuction.address,
+      sdk.OptimisticBid.address,
+      sdk.NounletGovernance.address
+    ])
+
+    const mintProof = await sdk.NounletProtoform.getProof(merkleTree, 0)
+    const tx = await sdk.NounletAuction.connect(library.getSigner()).settleAuction(
+      vaultAddress,
+      mintProof
+    )
+    return txWithErrorHandling(tx)
+  }
 
   return {
-    isLoading,
-    hasAuctionEnded,
     nid,
-    liveNounletId,
-    auctionData
+    isLatestNounlet: nid === latestNounletTokenId,
+    isLoading: auctionInfo == null || isLoading,
+    vaultAddress,
+    nounletTokenAddress,
+    nounletImageData,
+    nounletBackground,
+    latestNounletTokenId,
+    hasAuctionEnded,
+    hasAuctionSettled,
+    auctionInfo,
+    auctionEndTime,
+    endedAuctionInfo,
+    historicBids,
+    // methods
+    mutateAuctionInfo,
+    bid,
+    settleAuction
   }
 }

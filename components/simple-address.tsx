@@ -1,22 +1,25 @@
-import classNames from 'classnames'
 import Davatar from '@davatar/react'
+import { useEthers } from '@usedapp/core'
+import classNames from 'classnames'
+import { ethers } from 'ethers'
 import { shortenAddress } from 'lib/utils/common'
 import { useReverseENSLookUp } from 'lib/utils/ensLookup'
+import { buildEtherscanAddressLink } from '../lib/utils/etherscan'
 import OnMounted from './utils/on-mounted'
-import { useEthers } from '@usedapp/core'
-import {buildEtherscanAddressLink} from "../lib/utils/etherscan";
 
 type ComponentProps = {
   className?: string
   address: string
   avatarSize?: number
+  subtitle?: JSX.Element
+  textClassName?: string // Used to fix londrina font clipping
 }
 
 export default function SimpleAddress(props: ComponentProps): JSX.Element {
   const { library: provider } = useEthers()
   const { avatarSize = 0 } = props
-  const address = props.address || '0x0000000000000000000000000000000000000000'
-  const shortenedAddres = shortenAddress(address)
+  const address = props.address || ethers.constants.AddressZero
+  const shortenedAddres = shortenAddress(address).toLowerCase()
   const ens = useReverseENSLookUp(address, false)
 
   // TODO if the address owns an nounlet, use it as avatar
@@ -27,18 +30,26 @@ export default function SimpleAddress(props: ComponentProps): JSX.Element {
     >
       <OnMounted>
         {!!avatarSize && (
-            <a href={buildEtherscanAddressLink(address)} target="_blank" rel="noreferrer">
-              <div
+          <a
+            href={buildEtherscanAddressLink(address)}
+            target="_blank"
+            rel="noreferrer"
+            className="overflow-hidden flex-shrink-0"
+          >
+            <div
               className="overflow-hidden rounded-full flex-shrink-0"
               style={{ width: avatarSize, height: avatarSize }}
             >
               <Davatar size={avatarSize} address={address} provider={provider} />
             </div>
-            </a>
+          </a>
         )}
-        <a href={buildEtherscanAddressLink(address)} target="_blank" rel="noreferrer">
-          <p className="truncate">{ens || shortenedAddres}</p>
-        </a>
+        <div className="flex flex-col overflow-hidden">
+          <a href={buildEtherscanAddressLink(address)} target="_blank" rel="noreferrer">
+            <p className={classNames('truncate ', props.textClassName)}>{ens || shortenedAddres}</p>
+          </a>
+          {props.subtitle}
+        </div>
       </OnMounted>
     </div>
   )

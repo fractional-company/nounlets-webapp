@@ -1,13 +1,17 @@
 import classNames from 'classnames'
+import { NounImage } from 'components/NounletImage'
 import Image from 'next/image'
 import nounImage from 'public/img/noun.png'
+import { useVaultStore } from 'store/vaultStore'
 
 export default function HomeCollectiveOwnership(): JSX.Element {
+  const { nounTokenId } = useVaultStore()
+
   return (
     <div className="home-collective-ownership">
       <div className="lg:container mx-auto">
         <div className="px-4 md:px-12 lg:px-4 mt-12 lg:mt-16">
-          <div className="md:grid md:grid-cols-2 items-end">
+          <div className="grid md:grid-cols-2 gap-8 items-end">
             <h1
               className={classNames(
                 'text-center self-center font-londrina font-900 text-[48px] leading-[56px]',
@@ -15,11 +19,11 @@ export default function HomeCollectiveOwnership(): JSX.Element {
                 'md:text-left lg:text-[96px] lg:leading-[116px]'
               )}
             >
-              COLLECTIVE OWNERSHIP OF NOUN 356
+              COLLECTIVE OWNERSHIP OF NOUN {nounTokenId || '???'}
             </h1>
 
             <div className="w-full aspect-square max-w-[512px] mx-auto">
-              <Image src={nounImage} layout="responsive" alt="nounlet 1" />
+              <NounImage />
             </div>
           </div>
         </div>

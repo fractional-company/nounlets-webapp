@@ -115,6 +115,29 @@ module.exports = {
         px42: '42px',
         px48: '48px',
         px64: '64px'
+      },
+      animation: {
+        wiggle: 'wiggle 10s linear infinite',
+        in: 'animate-in 0.3s ease-out forwards',
+        out: 'animate-out 0.3s ease-in forwards'
+      },
+      keyframes: {
+        wiggle: {
+          '0%': { backgroundPosition: 'center left 0px' },
+          '89.999%': { backgroundPosition: 'center left 0px' },
+          '90%': { backgroundPosition: 'center left -109px' },
+          '91.999%': { backgroundPosition: 'center left -109px' },
+          '92%': { backgroundPosition: 'center left 0px' },
+          '100%': { backgroundPosition: 'center left 0px' }
+        },
+        'animate-in': {
+          '0%': { transform: 'translate(0px, -40px)', opacity: '0' },
+          '100%': { transform: 'translate(0px, 0px)', opacity: '1' }
+        },
+        'animate-out': {
+          '0%': { transform: 'translate(0px, 0px)', opacity: '1' },
+          '100%': { transform: 'translate(0px, -40px)', opacity: '0' }
+        }
       }
     }
   },

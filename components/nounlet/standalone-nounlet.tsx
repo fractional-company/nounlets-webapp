@@ -1,22 +1,36 @@
 // import {INounSeed, useNounletSeed} from "../../lib/wrappers/nounletToken";
-import {BigNumber} from "ethers";
-import Link from "next/link";
-import {useDisplayAuction} from "../../store/onDisplayAuction";
+import { BigNumber } from 'ethers'
 // import Nounlet from "./nounlet";
-import {useMemo} from "react";
 
 interface StandaloneNounletProps {
-    nounId: BigNumber;
+  nounId: BigNumber
 }
 interface StandaloneCircularNounletProps {
-    nounId: BigNumber;
+  nounId: BigNumber
 }
 
 interface StandaloneNounletWithSeedProps {
-    nounId: BigNumber;
-    onLoadSeed?: (seed: any) => void;
-    shouldLinkToProfile: boolean;
+  nounId: BigNumber
+  onLoadSeed?: (seed: any) => void
+  shouldLinkToProfile: boolean
 }
+
+// const getNounlet = async (nounId: string, nounletId: string) => {
+//     const name = `Noun ${nounId}`;
+//     const description = `Noun ${nounId} is a member of the Nouns DAO`;
+//     const { parts, background } = getBigNounData(seed);
+//     const svg = buildSVG(parts, bigNounData.palette, background);
+//     const image = `data:image/svg+xml;base64,${btoa(svg)}`;
+
+//     return {
+//         name,
+//         svg,
+//         description,
+//         image,
+//         parts,
+//     };
+// };
+
 //
 // const getNounlet = (nounId: string | BigNumber | number, seed: INounSeed) => {
 //     const id = nounId.toString();

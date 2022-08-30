@@ -1,5 +1,8 @@
 import Button from 'components/buttons/button'
-import SimpleModal from 'components/simple-modal'
+import SimpleModalWrapper from 'components/SimpleModalWrapper'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
+import { useAppStore } from 'store/application'
 
 type ComponentProps = {
   isShown: boolean
@@ -7,8 +10,11 @@ type ComponentProps = {
 }
 
 export default function CongratulationsModal(props: ComponentProps): JSX.Element {
+  const router = useRouter()
+  const { congratulationsModal, setCongratulationsModalForNounletId } = useAppStore()
+
   return (
-    <SimpleModal
+    <SimpleModalWrapper
       className="congratulations-modal !max-w-[454px]"
       isShown={props.isShown}
       onClose={() => props?.onClose?.()}
@@ -20,20 +26,25 @@ export default function CongratulationsModal(props: ComponentProps): JSX.Element
           <p className="font-londrina text-px24 leading-px36 text-gray-4 text-center">
             You now own
           </p>
-          <p className="font-londrina text-px36 leading-px42 text-center">Nounlet 32/100</p>
+          <p className="font-londrina text-px36 leading-px42 text-center">
+            Nounlet {congratulationsModal.nounletId}/100
+          </p>
           <p className="font-500 text-px20 leading-px30 text-gray-4 text-center">
             You can change your vote to another delegate at any time.
           </p>
-          <Button
-            className="primary"
-            onClick={() => {
-              console.log('Vote for delegate')
-            }}
-          >
-            Cast votes
-          </Button>
+          <Link href={'/governance'}>
+            <Button
+              className="primary"
+              onClick={async () => {
+                router.push('/governance')
+                setCongratulationsModalForNounletId(false)
+              }}
+            >
+              Cast votes
+            </Button>
+          </Link>
         </div>
       </div>
-    </SimpleModal>
+    </SimpleModalWrapper>
   )
 }

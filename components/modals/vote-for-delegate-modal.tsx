@@ -1,21 +1,57 @@
+import { useResolveName } from '@usedapp/core'
 import Button from 'components/buttons/button'
-import SimpleModal from 'components/simple-modal'
-import { useAppState } from 'store/application'
+import SimpleAddress from 'components/simple-address'
+import SimpleModalWrapper from 'components/SimpleModalWrapper'
+import { ErrorToast, SuccessToast } from 'components/toasts/CustomToasts'
+import { useDebounced } from 'hooks/useDebounced'
+import useLeaderboard from 'hooks/useLeaderboard'
+import useToasts from 'hooks/useToasts'
+import { WrappedTransactionReceiptState } from 'lib/utils/tx-with-error-handling'
+import { useMemo, useState } from 'react'
+import toast from 'react-hot-toast'
+import { useAppStore } from 'store/application'
 
 export default function VoteForDelegateModal(): JSX.Element {
-  const { voteForDelegateModal, setVoteForDelegateModalForAddress } = useAppState()
+  const { voteForDelegateModal, setVoteForDelegateModalForAddress } = useAppStore()
+  const { myNounlets, delegateVotes } = useLeaderboard()
+  const [isLoading, setIsLoading] = useState(false)
+  const { toastSuccess, toastError } = useToasts()
+
+  const handleVoteForDelegate = async () => {
+    if (voteForDelegateModal.address == null) return
+    setIsLoading(true)
+    try {
+      const response = await delegateVotes(voteForDelegateModal.address)
+      if (
+        response.status === WrappedTransactionReceiptState.SUCCESS ||
+        response.status === WrappedTransactionReceiptState.SPEDUP
+      ) {
+        setVoteForDelegateModalForAddress(false)
+        toastSuccess('Votes cast 🎉', 'Leaderboard will refresh momentarily.')
+      } else {
+        throw response
+      }
+    } catch (error) {
+      console.log('error!', error)
+      toastError('Votes cast failed', 'Please try again.')
+    }
+
+    setIsLoading(false)
+  }
 
   return (
-    <SimpleModal
+    <SimpleModalWrapper
       className="vote-for-delegate-modal !max-w-[454px]"
       isShown={voteForDelegateModal.show}
       onClose={() => setVoteForDelegateModalForAddress(false)}
     >
       <div className="font-londrina">
         <h2 className="text-px24 leading-px30 text-gray-4">Vote for delegate</h2>
-        <h2 className="mt-2 text-px42 leading-px36 truncate">
-          {voteForDelegateModal.address || 'Address'}
-        </h2>
+        <SimpleAddress
+          className="mt-2 text-px42 leading-px44 hover:text-secondary-green"
+          textClassName="pl-2"
+          address={voteForDelegateModal.address || ''}
+        />
       </div>
       <div className="mt-8 flex flex-col gap-8">
         <p className="font-500 text-px20 leading-px30 text-gray-4">
@@ -26,17 +62,18 @@ export default function VoteForDelegateModal(): JSX.Element {
           <p className="font-londrina text-px24 leading-px36 text-gray-4 text-center">
             My voting power
           </p>
-          <p className="font-londrina text-px36 leading-px42 text-center">3</p>
+          <p className="font-londrina text-px36 leading-px42 text-center">{myNounlets.length}</p>
           <Button
             className="primary"
+            loading={isLoading}
             onClick={() => {
-              console.log('Vote for delegate')
+              handleVoteForDelegate()
             }}
           >
             Vote
           </Button>
         </div>
       </div>
-    </SimpleModal>
+    </SimpleModalWrapper>
   )
 }

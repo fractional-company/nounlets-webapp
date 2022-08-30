@@ -1,6 +1,6 @@
 import Button from '../buttons/button'
 import { useEffect, useRef, useState } from 'react'
-import { useAppState } from '../../store/application'
+import { useAppStore } from '../../store/application'
 import { useEthers } from '@usedapp/core'
 import config, { CHAIN_ID } from '../../config'
 import { InjectedConnector } from '@web3-react/injected-connector'
@@ -8,9 +8,9 @@ import WalletConnectProvider from '@walletconnect/web3-provider'
 import { FortmaticConnector } from '@web3-react/fortmatic-connector'
 import { WalletConnectConnector } from '@web3-react/walletconnect-connector'
 import { WalletLinkConnector } from '@web3-react/walletlink-connector'
-import { TrezorConnector } from '@web3-react/trezor-connector'
+// import { TrezorConnector } from '@web3-react/trezor-connector'
 import WalletButton, { WALLET_TYPE } from '../wallet-button'
-import SimpleModal from '../simple-modal'
+import SimpleModalWrapper from '../SimpleModalWrapper'
 import SimpleCheckbox from 'components/simple-checkbox'
 import Link from 'next/link'
 import classNames from 'classnames'
@@ -19,7 +19,7 @@ export default function WalletModal(): JSX.Element {
   const [isMobileMenuOpen, setIsModalMenuOpen] = useState(false)
   const [mobileMenuMaxHeight, setMobileMenuMaxHeight] = useState(0)
   const mobileMenuRef = useRef<HTMLDivElement>(null)
-  const { setConnectModalOpen, isConnectModalOpen } = useAppState()
+  const { setConnectModalOpen, isConnectModalOpen } = useAppStore()
   const { activate, activateBrowserWallet, account, deactivate } = useEthers()
   const supportedChainIds = [CHAIN_ID]
   const [areConditionsAccepted, setAreConditionsAccepted] = useState(false)
@@ -36,9 +36,9 @@ export default function WalletModal(): JSX.Element {
 
   useEffect(() => {
     if (account) {
-        setConnectModalOpen(false)
+      setConnectModalOpen(false)
     }
-  }, [account])
+  }, [account, setConnectModalOpen])
 
   const wallets = (
     <div className="wallet-buttons-list grid grid-cols-1 md:grid-cols-2 gap-3 justify-items-stretch md:justify-items-start">
@@ -51,7 +51,7 @@ export default function WalletModal(): JSX.Element {
       `}</style>
       <WalletButton
         onClick={async () => {
-            await activateBrowserWallet()
+          await activateBrowserWallet()
         }}
         walletType={WALLET_TYPE.metamask}
       />
@@ -90,10 +90,7 @@ export default function WalletModal(): JSX.Element {
         }}
         walletType={WALLET_TYPE.coinbaseWallet}
       />
-      <WalletButton
-          onClick={() => activateBrowserWallet()}
-          walletType={WALLET_TYPE.brave}
-      />
+      <WalletButton onClick={() => activateBrowserWallet()} walletType={WALLET_TYPE.brave} />
       {/* <WalletButton
         onClick={() => {
           const ledger = new LedgerConnector({
@@ -106,7 +103,7 @@ export default function WalletModal(): JSX.Element {
         walletType={WALLET_TYPE.ledger}
       /> */}
 
-      <WalletButton
+      {/* <WalletButton
         onClick={() => {
           const trezor = new TrezorConnector({
             chainId: CHAIN_ID,
@@ -117,14 +114,14 @@ export default function WalletModal(): JSX.Element {
           activate(trezor)
         }}
         walletType={WALLET_TYPE.trezor}
-      />
+      /> */}
     </div>
   )
 
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
 
   return (
-    <SimpleModal
+    <SimpleModalWrapper
       className="wallet-modal !max-w-[454px]"
       isShown={isConnectModalOpen}
       onClose={() => setConnectModalOpen(false)}
@@ -160,14 +157,17 @@ export default function WalletModal(): JSX.Element {
           className="link text-px14 font-700 text-gray-3 hover:text-secondary-blue w-full --sm"
           onClick={() => {
             console.log(localStorage.removeItem('walletconnect'))
-              deactivate()
+            deactivate()
             setIsSuccessModalOpen(true)
           }}
         >
           Clear WalletConnect Data
         </Button>
 
-        <SimpleModal isShown={isSuccessModalOpen} onClose={() => setIsSuccessModalOpen(false)}>
+        <SimpleModalWrapper
+          isShown={isSuccessModalOpen}
+          onClose={() => setIsSuccessModalOpen(false)}
+        >
           <h2 className="font-700 text-px32 leading-px36 text-center">Data cleared!</h2>
           <div className="mt-8 flex flex-col gap-6">
             <Button
@@ -179,8 +179,8 @@ export default function WalletModal(): JSX.Element {
               Yay!
             </Button>
           </div>
-        </SimpleModal>
+        </SimpleModalWrapper>
       </div>
-    </SimpleModal>
+    </SimpleModalWrapper>
   )
 }

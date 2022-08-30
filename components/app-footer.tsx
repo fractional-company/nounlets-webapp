@@ -11,8 +11,13 @@ export default function AppFooter(): JSX.Element {
         <a href="" target="_blank" className="hover:text-secondary-green transition-colors">
           Etherscan
         </a>
-        <a href="" target="_blank" className="hover:text-secondary-green transition-colors">
-          fractional.art
+        <a
+          href="https://tessera.co/"
+          target="_blank"
+          rel="noreferrer"
+          className="hover:text-secondary-green transition-colors"
+        >
+          tessera.co
         </a>
       </div>
     </div>

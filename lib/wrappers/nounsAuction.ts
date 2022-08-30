@@ -1,8 +1,5 @@
-import { useContractCall } from '@usedapp/core';
-import { BigNumber as EthersBN, utils } from 'ethers';
-import BigNumber from 'bignumber.js';
-import NounletsAuctionABI from '../../typechain/abis/nounletAuction.abi.json'
-import config from "../../config";
+import { BigNumber as EthersBN } from 'ethers'
+// import NounletsAuctionABI from '../../typechain/abis/nounletAuction.abi.json';
 
 // export enum AuctionHouseContractFunction {
 //   auction = 'auction',
@@ -14,28 +11,28 @@ import config from "../../config";
 // }
 
 export interface Auction {
-  id?: EthersBN;
-  amount: EthersBN;
-  bidder: string;
-  endTime: EthersBN;
-  startTime: EthersBN;
-  nounId?: EthersBN;
-  settled: boolean;
+  id?: EthersBN
+  amount: EthersBN
+  bidder: string
+  endTime: EthersBN
+  startTime: EthersBN
+  nounId?: EthersBN
+  settled: boolean
 }
 
-const abi = new utils.Interface(NounletsAuctionABI);
+// const abi = new utils.Interface(NounletsAuctionABI);
 
-export const useAuctionMinBidIncPercentage = () => {
-  const minBidIncrement = useContractCall({
-    abi,
-    address: config.addresses.nounletAuction,
-    method: 'minBidIncrementPercentage',
-    args: [],
-  });
+// export const useAuctionMinBidIncPercentage = () => {
+//   const minBidIncrement = useContractCall({
+//     abi,
+//     address: config.addresses.nounletAuction,
+//     method: 'minBidIncrementPercentage',
+//     args: [],
+//   });
 
-  if (!minBidIncrement) {
-    return;
-  }
+//   if (!minBidIncrement) {
+//     return;
+//   }
 
-  return new BigNumber(minBidIncrement[0]);
-};
+//   return new BigNumber(minBidIncrement[0]);
+// };

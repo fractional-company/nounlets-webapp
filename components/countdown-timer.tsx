@@ -1,29 +1,26 @@
 import dayjs from 'dayjs'
-import duration from 'dayjs/plugin/duration'
-import utc from 'dayjs/plugin/utc'
-import { BigNumber } from 'ethers'
+import { BigNumber, BigNumberish } from 'ethers'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
-
-dayjs.extend(duration)
-dayjs.extend(utc)
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 type ComponentProps = {
   showEndTime?: boolean
-  auctionStart: BigNumber
-  auctionEnd: BigNumber
+  auctionEnd: BigNumberish
+  onTimerFinished?: () => void
 }
 
 export default function CountdownTimer(props: ComponentProps): JSX.Element {
-  const { showEndTime, auctionStart, auctionEnd } = props
+  const { showEndTime, auctionEnd, onTimerFinished } = props
   const [auctionTimer, setAuctionTimer] = useState(0)
 
   useEffect(() => {
-    const timeLeft = Math.floor(auctionEnd.toNumber()) - dayjs().unix()
+    const timeLeft = Math.floor(BigNumber.from(auctionEnd).toNumber()) - dayjs().unix()
     setAuctionTimer(timeLeft)
 
     if (timeLeft <= 0) {
+      console.log('⏱ Timer ended!')
       setAuctionTimer(0)
+      onTimerFinished?.()
     } else {
       const timer = setTimeout(() => {
         setAuctionTimer((v) => v - 1)
@@ -33,10 +30,11 @@ export default function CountdownTimer(props: ComponentProps): JSX.Element {
         clearTimeout(timer)
       }
     }
-  }, [auctionStart, auctionEnd, auctionTimer])
+  }, [auctionEnd, auctionTimer, onTimerFinished])
 
   const formattedTime = useMemo(() => {
-    const endTime = dayjs.unix(auctionEnd.toNumber()).local()
+    console.log('auctione nd', auctionEnd)
+    const endTime = dayjs.unix(BigNumber.from(auctionEnd).toNumber()).local()
     return endTime.format('h:mm:ss a')
   }, [auctionEnd])
 
