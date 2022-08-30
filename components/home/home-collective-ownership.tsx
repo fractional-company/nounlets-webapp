@@ -11,7 +11,7 @@ export default function HomeCollectiveOwnership(): JSX.Element {
     <div className="home-collective-ownership">
       <div className="lg:container mx-auto">
         <div className="px-4 md:px-12 lg:px-4 mt-12 lg:mt-16">
-          <div className="md:grid md:grid-cols-2 items-end">
+          <div className="grid md:grid-cols-2 gap-8 items-end">
             <h1
               className={classNames(
                 'text-center self-center font-londrina font-900 text-[48px] leading-[56px]',

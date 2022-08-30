@@ -205,7 +205,7 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
       </div>
 
       <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
-        <div className="bid-input flex items-center space-x-1 bg-gray-1 lg:bg-white rounded-px10 px-4 leading-[52px] focus-within:outline-dashed flex-1">
+        <div className="bid-input flex items-center space-x-1 bg-gray-1 lg:bg-white rounded-px10 px-4 leading-[52px] focus-within:outline-dashed focus-within:outline-[3px] flex-1">
           <IconEth className="flex-shrink-0 h-[12px] text-gray-3" />
           <input
             value={bidInputValue}
@@ -231,12 +231,18 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
 
       <div className="latest-bids space-y-2 pt-5 lg:pt-0">
         <div className="flex flex-col divide-y divide-gray-2">{latestBidsList}</div>
-        <p
-          className="text-center text-gray-4 text-px16 leading-px24 font-500 cursor-pointer"
-          onClick={() => setBidModalOpen(true)}
-        >
-          View all bids
-        </p>
+        {latestBidsList.length === 0 ? (
+          <p className="text-center text-gray-4 text-px16 leading-px24 font-500">
+            No bids yet. Be the first!
+          </p>
+        ) : (
+          <p
+            className="text-center text-gray-4 text-px16 leading-px24 font-500 cursor-pointer"
+            onClick={() => setBidModalOpen(true)}
+          >
+            View all bids
+          </p>
+        )}
       </div>
 
       <SimpleModalWrapper

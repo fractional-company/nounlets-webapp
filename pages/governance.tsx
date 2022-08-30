@@ -156,8 +156,6 @@ function GovernanceCurrentDelegate() {
                       <Link href={`/nounlet/${nounlet.id}`} key={nounlet.id}>
                         <div className="overflow-hidden flex-shrink-0 w-10 h-10 rounded-px8 cursor-pointer hover:scale-110 transition-transform">
                           <NounletImage id={nounlet.id} />
-
-                          {/* <Image src={nounletIcon} alt="icon" width="40" height="40" /> */}
                         </div>
                       </Link>
                     )
@@ -173,7 +171,7 @@ function GovernanceCurrentDelegate() {
 }
 
 function GovernanceLeaderboard() {
-  const { data, isOutOfSync, myNounletsVotes } = useLeaderboard()
+  const { data, isOutOfSync, myNounletsVotes, myNounlets } = useLeaderboard()
   const { account } = useEthers()
   const { setConnectModalOpen } = useAppStore()
   const [isVoteForDelegateModalShown, setIsVoteForDelegateModalShown] = useState(false)
@@ -181,6 +179,8 @@ function GovernanceLeaderboard() {
   const debouncedSearchInputValue = useDebounced(searchInputValue, 500)
   const { address: ensAddress, isLoading: isLoadingENSName } =
     useResolveName(debouncedSearchInputValue)
+
+  const canIVote = useMemo(() => myNounlets.length > 0, [myNounlets])
 
   const filterByText = useMemo(() => {
     if (ensAddress != null) {
@@ -236,7 +236,7 @@ function GovernanceLeaderboard() {
         style={{ gridTemplateColumns: 'auto 100px 140px 160px' }}
       >
         <div className="flex">
-          <div className="flex h-12 items-center bg-gray-1 focus-within:outline-dashed rounded-px10 px-2 gap-2 w-full lg:w-10/12">
+          <div className="flex h-12 items-center bg-gray-1 focus-within:outline-dashed focus-within:outline-[3px] rounded-px10 px-2 gap-2 w-full lg:w-10/12">
             <IconMagnify className="w-5 h-5 flex-shrink-0" />
             <input
               value={searchInputValue}
@@ -275,7 +275,7 @@ function GovernanceLeaderboard() {
         ) : (
           <>
             {filteredLeaderboardListData.map((data) => (
-              <LeaderboardListTile key={data.walletAddress} data={data} />
+              <LeaderboardListTile key={data.walletAddress} data={data} canIVote={canIVote} />
             ))}
 
             {account && (

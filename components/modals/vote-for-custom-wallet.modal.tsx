@@ -67,7 +67,7 @@ export default function VoteForCustomWalletModal(props: ComponentProps): JSX.Ele
     <div>
       <h2 className="font-700 text-px32 leading-px36 text-center">Enter address</h2>
       <div className="mt-8 flex flex-col gap-3">
-        <div className="flex-1 focus-within:outline-dashed rounded-px10">
+        <div className="flex-1 focus-within:outline-dashed focus-within:outline-[3px] rounded-px10">
           <input
             value={searchInputValue}
             onChange={(event) => setSearchinputValue(event.target.value.trim())}

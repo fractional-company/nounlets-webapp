@@ -185,27 +185,33 @@ export default function AppHeader(): JSX.Element {
         >
           <div ref={mobileMenuRef}>
             <div className="space-y-2 pb-4">
-              <Button className="default-outline w-full space-x-2">
+              <Link href="/governance">
+                <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
+                  <Image src={IconPeople} alt="votes" height={14} />
+                  <span>Vote</span>
+                </Button>
+              </Link>
+              <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
                 <IconDiscord className="h-[13px] w-auto" />
                 <span>Discord</span>
               </Button>
-              <Button className="default-outline w-full space-x-2">
+              <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
                 <IconMedium className="h-[16px] w-auto" />
                 <span>What is it... (blog)</span>
               </Button>
-              <Button className="default-outline w-full space-x-2">
+              <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
                 <IconHeartHollow className="h-[16px] w-auto" />
                 <span>Nouns.wtf</span>
               </Button>
-              <Button className="default-outline w-full space-x-2">
+              <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
                 <IconTwitter className="h-[16px] w-auto" />
                 <span>Twitter</span>
               </Button>
-              <Button className="default-outline w-full space-x-2">
+              <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
                 <IconEtherscan className="h-[16px] w-auto" />
                 <span>Etherscan</span>
               </Button>
-              <Button className="default-outline w-full space-x-2">
+              <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
                 <IconFractionalLogo className="h-[16px] w-auto text-secondary-green" />
                 <span>Fractional.art</span>
               </Button>

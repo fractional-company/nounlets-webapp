@@ -227,14 +227,14 @@ function LeaderboardUpdater() {
 
   return (
     <>
-      <Button
+      {/* <Button
         className="primary"
         onClick={() => {
           mutate()
         }}
       >
         Update leaderboard
-      </Button>
+      </Button> */}
     </>
   )
 }

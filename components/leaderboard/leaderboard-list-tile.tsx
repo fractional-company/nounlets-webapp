@@ -26,6 +26,7 @@ export type LeaderboardListTileProps = {
 
 export default function LeaderboardListTile(props: {
   data: LeaderboardListTileProps
+  canIVote?: boolean
 }): JSX.Element {
   const { account } = useEthers()
   const { claimDelegate } = useLeaderboard()
@@ -92,11 +93,11 @@ export default function LeaderboardListTile(props: {
       <div
         className={classNames('border-2 rounded-px16 px-4 py-4', {
           'border-gray-2': !isDelegate,
-          'border-transparent outline-dashed outline-secondary-green': isDelegate
+          'border-transparent outline-[3px] outline-dashed outline-secondary-green': isDelegate
         })}
       >
         <div
-          className="flex flex-col space-y-4 lg:grid lg:-mx-4 lg:space-y-0"
+          className="flex flex-col space-y-4 lg:grid lg:-mx-4 lg:space-y-0 min-h-[40px]"
           style={{ gridTemplateColumns: 'auto 100px 140px 160px' }}
         >
           <div className="flex items-center flex-grow-1 overflow-hidden lg:flex-grow-0 lg:pl-4">
@@ -176,7 +177,7 @@ export default function LeaderboardListTile(props: {
             </Button>
           )}
 
-          {account && (
+          {account && props.canIVote && (
             <div className="flex lg:justify-end lg:pr-4">
               <Button
                 className="primary --sm flex-auto lg:flex-none"

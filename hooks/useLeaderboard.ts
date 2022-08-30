@@ -30,18 +30,11 @@ export default function useLeaderboard() {
     async (key) => {
       console.log('🌽🌽🌽🌽🌽 Fetching new leaderboard data')
       const leaderboardData = await getAllNounlets(vaultAddress)
-      // const [leaderboardData, currentDelegate] = await Promise.all([
-      //   getAllNounlets(vaultAddress),
-      //   sdk!.NounletGovernance.currentDelegate(vaultAddress)
-      // ])
-
       console.groupCollapsed('🌽🌽🌽🌽🌽 Fetched new leaderboard data')
       console.log({ leaderboardData })
       console.groupEnd()
 
-      return {
-        ...leaderboardData
-      }
+      return leaderboardData
     },
     {
       revalidateIfStale: false,
@@ -49,9 +42,8 @@ export default function useLeaderboard() {
         if (latestData == null) return 15000
         if (latestData._meta.block.number < leaderboardBlockNumber) {
           console.log(
-            '🍆🍆🍆🍆🍆🍆 Leaderboard is behind',
+            '🐌 Leaderboard is outdated',
             latestData._meta.block.number,
-            'vs',
             leaderboardBlockNumber
           )
           return 15000
@@ -59,7 +51,7 @@ export default function useLeaderboard() {
 
         return 0
       },
-      onSuccess: (data, key, config) => {
+      onSuccess: (data) => {
         if (data == null) {
           setTimeout(() => {
             console.log('🌽🌽🌽', 'Data null, forced mutate', '🌽🌽🌽')
@@ -69,12 +61,9 @@ export default function useLeaderboard() {
         }
 
         setCurrentDelegate(data.currentDelegate)
-
-        console.log('🌽🌽🌽🌽🌽🌽🌽🌽🌽 delegate out of sync', !data.doesDelegateHaveMostVotes)
         setIsCurrentDelegateOutOfSync(!data.doesDelegateHaveMostVotes)
 
         if (data._meta.block.number > leaderboardBlockNumber) {
-          console.log('🌽🌽🌽🌽🌽', 'block number is higher on BE. Update it!')
           setLeaderboardBlockNumber(data._meta.block.number)
           return
         }
@@ -185,7 +174,7 @@ export default function useLeaderboard() {
   // }, [data, account, myNounletsVotes])
 
   const claimDelegate = async (toAddress: string) => {
-    console.log('update delegate', vaultAddress, toAddress)
+    console.log('🔔 claimDelegate', vaultAddress, toAddress)
     if (sdk == null || account == null || library == null) throw new Error('No signer')
     if (nounletTokenAddress == '') throw new Error('No nounlet token address')
 
@@ -195,7 +184,7 @@ export default function useLeaderboard() {
   }
 
   const delegateVotes = async (toAddress: string) => {
-    console.log('delegating votes to:', toAddress)
+    console.log('🔔 delegateVotes', toAddress)
     if (sdk == null || account == null || library == null) throw new Error('No signer')
     if (nounletTokenAddress == '') throw new Error('No nounlet token address')
 

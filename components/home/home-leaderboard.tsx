@@ -16,11 +16,12 @@ export default function HomeLeaderboard(): JSX.Element {
   const { account, library } = useEthers()
   const router = useRouter()
   const { latestNounletTokenId } = useVaultStore()
-  const { data, myNounletsVotes, isOutOfSync } = useLeaderboard()
+  const { data, myNounletsVotes, myNounlets, isOutOfSync } = useLeaderboard()
 
   const leaderboardListData = useMemo(() => {
     return constructLeaderboardListData(data, myNounletsVotes, account).slice(0, 3)
   }, [data, myNounletsVotes, account])
+  const canIVote = useMemo(() => myNounlets.length > 0, [myNounlets])
 
   const hasFirstAuctionSettled = latestNounletTokenId !== '0' && latestNounletTokenId !== '1'
 
@@ -53,7 +54,7 @@ export default function HomeLeaderboard(): JSX.Element {
         {hasFirstAuctionSettled ? (
           <div className="leaderboard-list mt-8 space-y-2">
             {leaderboardListData.map((data, index) => (
-              <LeaderboardListTile key={index} data={data} />
+              <LeaderboardListTile key={index} data={data} canIVote={canIVote} />
             ))}
             <Link href="/governance">
               <Button className="border-2 border-gray-2 hover:border-secondary-blue h-12 sm:h-[74px] rounded-px16 text-secondary-blue w-full text-px20 font-700">

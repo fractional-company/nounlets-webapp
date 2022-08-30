@@ -26,11 +26,7 @@ const Home: NextPage<{ vault: any }> = ({ vault }: { vault: any }) => {
 
   return (
     <div className="page-home w-screen">
-      <SimpleModalWrapper
-        onClose={() => setBidModalOpen(false)}
-        isShown={isBidModalOpen}
-        style={{ backgroundColor: currentBackground }}
-      >
+      <SimpleModalWrapper onClose={() => setBidModalOpen(false)} isShown={isBidModalOpen}>
         <BidHistoryModal />
       </SimpleModalWrapper>
       <div className="space-y-16">
