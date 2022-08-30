@@ -74,7 +74,7 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
         .round(NEXT_PUBLIC_BID_DECIMALS)
         .toString()
       return (
-        <div key={bid.id.toString()} className="flex items-center flex-1 py-2 overflow-hidden">
+        <div key={bid.id.toString()} className="flex items-center flex-1 py-3 overflow-hidden">
           <SimpleAddress
             avatarSize={24}
             address={bid.bidder?.id || ethers.constants.AddressZero}
@@ -230,7 +230,7 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
       </div>
 
       <div className="latest-bids space-y-2 pt-5 lg:pt-0">
-        <div className="flex flex-col divide-y divide-gray-2">{latestBidsList}</div>
+        <div className="flex flex-col divide-y divide-black/10">{latestBidsList}</div>
         {latestBidsList.length === 0 ? (
           <p className="text-center text-gray-4 text-px16 leading-px24 font-500">
             No bids yet. Be the first!
