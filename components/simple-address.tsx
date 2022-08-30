@@ -11,6 +11,7 @@ type ComponentProps = {
   className?: string
   address: string
   avatarSize?: number
+  avatarClassName?: string
   subtitle?: JSX.Element
   textClassName?: string // Used to fix londrina font clipping
 }
@@ -37,7 +38,10 @@ export default function SimpleAddress(props: ComponentProps): JSX.Element {
             className="overflow-hidden flex-shrink-0"
           >
             <div
-              className="overflow-hidden rounded-full flex-shrink-0"
+              className={classNames(
+                'overflow-hidden rounded-full flex-shrink-0',
+                props.avatarClassName
+              )}
               style={{ width: avatarSize, height: avatarSize }}
             >
               <Davatar size={avatarSize} address={address} provider={provider} />

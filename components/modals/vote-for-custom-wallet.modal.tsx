@@ -1,5 +1,6 @@
 import { useResolveName } from '@usedapp/core'
 import Button from 'components/buttons/button'
+import SimpleAddress from 'components/simple-address'
 import SimpleModalWrapper from 'components/SimpleModalWrapper'
 import { ethers } from 'ethers'
 import { useDebounced } from 'hooks/useDebounced'
@@ -65,7 +66,9 @@ export default function VoteForCustomWalletModal(props: ComponentProps): JSX.Ele
 
   return (
     <div>
-      <h2 className="font-700 text-px32 leading-px36 text-center">Enter address</h2>
+      <div className="font-londrina">
+        <h2 className="text-px42 -mt-3 -mb-4">Vote for wallet</h2>
+      </div>
       <div className="mt-8 flex flex-col gap-3">
         <div className="flex-1 focus-within:outline-dashed focus-within:outline-[3px] rounded-px10">
           <input
@@ -77,7 +80,7 @@ export default function VoteForCustomWalletModal(props: ComponentProps): JSX.Ele
           />
         </div>
         {shortenedAddress && (
-          <p className="font-500 text-px20 leading-px20 truncate text-gray-4 py-2 text-center">
+          <p className="font-londrina font-500 text-px20 leading-px20 truncate text-gray-4 py-2 text-center">
             {shortenedAddress}
           </p>
         )}

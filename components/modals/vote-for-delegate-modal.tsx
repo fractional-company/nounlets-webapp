@@ -41,15 +41,15 @@ export default function VoteForDelegateModal(): JSX.Element {
 
   return (
     <SimpleModalWrapper
-      className="vote-for-delegate-modal !max-w-[454px]"
+      className="vote-for-delegate-modal w-[454px] !max-w-[454px]"
       isShown={voteForDelegateModal.show}
       onClose={() => setVoteForDelegateModalForAddress(false)}
     >
       <div className="font-londrina">
         <h2 className="text-px24 leading-px30 text-gray-4">Vote for delegate</h2>
         <SimpleAddress
-          className="mt-2 text-px42 leading-px44 hover:text-secondary-green"
-          textClassName="pl-2"
+          className="text-px42 hover:text-secondary-green -mt-3 -mb-4"
+          textClassName="pl-0"
           address={voteForDelegateModal.address || ''}
         />
       </div>

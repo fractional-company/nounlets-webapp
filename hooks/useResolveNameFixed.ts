@@ -20,7 +20,12 @@ export const useResolveNameFixed = (name: string | undefined) => {
     let mounted = true
 
     void (async () => {
-      if (!library || !name) return
+      if (!library || !name) {
+        setIsLoading(false)
+        setAddress(null)
+        setError(null)
+        return
+      }
       try {
         setIsLoading(true)
         const resolved = await library.resolveName(name)

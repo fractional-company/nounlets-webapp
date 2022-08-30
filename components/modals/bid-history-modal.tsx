@@ -34,14 +34,15 @@ const BidHistoryModal = (): JSX.Element => {
         return (
           <div
             key={bid.id.toString()}
-            className={`items-center rounded-px10 justify-between p-3 flex bg-white ${
+            className={`flex items-center rounded-px10 justify-between p-3 bg-white ${
               index === 0 ? 'opacity-100' : 'opacity-50'
             }`}
           >
-            <div className="flex flex-col min-w-0">
+            <div className="flex min-w-0">
               <SimpleAddress
                 avatarSize={40}
                 address={bid.bidder?.id || '0x0'}
+                avatarClassName="hidden xs:block"
                 className="text-px18 leading-px24 font-700 gap-3 flex-1"
                 subtitle={
                   <div className="text-px14 leading-px20 font-500 text-gray-4 truncate">
@@ -64,9 +65,9 @@ const BidHistoryModal = (): JSX.Element => {
   )
 
   return (
-    <div className="sm:w-[400px]">
-      <Dialog.Title className="p-4 pl-0 text-px24 font-500">
-        <div className="flex items-center -mt-10 space-x-4">
+    <div className="overflow-hidden">
+      <Dialog.Title className="text-px24 font-500">
+        <div className="flex items-start space-x-4">
           <div className="w-[84px] flex-shrink-0 rounded-[15px] overflow-hidden">
             <NounletImage id={nid} />
           </div>
@@ -76,8 +77,8 @@ const BidHistoryModal = (): JSX.Element => {
           </div>
         </div>
       </Dialog.Title>
-      <div className="py-4 pl-4 pr-2 bg-gray-2 rounded-px10 h-[17.25rem]">
-        <div className="flex flex-col overflow-auto gap-2 h-full pr-2">{bidHistory}</div>
+      <div className="mt-8 py-4 px-4 bg-gray-2 rounded-px10 h-[17.25rem]">
+        <div className="flex flex-col overflow-auto gap-2 h-full">{bidHistory}</div>
       </div>
     </div>
   )

@@ -229,7 +229,15 @@ function GovernanceLeaderboard() {
         {account == null ? (
           <div className="flex flex-col xs:flex-row items-center gap-2">
             <p className="font-500 text-px14 text-gray-3">Connect wallet to cast a vote</p>
-            <Button className="primary --sm" onClick={() => setConnectModalOpen(true)}>
+            {/* <Button
+              key={0}
+              className="text-px18 leading-px26 basic default !h-11"
+              onClick={() => setBidModalOpen(true)}
+              disabled={historicBids.length === 0}
+            >
+              <IconBidHistory className="mr-2.5" /> Bid history
+            </Button> */}
+            <Button className="default --sm" onClick={() => setConnectModalOpen(true)}>
               Connect wallet
             </Button>
           </div>
@@ -295,7 +303,7 @@ function GovernanceLeaderboard() {
 
                 <SimpleModalWrapper
                   preventCloseOnBackdrop
-                  className="vote-for-custom-wallet-modal"
+                  className="vote-for-custom-wallet-modal w-[454px] !max-w-[454px]"
                   isShown={isVoteForDelegateModalShown}
                   onClose={() => setIsVoteForDelegateModalShown(false)}
                 >

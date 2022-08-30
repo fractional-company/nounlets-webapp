@@ -252,11 +252,14 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
       </div>
 
       <SimpleModalWrapper
-        className="vote-for-custom-wallet-modal !max-w-[472px]"
+        className="vote-for-custom-wallet-modal !max-w-[600px]"
         isShown={showWrongBidModal}
         onClose={() => setShowWrongBidModal(false)}
       >
-        <h2 className="font-700 text-px32 leading-px36 text-center">Insufficient bid amount 🤏</h2>
+        <h2 className="font-londrina text-px42 -mt-3 -mb-4">
+          Insufficient bid <span className="hidden sm:inline">amount</span>{' '}
+          <span className="hidden xs:inline">🤏</span>
+        </h2>
         <div className="mt-8 flex flex-col gap-3">
           <p className="font-500 text-px20 leading-px30 text-gray-4 text-center">
             Please place a bid higher than or equal to the minimum bid amount of{' '}

@@ -154,7 +154,11 @@ export default function LeaderboardListTile(props: {
           </div>
 
           {isUpdateDelegateActionShown && (
-            <Button className="flex lg:hidden items-center justify-center text-secondary-blue text-px18 font-700 border-2 border-secondary-blue px-2 h-10 rounded-px10">
+            <Button
+              loading={isClaiming}
+              onClick={() => handleClaimDelegate(walletAddress)}
+              className="flex lg:hidden items-center justify-center text-secondary-blue text-px18 font-700 border-2 border-secondary-blue px-2 h-10 rounded-px10"
+            >
               <IconUpdateDelegate />
               <span className="ml-2">Update delegate</span>
             </Button>

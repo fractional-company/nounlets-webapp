@@ -126,7 +126,7 @@ export default function WalletModal(): JSX.Element {
       isShown={isConnectModalOpen}
       onClose={() => setConnectModalOpen(false)}
     >
-      <h2 className="font-700 text-px32 leading-px36 text-center">Connect your wallet</h2>
+      <h2 className="font-londrina text-px42 -mt-3 -mb-4">Connect your wallet</h2>
       <div className="mt-8 flex flex-col gap-6">
         <div className="flex items-center p-5 rounded-px16 bg-gray-5 gap-4">
           <SimpleCheckbox isChecked={areConditionsAccepted} onChange={setAreConditionsAccepted} />
@@ -167,8 +167,9 @@ export default function WalletModal(): JSX.Element {
         <SimpleModalWrapper
           isShown={isSuccessModalOpen}
           onClose={() => setIsSuccessModalOpen(false)}
+          className="md:min-w-[400px] !max-w-[400px]"
         >
-          <h2 className="font-700 text-px32 leading-px36 text-center">Data cleared!</h2>
+          <h2 className="font-londrina text-px42 -mt-3 -mb-4">Data cleared!</h2>
           <div className="mt-8 flex flex-col gap-6">
             <Button
               className="basic"
