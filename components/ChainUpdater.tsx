@@ -33,6 +33,7 @@ export default function ChainUpdater() {
 
   // url nid listener
   const { nid, auctionInfo } = useDisplayedNounlet()
+  const { isOutOfSync } = useLeaderboard()
 
   const vaultMetadata = {
     isLive,
@@ -43,6 +44,10 @@ export default function ChainUpdater() {
     backendLatestNounletTokenId,
     latestNounletTokenId,
     currentDelegate
+  }
+
+  const leaderboard = {
+    isOutOfSync
   }
 
   return (
@@ -57,7 +62,7 @@ export default function ChainUpdater() {
           </div>
           {showDebugInfo && (
             <div className="overflow-hidden p-1 pt-8 text-px14 bg-secondary-red/25">
-              <pre>{JSON.stringify({ nid, vaultMetadata, auctionInfo }, null, 4)}</pre>
+              <pre>{JSON.stringify({ nid, vaultMetadata, auctionInfo, leaderboard }, null, 4)}</pre>
             </div>
           )}
         </>

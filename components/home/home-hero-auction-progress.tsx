@@ -5,11 +5,11 @@ import IconQuestionCircle from 'components/icons/icon-question-circle'
 import { formatEther, parseEther } from 'ethers/lib/utils'
 import useDisplayedNounlet from 'hooks/useDisplayedNounlet'
 
-import { useEthers } from '@usedapp/core'
+import { Mainnet, Rinkeby, useEthers } from '@usedapp/core'
 import IconLinkOffsite from 'components/icons/icon-link-offsite'
 import SimpleAddress from 'components/simple-address'
 import OnMounted from 'components/utils/on-mounted'
-import { NEXT_PUBLIC_BID_DECIMALS } from 'config'
+import { CHAIN_ID, NEXT_PUBLIC_BID_DECIMALS } from 'config'
 import { BigNumber, ethers, FixedNumber } from 'ethers'
 import useSdk from 'hooks/useSdk'
 import { calculateNextBid } from 'lib/utils/nextBidCalculator'
@@ -73,6 +73,12 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
       const ethValue = FixedNumber.from(formatEther(bid.amount.toString()))
         .round(NEXT_PUBLIC_BID_DECIMALS)
         .toString()
+
+      const explorerLink =
+        CHAIN_ID === 1
+          ? Mainnet.getExplorerTransactionLink(bid.id)
+          : Rinkeby.getExplorerTransactionLink(bid.id)
+
       return (
         <div key={bid.id.toString()} className="flex items-center flex-1 py-3 overflow-hidden">
           <SimpleAddress
@@ -82,7 +88,7 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
           />
           <IconEth className="flex-shrink-0 h-[12px]" />
           <p className="ml-1 text-px18 leading-px28 font-700">{ethValue}</p>
-          <a href={''} target="_blank" rel="noreferrer">
+          <a href={explorerLink} target="_blank" rel="noreferrer">
             <IconLinkOffsite className="ml-3 flex-shrink-0 h-[12px]" />
           </a>
         </div>

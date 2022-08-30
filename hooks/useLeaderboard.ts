@@ -41,11 +41,11 @@ export default function useLeaderboard() {
       refreshInterval: (latestData) => {
         if (latestData == null) return 15000
         if (latestData._meta.block.number < leaderboardBlockNumber) {
-          console.log(
-            '🐌 Leaderboard is outdated',
-            latestData._meta.block.number,
-            leaderboardBlockNumber
-          )
+          // console.log(
+          //   '🐌 Leaderboard is outdated',
+          //   latestData._meta.block.number,
+          //   leaderboardBlockNumber
+          // )
           return 15000
         }
 
