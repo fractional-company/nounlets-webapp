@@ -10,8 +10,17 @@ import useSdk from 'hooks/useSdk'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useVaultStore } from 'store/vaultStore'
+import SEO from "../components/seo";
 
-const Settings: NextPage<{}, {}> = () => {
+export const getServerSideProps = (context: any) => {
+  return {
+    props: {
+      url: context?.req?.headers?.host,
+    },
+  };
+};
+
+const Settings: NextPage<{url: string}> = ({url}) => {
   const router = useRouter()
   const { account, library } = useEthers()
   const sdk = useSdk()
@@ -85,11 +94,11 @@ const Settings: NextPage<{}, {}> = () => {
     mintProof = protoform.getProof(merkleTree, 0);
 
     // optimisticBid
-    batchBurnProof = protoform.getProof(merkleTree, 1); 
-    withdrawERC721Proof = protoform.getProof(merkleTree, 2); 
+    batchBurnProof = protoform.getProof(merkleTree, 1);
+    withdrawERC721Proof = protoform.getProof(merkleTree, 2);
 
     // nounletGovernance
-    castVoteProof = protoform.getProof(merkleTree, 3);    
+    castVoteProof = protoform.getProof(merkleTree, 3);
     castVoteWithReasonProof = protoform.getProof(merkleTree, 4);
     cancelProof = protoform.getProof(merkleTree, 5);
     proposeProof = protoform.getProof(merkleTree, 6);
@@ -123,6 +132,13 @@ const Settings: NextPage<{}, {}> = () => {
 
   return (
     <div className="p-4 flex flex-col gap-3 text-px12">
+      <SEO
+          url={`${url}/post`}
+          openGraphType="website"
+          title="Settings"
+          description="The only thing we learn from history, it has been said, 'is that men never learn from history'..."
+          image={`${url}/img/loading-skull.gif`}
+      />
       <h1 className="font-600">Settings</h1>
 
       <div className="px-4">

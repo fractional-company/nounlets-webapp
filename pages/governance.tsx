@@ -18,12 +18,20 @@ import Link from 'next/link'
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
 import { useAppStore } from 'store/application'
 import { useVaultStore } from 'store/vaultStore'
+import SEO from "../components/seo";
 
-const Governance: NextPage = () => {
+const Governance: NextPage<{ url: string }> = ({url}) => {
   const { isLive, latestNounletTokenId } = useVaultStore()
 
   return (
     <div className="page-governance lg:container mx-auto w-screen">
+      <SEO
+          url={`${url}/governance`}
+          openGraphType="website"
+          title="Governance"
+          description="Leaderboard and Voting for a Noun delegate"
+          image={`${url}/img/loading-skull.gif`}
+      />
       <div className="px-4 md:px-12 lg:px-4 mt-12 lg:mt-16">
         <h4 className="font-londrina text-px24 leading-px36 text-gray-4">Governance</h4>
         <h1 className="font-londrina text-[56px] leading-[68px] mt-3">Vote for a delegate</h1>
@@ -56,6 +64,15 @@ const Governance: NextPage = () => {
     </div>
   )
 }
+
+
+export const getServerSideProps = (context: any) => {
+  return {
+    props: {
+      url: context?.req?.headers?.host,
+    },
+  };
+};
 
 export default Governance
 
