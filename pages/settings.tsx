@@ -116,7 +116,7 @@ const Settings: NextPage<{url: string}> = ({url}) => {
       [],
       mintProof,
       sdk.NounsDescriptorV2.address,
-      1
+      9
     )
 
     return tx

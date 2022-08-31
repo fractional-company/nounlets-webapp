@@ -182,7 +182,7 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
               onClick={() => handleSettleAuction()}
               disabled={account == null}
             >
-              Settle & start next auction
+              Settle{'' + nid !== '100' ? ' & start next auction' : ''}
             </Button>
           </>
         )}

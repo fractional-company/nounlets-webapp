@@ -66,7 +66,7 @@ const SEO = (props: SocialTagsProps) => {
     const { title, description, image } = props;
     return (
         <Head>
-            <title>{title} | Nounlets</title>
+            <title>{title + ' | Nounlets'}</title>
             <meta name="description" content={description} />
             <meta itemProp="name" content={title} />
             <meta itemProp="description" content={description} />
