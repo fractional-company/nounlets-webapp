@@ -142,6 +142,11 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
     console.log('finished timer!')
   }, [debouncedMutateAuctionInfo])
 
+  // Currently unused
+  const handleTimerTick = useCallback(() => {
+    debouncedMutateAuctionInfo()
+  }, [debouncedMutateAuctionInfo])
+
   const handleBidInputValue = (event: ChangeEvent<HTMLInputElement>) => {
     const onlyNumbers = new RegExp(`^\\d+\\.?\\d{0,${NEXT_PUBLIC_BID_DECIMALS}}$`)
     try {
@@ -197,6 +202,7 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
               showEndTime={showEndTime}
               auctionEnd={auctionEndTime}
               onTimerFinished={handleTimerFinished}
+              onTimerTick={handleTimerTick}
             />
           </div>
         </div>
