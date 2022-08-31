@@ -4,9 +4,11 @@ import { getNounletAuctionData, getNounletAuctionDataBC } from 'lib/graphql/quer
 import { useCallback, useMemo } from 'react'
 import { useVaultStore } from 'store/vaultStore'
 import useSWR, { unstable_serialize, useSWRConfig } from 'swr'
+import useLocalStorage from './useLocalStorage'
 import useSdk from './useSdk'
 
 export default function useNounletAuctionInfo(nounletId: string | null) {
+  const { setNounletAuctionsCache } = useLocalStorage()
   const sdk = useSdk()
   const { cache } = useSWRConfig()
   const { isLive, vaultAddress, nounletTokenAddress, latestNounletTokenId } = useVaultStore()
@@ -94,6 +96,17 @@ export default function useNounletAuctionInfo(nounletId: string | null) {
       return { auction: response, fetchedAt: Date.now() }
     },
     {
+      onSuccess(data, key, config) {
+        // console.log('auction success', key, data)
+        if (data != null && data.auction != null) {
+          if (
+            data.auction.settled === true &&
+            data.auction.settledTransactionHash !== ethers.constants.AddressZero
+          ) {
+            setNounletAuctionsCache(key, data)
+          }
+        }
+      },
       dedupingInterval: 2000,
       revalidateIfStale: !cachedDataAuctionSettled
     }
