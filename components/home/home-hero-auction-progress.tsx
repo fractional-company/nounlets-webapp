@@ -19,6 +19,8 @@ import { Auction } from '../../lib/wrappers/nounsAuction'
 import { useAppStore } from '../../store/application'
 import SimpleModalWrapper from '../SimpleModalWrapper'
 import { debounce } from 'lodash'
+import useToasts from 'hooks/useToasts'
+import { WrappedTransactionReceiptState } from 'lib/utils/tx-with-error-handling'
 
 type ComponentProps = {
   auction?: Auction
@@ -27,6 +29,7 @@ type ComponentProps = {
 export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Element {
   const { account } = useEthers()
   const sdk = useSdk()
+  const { toastSuccess, toastError } = useToasts()
 
   const { vaultAddress, nounletTokenAddress, minBidIncrease } = useVaultStore()
   const {
@@ -166,15 +169,21 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
       const bidAmount = parseEther(bidInputValue)
       if (bidAmount.gte(parseEther(formattedValues.minNextBid))) {
         console.log('Proceed with bid!', bidAmount)
-        const result = await bid(bidAmount)
-        await mutateAuctionInfo() // TODO maybe remove this
-        console.log('yas bid!', result)
-        setBidInputValue('')
+        const response = await bid(bidAmount)
+
+        if (
+          response.status === WrappedTransactionReceiptState.SUCCESS ||
+          response.status === WrappedTransactionReceiptState.SPEDUP
+        ) {
+          await mutateAuctionInfo() // TODO maybe remove this
+          toastSuccess('Bid accepted 🎉', 'woohooooo!')
+          setBidInputValue('')
+        }
       } else {
         setShowWrongBidModal(true)
       }
     } catch (error) {
-      console.error(error)
+      toastError('Bid failed', 'Please try again.')
     }
     setIsBidding(false)
   }

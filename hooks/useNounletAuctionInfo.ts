@@ -60,6 +60,16 @@ export default function useNounletAuctionInfo(nounletId: string | null) {
     )
   }, [cachedData])
 
+  const chachedActionTimeLeft = useMemo(() => {
+    if (cachedData == null) return 1
+    if (cachedData.auction == null) return 1
+
+    const now = Date.now() + 5000 // add 5 second buffer
+    const endTime = cachedData.auction.endTime * 1000
+    const timeLeft = endTime - now
+    return timeLeft
+  }, [cachedData])
+
   const cachedDataAuctionRefreshInterval = useMemo(() => {
     try {
       if (cachedData == null) return 0
@@ -70,10 +80,11 @@ export default function useNounletAuctionInfo(nounletId: string | null) {
         // console.log('⚱️ ⚱️ ⚱️ Ended AND settled. Stop retrying')
         return 0
       }
-      const now = Date.now() + 5000 // add 5 second buffer
-      const endTime = cachedData.auction.endTime * 1000
-      const timeLeft = endTime - now
-      const hasAuctionEnded = endTime <= now
+      // const now = Date.now() + 5000 // add 5 second buffer
+      // const endTime = cachedData.auction.endTime * 1000
+
+      const timeLeft = chachedActionTimeLeft
+      const hasAuctionEnded = chachedActionTimeLeft <= 0
 
       // Ended but not yet settled, try every minute
       if (hasAuctionEnded) {
@@ -100,7 +111,7 @@ export default function useNounletAuctionInfo(nounletId: string | null) {
 
     // Fallback
     return 60_000
-  }, [cachedData, cachedDataHasAuctionSettled])
+  }, [cachedData, cachedDataHasAuctionSettled, chachedActionTimeLeft])
 
   const canFetch = useMemo(() => {
     if (!isLive) return false
@@ -113,7 +124,8 @@ export default function useNounletAuctionInfo(nounletId: string | null) {
   const { data, mutate } = useSWR(
     canFetch && swrKey,
     async (key) => {
-      const isAuctionOld = +key.nounletId < +latestNounletTokenId
+      // const isAuctionOld = +key.nounletId < +latestNounletTokenId
+      const isAuctionOld = +key.nounletId < +latestNounletTokenId || chachedActionTimeLeft <= 0
       console.log('👩‍⚖️ Fetching auction', { isAuctionOld, key })
       let response: Awaited<ReturnType<typeof getNounletAuctionData>>
 
