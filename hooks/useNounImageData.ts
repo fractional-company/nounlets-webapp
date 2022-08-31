@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useVaultStore } from 'store/vaultStore'
 import useSWR, { useSWRConfig } from 'swr'
+import useLocalStorage from './useLocalStorage'
 import useSdk from './useSdk'
 
 interface NounImageData {
@@ -17,6 +18,7 @@ interface NounImageData {
 }
 
 export default function useNounImageData(nounId: string | null) {
+  const { setNounletImageCache } = useLocalStorage()
   const sdk = useSdk()
   const { isLive, vaultAddress, nounletTokenAddress } = useVaultStore()
 
@@ -68,6 +70,11 @@ export default function useNounImageData(nounId: string | null) {
       return null
     },
     {
+      onSuccess(data, key) {
+        if (data != null) {
+          setNounletImageCache(key, data)
+        }
+      },
       revalidateIfStale: false,
       revalidateOnFocus: false,
       revalidateOnReconnect: false

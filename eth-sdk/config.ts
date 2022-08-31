@@ -77,7 +77,6 @@ export default defineConfig({
         // NounsArt: '0x71e23e67fb0c732fb37d5fd802efef2bc8f4c165',
         // NounsSeeder: '0xf5a1400e325daae78e5fc48456528a17621efb28',
         NounsToken: '0x5f4b0a9264246c0c8d4baf1d108a42051f4cc564',
-        // MintHelper: '0xd56bb57449454ce300fd3daaa4bb2119a4ff6660',
         // NounsDAOLogicV1: '0x7c7c56ccb5a57cd5e507b292c9fd46a6a52afb15',
         // NounsDAOExecutor: '0x4729eafff14b0cb7203248c7fa7a9e75c7065bb2',
         // NounsDAOProxy: '0x2a7983d3fe27e91b778428640956fbb8e87158ff',

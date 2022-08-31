@@ -34,7 +34,6 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
     const endedOn = dayjs((endedAuctionInfo?.endedOn ?? 0) * 1000).format('h:mmA, MMMM D, YYYY')
     const wonByAddress = endedAuctionInfo?.wonByAddress || ethers.constants.AddressZero
 
-    console.log({ endedAuctionInfo })
     return {
       isLoading,
       isSettled: !!endedAuctionInfo?.isSettled,
