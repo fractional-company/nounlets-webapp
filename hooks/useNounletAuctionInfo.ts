@@ -67,7 +67,7 @@ export default function useNounletAuctionInfo(nounletId: string | null) {
 
       // No need to refresh since its DONE
       if (cachedDataHasAuctionSettled) {
-        console.log('⚱️ ⚱️ ⚱️ Ended AND settled. Stop retrying')
+        // console.log('⚱️ ⚱️ ⚱️ Ended AND settled. Stop retrying')
         return 0
       }
       const now = Date.now() + 5000 // add 5 second buffer
@@ -77,8 +77,8 @@ export default function useNounletAuctionInfo(nounletId: string | null) {
 
       // Ended but not yet settled, try every minute
       if (hasAuctionEnded) {
-        console.log('⚱️ ⚱️ ⚱️ Ended but not settled 1 minute retry')
-        return 10_000
+        // console.log('⚱️ ⚱️ ⚱️ Ended but not settled 1 minute retry')
+        return 60_000
       }
       // More than an hour left
       if (timeLeft >= 3600_000) {
@@ -163,7 +163,7 @@ export default function useNounletAuctionInfo(nounletId: string | null) {
           }
         }
       },
-      dedupingInterval: 2000,
+      dedupingInterval: 30000,
       refreshInterval: cachedDataAuctionRefreshInterval,
       revalidateIfStale: !cachedDataHasAuctionSettled
     }
