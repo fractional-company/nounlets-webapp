@@ -24,7 +24,7 @@ dayjs.extend(relativeTime)
 
 type SupportedChains = ChainId.Rinkeby | ChainId.Mainnet
 
-export const CHAIN_ID: SupportedChains = parseInt(process.env.REACT_APP_CHAIN_ID ?? '4')
+export const CHAIN_ID: SupportedChains = parseInt(process.env.NEXT_PUBLIC_CHAIN_ID ?? '1')
 const infuraId = process.env.NEXT_PUBLIC_INFURA_ID
 
 const useDappConfig: Config = {

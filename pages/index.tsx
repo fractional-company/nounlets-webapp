@@ -30,8 +30,8 @@ const Home: NextPage<{url: string}> = ({url}) => {
         <SEO
             url={`${url}`}
             openGraphType="website"
-            title="Home"
-            description="Bid for and win fractions of a Noun"
+            title="Nounlets"
+            description="Buy Nounlets and collectively own a Noun"
             image={`${url}/img/loading-skull.gif`}
         />
       <SimpleModalWrapper

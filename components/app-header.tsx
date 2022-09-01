@@ -116,49 +116,51 @@ export default function AppHeader(): JSX.Element {
         <VoteForDelegateModal />
         <div className="flex items-center h-full space-x-4 min-h-[88px]">
           <Link href="/">
-            <a className="relative h-[88px] overflow-visible pt-2">
-              <IconNounletsLogo className="flex-shrink-0 w-auto h-16" />
+            <a className="relative overflow-visible pt-2 mb-4">
+              <IconNounletsLogo className="flex-shrink-0 w-20 h-20 md:w-[108px] md:h-[108px]" />
             </a>
           </Link>
-          <div className="flex-1">
-            {isLive && (
-              <div className="hidden md:inline-flex items-center px-4 h-12 rounded-px10 bg-white space-x-2">
-                <span className="hidden lg:inline">Current delegate</span>
-                {currentDelegateRC}
+          <div className="flex flex-1 -mt-6">
+            <div className="flex-1">
+              {isLive && (
+                  <div className="hidden md:inline-flex items-center px-4 h-12 rounded-px10 bg-white space-x-2">
+                    <span className="hidden lg:inline">Current delegate</span>
+                    {currentDelegateRC}
 
-                {isCurrentDelegateOutOfSync && (
-                  <SimplePopover>
-                    <h1 className="font-700 text-px18 text-gray-4">
-                      <span className="text-secondary-orange">⚠</span>
-                    </h1>
-                    <div>Delegate is out of sync. You can update it on the vote page.</div>
-                  </SimplePopover>
-                )}
-              </div>
-            )}
-          </div>
-          <div className="hidden lg:flex items-center space-x-4">
-            <Link href="/governance">
-              <Button className="basic space-x-2">
-                <Image src={IconPeople} alt="votes" height={14} />
-                <span>Vote</span>
+                    {isCurrentDelegateOutOfSync && (
+                        <SimplePopover>
+                          <h1 className="font-700 text-px18 text-gray-4">
+                            <span className="text-secondary-orange">⚠</span>
+                          </h1>
+                          <div>Delegate is out of sync. You can update it on the vote page.</div>
+                        </SimplePopover>
+                    )}
+                  </div>
+              )}
+            </div>
+            <div className="hidden lg:flex items-center space-x-4">
+              <Link href="/governance">
+                <Button className="basic space-x-2">
+                  <Image src={IconPeople} alt="votes" height={14} />
+                  <span>Vote</span>
+                </Button>
+              </Link>
+              <Button className="basic space-x-2" onClick={handleShowNotification}>
+                <IconDiscord className="h-[11px] w-auto" />
+                <span>Discord</span>
               </Button>
-            </Link>
-            <Button className="basic space-x-2" onClick={handleShowNotification}>
-              <IconDiscord className="h-[11px] w-auto" />
-              <span>Discord</span>
-            </Button>
-            <LinksDropdownButton />
-            {connectButton}
-          </div>
-          <div className="flex lg:hidden space-x-2">
-            {connectButton}
-            <Button
-              className="basic space-x-2"
-              onClick={() => setIsModalMenuOpen(!isMobileMenuOpen)}
-            >
-              <IconCaretDropdown className="h-[7px] w-auto" />
-            </Button>
+              <LinksDropdownButton />
+              {connectButton}
+            </div>
+            <div className="flex lg:hidden space-x-2">
+              {connectButton}
+              <Button
+                  className="basic space-x-2"
+                  onClick={() => setIsModalMenuOpen(!isMobileMenuOpen)}
+              >
+                <IconCaretDropdown className="h-[7px] w-auto" />
+              </Button>
+            </div>
           </div>
         </div>
         {isLive && (
