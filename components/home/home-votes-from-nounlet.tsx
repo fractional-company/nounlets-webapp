@@ -44,6 +44,7 @@ export default function HomeVotesFromNounlet(): JSX.Element {
 
     const votes = data.nounlet.delegateVotes.map((vote) => {
       const formattedTimestamp = dayjs.unix(+vote.timestamp).format('MMM D, YYYY, h:mmA')
+      const address = vote.delegate.id.split('-')[1]
 
       return (
         <div className="votes-list-tile" key={vote.id}>
@@ -53,7 +54,7 @@ export default function HomeVotesFromNounlet(): JSX.Element {
                 <IconTime className="h-6 w-6 flex-shrink-0" />
                 <p className="text-px18 font-500">Voted for delegate</p>
                 <div className="text-px18 font-700 text-secondary-blue inline-flex">
-                  <SimpleAddress address={vote.delegate.id} />
+                  <SimpleAddress address={address} />
                 </div>
               </div>
 

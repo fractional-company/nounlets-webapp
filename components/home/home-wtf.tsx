@@ -52,8 +52,7 @@ export default function HomeWTF(): JSX.Element {
                   been sold.
                 </li>
                 <li>
-                  97% of auction proceeds are trustlessly sent to the original Noun owner. 1.5% of
-                  auction proceeds are sent to Nouns DAO and another 1.5% are sent to Tessera.
+                  98% of auction proceeds are trustlessly sent to the original Noun owner. 2% of auction proceeds are sent to Tessera.
                 </li>
                 <li>Settlement of one auction kicks off the next.</li>
                 <li>The elected delegate of the Noun is considered a member of NounsDAO.</li>
@@ -75,9 +74,7 @@ export default function HomeWTF(): JSX.Element {
                 <p>
                   The Nounlets Auction Contract will act as a self-sufficient Noun generation and
                   distribution mechanism, auctioning one Nounlet every 4 hours until all 100
-                  Nounlets are sold. 97% of auction proceeds are trustlessly sent to the original
-                  Noun owner (the curator). 1.5% of proceeds are sent to Nouns DAO and another 1.5%
-                  are sent to Tessera.
+                  Nounlets are sold. 98% of auction proceeds are trustlessly sent to the original Noun owner. 2% of auction proceeds are sent to Tessera.
                 </p>
                 <p>
                   Each time an auction is settled, the settlement transaction will cause a new
@@ -175,23 +172,6 @@ export default function HomeWTF(): JSX.Element {
                 <p>
                   Trait generation is not truly random. Traits can be predicted when minting a Noun
                   on the pending block.
-                </p>
-              </div>
-            </SimpleAccordion>
-            <SimpleAccordion
-              title="NounsDao Reward"
-              isOpen={openAccordionIndex === 6}
-              onOpen={() => setOpenAccordionIndex(6)}
-              onClose={() => setOpenAccordionIndex(-1)}
-            >
-              <div className="space-y-4">
-                <p>
-                  For being selfless stewards of cc0, Tessera and Nounlets have chosen to compensate
-                  the Nouns DAO with 1.5% of all auction proceeds and secondary sales.
-                </p>
-                <p>
-                  ETH proceeds are sent directly to the NounsDAO Treasury after each auction, and
-                  auctions continue on schedule with the next available Nounlet.
                 </p>
               </div>
             </SimpleAccordion>

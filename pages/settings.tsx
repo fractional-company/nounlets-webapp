@@ -21,16 +21,11 @@ export const getServerSideProps = (context: any) => {
 };
 
 const Settings: NextPage<{url: string}> = ({url}) => {
-  const router = useRouter()
   const { account, library } = useEthers()
   const sdk = useSdk()
   const {
     isLive,
     isLoading,
-    setNounletTokenAddress,
-    setBackendLatestNounletTokenId,
-    setLatestNounletTokenId,
-    setIsLoading,
     vaultAddress,
     nounletTokenAddress,
     latestNounletTokenId
@@ -116,7 +111,7 @@ const Settings: NextPage<{url: string}> = ({url}) => {
       [],
       mintProof,
       sdk.NounsDescriptorV2.address,
-      9
+      12
     )
 
     return tx
