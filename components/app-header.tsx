@@ -120,7 +120,7 @@ export default function AppHeader(): JSX.Element {
               <IconNounletsLogo className="flex-shrink-0 w-20 h-20 md:w-[108px] md:h-[108px]" />
             </a>
           </Link>
-          <div className="flex flex-1 -mt-6">
+          <div className="flex flex-1 -mt-4 md:-mt-8">
             <div className="flex-1">
               {isLive && (
                   <div className="hidden md:inline-flex items-center px-4 h-12 rounded-px10 bg-white space-x-2">
@@ -145,9 +145,11 @@ export default function AppHeader(): JSX.Element {
                   <span>Vote</span>
                 </Button>
               </Link>
-              <Button className="basic space-x-2" onClick={handleShowNotification}>
-                <IconDiscord className="h-[11px] w-auto" />
-                <span>Discord</span>
+              <Button className="basic" onClick={handleShowNotification}>
+                <a href="https://discord.com/invite/8a34wmRjWB" target="_blank" className="flex space-x-2 items-center" rel="noreferrer">
+                  <IconDiscord className="h-[11px] w-auto" />
+                  <span>Discord</span>
+                </a>
               </Button>
               <LinksDropdownButton />
               {connectButton}
@@ -194,28 +196,38 @@ export default function AppHeader(): JSX.Element {
                 </Button>
               </Link>
               <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
-                <IconDiscord className="h-[13px] w-auto" />
-                <span>Discord</span>
+                <a href="https://discord.com/invite/8a34wmRjWB" target="_blank" className="space-x-2 w-full flex justify-center" rel="noreferrer">
+                  <IconDiscord className="h-[13px] w-auto" />
+                  <span>Discord</span>
+                </a>
               </Button>
               <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
-                <IconMedium className="h-[16px] w-auto" />
-                <span>What is it... (blog)</span>
+                <a href="https://medium.com/@deeze/b76bbb4e42cc" target="_blank" rel="noreferrer" className="space-x-2 w-full flex justify-center">
+                  <IconMedium className="h-[16px] w-auto" />
+                  <span>Nounlets Explained (FAQ)</span>
+                </a>
               </Button>
               <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
-                <IconHeartHollow className="h-[16px] w-auto" />
-                <span>Nouns.wtf</span>
+                <a href="https://nouns.wtf" target="_blank" rel="noreferrer" className="space-x-2 w-full flex justify-center">
+                  <IconHeartHollow className="h-[16px] w-auto" />
+                  <span>Nouns.wtf</span>
+                </a>
               </Button>
               <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
-                <IconTwitter className="h-[16px] w-auto" />
-                <span>Twitter</span>
+                <a href="https://twitter.com/tessera" target="_blank" rel="noreferrer" className="space-x-2 w-full flex justify-center">
+                  <IconTwitter className="h-[16px] w-auto" />
+                  <span>Twitter</span>
+                </a>
               </Button>
               <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
                 <IconEtherscan className="h-[16px] w-auto" />
                 <span>Etherscan</span>
               </Button>
               <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
-                <IconFractionalLogo className="h-[16px] w-auto text-secondary-green" />
-                <span>Fractional.art</span>
+                <a href="https://tessera.co/" target="_blank" rel="noreferrer" className="space-x-2 w-full flex justify-center">
+                  <IconFractionalLogo className="h-[16px] w-auto text-secondary-green" />
+                  <span>Tessera</span>
+                </a>
               </Button>
             </div>
           </div>

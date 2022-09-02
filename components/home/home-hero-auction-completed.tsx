@@ -109,21 +109,20 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
         </div>
         <div className="sm:border-r-2 border-black/20"></div>
         <div className="flex flex-col space-y-3 cursor-pointer">
-          <p className="text-px18 leading-px22 font-500 text-gray-4">Nounlet held by</p>
+          <p className="text-px18 leading-px22 font-500 text-gray-4">{formattedData.isSettled ? 'Nounlet held by' : 'Winner'}</p>
           <div className="flex items-center">
             {isLoadingHeldByAddress ? (
               <IconSpinner className="animate-spin text-gray-3" />
             ) : (
               <SimpleAddress
                 avatarSize={32}
-                address={formattedData.heldByAddress}
+                address={formattedData.isSettled ? formattedData.heldByAddress : formattedData.wonByAddress}
                 className="text-px32 leading-[38px] font-700 gap-2 flex-1"
               />
             )}
           </div>
         </div>
       </div>
-
       <div className="flex items-center !mt-6">
         <IconLock className="mb-1" />
         <p className="text-px18 font-500 ml-2">

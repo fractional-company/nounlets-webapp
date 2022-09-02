@@ -132,17 +132,17 @@ export default function WalletModal(): JSX.Element {
           <SimpleCheckbox isChecked={areConditionsAccepted} onChange={setAreConditionsAccepted} />
           <p className="font-500 font-px12 leading-px20 text-white">
             I have read and accept the site&apos;s{' '}
-            <Link href="/">
-              <a className="text-primary hover:text-white transition-colors">Disclaimer</a>
-            </Link>
+            <a href="https://fractional.art/disclaimer" target="_blank" rel="noreferrer" className="text-primary hover:text-white transition-colors">
+              Disclaimer
+            </a>
             {', '}
-            <Link href="/">
-              <a className="text-primary hover:text-white transition-colors">Privacy Policy</a>
-            </Link>
+            <a href="https://tessera.co/privacy" target="_blank" rel="noreferrer" className="text-primary hover:text-white transition-colors">
+              Privacy Policy
+            </a>
             {', and '}
-            <Link href="/">
-              <a className="text-primary hover:text-white transition-colors">Terms of Use</a>
-            </Link>
+            <a href="https://tessera.co/terms" target="_blank" rel="noreferrer" className="text-primary hover:text-white transition-colors">
+              Terms of Use
+            </a>
             .
           </p>
         </div>

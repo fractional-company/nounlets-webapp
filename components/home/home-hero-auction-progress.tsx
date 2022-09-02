@@ -221,7 +221,7 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
         <IconQuestionCircle className="flex-shrink-0" />
         <p>
           You are bidding for 1% ownership of the Noun.{' '}
-          <span className="font-700 text-secondary-blue">Read more</span>
+          <a href="https://medium.com/@deeze/b76bbb4e42cc" target="_blank" className="font-700 text-secondary-blue">Read more</a>
         </p>
       </div>
 

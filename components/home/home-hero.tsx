@@ -52,13 +52,13 @@ export default function HomeHero(): JSX.Element {
     <div className="home-hero" style={{ background: currentBackground }}>
       <div className="lg:container mx-auto px-4">
         <div className="lg:grid lg:grid-cols-2">
-          <div className="flex flex-col justify-end lg:pr-4 lg:min-h-[620px]">
+          <div className="flex flex-col justify-end lg:pr-4 lg:min-h-[544px]">
             <div className="w-full aspect-square max-w-[512px] mx-auto">
               <NounletImage id={nid} />
             </div>
           </div>
 
-          <div className="px-4 py-12 md:p-12 lg:pl-6 lg:pr-10 -mx-4 lg:-mx-0 bg-white lg:bg-transparent space-y-3">
+          <div className="px-4 py-12 lg:pb-0 lg:pt-4 md:p-12 lg:pl-6 lg:pr-10 -mx-4 lg:-mx-0 bg-white lg:bg-transparent space-y-3">
             {/* <pre>{JSON.stringify(auctionInfo, null, 4)}</pre> */}
             <div className="navigation flex items-center space-x-1">
               <Button
