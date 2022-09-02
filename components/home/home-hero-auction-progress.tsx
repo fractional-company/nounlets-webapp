@@ -2,25 +2,25 @@ import Button from 'components/buttons/button'
 import CountdownTimer from 'components/countdown-timer'
 import IconEth from 'components/icons/icon-eth'
 import IconQuestionCircle from 'components/icons/icon-question-circle'
-import { formatEther, parseEther } from 'ethers/lib/utils'
+import {formatEther, parseEther} from 'ethers/lib/utils'
 import useDisplayedNounlet from 'hooks/useDisplayedNounlet'
 
-import { Mainnet, Rinkeby, useEthers } from '@usedapp/core'
+import {Mainnet, Rinkeby, useEthers} from '@usedapp/core'
 import IconLinkOffsite from 'components/icons/icon-link-offsite'
 import SimpleAddress from 'components/simple-address'
 import OnMounted from 'components/utils/on-mounted'
-import { CHAIN_ID, NEXT_PUBLIC_BID_DECIMALS } from 'config'
-import { BigNumber, ethers, FixedNumber } from 'ethers'
+import {CHAIN_ID, NEXT_PUBLIC_BID_DECIMALS} from 'config'
+import {BigNumber, ethers, FixedNumber} from 'ethers'
 import useSdk from 'hooks/useSdk'
-import { calculateNextBid } from 'lib/utils/nextBidCalculator'
-import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useVaultStore } from 'store/vaultStore'
-import { Auction } from '../../lib/wrappers/nounsAuction'
-import { useAppStore } from '../../store/application'
+import {calculateNextBid} from 'lib/utils/nextBidCalculator'
+import {ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {useVaultStore} from 'store/vaultStore'
+import {Auction} from '../../lib/wrappers/nounsAuction'
+import {useAppStore} from '../../store/application'
 import SimpleModalWrapper from '../SimpleModalWrapper'
-import { debounce } from 'lodash'
+import {debounce} from 'lodash'
 import useToasts from 'hooks/useToasts'
-import { WrappedTransactionReceiptState } from 'lib/utils/tx-with-error-handling'
+import {WrappedTransactionReceiptState} from 'lib/utils/tx-with-error-handling'
 
 type ComponentProps = {
   auction?: Auction
@@ -59,7 +59,7 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
 
   const formattedValues = useMemo(() => {
     return {
-      currrentBid: currentBidFX.round(NEXT_PUBLIC_BID_DECIMALS).toString(),
+      currentBid: currentBidFX.round(NEXT_PUBLIC_BID_DECIMALS).toString(),
       minNextBid: minNextBidFX.round(NEXT_PUBLIC_BID_DECIMALS).toString()
     }
   }, [currentBidFX, minNextBidFX])
@@ -127,7 +127,7 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
       bidder: string,
       amount: BigNumber,
       extendedTime: BigNumber,
-      event: any // IDK why this isnt BidEvent
+      event: any // IDK why this isn't BidEvent
     ) => {
       console.log('🖐 bid event!', vault, token, id, bidder, amount, extendedTime, event)
       debouncedMutateAuctionInfo()
@@ -168,7 +168,6 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
     try {
       const bidAmount = parseEther(bidInputValue)
       if (bidAmount.gte(parseEther(formattedValues.minNextBid))) {
-        console.log('Proceed with bid!', bidAmount)
         const response = await bid(bidAmount)
 
         if (
@@ -178,6 +177,8 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
           await mutateAuctionInfo() // TODO maybe remove this
           toastSuccess('Bid accepted 🎉', 'woohooooo!')
           setBidInputValue('')
+        } else if (response.status === WrappedTransactionReceiptState.ERROR) {
+          throw response.data
         }
       } else {
         setShowWrongBidModal(true)
@@ -195,7 +196,7 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
           <p className="text-px18 leading-px22 font-500 text-gray-4">Current bid</p>
           <div className="flex items-center space-x-3">
             <IconEth className="flex-shrink-0" />
-            <p className="text-px32 leading-[38px] font-700">{formattedValues.currrentBid}</p>
+            <p className="text-px32 leading-[38px] font-700">{formattedValues.currentBid}</p>
           </div>
         </div>
         <div className="sm:border-r-2 border-black/20"></div>
@@ -221,7 +222,7 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
         <IconQuestionCircle className="flex-shrink-0" />
         <p>
           You are bidding for 1% ownership of the Noun.{' '}
-          <a href="https://medium.com/@deeze/b76bbb4e42cc" target="_blank" className="font-700 text-secondary-blue">Read more</a>
+          <a href="https://medium.com/@deeze/b76bbb4e42cc" target="_blank" className="font-700 text-secondary-blue" rel="noreferrer">Read more</a>
         </p>
       </div>
 

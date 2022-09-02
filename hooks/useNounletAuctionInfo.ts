@@ -52,7 +52,7 @@ export default function useNounletAuctionInfo(nounletId: string | null) {
     if (cachedData == null) return false
     // Is settled is manually set if the auction has settled on the BC but BE hasn't
     // caught up yet. This is so we can show the "settled" state on the home-hero.
-    // But until the BE has cought up, the transaction hash is ZeroAddress
+    // But until the BE has caught up, the transaction hash is ZeroAddress
     // so we show a "indexing..." button
     return (
       !!cachedData.auction?.settled &&
