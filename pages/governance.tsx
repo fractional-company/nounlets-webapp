@@ -230,7 +230,7 @@ function GovernanceLeaderboard() {
     return leaderboardData.list.filter((acc) => {
       return acc.walletAddress.toLowerCase().includes(filterByText) || walletsWithEnsName.find(wal => wal.ensName.includes(filterByText) && wal.address === acc.walletAddress)
     })
-  }, [leaderboardData, filterByText, ensNames])
+  }, [ensNames, filterByText, leaderboardData.list, leaderboardList])
 
   const handleInput = (event: ChangeEvent<HTMLInputElement>) => {
     setSearchinputValue(event.target.value.trim())
