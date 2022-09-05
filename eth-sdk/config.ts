@@ -2,7 +2,9 @@ import { defineConfig } from '@dethcrypto/eth-sdk'
 
 export default defineConfig({
   contracts: {
-    mainnet: {},
+    mainnet: {
+      ReverseRecords: '0x3671aE578E63FdF66ad4F3E12CC0c0d71Ac7510C'
+    },
     // rinkeby: {
     //     nounletAuction: '0x6d7B5aD50c21c72844Da477f7D08c04829Bf1852',
     //     nounletToken: '0x3cd078856c24B1A8B6B9D63fDfC9b2983038EC8e',
@@ -88,7 +90,8 @@ export default defineConfig({
         OptimisticBid: '0x1c70df511de53a2b55b0bd1a94cf31394cbfaed1',
         // NounletProposal: '0x7f36ec778f2daf9017483c7cea509ae174fbe892',
         NounletGovernance: '0x419ccce46c915c6df3c246bae260433b16211ce1',
-        NounletToken: '0xA5A3Bec0D125C88f2DD409d2f6a79209A49Df771'
+        NounletToken: '0xA5A3Bec0D125C88f2DD409d2f6a79209A49Df771',
+        ReverseRecords: '0x196eC7109e127A353B709a20da25052617295F6f'
       }
     }
   }

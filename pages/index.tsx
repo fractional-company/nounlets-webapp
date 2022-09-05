@@ -31,7 +31,7 @@ const Home: NextPage<{url: string}> = ({url}) => {
             url={`${url}`}
             openGraphType="website"
             title="Nounlets"
-            description="Buy Nounlets and collectively own a Noun"
+            description="Own a noun together with Nounlets"
             image={`${url}/img/loading-skull.gif`}
         />
       <SimpleModalWrapper

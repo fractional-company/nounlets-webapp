@@ -19,6 +19,7 @@ import { ChangeEvent, useCallback, useMemo, useState } from 'react'
 import { useAppStore } from 'store/application'
 import { useVaultStore } from 'store/vaultStore'
 import SEO from "../components/seo";
+import {useReverseRecords} from "../lib/utils/useReverseRecords";
 
 const Governance: NextPage<{ url: string }> = ({url}) => {
   const { isLive, latestNounletTokenId } = useVaultStore()
@@ -28,8 +29,8 @@ const Governance: NextPage<{ url: string }> = ({url}) => {
       <SEO
           url={`${url}/governance`}
           openGraphType="website"
-          title="Governance"
-          description="Leaderboard and Voting for a Noun delegate"
+          title="Nounlets Governance"
+          description="Vote for your delegate"
           image={`${url}/img/loading-skull.gif`}
       />
       <div className="px-4 md:px-12 lg:px-4 mt-12 lg:mt-16">
@@ -199,8 +200,11 @@ function GovernanceLeaderboard() {
   const [isVoteForDelegateModalShown, setIsVoteForDelegateModalShown] = useState(false)
   const [searchInputValue, setSearchinputValue] = useState('')
   const debouncedSearchInputValue = useDebounced(searchInputValue, 500)
+  const leaderboardList = useMemo(() => leaderboardData.list.map(l => l.walletAddress), [leaderboardData.list])
   const { address: ensAddress, isLoading: isLoadingENSName } =
     useResolveName(debouncedSearchInputValue)
+  const {ensNames, isLoading: isLoadingENSNames, error: ensNamesError} = useReverseRecords(leaderboardList)
+
 
   const filterByText = useMemo(() => {
     if (debouncedSearchInputValue.trim() === '') return debouncedSearchInputValue.trim()
@@ -216,6 +220,7 @@ function GovernanceLeaderboard() {
   }, [debouncedSearchInputValue, ensAddress])
 
   const filteredLeaderboardListData = useMemo(() => {
+    const walletsWithEnsName = (ensNames?.length ? ensNames.map((ensName, index) => ({address: leaderboardList[index], ensName})) : []).filter(wallet => wallet.ensName)
     if (filterByText === '') {
       return leaderboardData.list.filter((acc) => {
         return acc.isMe || acc.isDelegate || acc.percentage > 0.019
@@ -223,9 +228,9 @@ function GovernanceLeaderboard() {
     }
 
     return leaderboardData.list.filter((acc) => {
-      return acc.walletAddress.toLowerCase().includes(filterByText)
+      return acc.walletAddress.toLowerCase().includes(filterByText) || walletsWithEnsName.find(wal => wal.ensName.includes(filterByText) && wal.address === acc.walletAddress)
     })
-  }, [leaderboardData, filterByText])
+  }, [leaderboardData, filterByText, ensNames])
 
   const handleInput = (event: ChangeEvent<HTMLInputElement>) => {
     setSearchinputValue(event.target.value.trim())
