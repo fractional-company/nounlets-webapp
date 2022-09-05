@@ -169,7 +169,6 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
       const bidAmount = parseEther(bidInputValue)
       if (bidAmount.gte(parseEther(formattedValues.minNextBid))) {
         const response = await bid(bidAmount)
-
         if (
           response.status === WrappedTransactionReceiptState.SUCCESS ||
           response.status === WrappedTransactionReceiptState.SPEDUP
@@ -179,6 +178,8 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
           setBidInputValue('')
         } else if (response.status === WrappedTransactionReceiptState.ERROR) {
           throw response.data
+        } else if (response.status === WrappedTransactionReceiptState.CANCELLED) {
+          toastError('Transaction canceled', 'Please try again.')
         }
       } else {
         setShowWrongBidModal(true)

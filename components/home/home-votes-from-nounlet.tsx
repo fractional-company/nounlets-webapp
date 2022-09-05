@@ -13,7 +13,7 @@ import { buildEtherscanAddressLink } from '../../lib/utils/etherscan'
 import SimpleAddress from '../simple-address'
 
 export default function HomeVotesFromNounlet(): JSX.Element {
-  const { nid, nounletTokenAddress } = useDisplayedNounlet()
+  const { nid, nounletTokenAddress, auctionInfo, endedAuctionInfo } = useDisplayedNounlet()
   const [showAll, setShowAll] = useState(false)
 
   const voteShowLimit = 5
@@ -35,12 +35,17 @@ export default function HomeVotesFromNounlet(): JSX.Element {
         </div>
       )
 
-    if (data.nounlet.delegateVotes.length === 0)
-      return (
-        <p className="font-500 text-px20 leading-px28 text-gray-4">
-          This nounlet has not yet voted for a Delegate
-        </p>
-      )
+    // if (data.nounlet.delegateVotes.length === 0)
+    //   return (
+    //     <p className="font-500 text-px20 leading-px28 text-gray-4">
+    //       This nounlet has not yet voted for a Delegate
+    //     </p>
+    //   )
+
+    // const firstId = `${endedAuctionInfo?.heldByAddress}-${endedAuctionInfo?.wonByAddress}`
+    // const initialVote = {delegate: { id: firstId }, id: firstId, timestamp: endedAuctionInfo?.endedOn}
+    //
+    // const delegateVotesIncludingInitial = [initialVote, ...data.nounlet.delegateVotes]
 
     const votes = data.nounlet.delegateVotes.map((vote) => {
       const formattedTimestamp = dayjs.unix(+vote.timestamp).format('MMM D, YYYY, h:mmA')

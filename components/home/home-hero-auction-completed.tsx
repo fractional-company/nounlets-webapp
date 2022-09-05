@@ -30,6 +30,7 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
     const winningBid = FixedNumber.from(formatEther(endedAuctionInfo?.winningBid ?? 0))
       .round(NEXT_PUBLIC_BID_DECIMALS)
       .toString()
+    const hasBids = endedAuctionInfo?.winningBid !== '0'
     const heldByAddress = endedAuctionInfo?.heldByAddress || ethers.constants.AddressZero
     const endedOn = dayjs((endedAuctionInfo?.endedOn ?? 0) * 1000).format('h:mmA, MMMM D, YYYY')
     const wonByAddress = endedAuctionInfo?.wonByAddress || ethers.constants.AddressZero
@@ -42,6 +43,7 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
       winningBid,
       heldByAddress,
       endedOn,
+      hasBids,
       wonByAddress
     }
   }, [endedAuctionInfo])
@@ -104,19 +106,19 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
           <p className="text-px18 leading-px22 font-500 text-gray-4">Winning bid</p>
           <div className="flex items-center space-x-3">
             <IconEth className="flex-shrink-0" />
-            <p className="text-px32 leading-[38px] font-700">{formattedData.winningBid}</p>
+            <p className="text-px32 leading-[38px] font-700">{formattedData.hasBids ? formattedData.winningBid : 'n/a'}</p>
           </div>
         </div>
         <div className="sm:border-r-2 border-black/20"></div>
         <div className="flex flex-col space-y-3 cursor-pointer">
-          <p className="text-px18 leading-px22 font-500 text-gray-4">{formattedData.isSettled ? 'Nounlet held by' : 'Winner'}</p>
+          <p className="text-px18 leading-px22 font-500 text-gray-4">Nounlet held by</p>
           <div className="flex items-center">
             {isLoadingHeldByAddress ? (
               <IconSpinner className="animate-spin text-gray-3" />
             ) : (
               <SimpleAddress
                 avatarSize={32}
-                address={formattedData.isSettled ? formattedData.heldByAddress : formattedData.wonByAddress}
+                address={formattedData.heldByAddress}
                 className="text-px32 leading-[38px] font-700 gap-2 flex-1"
               />
             )}
@@ -132,7 +134,7 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
       <div className="flex items-center mt-3">
         <IconHeart />
         <div className="text-px18 font-500 ml-2">
-          Won by{' '}
+          {formattedData.hasBids ? 'Won by ' : 'No bids: Nounlet transferred to curator '}
           <SimpleAddress
             address={formattedData.wonByAddress}
             className="font-700 gap-2 flex-1 text-secondary-blue inline-flex"
