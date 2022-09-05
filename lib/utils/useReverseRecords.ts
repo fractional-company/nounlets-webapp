@@ -3,7 +3,7 @@ import useSdk from "../../hooks/useSdk";
 
 export function useReverseRecords(addresses: string[] | undefined) {
     const sdk = useSdk()
-    const [ensNames, setENSNames] = useState<string[] | null>()
+    const [ensNames, setENSNames] = useState<string[] | null>([])
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState<Error | null>(null)
 
@@ -11,7 +11,7 @@ export function useReverseRecords(addresses: string[] | undefined) {
         let mounted = true
 
         void (async () => {
-            if (!addresses || !sdk) return
+            if (!addresses || addresses.length === 0 || !sdk) return
             try {
                 setIsLoading(true)
                 const resolved = await sdk.ReverseRecords.getNames(addresses)
