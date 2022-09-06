@@ -113,9 +113,16 @@ function VaultUpdater() {
         // sdk.NounletGovernance.currentDelegate(vaultAddress)
       ])
 
+      const tmp = {
+        ...vaultInfo
+      }
+      if (+tmp.currentId.toString() >= 100) {
+        tmp.currentId = BigNumber.from(100)
+      }
+
       return {
         ...vaultMetadata,
-        ...vaultInfo
+        ...tmp
         // currentDelegate
       }
     },
