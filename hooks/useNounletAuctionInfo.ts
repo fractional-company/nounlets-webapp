@@ -10,7 +10,7 @@ import useSdk from './useSdk'
 export default function useNounletAuctionInfo(nounletId: string | null) {
   const { setNounletAuctionsCache } = useLocalStorage()
   const sdk = useSdk()
-  const { cache } = useSWRConfig()
+  const { cache, mutate: globalMutate } = useSWRConfig()
   const { isLive, vaultAddress, nounletTokenAddress, latestNounletTokenId } = useVaultStore()
 
   const nid = useMemo(() => {
@@ -156,8 +156,14 @@ export default function useNounletAuctionInfo(nounletId: string | null) {
       )
 
       if (isAuctionOld) {
-        console.log('👩‍⚖️👩‍⚖️ Data for unsynced auction should now be fixed')
+        console.log('👩‍⚖️👩‍⚖️ Data for unsynced auction should now be fixed. Refresh vault')
         response.settled = true
+        globalMutate(
+          unstable_serialize({
+            name: 'VaultMetadata',
+            vaultAddress: vaultAddress
+          })
+        )
       }
 
       return { auction: response, fetchedAt: Date.now() }

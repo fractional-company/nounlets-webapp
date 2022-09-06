@@ -152,7 +152,8 @@ function VaultUpdater() {
           // Retry after 15 seconds.
           setTimeout(() => mutate(), 15000)
         }
-      }
+      },
+      refreshInterval: 5 * 60000
     }
   )
 
