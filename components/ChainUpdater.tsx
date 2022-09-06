@@ -56,7 +56,7 @@ export default function ChainUpdater() {
       {NEXT_PUBLIC_SHOW_DEBUG && (
         <>
           <div
-            className="absolute cursor-pointer p-1"
+            className="absolute z-50 cursor-pointer p-1"
             onClick={() => setShowDebugInfo(!showDebugInfo)}
           >
             <IconBug className={showDebugInfo ? 'animate-spin' : ''} />

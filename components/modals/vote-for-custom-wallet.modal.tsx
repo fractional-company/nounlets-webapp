@@ -74,7 +74,7 @@ export default function VoteForCustomWalletModal(props: ComponentProps): JSX.Ele
           <input
             value={searchInputValue}
             onChange={(event) => setSearchinputValue(event.target.value.trim())}
-            className="leading-px48 rounded-px10 px-4 font-500 text-px20 outline-none w-full md:w-[400px] truncate"
+            className="leading-px48 rounded-px10 px-4 font-500 text-px20 outline-none w-full md:w-[380px] truncate"
             type="text"
             placeholder="eth wallet address or ENS"
           />
