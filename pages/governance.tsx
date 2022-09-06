@@ -18,20 +18,20 @@ import Link from 'next/link'
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
 import { useAppStore } from 'store/application'
 import { useVaultStore } from 'store/vaultStore'
-import SEO from "../components/seo";
-import {useReverseRecords} from "../lib/utils/useReverseRecords";
+import SEO from '../components/seo'
+import { useReverseRecords } from '../lib/utils/useReverseRecords'
 
-const Governance: NextPage<{ url: string }> = ({url}) => {
+const Governance: NextPage<{ url: string }> = ({ url }) => {
   const { isLive, latestNounletTokenId } = useVaultStore()
 
   return (
     <div className="page-governance lg:container mx-auto w-screen">
       <SEO
-          url={`${url}/governance`}
-          openGraphType="website"
-          title="Nounlets Governance"
-          description="Vote for your delegate"
-          image={`${url}/img/loading-skull.gif`}
+        url={`${url}/governance`}
+        openGraphType="website"
+        title="Nounlets Governance"
+        description="Vote for your delegate"
+        image={`${url}/img/loading-skull.gif`}
       />
       <div className="px-4 md:px-12 lg:px-4 mt-12 lg:mt-16">
         <h4 className="font-londrina text-px24 leading-px36 text-gray-4">Governance</h4>
@@ -66,19 +66,19 @@ const Governance: NextPage<{ url: string }> = ({url}) => {
   )
 }
 
-
 export const getServerSideProps = (context: any) => {
   return {
     props: {
-      url: context?.req?.headers?.host,
-    },
-  };
-};
+      url: context?.req?.headers?.host
+    }
+  }
+}
 
 export default Governance
 
 function GovernanceCurrentDelegate() {
   const { account } = useEthers()
+  const { setConnectModalOpen } = useAppStore()
   const { currentDelegate, isCurrentDelegateOutOfSync } = useVaultStore()
   const { myNounlets, myNounletsVotes, mostVotesAcc, claimDelegate } = useLeaderboard()
   const { toastSuccess, toastError } = useToasts()
@@ -102,6 +102,12 @@ function GovernanceCurrentDelegate() {
 
   const handleUpdateDelegate = useCallback(async () => {
     console.log('handlee', mostVotesAcc)
+
+    if (account == null) {
+      setConnectModalOpen(true)
+      return
+    }
+
     if (mostVotesAcc.address !== ethers.constants.AddressZero) setIsClaiming(true)
     try {
       const response = await claimDelegate(mostVotesAcc.address)
@@ -111,7 +117,7 @@ function GovernanceCurrentDelegate() {
       toastError('Update delegate failed', 'Please try again.')
       setIsClaiming(false)
     }
-  }, [mostVotesAcc, claimDelegate, toastError, toastSuccess])
+  }, [account, mostVotesAcc, claimDelegate, toastError, toastSuccess, setConnectModalOpen])
 
   return (
     <div className="mt-10 border-2 rounded-px16 p-4 lg:p-8 border-gray-2">
@@ -200,11 +206,17 @@ function GovernanceLeaderboard() {
   const [isVoteForDelegateModalShown, setIsVoteForDelegateModalShown] = useState(false)
   const [searchInputValue, setSearchinputValue] = useState('')
   const debouncedSearchInputValue = useDebounced(searchInputValue, 500)
-  const leaderboardList = useMemo(() => leaderboardData.list.map(l => l.walletAddress), [leaderboardData.list])
+  const leaderboardList = useMemo(
+    () => leaderboardData.list.map((l) => l.walletAddress),
+    [leaderboardData.list]
+  )
   const { address: ensAddress, isLoading: isLoadingENSName } =
     useResolveName(debouncedSearchInputValue)
-  const {ensNames, isLoading: isLoadingENSNames, error: ensNamesError} = useReverseRecords(leaderboardList)
-
+  const {
+    ensNames,
+    isLoading: isLoadingENSNames,
+    error: ensNamesError
+  } = useReverseRecords(leaderboardList)
 
   const filterByText = useMemo(() => {
     if (debouncedSearchInputValue.trim() === '') return debouncedSearchInputValue.trim()
@@ -220,7 +232,11 @@ function GovernanceLeaderboard() {
   }, [debouncedSearchInputValue, ensAddress])
 
   const filteredLeaderboardListData = useMemo(() => {
-    const walletsWithEnsName = (ensNames?.length ? ensNames.map((ensName, index) => ({address: leaderboardList[index], ensName})) : []).filter(wallet => wallet.ensName)
+    const walletsWithEnsName = (
+      ensNames?.length
+        ? ensNames.map((ensName, index) => ({ address: leaderboardList[index], ensName }))
+        : []
+    ).filter((wallet) => wallet.ensName)
     if (filterByText === '') {
       return leaderboardData.list.filter((acc) => {
         return acc.isMe || acc.isDelegate || acc.percentage > 0.019
@@ -228,7 +244,12 @@ function GovernanceLeaderboard() {
     }
 
     return leaderboardData.list.filter((acc) => {
-      return acc.walletAddress.toLowerCase().includes(filterByText) || walletsWithEnsName.find(wal => wal.ensName.includes(filterByText) && wal.address === acc.walletAddress)
+      return (
+        acc.walletAddress.toLowerCase().includes(filterByText) ||
+        walletsWithEnsName.find(
+          (wal) => wal.ensName.includes(filterByText) && wal.address === acc.walletAddress
+        )
+      )
     })
   }, [ensNames, filterByText, leaderboardData.list, leaderboardList])
 

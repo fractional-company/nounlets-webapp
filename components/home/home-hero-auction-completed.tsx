@@ -23,7 +23,8 @@ import { unstable_serialize, useSWRConfig } from 'swr'
 export default function HomeHeroAuctionCompleted(): JSX.Element {
   const { account } = useEthers()
   const { mutate: globalMutate } = useSWRConfig()
-  const { setBidModalOpen, setCongratulationsModalForNounletId } = useAppStore()
+  const { setBidModalOpen, setCongratulationsModalForNounletId, setConnectModalOpen } =
+    useAppStore()
   const { toastSuccess, toastError } = useToasts()
   const { nid, vaultAddress, endedAuctionInfo, settleAuction, historicBids } = useDisplayedNounlet()
 
@@ -52,6 +53,10 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
 
   const [isSettlingAuction, setIsSettlingAuction] = useState(false)
   const handleSettleAuction = async () => {
+    if (account == null) {
+      setConnectModalOpen(true)
+      return
+    }
     console.log('handle settle!')
     setIsSettlingAuction(true)
 
@@ -190,7 +195,6 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
               className="primary !h-[52px] w-full"
               loading={isSettlingAuction}
               onClick={() => handleSettleAuction()}
-              disabled={account == null}
             >
               Settle{'' + nid !== '100' ? ' & start next auction' : ''}
             </Button>

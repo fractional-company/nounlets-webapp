@@ -26,7 +26,7 @@ export default function LeaderboardListTile(props: {
 }): JSX.Element {
   const { account } = useEthers()
   const { claimDelegate } = useLeaderboard()
-  const { setVoteForDelegateModalForAddress } = useAppStore()
+  const { setVoteForDelegateModalForAddress, setConnectModalOpen } = useAppStore()
   const { toastSuccess, toastError } = useToasts()
   const {
     isMe,
@@ -50,16 +50,24 @@ export default function LeaderboardListTile(props: {
   }, [percentage])
 
   const isUpdateDelegateActionShown = useMemo(() => {
-    return account && isDelegateCandidate
-  }, [account, isDelegateCandidate])
+    return isDelegateCandidate
+  }, [isDelegateCandidate])
 
   const handleCastVote = (address: string) => {
+    if (account == null) {
+      setConnectModalOpen(true)
+      return
+    }
     console.log('casting vote for!', address)
     setVoteForDelegateModalForAddress(true, address)
   }
 
   const handleClaimDelegate = async (address: string) => {
-    console.log('aliming delegate handler', address)
+    if (account == null) {
+      setConnectModalOpen(true)
+      return
+    }
+
     setIsClaiming(true)
     try {
       const response = await claimDelegate(address)

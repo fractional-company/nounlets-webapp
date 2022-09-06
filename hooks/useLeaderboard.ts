@@ -218,9 +218,10 @@ export const constructLeaderboardData = (
           .round(2)
           .toUnsafeFloat()
       }
-      const canIVote =
-        leaderboardData.myNounlets.length > 0 &&
-        (leaderboardData.areMyVotesSplit || leaderboardData.myNounlets[0]?.delegate !== accAddress)
+      // const canIVote =
+      //   leaderboardData.myNounlets.length > 0 &&
+      //   (leaderboardData.areMyVotesSplit || leaderboardData.myNounlets[0]?.delegate !== accAddress)
+      const canIVote = true // Sigh ...
       const isDelegate = address.toLowerCase() === leaderboardData.currentDelegate
       if (isDelegate) {
         wasDelegateFound = true
