@@ -7,7 +7,7 @@ import { BidEvent } from 'lib/utils/types'
 import { useRouter } from 'next/router'
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { useVaultStore } from 'store/vaultStore'
-import useSWR, { useSWRConfig } from 'swr'
+import useSWR, { unstable_serialize, useSWRConfig } from 'swr'
 import debounce from 'lodash/debounce'
 import OnMounted from './utils/on-mounted'
 import useLeaderboard from 'hooks/useLeaderboard'
@@ -76,6 +76,7 @@ export default function ChainUpdater() {
 }
 
 function VaultUpdater() {
+  const { cache, mutate: globalMutate } = useSWRConfig()
   const router = useRouter()
   const sdk = useSdk()
   const {
@@ -157,35 +158,43 @@ function VaultUpdater() {
     }
   )
 
-  const debouncedMutate = useMemo(() => debounce(mutate, 1000), [mutate])
+  // const debouncedMutate = useMemo(() => debounce(mutate, 1000), [mutate])
 
-  useEffect(() => {
-    if (sdk == null) return
-    if (!isLive) return
+  // useEffect(() => {
+  //   if (sdk == null) return
+  //   if (!isLive) return
 
-    console.log('🍁 setting SETTLED listener for ', latestNounletTokenId)
-    const nounletAuction = sdk.NounletAuction
-    const settledFilter = sdk.NounletAuction.filters.Settled(
-      vaultAddress,
-      nounletTokenAddress,
-      latestNounletTokenId
-    )
+  //   console.log('🍁 setting SETTLED listener for ', latestNounletTokenId)
+  //   const nounletAuction = sdk.NounletAuction
+  //   const settledFilter = sdk.NounletAuction.filters.Settled(
+  //     vaultAddress,
+  //     nounletTokenAddress
+  //     // latestNounletTokenId
+  //   )
 
-    const listener = (...eventData: any) => {
-      const event = eventData.at(-1)
-      console.log('🍁🍁🍁 Settled event', eventData)
-      console.log('event data', event)
-      debouncedMutate()
-    }
+  //   const listener = (...eventData: any) => {
+  //     const event = eventData.at(-1)
+  //     console.log('🍁🍁🍁 Settled event', eventData)
+  //     console.log('event data', event)
+  //     debouncedMutate()
+  //   }
 
-    nounletAuction.on(settledFilter, listener)
+  //   // nounletAuction.on(settledFilter, listener)
 
-    return () => {
-      console.log('🍁 removing SETTLED listener for ', latestNounletTokenId)
-      nounletAuction.off(settledFilter, listener)
-    }
-  }, [isLive, vaultAddress, nounletTokenAddress, latestNounletTokenId, sdk, debouncedMutate])
+  //   return () => {
+  //     console.log('🍁 removing SETTLED listener for ', latestNounletTokenId)
+  //     nounletAuction.off(settledFilter, listener)
+  //   }
+  // }, [isLive, vaultAddress, nounletTokenAddress, latestNounletTokenId, sdk, debouncedMutate])
 
+  // const lala = () => {
+  //   globalMutate(
+  //     unstable_serialize({
+  //       name: 'VaultMetadata',
+  //       vaultAddress: vaultAddress
+  //     })
+  //   )
+  // }
   return <></>
 }
 

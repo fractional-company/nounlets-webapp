@@ -114,7 +114,7 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
   }, [auctionInfo])
 
   const endedAuctionInfo = useMemo(() => {
-    if (auctionInfo == null || nid == null) return null
+    if (auctionInfo == null || nid == null || auctionInfo.auction == null) return null
 
     let heldByAddress = nounletHolderAddress || ethers.constants.AddressZero
     let wonByAddress = auctionInfo.auction!.highestBidder?.id || ethers.constants.AddressZero
@@ -128,7 +128,7 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
     }
 
     return {
-      isSettled: +nid < +latestNounletTokenId,
+      isSettled: auctionInfo.auction.settled, // +nid < +latestNounletTokenId,
       settledTransactionHash: auctionInfo.auction.settledTransactionHash,
       winningBid: auctionInfo.auction!.highestBidAmount.toString(),
       heldByAddress,
@@ -140,7 +140,6 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
     auctionEndTime,
     auctionInfo,
     nid,
-    latestNounletTokenId,
     vaultCuratorAddress,
     nounletHolderAddress
   ])

@@ -10,26 +10,21 @@ import useSdk from 'hooks/useSdk'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useVaultStore } from 'store/vaultStore'
-import SEO from "../components/seo";
+import SEO from '../components/seo'
 
 export const getServerSideProps = (context: any) => {
   return {
     props: {
-      url: context?.req?.headers?.host,
-    },
-  };
-};
+      url: context?.req?.headers?.host
+    }
+  }
+}
 
-const Settings: NextPage<{url: string}> = ({url}) => {
+const Settings: NextPage<{ url: string }> = ({ url }) => {
   const { account, library } = useEthers()
   const sdk = useSdk()
-  const {
-    isLive,
-    isLoading,
-    vaultAddress,
-    nounletTokenAddress,
-    latestNounletTokenId
-  } = useVaultStore()
+  const { isLive, isLoading, vaultAddress, nounletTokenAddress, latestNounletTokenId } =
+    useVaultStore()
 
   const { delegateVotes } = useLeaderboard()
 
@@ -111,7 +106,7 @@ const Settings: NextPage<{url: string}> = ({url}) => {
       [],
       mintProof,
       sdk.NounsDescriptorV2.address,
-      12
+      14
     )
 
     return tx
@@ -128,11 +123,11 @@ const Settings: NextPage<{url: string}> = ({url}) => {
   return (
     <div className="p-4 flex flex-col gap-3 text-px12">
       <SEO
-          url={`${url}/post`}
-          openGraphType="website"
-          title="Settings"
-          description="The only thing we learn from history, it has been said, 'is that men never learn from history'..."
-          image={`${url}/img/loading-skull.gif`}
+        url={`${url}/post`}
+        openGraphType="website"
+        title="Settings"
+        description="The only thing we learn from history, it has been said, 'is that men never learn from history'..."
+        image={`${url}/img/loading-skull.gif`}
       />
       <h1 className="font-600">Settings</h1>
 

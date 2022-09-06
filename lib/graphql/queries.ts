@@ -144,7 +144,12 @@ export const getNounletAuctionData = async (
   console.log(data)
   console.groupEnd()
 
-  const auction = data.vault.noun!.nounlets[0].auction
+  if ((data.vault.noun?.nounlets?.length ?? 0) === 0) {
+    console.log('BE doesnt have data yet')
+    return null
+  }
+
+  const auction = data.vault.noun.nounlets[0].auction
   auction.id = splitKey(auction.id)
   if (auction.highestBidder) {
     auction.highestBidder = {

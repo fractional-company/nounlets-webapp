@@ -18,12 +18,14 @@ import IconLock from '../icons/icon-lock'
 import IconVerified from '../icons/icon-verified'
 import { WrappedTransactionReceiptState } from 'lib/utils/tx-with-error-handling'
 import useToasts from 'hooks/useToasts'
+import { unstable_serialize, useSWRConfig } from 'swr'
 
 export default function HomeHeroAuctionCompleted(): JSX.Element {
   const { account } = useEthers()
+  const { mutate: globalMutate } = useSWRConfig()
   const { setBidModalOpen, setCongratulationsModalForNounletId } = useAppStore()
   const { toastSuccess, toastError } = useToasts()
-  const { nid, endedAuctionInfo, settleAuction, historicBids } = useDisplayedNounlet()
+  const { nid, vaultAddress, endedAuctionInfo, settleAuction, historicBids } = useDisplayedNounlet()
 
   const formattedData = useMemo(() => {
     const isLoading = endedAuctionInfo == null
@@ -66,6 +68,12 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
           setCongratulationsModalForNounletId(true, nounletId)
           // setIsCongratulationsModalShown(true)
         }
+        await globalMutate(
+          unstable_serialize({
+            name: 'VaultMetadata',
+            vaultAddress: vaultAddress
+          })
+        )
         toastSuccess('Auction settled 🎊', 'On to the next one!')
         // await mutateDisplayedNounletAuctionInfo() // not needed since there is no new events
       } else {
@@ -106,7 +114,9 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
           <p className="text-px18 leading-px22 font-500 text-gray-4">Winning bid</p>
           <div className="flex items-center space-x-3">
             <IconEth className="flex-shrink-0" />
-            <p className="text-px32 leading-[38px] font-700">{formattedData.hasBids ? formattedData.winningBid : 'n/a'}</p>
+            <p className="text-px32 leading-[38px] font-700">
+              {formattedData.hasBids ? formattedData.winningBid : 'n/a'}
+            </p>
           </div>
         </div>
         <div className="sm:border-r-2 border-black/20"></div>
