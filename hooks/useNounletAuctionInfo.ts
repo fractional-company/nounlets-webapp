@@ -158,12 +158,14 @@ export default function useNounletAuctionInfo(nounletId: string | null) {
       if (isAuctionOld) {
         console.log('👩‍⚖️👩‍⚖️ Data for unsynced auction should now be fixed. Refresh vault')
         response.settled = true
-        globalMutate(
-          unstable_serialize({
-            name: 'VaultMetadata',
-            vaultAddress: vaultAddress
-          })
-        )
+        setTimeout(() => {
+          globalMutate(
+            unstable_serialize({
+              name: 'VaultMetadata',
+              vaultAddress: vaultAddress
+            })
+          )
+        }, 5000)
       }
 
       return { auction: response, fetchedAt: Date.now() }
