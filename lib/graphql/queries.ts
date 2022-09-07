@@ -319,6 +319,7 @@ export const getAllNounlets = async (vaultAddress: string) => {
     mostVotesAddress !== ethers.constants.AddressZero
   ) {
     if (accounts[currentDelegate].votes >= mostVotes) {
+      mostVotesAddress = currentDelegate
       doesDelegateHaveMostVotes = true
     }
   }
