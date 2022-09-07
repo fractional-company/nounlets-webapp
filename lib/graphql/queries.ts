@@ -312,12 +312,22 @@ export const getAllNounlets = async (vaultAddress: string) => {
   })
 
   const currentDelegate = data.vault.noun.currentDelegate
+  let doesDelegateHaveMostVotes = false
+
+  if (
+    currentDelegate !== ethers.constants.AddressZero &&
+    mostVotesAddress !== ethers.constants.AddressZero
+  ) {
+    if (accounts[currentDelegate].votes >= mostVotes) {
+      doesDelegateHaveMostVotes = true
+    }
+  }
 
   // console.log({ data })
   console.log({
     accounts,
     currentDelegate,
-    doesDelegateHaveMostVotes: currentDelegate === mostVotesAddress
+    doesDelegateHaveMostVotes
   })
 
   return {
