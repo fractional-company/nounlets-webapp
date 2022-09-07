@@ -64,7 +64,7 @@ export default function useLocalStorage() {
   const setNounletImageCache = useCallback((key: string, data: object) => {
     if (cacheVersion !== -1) {
       if (typeof window !== 'undefined' && window.localStorage != null) {
-        // console.log('📸📸📸 setting image data', key, data)
+        console.log('📸📸📸 setting image data', key, data)
         localStorageData['images'][key] = data
         debouncedLocalStorageWrite()
       }
@@ -72,9 +72,9 @@ export default function useLocalStorage() {
   }, [])
 
   const setNounletAuctionsCache = useCallback((key: string, data: object) => {
-    if (cacheVersion !== -1) {
+    if (cacheVersion > 3) {
       if (typeof window !== 'undefined' && window.localStorage != null) {
-        // console.log('🔫🔫🔫 setting auctions data', key, data)
+        console.log('🔫🔫🔫 setting auctions data', key, data)
         localStorageData['auctions'][key] = data
         debouncedLocalStorageWrite()
       }
