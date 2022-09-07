@@ -32,21 +32,21 @@ export default function WalletConfig(props: { children: ReactNode }) {
     if (library) {
       if (chainId === CHAIN_ID) {
         if (wasWrongChainAlertShown) {
-          console.log('refresh page')
           if (typeof window !== 'undefined') {
             window.location.reload()
           }
         }
       } else {
-        setWasWrongChainAlertShown(true)
+        if (account != null) {
+          setWasWrongChainAlertShown(true)
+        }
       }
     }
-  }, [library, chainId, wasWrongChainAlertShown])
+  }, [account, library, chainId, wasWrongChainAlertShown])
 
   useEffect(() => {
     if (library) {
       if (chainId === CHAIN_ID) {
-        console.log('Setting SDK')
         setSdk(
           (CHAIN_ID === 4 ? getRinkebySdk(library) : (getMainnetSdk(library) as RinkebySdk))
             .nounlets
@@ -58,7 +58,7 @@ export default function WalletConfig(props: { children: ReactNode }) {
   return (
     <SDKContext.Provider value={sdk}>
       <div className={`${classes.wrapper}`}>
-        {Number(CHAIN_ID) !== chainId && <NetworkAlert />}
+        {account && Number(CHAIN_ID) !== chainId && <NetworkAlert />}
         {alertModal.show && (
           <>
             <AlertModal

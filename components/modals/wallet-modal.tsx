@@ -40,6 +40,14 @@ export default function WalletModal(): JSX.Element {
     }
   }, [account, setConnectModalOpen])
 
+  const connectMetamask = async () => {
+    try {
+      await activateBrowserWallet()
+    } catch (error) {
+      console.log('Metamask error', error)
+    }
+  }
+
   const wallets = (
     <div className="wallet-buttons-list grid grid-cols-1 md:grid-cols-2 gap-3 justify-items-stretch md:justify-items-start">
       <style jsx global>{`
@@ -49,12 +57,7 @@ export default function WalletModal(): JSX.Element {
           }
         }
       `}</style>
-      <WalletButton
-        onClick={async () => {
-          await activateBrowserWallet()
-        }}
-        walletType={WALLET_TYPE.metamask}
-      />
+      <WalletButton onClick={connectMetamask} walletType={WALLET_TYPE.metamask} />
       <WalletButton
         onClick={() => {
           const fortmatic = new FortmaticConnector({
@@ -132,11 +135,21 @@ export default function WalletModal(): JSX.Element {
           <SimpleCheckbox isChecked={areConditionsAccepted} onChange={setAreConditionsAccepted} />
           <p className="font-500 font-px12 leading-px20 text-white">
             I have read and accept the site&apos;s{' '}
-            <a href="https://tessera.co/privacy" target="_blank" rel="noreferrer" className="text-primary hover:text-white transition-colors">
+            <a
+              href="https://tessera.co/privacy"
+              target="_blank"
+              rel="noreferrer"
+              className="text-primary hover:text-white transition-colors"
+            >
               Privacy Policy
             </a>
             {' and '}
-            <a href="https://tessera.co/terms" target="_blank" rel="noreferrer" className="text-primary hover:text-white transition-colors">
+            <a
+              href="https://tessera.co/terms"
+              target="_blank"
+              rel="noreferrer"
+              className="text-primary hover:text-white transition-colors"
+            >
               Terms of Use
             </a>
             .
