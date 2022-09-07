@@ -97,10 +97,6 @@ export default function AppHeader(): JSX.Element {
     [account, isCrownShown, handleConnectButtonClick]
   )
 
-  const handleShowNotification = () => {
-    console.log('link to discord')
-  }
-
   const currentDelegateRC = useMemo(() => {
     return currentDelegate === ethers.constants.AddressZero ? (
       <span className="font-700 ml-2">no one :(</span>
@@ -123,19 +119,19 @@ export default function AppHeader(): JSX.Element {
           <div className="flex flex-1 -mt-4 md:-mt-8">
             <div className="flex-1">
               {isLive && (
-                  <div className="hidden md:inline-flex items-center px-4 h-12 rounded-px10 bg-white space-x-2">
-                    <span className="hidden lg:inline">Current delegate</span>
-                    {currentDelegateRC}
+                <div className="hidden md:inline-flex items-center px-4 h-12 rounded-px10 bg-white space-x-2">
+                  <span className="hidden lg:inline">Current delegate</span>
+                  {currentDelegateRC}
 
-                    {isCurrentDelegateOutOfSync && (
-                        <SimplePopover>
-                          <h1 className="font-700 text-px18 text-gray-4">
-                            <span className="text-secondary-orange">⚠</span>
-                          </h1>
-                          <div>Delegate is out of sync. You can update it on the vote page.</div>
-                        </SimplePopover>
-                    )}
-                  </div>
+                  {isCurrentDelegateOutOfSync && (
+                    <SimplePopover>
+                      <h1 className="font-700 text-px18 text-gray-4">
+                        <span className="text-secondary-orange">⚠</span>
+                      </h1>
+                      <div>Delegate is out of sync. You can update it on the vote page.</div>
+                    </SimplePopover>
+                  )}
+                </div>
               )}
             </div>
             <div className="hidden lg:flex items-center space-x-4">
@@ -145,8 +141,13 @@ export default function AppHeader(): JSX.Element {
                   <span>Vote</span>
                 </Button>
               </Link>
-              <Button className="basic" onClick={handleShowNotification}>
-                <a href="https://discord.com/invite/8a34wmRjWB" target="_blank" className="flex space-x-2 items-center" rel="noreferrer">
+              <Button className="basic">
+                <a
+                  href="https://discord.com/invite/8a34wmRjWB"
+                  target="_blank"
+                  className="flex space-x-2 items-center"
+                  rel="noreferrer"
+                >
                   <IconDiscord className="h-[11px] w-auto" />
                   <span>Discord</span>
                 </a>
@@ -157,8 +158,8 @@ export default function AppHeader(): JSX.Element {
             <div className="flex lg:hidden space-x-2">
               {connectButton}
               <Button
-                  className="basic space-x-2"
-                  onClick={() => setIsModalMenuOpen(!isMobileMenuOpen)}
+                className="basic space-x-2"
+                onClick={() => setIsModalMenuOpen(!isMobileMenuOpen)}
               >
                 <IconCaretDropdown className="h-[7px] w-auto" />
               </Button>
@@ -196,25 +197,45 @@ export default function AppHeader(): JSX.Element {
                 </Button>
               </Link>
               <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
-                <a href="https://discord.com/invite/8a34wmRjWB" target="_blank" className="space-x-2 w-full flex justify-center" rel="noreferrer">
+                <a
+                  href="https://discord.com/invite/8a34wmRjWB"
+                  target="_blank"
+                  className="space-x-2 w-full flex justify-center"
+                  rel="noreferrer"
+                >
                   <IconDiscord className="h-[13px] w-auto" />
                   <span>Discord</span>
                 </a>
               </Button>
               <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
-                <a href="https://medium.com/@deeze/b76bbb4e42cc" target="_blank" rel="noreferrer" className="space-x-2 w-full flex justify-center">
+                <a
+                  href="https://medium.com/@deeze/b76bbb4e42cc"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="space-x-2 w-full flex justify-center"
+                >
                   <IconMedium className="h-[16px] w-auto" />
                   <span>Nounlets Explained (FAQ)</span>
                 </a>
               </Button>
               <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
-                <a href="https://nouns.wtf" target="_blank" rel="noreferrer" className="space-x-2 w-full flex justify-center">
+                <a
+                  href="https://nouns.wtf"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="space-x-2 w-full flex justify-center"
+                >
                   <IconHeartHollow className="h-[16px] w-auto" />
                   <span>Nouns.wtf</span>
                 </a>
               </Button>
               <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
-                <a href="https://twitter.com/tessera" target="_blank" rel="noreferrer" className="space-x-2 w-full flex justify-center">
+                <a
+                  href="https://twitter.com/tessera"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="space-x-2 w-full flex justify-center"
+                >
                   <IconTwitter className="h-[16px] w-auto" />
                   <span>Twitter</span>
                 </a>
@@ -224,7 +245,12 @@ export default function AppHeader(): JSX.Element {
                 <span>Etherscan</span>
               </Button>
               <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
-                <a href="https://tessera.co/" target="_blank" rel="noreferrer" className="space-x-2 w-full flex justify-center">
+                <a
+                  href="https://tessera.co/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="space-x-2 w-full flex justify-center"
+                >
                   <IconFractionalLogo className="h-[16px] w-auto text-secondary-green" />
                   <span>Tessera</span>
                 </a>

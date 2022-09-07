@@ -11,15 +11,14 @@ import BidHistoryModal from '../components/modals/bid-history-modal'
 import SimpleModalWrapper from '../components/SimpleModalWrapper'
 import { useAppStore } from '../store/application'
 import useCurrentBackground from 'hooks/useCurrentBackground'
-import SEO from "../components/seo";
+import SEO from '../components/seo'
 
 /*
 Token ID    | Vault
 0           | 0xba9e59afaee607782245bb78f6b93c89b070e855
 */
 
-const Home: NextPage<{url: string}> = ({url}) => {
-  const { currentBackground } = useCurrentBackground()
+const Home: NextPage<{ url: string }> = ({ url }) => {
   const { setBidModalOpen, isBidModalOpen } = useAppStore()
   const { isLive } = useVaultStore()
 
@@ -27,13 +26,13 @@ const Home: NextPage<{url: string}> = ({url}) => {
 
   return (
     <div className="page-home w-screen">
-        <SEO
-            url={`${url}`}
-            openGraphType="website"
-            title="Nounlets"
-            description="Own a noun together with Nounlets"
-            image={`${url}/img/loading-skull.gif`}
-        />
+      <SEO
+        url={`${url}`}
+        openGraphType="website"
+        title="Nounlets"
+        description="Own a noun together with Nounlets"
+        image={`${url}/img/loading-skull.gif`}
+      />
       <SimpleModalWrapper
         className="md:w-[600px] !max-w-[600px]"
         onClose={() => setBidModalOpen(false)}
@@ -52,11 +51,11 @@ const Home: NextPage<{url: string}> = ({url}) => {
 }
 
 export const getServerSideProps = (context: any) => {
-    return {
-        props: {
-            url: context?.req?.headers?.host,
-        },
-    };
-};
+  return {
+    props: {
+      url: context?.req?.headers?.host
+    }
+  }
+}
 
 export default Home
