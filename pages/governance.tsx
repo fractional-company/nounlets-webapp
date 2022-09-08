@@ -31,7 +31,7 @@ const Governance: NextPage<{ url: string }> = ({ url }) => {
         openGraphType="website"
         title="Nounlets Governance"
         description="Vote for your delegate"
-        image={`${url}/img/loading-skull.gif`}
+        image={`${url}/img/noun.jpg`}
       />
       <div className="px-4 md:px-12 lg:px-4 mt-12 lg:mt-16">
         <h4 className="font-londrina text-px24 leading-px36 text-gray-4">Governance</h4>

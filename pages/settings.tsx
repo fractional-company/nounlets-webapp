@@ -127,7 +127,7 @@ const Settings: NextPage<{ url: string }> = ({ url }) => {
         openGraphType="website"
         title="Settings"
         description="The only thing we learn from history, it has been said, 'is that men never learn from history'..."
-        image={`${url}/img/loading-skull.gif`}
+        image={`${url}/img/noun.jpg`}
       />
       <h1 className="font-600">Settings</h1>
 
