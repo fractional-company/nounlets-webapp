@@ -1,5 +1,5 @@
 import { useEthers } from '@usedapp/core'
-import { BigNumber, ethers } from 'ethers'
+import { BigNumber, ethers, FixedNumber } from 'ethers'
 import txWithErrorHandling from 'lib/utils/tx-with-error-handling'
 import { useRouter } from 'next/router'
 import { useCallback, useMemo } from 'react'
@@ -150,8 +150,10 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
     if (library == null) throw new Error('no library')
     if (vaultAddress == null) throw new Error('no vault')
 
+    const gasLimit = await sdk.NounletAuction.estimateGas.bid(vaultAddress, { value: bidAmount })
     const tx = await sdk.NounletAuction.connect(library.getSigner()).bid(vaultAddress, {
-      value: bidAmount
+      value: bidAmount,
+      gasLimit: gasLimit.mul(11).div(10)
     })
     return txWithErrorHandling(tx)
   }
