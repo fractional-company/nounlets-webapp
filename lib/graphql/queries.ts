@@ -209,7 +209,8 @@ export const getNounletAuctionDataBC = async (
       }
     })
     .sort((a, b) => {
-      return BigNumber.from(b.amount).sub(BigNumber.from(a.amount)).toNumber()
+      // return BigNumber.from(b.amount).sub(BigNumber.from(a.amount)).toNumber() // This can overflow
+      return BigNumber.from(b.amount).gte(BigNumber.from(a.amount)) ? 1 : -1
     })
 
   // TODO id toLowerCase() if needed
