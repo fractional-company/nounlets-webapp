@@ -29,9 +29,13 @@ const Settings: NextPage<{ url: string }> = ({ url }) => {
   const { delegateVotes } = useLeaderboard()
 
   const environment = {
-    NEXT_PUBLIC_NOUN_VAULT_ADDRESS: `${process.env.NEXT_PUBLIC_NOUN_VAULT_ADDRESS} || ${NEXT_PUBLIC_NOUN_VAULT_ADDRESS}`,
-    NEXT_PUBLIC_BLOCKS_PER_DAY: `${process.env.NEXT_PUBLIC_BLOCKS_PER_DAY} || ${NEXT_PUBLIC_BLOCKS_PER_DAY}`,
-    BID_DECIMALS: `${process.env.BID_DECIMALS} || ${NEXT_PUBLIC_BID_DECIMALS}`
+    NEXT_PUBLIC_ENVIRONMENT: process.env.NEXT_PUBLIC_ENVIRONMENT,
+    NEXT_PUBLIC_CHAIN_ID: process.env.NEXT_PUBLIC_CHAIN_ID,
+    NEXT_PUBLIC_CACHE_VERSION: process.env.NEXT_PUBLIC_CACHE_VERSION,
+    NEXT_PUBLIC_SHOW_DEBUG: process.env.NEXT_PUBLIC_SHOW_DEBUG,
+    NEXT_PUBLIC_NOUN_VAULT_ADDRESS: process.env.NEXT_PUBLIC_NOUN_VAULT_ADDRESS,
+    NEXT_PUBLIC_BLOCKS_PER_DAY: process.env.NEXT_PUBLIC_BLOCKS_PER_DAY,
+    NEXT_PUBLIC_BID_DECIMALS: process.env.NEXT_PUBLIC_BID_DECIMALS
   }
 
   const vaultMetadata = {
@@ -40,12 +44,6 @@ const Settings: NextPage<{ url: string }> = ({ url }) => {
     vaultAddress, // VaultContract
     nounletTokenAddress, // NouneltTokenContract (proxy?)
     latestNounletTokenId
-  }
-
-  const myAddresses = {
-    current: account,
-    main: '0x497F34f8A6EaB10652f846fD82201938e58d72E0',
-    secondary: '0x6d2343bEecEd0E805f3ccCfF870ccB974B5795E6'
   }
 
   const createVault = async () => {
@@ -106,7 +104,7 @@ const Settings: NextPage<{ url: string }> = ({ url }) => {
       [],
       mintProof,
       sdk.NounsDescriptorV2.address,
-      14
+      1
     )
 
     return tx
@@ -137,20 +135,12 @@ const Settings: NextPage<{ url: string }> = ({ url }) => {
       </div>
 
       <div className="px-4">
-        <h1 className="font-600">My eth addresses:</h1>
-        <pre>{JSON.stringify(myAddresses, null, 4)}</pre>
-      </div>
-
-      <div className="px-4">
         <h1 className="font-600">Vault METADATA</h1>
         <pre>{JSON.stringify(vaultMetadata, null, 4)}</pre>
       </div>
 
       <Button className="primary" onClick={() => createVault()}>
         Create new vault
-      </Button>
-      <Button className="primary" onClick={() => delegateVotes(myAddresses.secondary)}>
-        Delegate votes
       </Button>
     </div>
   )
