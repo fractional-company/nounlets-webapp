@@ -153,7 +153,7 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
     const gasLimit = await sdk.NounletAuction.estimateGas.bid(vaultAddress, { value: bidAmount })
     const tx = await sdk.NounletAuction.connect(library.getSigner()).bid(vaultAddress, {
       value: bidAmount,
-      gasLimit: gasLimit.mul(11).div(10)
+      gasLimit: gasLimit.mul(12).div(10)
     })
     return txWithErrorHandling(tx)
   }
