@@ -348,7 +348,7 @@ export const getNounletVotes = async (nounletTokenAddress: string, nounletTokenI
     {
       nounlet (id: "${nounletTokenAddress.toLowerCase()}-${nounletTokenId}") {
         id
-        delegateVotes {
+        delegateVotes (orderBy: timestamp orderDirection: desc){
           id,
           delegate {id}
           timestamp
