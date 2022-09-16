@@ -5,8 +5,10 @@ import IconUpdateDelegate from 'components/icons/icon-update-delegate'
 import SimpleAddress from 'components/simple-address'
 import useLeaderboard from 'hooks/useLeaderboard'
 import useToasts from 'hooks/useToasts'
+import { WrappedTransactionReceiptState } from 'lib/utils/tx-with-error-handling'
 import { useMemo, useState } from 'react'
 import { useAppStore } from 'store/application'
+import { useBlockNumberCheckpointStore } from 'store/blockNumberCheckpointStore'
 import LeaderboardVotesDots from './leaderboard-votes-dots'
 
 export type LeaderboardListTileProps = {
@@ -28,6 +30,7 @@ export default function LeaderboardListTile(props: {
   const { claimDelegate } = useLeaderboard()
   const { setVoteForDelegateModalForAddress, setConnectModalOpen } = useAppStore()
   const { toastSuccess, toastError } = useToasts()
+  const { setLeaderboardBlockNumber } = useBlockNumberCheckpointStore()
   const {
     isMe,
     isDelegate,
@@ -71,7 +74,9 @@ export default function LeaderboardListTile(props: {
     setIsClaiming(true)
     try {
       const response = await claimDelegate(address)
-      console.log('yasss', response)
+      if (response?.receipt?.blockNumber != null) {
+        setLeaderboardBlockNumber(response.receipt.blockNumber)
+      }
       toastSuccess('Delegate updated 👑', 'Leaderboard will refresh momentarily.')
     } catch (error) {
       toastError('Update delegate failed', 'Please try again.')

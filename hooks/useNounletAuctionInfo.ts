@@ -56,7 +56,7 @@ export default function useNounletAuctionInfo(nounletId: string | null) {
     if (cachedData == null) return 1
     if (cachedData.auction == null) return 1
 
-    const now = Date.now() + 5000 // add 5 second buffer
+    const now = Date.now() + 2000 // add 2 second buffer
     const endTime = cachedData.auction.endTime * 1000
     const timeLeft = endTime - now
     return timeLeft

@@ -105,7 +105,7 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
   }, [auctionInfo])
 
   const hasAuctionEnded = useMemo(() => {
-    const now = Date.now() + 5000 // add 5 second buffer
+    const now = Date.now() + 2000 // add 2 second buffer
     return auctionInfo != null && auctionEndTime * 1000 <= now
   }, [auctionInfo, auctionEndTime])
 

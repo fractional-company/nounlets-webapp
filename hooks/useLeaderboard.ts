@@ -115,7 +115,7 @@ export default function useLeaderboard() {
     const nounletGovernance = sdk.NounletGovernance.connect(library.getSigner())
     const gasLimit = await nounletGovernance.estimateGas.claimDelegate(vaultAddress, toAddress)
     const tx = await nounletGovernance.claimDelegate(vaultAddress, toAddress, {
-      gasLimit: gasLimit.mul(12).div(10)
+      gasLimit: gasLimit.mul(13).div(10)
     })
     return txWithErrorHandling(tx)
   }
