@@ -113,7 +113,10 @@ export default function useLeaderboard() {
     if (nounletTokenAddress == '') throw new Error('No nounlet token address')
 
     const nounletGovernance = sdk.NounletGovernance.connect(library.getSigner())
-    const tx = await nounletGovernance.claimDelegate(vaultAddress, toAddress)
+    const gasLimit = await nounletGovernance.estimateGas.claimDelegate(vaultAddress, toAddress)
+    const tx = await nounletGovernance.claimDelegate(vaultAddress, toAddress, {
+      gasLimit: gasLimit.mul(12).div(10)
+    })
     return txWithErrorHandling(tx)
   }
 
