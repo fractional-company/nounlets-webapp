@@ -13,7 +13,12 @@ export default function HomeWTF(): JSX.Element {
           </h2>
           <p className="mb-6">
             Nounlets are an experiment to allow for collective ownership over an individual{' '}
-            <a href="https://nouns.wtf/" className="text-secondary-blue">
+            <a
+              href="https://nouns.wtf/"
+              className="text-secondary-blue"
+              target="_blank"
+              rel="noreferrer"
+            >
               Noun
             </a>
             . Each Nounlet represents 1% of the vaulted Noun and has a vote in delegating the Noun’s
@@ -25,6 +30,8 @@ export default function HomeWTF(): JSX.Element {
             <a
               href="https://www.notion.so/EXTERNAL-Nouns-fa66ae7a59f147118bd67eaf4b83432b"
               className="text-secondary-blue"
+              target="_blank"
+              rel="noreferrer"
             >
               Nouns DAO homepage.
             </a>
@@ -43,6 +50,8 @@ export default function HomeWTF(): JSX.Element {
                   <a
                     href="https://creativecommons.org/publicdomain/zero/1.0/"
                     className="text-secondary-blue"
+                    target="_blank"
+                    rel="noreferrer"
                   >
                     public domain.
                   </a>
@@ -52,7 +61,8 @@ export default function HomeWTF(): JSX.Element {
                   been sold.
                 </li>
                 <li>
-                  98% of auction proceeds are trustlessly sent to the original Noun owner. 2% of auction proceeds are sent to Tessera.
+                  98% of auction proceeds are trustlessly sent to the original Noun owner. 2% of
+                  auction proceeds are sent to Tessera.
                 </li>
                 <li>Settlement of one auction kicks off the next.</li>
                 <li>The elected delegate of the Noun is considered a member of NounsDAO.</li>
@@ -74,7 +84,8 @@ export default function HomeWTF(): JSX.Element {
                 <p>
                   The Nounlets Auction Contract will act as a self-sufficient Noun generation and
                   distribution mechanism, auctioning one Nounlet every 4 hours until all 100
-                  Nounlets are sold. 98% of auction proceeds are trustlessly sent to the original Noun owner. 2% of auction proceeds are sent to Tessera.
+                  Nounlets are sold. 98% of auction proceeds are trustlessly sent to the original
+                  Noun owner. 2% of auction proceeds are sent to Tessera.
                 </p>
                 <p>
                   Each time an auction is settled, the settlement transaction will cause a new
@@ -104,9 +115,52 @@ export default function HomeWTF(): JSX.Element {
               </div>
             </SimpleAccordion>
             <SimpleAccordion
-              title="Nounlet Traits"
+              title="Optimistic Buyouts"
               isOpen={openAccordionIndex === 3}
               onOpen={() => setOpenAccordionIndex(3)}
+              onClose={() => setOpenAccordionIndex(-1)}
+            >
+              <div className="space-y-4">
+                <p>
+                  Reconstitution is only possible after all 100 Nounlets have been sold. The Noun is
+                  able to be purchased and reconstituted (meaning one person buys the entire Noun
+                  from the vault) using what we call an optimistic bid.
+                </p>
+                <p>
+                  Someone who wants to buy the vaulted Noun makes a bid to buy the Noun out of the
+                  vault, which the Nounlet holders implicitly accept if the rejection criteria of
+                  purchasing all the bidder’s Nounlets aren’t met.
+                </p>
+                <p>
+                  In this mechanism, the bidder must name a price and put up at least 1 of their
+                  Nounlets as collateral. All other participants (whether they currently hold a
+                  Nounlet or not) are able to reject this bid by purchasing all of the Nounlets used
+                  as collateral at the fixed price proposed by the buyer.
+                </p>
+                <p>
+                  Optimistic buyouts will last for 7 days before being accepted.{' '}
+                  <span className="font-700 text-black">
+                    If all Nounlets are purchased at the implied valuation before 7 days have
+                    passed, the buyout ends and is rejected.
+                  </span>
+                </p>
+                <p>
+                  For more information visit the{' '}
+                  <a
+                    target="_blank"
+                    rel="noreferrer"
+                    href="https://medium.com/@deeze/ba4a1bcabdde"
+                    className="text-secondary-blue"
+                  >
+                    FAQ
+                  </a>
+                </p>
+              </div>
+            </SimpleAccordion>
+            <SimpleAccordion
+              title="Nounlet Traits"
+              isOpen={openAccordionIndex === 4}
+              onOpen={() => setOpenAccordionIndex(4)}
               onClose={() => setOpenAccordionIndex(-1)}
             >
               <div className="space-y-4">
@@ -124,7 +178,12 @@ export default function HomeWTF(): JSX.Element {
                 </ul>
                 <p>
                   You can experiment with off-chain Noun generation at the{' '}
-                  <a href="https://nouns.wtf/playground" className="text-secondary-blue">
+                  <a
+                    target="_blank"
+                    rel="noreferrer"
+                    href="https://nouns.wtf/playground"
+                    className="text-secondary-blue"
+                  >
                     Playground.
                   </a>
                 </p>
@@ -132,8 +191,8 @@ export default function HomeWTF(): JSX.Element {
             </SimpleAccordion>
             <SimpleAccordion
               title="On-Chain Artwork"
-              isOpen={openAccordionIndex === 4}
-              onOpen={() => setOpenAccordionIndex(4)}
+              isOpen={openAccordionIndex === 5}
+              onOpen={() => setOpenAccordionIndex(5)}
               onClose={() => setOpenAccordionIndex(-1)}
             >
               <div className="space-y-4">
@@ -154,8 +213,8 @@ export default function HomeWTF(): JSX.Element {
             </SimpleAccordion>
             <SimpleAccordion
               title="Nounlet Seeder Contract"
-              isOpen={openAccordionIndex === 5}
-              onOpen={() => setOpenAccordionIndex(5)}
+              isOpen={openAccordionIndex === 6}
+              onOpen={() => setOpenAccordionIndex(6)}
               onClose={() => setOpenAccordionIndex(-1)}
             >
               <div className="space-y-4">
