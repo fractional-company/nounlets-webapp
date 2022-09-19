@@ -346,7 +346,7 @@ function GovernanceLeaderboard() {
 
                 <SimpleModalWrapper
                   preventCloseOnBackdrop
-                  className="vote-for-custom-wallet-modal w-[454px] !max-w-[454px]"
+                  className="vote-for-custom-wallet-modal"
                   isShown={isVoteForDelegateModalShown}
                   onClose={() => setIsVoteForDelegateModalShown(false)}
                 >

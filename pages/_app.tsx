@@ -22,19 +22,9 @@ dayjs.extend(duration)
 dayjs.extend(utc)
 dayjs.extend(relativeTime)
 
-// type SupportedChains = ChainId.Rinkeby | ChainId.Goerli | ChainId.Mainnet
-
-//export const CHAIN_ID: SupportedChains = parseInt(process.env.NEXT_PUBLIC_CHAIN_ID ?? '1')
-
 const useDappConfig: Config = {
   readOnlyChainId: CHAIN_ID,
   readOnlyUrls: {
-    // [ChainId.Rinkeby]: 'https://eth-rinkeby.alchemyapi.io/v2/WCQsygq3peGhgnTkPKsFj6OsWrLXgkzt',
-    // [ChainId.Rinkeby]: 'https://rinkeby.infura.io/v3/' + infuraId,
-    // [ChainId.Mainnet]: 'https://eth-mainnet.g.alchemy.com/v2/JBgRzZwEiE7Im5glhOhqaTHdtvEsHYNs',
-    // [ChainId.Mainnet]: process.env.NEXT_PUBLIC_ALCHEMY_MAINNET_HTTPS ?? '',
-    // [ChainId.Goerli]: process.env.NEXT_PUBLIC_ALCHEMY_GOERLI_HTTPS ?? '',
-    // [ChainId.Rinkeby]: process.env.NEXT_PUBLIC_ALCHEMY_RINKEBY_HTTPS ?? '',
     [CHAIN_ID]: process.env.NEXT_PUBLIC_ALCHEMY_HTTPS ?? ''
   },
   autoConnect: true
