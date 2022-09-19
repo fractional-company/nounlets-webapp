@@ -17,9 +17,17 @@ import IconBug from './icons/icon-bug'
 import { NEXT_PUBLIC_SHOW_DEBUG } from 'config'
 
 export default function ChainUpdater() {
+  return (
+    <>
+      <OnMounted>{NEXT_PUBLIC_SHOW_DEBUG && <LittleBug />}</OnMounted>
+      <VaultUpdater />
+      <LeaderboardUpdater />
+    </>
+  )
+}
+
+function LittleBug() {
   const [showDebugInfo, setShowDebugInfo] = useState(false)
-  const router = useRouter()
-  const sdk = useContext(SDKContext)
   const {
     isLive,
     isLoading,
@@ -31,7 +39,6 @@ export default function ChainUpdater() {
     latestNounletTokenId
   } = useVaultStore()
 
-  // url nid listener
   const { nid, auctionInfo } = useDisplayedNounlet()
   const { isOutOfSync, leaderboardData } = useLeaderboard()
 
@@ -51,6 +58,16 @@ export default function ChainUpdater() {
     ...leaderboardData
   }
 
+  const testSentry = () => {
+    console.error('Testing sentry 1')
+    try {
+      throw new Error('Testing Sentry 2')
+    } catch (error) {
+      console.error('Testing Sentry 2', error)
+    }
+    throw new Error('Testing Sentry 3')
+  }
+
   return (
     <>
       {NEXT_PUBLIC_SHOW_DEBUG && (
@@ -63,14 +80,14 @@ export default function ChainUpdater() {
           </div>
           {showDebugInfo && (
             <div className="overflow-hidden p-1 pt-8 text-px14 bg-secondary-red/25">
+              <Button className="basic" onClick={testSentry}>
+                Test Sentry Error
+              </Button>
               <pre>{JSON.stringify({ nid, vaultMetadata, auctionInfo, leaderboard }, null, 4)}</pre>
             </div>
           )}
         </>
       )}
-
-      <VaultUpdater />
-      <LeaderboardUpdater />
     </>
   )
 }
