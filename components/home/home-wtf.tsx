@@ -219,9 +219,9 @@ export default function HomeWTF(): JSX.Element {
             >
               <div className="space-y-4">
                 <p>
-                  The Nounlet Seeder contract is used to determine Noun traits during the minting
-                  process. Currently, Nounlet traits are determined using pseudo-random number
-                  generation:
+                  The Noun Descriptor contract is used to determine Nounlet traits during the
+                  minting process. Currently, Nounlet traits are determined using pseudo-random
+                  number generation:
                 </p>
                 <p>
                   <span className="bg-gray-2 rounded-lg p-2 px-4 text-black text-px16">
@@ -229,8 +229,8 @@ export default function HomeWTF(): JSX.Element {
                   </span>
                 </p>
                 <p>
-                  Trait generation is not truly random. Traits can be predicted when minting a Noun
-                  on the pending block.
+                  Trait generation is not truly random. Traits can be predicted when minting a
+                  Nounlet on the pending block.
                 </p>
               </div>
             </SimpleAccordion>
