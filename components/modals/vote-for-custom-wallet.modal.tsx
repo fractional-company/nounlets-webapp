@@ -1,8 +1,4 @@
-import { useResolveName } from '@usedapp/core'
 import Button from 'components/buttons/button'
-import SimpleAddress from 'components/simple-address'
-import SimpleModalWrapper from 'components/SimpleModalWrapper'
-import { ethers } from 'ethers'
 import { useDebounced } from 'hooks/useDebounced'
 import useLeaderboard from 'hooks/useLeaderboard'
 import { useResolveNameFixed } from 'hooks/useResolveNameFixed'
@@ -10,7 +6,6 @@ import useToasts from 'hooks/useToasts'
 import { shortenAddress } from 'lib/utils/common'
 import { WrappedTransactionReceiptState } from 'lib/utils/tx-with-error-handling'
 import { useMemo, useState } from 'react'
-import { useAppStore } from 'store/application'
 
 type ComponentProps = {
   onClose?: () => void
@@ -19,7 +14,6 @@ type ComponentProps = {
 export default function VoteForCustomWalletModal(props: ComponentProps): JSX.Element {
   const [searchInputValue, setSearchinputValue] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const { setVoteForDelegateModalForAddress } = useAppStore()
   const { toastSuccess, toastError } = useToasts()
   const { delegateVotes } = useLeaderboard()
 

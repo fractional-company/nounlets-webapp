@@ -1,35 +1,28 @@
-import Image from 'next/image'
-import Button from './buttons/button'
-import IconCaretDropdown from './icons/icon-caret-dropdown'
-import IconDiscord from './icons/icon-discord'
-import IconFractionalLogo from './icons/icon-fractional-logo'
-import IconPeople from '../public/img/icon-people.png'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import IconMedium from './icons/icon-medium'
-import IconHeartHollow from './icons/icon-heart-hollow'
-import IconTwitter from './icons/icon-twitter'
-import IconEtherscan from './icons/icon-etherscan'
-import LinksDropdownButton from './buttons/links-dropdown-button'
-import InfoPopover from './info-popover'
-import WalletModal from './modals/wallet-modal'
-import { useAppStore } from '../store/application'
 import { useEthers } from '@usedapp/core'
-import { useShortAddress } from './ShortAddress'
-import SimplePopover from './simple-popover'
-import IconQuestionCircle from './icons/icon-question-circle'
-import Link from 'next/link'
-import VoteForDelegateModal from './modals/vote-for-delegate-modal'
-import toast from 'react-hot-toast'
-import IconNounletsLogo from './icons/icon-nounlets-logo'
-import { useVaultStore } from 'store/vaultStore'
-import SimpleAddress from './simple-address'
-import { ethers } from 'ethers'
 import classNames from 'classnames'
-import IconCrown from './icons/icon-crown'
-import useDisplayedNounlet from 'hooks/useDisplayedNounlet'
+import { ethers } from 'ethers'
 import useCurrentBackground from 'hooks/useCurrentBackground'
-import IconCheckmark from './icons/icon-checkmark'
-import { ErrorToast, SuccessToast } from './toasts/CustomToasts'
+import Image from 'next/image'
+import Link from 'next/link'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useVaultStore } from 'store/vaultStore'
+import IconPeople from '../public/img/icon-people.png'
+import { useAppStore } from '../store/application'
+import Button from './buttons/button'
+import LinksDropdownButton from './buttons/links-dropdown-button'
+import IconCaretDropdown from './icons/icon-caret-dropdown'
+import IconCrown from './icons/icon-crown'
+import IconDiscord from './icons/icon-discord'
+import IconEtherscan from './icons/icon-etherscan'
+import IconFractionalLogo from './icons/icon-fractional-logo'
+import IconHeartHollow from './icons/icon-heart-hollow'
+import IconMedium from './icons/icon-medium'
+import IconNounletsLogo from './icons/icon-nounlets-logo'
+import IconTwitter from './icons/icon-twitter'
+import VoteForDelegateModal from './modals/vote-for-delegate-modal'
+import WalletModal from './modals/wallet-modal'
+import SimpleAddress from './simple-address'
+import SimplePopover from './simple-popover'
 
 export default function AppHeader(): JSX.Element {
   const [isMobileMenuOpen, setIsModalMenuOpen] = useState(false)
@@ -120,7 +113,7 @@ export default function AppHeader(): JSX.Element {
               <IconNounletsLogo className="flex-shrink-0 w-20 h-20 md:w-[108px] md:h-[108px]" />
             </a>
           </Link>
-          <div className="flex flex-1 -mt-4 md:-mt-8 overflow-hidden">
+          <div className="flex flex-1 -mt-4 md:-mt-8">
             <div className="flex-1 pr-4">
               {isLive && (
                 <Link href="/governance">
@@ -140,7 +133,7 @@ export default function AppHeader(): JSX.Element {
                 </Link>
               )}
             </div>
-            <div className="hidden lg:flex items-center space-x-4 overflow-hidden">
+            <div className="hidden lg:flex items-center space-x-4">
               <Link href="/governance">
                 <Button className="basic space-x-2 flex-shrink-0">
                   <Image src={IconPeople} alt="votes" height={14} />
@@ -199,70 +192,73 @@ export default function AppHeader(): JSX.Element {
           <div ref={mobileMenuRef}>
             <div className="space-y-2 pb-4">
               <Link href="/governance">
-                <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
+                <Button
+                  className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40"
+                  onClick={() => setIsModalMenuOpen(false)}
+                >
                   <Image src={IconPeople} alt="votes" height={14} />
                   <span>Vote</span>
                 </Button>
               </Link>
-              <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
-                <a
-                  href="https://discord.com/invite/8a34wmRjWB"
-                  target="_blank"
-                  className="space-x-2 w-full flex justify-center"
-                  rel="noreferrer"
-                >
+              <a
+                href="https://discord.com/invite/8a34wmRjWB"
+                target="_blank"
+                className="space-x-2 w-full flex justify-center"
+                rel="noreferrer"
+              >
+                <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
                   <IconDiscord className="h-[13px] w-auto" />
                   <span>Discord</span>
-                </a>
-              </Button>
-              <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
-                <a
-                  href="https://medium.com/@deeze/b76bbb4e42cc"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="space-x-2 w-full flex justify-center"
-                >
+                </Button>
+              </a>
+              <a
+                href="https://medium.com/@deeze/b76bbb4e42cc"
+                target="_blank"
+                rel="noreferrer"
+                className="space-x-2 w-full flex justify-center"
+              >
+                <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
                   <IconMedium className="h-[16px] w-auto" />
                   <span>Nounlets Explained (FAQ)</span>
-                </a>
-              </Button>
-              <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
-                <a
-                  href="https://nouns.wtf"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="space-x-2 w-full flex justify-center"
-                >
+                </Button>
+              </a>
+              <a
+                href="https://nouns.wtf"
+                target="_blank"
+                rel="noreferrer"
+                className="space-x-2 w-full flex justify-center"
+              >
+                <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
                   <IconHeartHollow className="h-[16px] w-auto" />
                   <span>Nouns.wtf</span>
-                </a>
-              </Button>
-              <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
-                <a
-                  href="https://twitter.com/tessera"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="space-x-2 w-full flex justify-center"
-                >
+                </Button>
+              </a>
+              <a
+                href="https://twitter.com/tessera"
+                target="_blank"
+                rel="noreferrer"
+                className="space-x-2 w-full flex justify-center"
+              >
+                <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
                   <IconTwitter className="h-[16px] w-auto" />
                   <span>Twitter</span>
-                </a>
-              </Button>
+                </Button>
+              </a>
               <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
                 <IconEtherscan className="h-[16px] w-auto" />
                 <span>Etherscan</span>
               </Button>
-              <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
-                <a
-                  href="https://tessera.co/"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="space-x-2 w-full flex justify-center"
-                >
+              <a
+                href="https://tessera.co/"
+                target="_blank"
+                rel="noreferrer"
+                className="space-x-2 w-full flex justify-center"
+              >
+                <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
                   <IconFractionalLogo className="h-[16px] w-auto text-black" />
                   <span>Tessera</span>
-                </a>
-              </Button>
+                </Button>
+              </a>
             </div>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { Popover } from '@headlessui/react'
+import { Popover, Portal } from '@headlessui/react'
 import classNames from 'classnames'
 import { useState } from 'react'
 import { usePopper } from 'react-popper'
@@ -23,16 +23,18 @@ export default function SimplePopover(props: any): JSX.Element {
         </Popover.Button>
 
         {isShowing && (
-          <Popover.Panel
-            static
-            ref={setPopperElement}
-            style={{ ...styles.popper, zIndex: 200 }}
-            {...attributes.popper}
-          >
-            <div className="p-3 bg-black border-black shadow-md rounded-px10 text-white font-500 text-px14 leading-px18 border-2 w-[200px]">
-              {props.children[1]}
-            </div>
-          </Popover.Panel>
+          <Portal>
+            <Popover.Panel
+              static
+              ref={setPopperElement}
+              style={{ ...styles.popper, zIndex: 200 }}
+              {...attributes.popper}
+            >
+              <div className="p-3 bg-black border-black shadow-md rounded-px10 text-white font-500 text-px14 leading-px18 border-2 w-[200px]">
+                {props.children[1]}
+              </div>
+            </Popover.Panel>
+          </Portal>
         )}
       </Popover>
     </div>
