@@ -251,7 +251,7 @@ export default function AppHeader(): JSX.Element {
                   rel="noreferrer"
                   className="space-x-2 w-full flex justify-center"
                 >
-                  <IconFractionalLogo className="h-[16px] w-auto text-secondary-green" />
+                  <IconFractionalLogo className="h-[16px] w-auto text-black" />
                   <span>Tessera</span>
                 </a>
               </Button>
