@@ -58,7 +58,7 @@ export default function WalletModal(): JSX.Element {
         }
       `}</style>
       <WalletButton onClick={connectMetamask} walletType={WALLET_TYPE.metamask} />
-      <WalletButton
+      {/* <WalletButton
         onClick={() => {
           const fortmatic = new FortmaticConnector({
             apiKey: 'pk_live_60FAF077265B4CBA',
@@ -67,7 +67,8 @@ export default function WalletModal(): JSX.Element {
           activate(fortmatic)
         }}
         walletType={WALLET_TYPE.fortmatic}
-      />
+      /> */}
+      <WalletButton onClick={() => activateBrowserWallet()} walletType={WALLET_TYPE.brave} />
       <WalletButton
         onClick={() => {
           const walletConnect = new WalletConnectConnector({
@@ -93,7 +94,7 @@ export default function WalletModal(): JSX.Element {
         }}
         walletType={WALLET_TYPE.coinbaseWallet}
       />
-      <WalletButton onClick={() => activateBrowserWallet()} walletType={WALLET_TYPE.brave} />
+
       {/* <WalletButton
         onClick={() => {
           const ledger = new LedgerConnector({
