@@ -14,7 +14,7 @@ export default function HomeWTF(): JSX.Element {
           <p className="mb-6">
             Nounlets are an experiment to allow for collective ownership over an individual{' '}
             <a
-              href="https://nouns.wtf/315"
+              href="https://nouns.wtf/noun/315"
               className="text-secondary-blue"
               target="_blank"
               rel="noreferrer"
