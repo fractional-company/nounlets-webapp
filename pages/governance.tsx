@@ -158,7 +158,7 @@ function GovernanceCurrentDelegate() {
 
             <div className="flex flex-col lg:max-w-[300px]">
               <div className="flex flex-col xs:flex-row items-center xs:gap-3">
-                <p className="font-londrina text-px24 text-gray-4 leading-px36">My nounlets</p>
+                <p className="font-londrina text-px24 text-gray-4 leading-px36">My Nounlets</p>
 
                 {areMyVotesSplit && (
                   <div className="flex items-center">

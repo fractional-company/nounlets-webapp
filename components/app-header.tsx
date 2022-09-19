@@ -70,12 +70,12 @@ export default function AppHeader(): JSX.Element {
       <Button
         className={classNames(
           account ? 'basic hover:!bg-secondary-red' : 'primary',
-          'relative group'
+          'relative group overflow-hidden'
         )}
         onClick={() => handleConnectButtonClick()}
       >
         {account ? (
-          <div className="flex items-center">
+          <div className="flex items-center overflow-hidden">
             {isCrownShown && (
               <IconCrown className="absolute w-[30px] h-auto left-[-12px] top-[-12px] rotate-[-40deg] text-[#fa8f2f]" />
             )}
@@ -101,7 +101,11 @@ export default function AppHeader(): JSX.Element {
     return currentDelegate === ethers.constants.AddressZero ? (
       <span className="font-700 ml-2">no one :(</span>
     ) : (
-      <SimpleAddress className="inline-flex font-700 ml-2" address={currentDelegate} />
+      <SimpleAddress
+        className="inline-flex font-700 ml-2 pointer-events-none"
+        textClassName=""
+        address={currentDelegate}
+      />
     )
   }, [currentDelegate])
 
@@ -116,27 +120,29 @@ export default function AppHeader(): JSX.Element {
               <IconNounletsLogo className="flex-shrink-0 w-20 h-20 md:w-[108px] md:h-[108px]" />
             </a>
           </Link>
-          <div className="flex flex-1 -mt-4 md:-mt-8">
-            <div className="flex-1">
+          <div className="flex flex-1 -mt-4 md:-mt-8 overflow-hidden">
+            <div className="flex-1 pr-4">
               {isLive && (
-                <div className="hidden md:inline-flex items-center px-4 h-12 rounded-px10 bg-white space-x-2">
-                  <span className="hidden lg:inline">Current delegate</span>
-                  {currentDelegateRC}
+                <Link href="/governance">
+                  <div className="hidden md:inline-flex items-center px-4 h-12 rounded-px10 bg-white space-x-2 cursor-pointer overflow-hidden">
+                    <span className="flex-shrink-0">Current delegate</span>
+                    {currentDelegateRC}
 
-                  {isCurrentDelegateOutOfSync && (
-                    <SimplePopover>
-                      <h1 className="font-700 text-px18 text-gray-4">
-                        <span className="text-secondary-orange">⚠</span>
-                      </h1>
-                      <div>Delegate is out of sync. You can update it on the vote page.</div>
-                    </SimplePopover>
-                  )}
-                </div>
+                    {isCurrentDelegateOutOfSync && (
+                      <SimplePopover>
+                        <h1 className="font-700 text-px18 text-gray-4">
+                          <span className="text-secondary-orange">⚠</span>
+                        </h1>
+                        <div>Delegate is out of sync. You can update it on the vote page.</div>
+                      </SimplePopover>
+                    )}
+                  </div>
+                </Link>
               )}
             </div>
-            <div className="hidden lg:flex items-center space-x-4">
+            <div className="hidden lg:flex items-center space-x-4 overflow-hidden">
               <Link href="/governance">
-                <Button className="basic space-x-2">
+                <Button className="basic space-x-2 flex-shrink-0">
                   <Image src={IconPeople} alt="votes" height={14} />
                   <span>Vote</span>
                 </Button>
@@ -155,7 +161,7 @@ export default function AppHeader(): JSX.Element {
               <LinksDropdownButton />
               {connectButton}
             </div>
-            <div className="flex lg:hidden space-x-2">
+            <div className="flex lg:hidden space-x-2 overflow-hidden">
               {connectButton}
               <Button
                 className="basic space-x-2"
@@ -167,22 +173,24 @@ export default function AppHeader(): JSX.Element {
           </div>
         </div>
         {isLive && (
-          <div className="md:hidden pb-4">
-            <div className="flex items-center px-4 h-12 rounded-px10 bg-white space-x-2 justify-center">
-              <div className="truncate font-500">
-                <span className="hidden sm:inline">Current delegate</span>
-                {currentDelegateRC}
+          <Link href="/governance">
+            <div className="md:hidden pb-4 cursor-pointer">
+              <div className="flex flex-col items-center px-4 py-2 rounded-px10 bg-white space-y-2 justify-center overflow-hidden">
+                <p>Current delegate</p>
+                <div className="flex items-center justify-center space-x-2 w-full">
+                  <div className="truncate font-500">{currentDelegateRC}</div>
+                  {isCurrentDelegateOutOfSync && (
+                    <SimplePopover>
+                      <h1 className="font-700 text-px18 text-gray-4">
+                        <span className="text-secondary-orange">⚠</span>
+                      </h1>
+                      <div>Delegate is out of sync. You can update it on the vote page.</div>
+                    </SimplePopover>
+                  )}
+                </div>
               </div>
-              {isCurrentDelegateOutOfSync && (
-                <SimplePopover>
-                  <h1 className="font-700 text-px18 text-gray-4">
-                    <span className="text-secondary-orange">⚠</span>
-                  </h1>
-                  <div>Delegate is out of sync. You can update it on the vote page.</div>
-                </SimplePopover>
-              )}
             </div>
-          </div>
+          </Link>
         )}
         <div
           className="lg:hidden mobile-menu overflow-hidden transition-all ease-in-out"
