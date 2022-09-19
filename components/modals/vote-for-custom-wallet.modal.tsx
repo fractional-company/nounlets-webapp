@@ -38,9 +38,9 @@ export default function VoteForCustomWalletModal(props: ComponentProps): JSX.Ele
   }, [isLoadingENSName, ensAddress, ensAddressError])
 
   const shortenedAddress = useMemo(() => {
-    if (ensAddress == null || ensAddress === debouncedSearchInputValue) return ''
+    if (ensAddress == null) return ''
     return shortenAddress(ensAddress, 6).toLowerCase()
-  }, [ensAddress, debouncedSearchInputValue])
+  }, [ensAddress])
 
   const handleVoteForDelegate = async () => {
     if (ensAddress == null) return
@@ -80,7 +80,7 @@ export default function VoteForCustomWalletModal(props: ComponentProps): JSX.Ele
           />
         </div>
         {shortenedAddress && (
-          <p className="font-londrina font-500 text-px20 leading-px20 truncate text-gray-4 py-2 text-center">
+          <p className="font-500 text-px20 leading-px20 truncate text-black py-2 text-center">
             {shortenedAddress}
           </p>
         )}
