@@ -30,7 +30,6 @@ const Modal: React.FC<{
   content?: React.ReactNode
   onDismiss: () => void
 }> = (props) => {
-  console.log('MODAL', props)
   const { title, content, onDismiss } = props
   return (
     <>

@@ -47,8 +47,6 @@ export default function HomeVotesFromNounlet(): JSX.Element {
       const formattedTimestamp = dayjs.unix(+vote.timestamp).format('MMM D, YYYY, h:mmA')
       const address = vote.delegate.id.split('-')[1]
 
-      console.log(address)
-
       return (
         <div className="votes-list-tile" key={vote.id}>
           <div className="border rounded-px16 p-4 border-gray-2 leading-px24">

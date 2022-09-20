@@ -57,13 +57,11 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
       setConnectModalOpen(true)
       return
     }
-    console.log('handle settle!')
     setIsSettlingAuction(true)
 
     try {
       const nounletId = '' + nid
       const response = await settleAuction()
-      console.log('result of settling', response)
 
       if (
         response.status === WrappedTransactionReceiptState.SUCCESS ||

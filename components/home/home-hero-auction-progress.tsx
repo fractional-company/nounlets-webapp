@@ -70,7 +70,6 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
   }, [bidInputValue])
 
   const latestBidsList: JSX.Element[] = useMemo(() => {
-    console.log('latestbits', historicBids)
     return historicBids.slice(0, 3).map((bid) => {
       const ethValue = FixedNumber.from(formatEther(bid.amount.toString()))
         .round(NEXT_PUBLIC_BID_DECIMALS)
@@ -100,7 +99,6 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
 
   const debouncedMutateAuctionInfo = useMemo(() => {
     return debounce(() => {
-      console.log('🍓🍓🍓🍓🍓 calling debouncedMutateAuctionInfo')
       return mutateAuctionInfo()
     }, 1000)
   }, [mutateAuctionInfo])
@@ -109,7 +107,7 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
     if (sdk == null) return
     if (nounletId === '0') return
 
-    console.log('👍 setting bid listener for ', nounletId)
+    // console.log('👍 setting bid listener for ', nounletId)
     const nounletAuction = sdk.NounletAuction
     const bidFilter = nounletAuction.filters.Bid(
       vaultAddress,
@@ -128,20 +126,19 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
       extendedTime: BigNumber,
       event: any // IDK why this isn't BidEvent
     ) => {
-      console.log('🖐 bid event!', vault, token, id, bidder, amount, extendedTime, event)
+      // console.log('🖐 bid event!', vault, token, id, bidder, amount, extendedTime, event)
       debouncedMutateAuctionInfo()
     }
     nounletAuction.on(bidFilter, listener)
 
     return () => {
-      console.log('👎 removing listener for', nounletId)
+      // console.log('👎 removing listener for', nounletId)
       nounletAuction.off(bidFilter, listener)
     }
   }, [vaultAddress, nounletTokenAddress, nounletId, sdk, debouncedMutateAuctionInfo])
 
   const handleTimerFinished = useCallback(() => {
     debouncedMutateAuctionInfo()
-    console.log('finished timer!')
   }, [debouncedMutateAuctionInfo])
 
   // Currently unused

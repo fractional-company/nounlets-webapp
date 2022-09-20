@@ -19,8 +19,6 @@ if (cacheVersion !== -1) {
         localStorage.getItem(cacheKey) || '{"images": {}, "auctions": {}}'
       )
 
-      console.log(localStorageData)
-
       if (localStorageData['images'] == null) {
         localStorageData['images'] = {}
       }
@@ -49,7 +47,7 @@ if (cacheVersion !== -1) {
 const debouncedLocalStorageWrite = debounce(() => {
   if (cacheVersion !== -1) {
     if (typeof window !== 'undefined' && window.localStorage != null) {
-      console.log('📋📋📋📋📋📋 Writingto local storage')
+      // console.log('📋📋📋📋📋📋 Writingto local storage')
       try {
         const string = JSON.stringify(localStorageData)
         localStorage.setItem(cacheKey, string)
@@ -64,7 +62,7 @@ export default function useLocalStorage() {
   const setNounletImageCache = useCallback((key: string, data: object) => {
     if (cacheVersion !== -1) {
       if (typeof window !== 'undefined' && window.localStorage != null) {
-        console.log('📸📸📸 setting image data', key, data)
+        // console.log('📸📸📸 setting image data', key, data)
         localStorageData['images'][key] = data
         debouncedLocalStorageWrite()
       }
@@ -74,7 +72,7 @@ export default function useLocalStorage() {
   const setNounletAuctionsCache = useCallback((key: string, data: object) => {
     if (cacheVersion > 3) {
       if (typeof window !== 'undefined' && window.localStorage != null) {
-        console.log('🔫🔫🔫 setting auctions data', key, data)
+        // console.log('🔫🔫🔫 setting auctions data', key, data)
         localStorageData['auctions'][key] = data
         debouncedLocalStorageWrite()
       }

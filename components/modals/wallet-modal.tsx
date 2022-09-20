@@ -166,7 +166,6 @@ export default function WalletModal(): JSX.Element {
         <Button
           className="link text-px14 font-700 text-gray-3 hover:text-secondary-blue w-full --sm"
           onClick={() => {
-            console.log(localStorage.removeItem('walletconnect'))
             deactivate()
             setIsSuccessModalOpen(true)
           }}

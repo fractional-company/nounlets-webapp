@@ -123,8 +123,6 @@ export const useVaultStore = createTrackedSelector(
       },
       setLatestNounletTokenId: (id) => {
         set((state) => {
-          console.log('setCurredntId', id)
-
           state.latestNounletTokenId = id
         })
       },

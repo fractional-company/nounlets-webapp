@@ -28,11 +28,11 @@ export default function useLeaderboard() {
   const { data, mutate } = useSWR(
     canFetchLeaderboard && { name: 'Leaderboard' },
     async (key) => {
-      console.log('🌽🌽🌽🌽🌽 Fetching new leaderboard data')
+      // console.log('🌽🌽🌽🌽🌽 Fetching new leaderboard data')
       const leaderboardData = await getAllNounlets(vaultAddress, sdk!.NounletAuction.address)
-      console.groupCollapsed('🌽🌽🌽🌽🌽 Fetched new leaderboard data')
-      console.log({ leaderboardData })
-      console.groupEnd()
+      // console.groupCollapsed('🌽🌽🌽🌽🌽 Fetched new leaderboard data')
+      // console.log({ leaderboardData })
+      // console.groupEnd()
 
       return leaderboardData
     },
@@ -54,7 +54,6 @@ export default function useLeaderboard() {
       onSuccess: (data) => {
         if (data == null) {
           setTimeout(() => {
-            console.log('🌽🌽🌽', 'Data null, forced mutate', '🌽🌽🌽')
             mutate()
           }, 15000)
           return
@@ -70,7 +69,6 @@ export default function useLeaderboard() {
 
         if (leaderboardBlockNumber === 0) {
           setTimeout(() => {
-            console.log('🌽🌽🌽', 'First load, forced mutate', '🌽🌽🌽')
             mutate()
           }, 15000)
           return
@@ -108,7 +106,6 @@ export default function useLeaderboard() {
   }, [leaderboardData])
 
   const claimDelegate = async (toAddress: string) => {
-    console.log('🔔 claimDelegate', vaultAddress, toAddress)
     if (sdk == null || account == null || library == null) throw new Error('No signer')
     if (nounletTokenAddress == '') throw new Error('No nounlet token address')
 
@@ -121,7 +118,6 @@ export default function useLeaderboard() {
   }
 
   const delegateVotes = async (toAddress: string) => {
-    console.log('🔔 delegateVotes', toAddress)
     if (sdk == null || account == null || library == null) throw new Error('No signer')
     if (nounletTokenAddress == '') throw new Error('No nounlet token address')
 

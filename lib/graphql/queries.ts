@@ -103,9 +103,9 @@ export const getNounletAuctionData = async (
   nounletTokenAddress: string,
   nounletTokenId: string
 ) => {
-  console.groupCollapsed('🚀 Fetching auction data from BE')
-  console.table({ vaultAddress, nounletTokenAddress, nounletTokenId })
-  console.groupEnd()
+  // console.groupCollapsed('🚀 Fetching auction data from BE')
+  // console.table({ vaultAddress, nounletTokenAddress, nounletTokenId })
+  // console.groupEnd()
 
   const { data } = await client.query<AuctionDataResponse>({
     query: gql`
@@ -140,9 +140,9 @@ export const getNounletAuctionData = async (
     }`
   })
 
-  console.groupCollapsed('🚀 Fetched auction data from BE')
-  console.log(data)
-  console.groupEnd()
+  // console.groupCollapsed('🚀 Fetched auction data from BE')
+  // console.log(data)
+  // console.groupEnd()
 
   if ((data.vault.noun?.nounlets?.length ?? 0) === 0) {
     console.log('BE doesnt have data yet')
@@ -175,9 +175,9 @@ export const getNounletAuctionDataBC = async (
   nounletTokenId: string,
   nounletAuction: NounletsSDK['NounletAuction']
 ) => {
-  console.groupCollapsed('🔩 Fetching auction data from Blockchain')
-  console.table({ vaultAddress, nounletTokenAddress, nounletTokenId })
-  console.groupEnd()
+  // console.groupCollapsed('🔩 Fetching auction data from Blockchain')
+  // console.table({ vaultAddress, nounletTokenAddress, nounletTokenId })
+  // console.groupEnd()
 
   const bidFilter = nounletAuction.filters.Bid(
     vaultAddress,
@@ -229,9 +229,9 @@ export const getNounletAuctionDataBC = async (
     bids: [...formattedBids]
   }
 
-  console.groupCollapsed('🔩 Fetched auction data from Blockchain')
-  console.log(auction)
-  console.groupEnd()
+  // console.groupCollapsed('🔩 Fetched auction data from Blockchain')
+  // console.log(auction)
+  // console.groupEnd()
 
   return auction
 }
@@ -255,8 +255,6 @@ type NounletsDataResponse = {
 }
 
 export const getAllNounlets = async (vaultAddress: string, nounletAuctionAddress: string) => {
-  console.log('🍍 all nounlets for leaderboard data', vaultAddress)
-
   const { data } = await client.query<NounletsDataResponse>({
     query: gql`
     {
@@ -329,13 +327,6 @@ export const getAllNounlets = async (vaultAddress: string, nounletAuctionAddress
       doesDelegateHaveMostVotes = true
     }
   }
-
-  // console.log({ data })
-  console.log({
-    accounts,
-    currentDelegate,
-    doesDelegateHaveMostVotes
-  })
 
   return {
     accounts,

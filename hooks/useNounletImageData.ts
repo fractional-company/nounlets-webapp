@@ -47,7 +47,6 @@ export default function useNounletImageData(nounletId: string | null) {
   const { data } = useSWR<NounletImageData>(
     canFetch && swrKey,
     async (key) => {
-      console.log('🍧🍧🍧🍧 fetcheing image data', nid)
       const nounletToken = sdk!.NounletToken.attach(nounletTokenAddress)
 
       const [data, seed] = await Promise.all([
@@ -65,7 +64,6 @@ export default function useNounletImageData(nounletId: string | null) {
         head: seed.head
       }
 
-      console.log('🍧🍧🍧🍧 fetched image data', nid, json.seed)
       return json
     },
     {

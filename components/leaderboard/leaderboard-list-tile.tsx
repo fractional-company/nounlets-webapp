@@ -61,7 +61,6 @@ export default function LeaderboardListTile(props: {
       setConnectModalOpen(true)
       return
     }
-    console.log('casting vote for!', address)
     setVoteForDelegateModalForAddress(true, address)
   }
 

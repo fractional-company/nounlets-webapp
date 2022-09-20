@@ -9,6 +9,7 @@ import useLeaderboard from 'hooks/useLeaderboard'
 import useSdk from 'hooks/useSdk'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
+import { useEffect } from 'react'
 import { useVaultStore } from 'store/vaultStore'
 import SEO from '../components/seo'
 
@@ -21,6 +22,14 @@ export const getServerSideProps = (context: any) => {
 }
 
 const Settings: NextPage<{ url: string }> = ({ url }) => {
+  const router = useRouter()
+
+  useEffect(() => {
+    router.replace('/')
+  })
+
+  return null
+
   const { account, library } = useEthers()
   const sdk = useSdk()
   const { isLive, isLoading, vaultAddress, nounletTokenAddress, latestNounletTokenId } =

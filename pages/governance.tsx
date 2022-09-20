@@ -101,8 +101,6 @@ function GovernanceCurrentDelegate() {
   }, [currentDelegate])
 
   const handleUpdateDelegate = useCallback(async () => {
-    console.log('handlee', mostVotesAcc)
-
     if (account == null) {
       setConnectModalOpen(true)
       return

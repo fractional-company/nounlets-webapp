@@ -61,7 +61,6 @@ export default function CountdownTimer(props: ComponentProps): JSX.Element {
   }, [auctionEnd, auctionTimer, onTimerFinished, onTimerTick])
 
   const formattedTime = useMemo(() => {
-    console.log('auctione nd', auctionEnd)
     const endTime = dayjs.unix(BigNumber.from(auctionEnd).toNumber()).local()
     return endTime.format('h:mm:ss a')
   }, [auctionEnd])

@@ -62,7 +62,6 @@ export default function useNounImageData(nounId: string | null) {
           glasses: seed.glasses,
           head: seed.head
         }
-        console.log('🍕 fetched image data', nid, json.seed)
         return json
       } catch (error) {
         console.log('error while fetching nounlet image', error)

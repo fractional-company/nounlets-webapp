@@ -21,7 +21,7 @@ export const useBlockNumberCheckpointStore = createTrackedSelector(
       setLeaderboardBlockNumber: (data) => {
         set((state) => {
           if (data > get().leaderboardBlockNumber) {
-            console.log('🥇 Setting new leaderboard number!!!', data, get().leaderboardBlockNumber)
+            // console.log('🥇 Setting new leaderboard number', data, get().leaderboardBlockNumber)
             state.leaderboardBlockNumber = data
           }
         })

@@ -14,7 +14,6 @@ export const useReverseENSLookUp = (address: string, withStatus = true) => {
       }
       if (mounted && ensName) {
         setEns(ensName)
-        console.log(`error resolving no == ${ensName}`)
       } else {
         console.log(`error resolving reverse ens lookup: `, ensNameError?.message)
       }

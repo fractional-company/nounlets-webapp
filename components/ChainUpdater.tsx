@@ -120,9 +120,9 @@ function VaultUpdater() {
       },
     async (key) => {
       if (sdk == null) throw new Error('sdk not initialized')
-      console.groupCollapsed('🏳️ fetching vault metadata ...')
-      console.log({ ...key })
-      console.groupEnd()
+      // console.groupCollapsed('🏳️ fetching vault metadata ...')
+      // console.log({ ...key })
+      // console.groupEnd()
 
       const [vaultMetadata, vaultInfo /*, currentDelegate*/] = await Promise.all([
         getVaultData(key.vaultAddress),
@@ -146,7 +146,6 @@ function VaultUpdater() {
     {
       dedupingInterval: 5000,
       onErrorRetry: (error, key, config, revalidate, { retryCount }) => {
-        console.log(error, retryCount)
         if (error.status === 404) return
         if (error === 'vault not found') {
           console.log('🐉 Checking for vault again in 30 seconds 🐉')
@@ -159,9 +158,9 @@ function VaultUpdater() {
         setTimeout(() => revalidate({ retryCount }), 5000)
       },
       onSuccess: (data, key, config) => {
-        console.groupCollapsed('🏴 fetched vault metadata ...')
-        console.table(data)
-        console.groupEnd()
+        // console.groupCollapsed('🏴 fetched vault metadata ...')
+        // console.table(data)
+        // console.groupEnd()
 
         if (data.isLive) {
           setNounletTokenAddress(data.nounletTokenAddress)
@@ -238,16 +237,16 @@ function LeaderboardUpdater() {
     if (!isLive || sdk == null) return
 
     // TODO Maybe be more specific with the events?
-    console.log('🍉 listen to any event on NounletToken', vaultAddress, nounletTokenAddress)
+    // console.log('🍉 listen to any event on NounletToken', vaultAddress, nounletTokenAddress)
     const nounletToken = sdk.NounletToken.attach(nounletTokenAddress)
     const nounletAuction = sdk.NounletAuction
     const nounletGovernance = sdk.NounletGovernance
 
     const listener = (...eventData: any) => {
       const event = eventData.at(-1)
-      console.groupCollapsed('🍉🍉🍉 any event', event?.blockNumber, eventData)
-      console.log('event data', event)
-      console.groupEnd()
+      // console.groupCollapsed('🍉🍉🍉 any event', event?.blockNumber, eventData)
+      // console.log('event data', event)
+      // console.groupEnd()
 
       setLeaderboardBlockNumber(event?.blockNumber || 0)
       debouncedMutate()
@@ -258,7 +257,7 @@ function LeaderboardUpdater() {
     nounletGovernance.on(nounletGovernance, listener)
 
     return () => {
-      console.log('🍉 stop listening to any event on NounletToken')
+      // console.log('🍉 stop listening to any event on NounletToken')
       nounletToken.off(nounletToken, listener)
       nounletAuction.off(nounletAuction, listener)
       nounletGovernance.off(nounletGovernance, listener)

@@ -69,7 +69,7 @@ export default function useNounletAuctionInfo(nounletId: string | null) {
 
       // No need to refresh since its DONE
       if (cachedDataHasAuctionSettled) {
-        console.log('⚱️ ⚱️ ⚱️ Ended AND settled. Stop retrying')
+        // console.log('⚱️ ⚱️ ⚱️ Ended AND settled. Stop retrying')
         return 0
       }
 
@@ -113,11 +113,11 @@ export default function useNounletAuctionInfo(nounletId: string | null) {
     async (key) => {
       const isAuctionOld = +key.nounletId < +latestNounletTokenId
       let response: Awaited<ReturnType<typeof getNounletAuctionData>>
-      console.log('👩‍⚖️ Fetching auction', { isAuctionOld, key })
+      // console.log('👩‍⚖️ Fetching auction', { isAuctionOld, key })
 
       // The auction has already settled on the BC
       if (isAuctionOld) {
-        console.log('👩‍⚖️ Old auction')
+        // console.log('👩‍⚖️ Old auction')
         try {
           response = await getNounletAuctionData(
             key.vaultAddress,
@@ -126,7 +126,7 @@ export default function useNounletAuctionInfo(nounletId: string | null) {
           )
 
           if (response == null || !response.settled) {
-            console.log('👩‍⚖️👩‍⚖️ Old auction not yet synced. get from BC')
+            // console.log('👩‍⚖️👩‍⚖️ Old auction not yet synced. get from BC')
             response = await getNounletAuctionDataBC(
               key.vaultAddress,
               key.nounletTokenAddress,
@@ -142,7 +142,7 @@ export default function useNounletAuctionInfo(nounletId: string | null) {
         }
       }
       // Check for auction info every once in a while
-      console.log('👩‍⚖️👩‍⚖️👩‍⚖️👩‍⚖️ Just checking')
+      // console.log('👩‍⚖️👩‍⚖️👩‍⚖️👩‍⚖️ Just checking')
       try {
         response = await getNounletAuctionData(
           key.vaultAddress,
@@ -151,7 +151,7 @@ export default function useNounletAuctionInfo(nounletId: string | null) {
         )
 
         if (response == null || !response.settled) {
-          console.log('👩‍⚖️👩‍⚖️👩‍⚖️👩‍⚖️ Auction not yet synced. get from BC')
+          // console.log('👩‍⚖️👩‍⚖️👩‍⚖️👩‍⚖️ Auction not yet synced. get from BC')
           response = await getNounletAuctionDataBC(
             key.vaultAddress,
             key.nounletTokenAddress,
@@ -168,7 +168,6 @@ export default function useNounletAuctionInfo(nounletId: string | null) {
     },
     {
       onSuccess(data, key) {
-        console.log('auction success', key, data)
         if (data != null && data.auction != null) {
           if (data.auction.settled === true) {
             if (data.auction.id === latestNounletTokenId) {
