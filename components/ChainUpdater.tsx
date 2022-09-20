@@ -147,7 +147,7 @@ function VaultUpdater() {
       dedupingInterval: 5000,
       onErrorRetry: (error, key, config, revalidate, { retryCount }) => {
         if (error.status === 404) return
-        if (error === 'vault not found') {
+        if (error.message === 'vault not found') {
           console.log('🐉 Checking for vault again in 30 seconds 🐉')
           setTimeout(() => revalidate({ retryCount }), 30000)
           return

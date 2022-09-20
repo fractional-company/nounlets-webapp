@@ -225,7 +225,7 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
         <p>
           You are bidding for 1% ownership of the Noun.{' '}
           <a
-            href="https://medium.com/@deeze/b76bbb4e42cc"
+            href="https://medium.com/tessera-nft/nounlets-explained-faq-57e9bc537d93"
             target="_blank"
             className="font-700 text-secondary-blue"
             rel="noreferrer"
