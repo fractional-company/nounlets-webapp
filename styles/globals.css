@@ -8,6 +8,10 @@
   .image-pixelated {
     image-rendering: pixelated;
   }
+
+  .wiggle-hover:hover {
+    background-position: center left -109px !important;
+  }
 }
 
 @font-face {

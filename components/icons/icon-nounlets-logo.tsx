@@ -447,7 +447,7 @@ export default function IconNounletsLogo(props: { className?: string }) {
     //   className={props.className}
     // />
     <div
-      className={`${props.className} md:animate-wiggle`}
+      className={`${props.className} md:animate-wiggle md:wiggle-hover`}
       style={{
         backgroundImage: `url(${nounletsTileset.src})`,
         backgroundRepeat: 'no-repeat',
