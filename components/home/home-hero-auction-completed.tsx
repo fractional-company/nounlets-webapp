@@ -77,7 +77,8 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
             vaultAddress: vaultAddress
           })
         )
-        toastSuccess('Auction settled 🎊', 'On to the next one!')
+        const message = nounletId === '100' ? "Aaaaaand we're done!" : 'On to the next one!'
+        toastSuccess('Auction settled 🎊', message)
         // await mutateDisplayedNounletAuctionInfo() // not needed since there is no new events
       } else {
         throw response

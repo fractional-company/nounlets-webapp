@@ -13,16 +13,11 @@ import { useAppStore } from '../store/application'
 import useCurrentBackground from 'hooks/useCurrentBackground'
 import SEO from '../components/seo'
 
-/*
-Token ID    | Vault
-0           | 0xba9e59afaee607782245bb78f6b93c89b070e855
-*/
-
 const Home: NextPage<{ url: string }> = ({ url }) => {
   const { setBidModalOpen, isBidModalOpen } = useAppStore()
   const { isLive } = useVaultStore()
 
-  const { isLatestNounlet } = useDisplayedNounlet()
+  const { isLatestNounlet, hasAuctionSettled } = useDisplayedNounlet()
 
   return (
     <div className="page-home w-screen">
@@ -42,8 +37,9 @@ const Home: NextPage<{ url: string }> = ({ url }) => {
       </SimpleModalWrapper>
       <div className="space-y-16">
         <HomeHero />
-        {isLive && (isLatestNounlet ? <HomeLeaderboard /> : <HomeVotesFromNounlet />)}
-        {isLive && isLatestNounlet && <HomeCollectiveOwnership />}
+        {isLive && hasAuctionSettled && <HomeVotesFromNounlet />}
+        {isLive && <HomeLeaderboard />}
+        {isLive && <HomeCollectiveOwnership />}
         <HomeWTF />
       </div>
     </div>
