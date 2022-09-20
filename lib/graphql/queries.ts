@@ -254,7 +254,7 @@ type NounletsDataResponse = {
   _meta: _Meta
 }
 
-export const getAllNounlets = async (vaultAddress: string) => {
+export const getAllNounlets = async (vaultAddress: string, nounletAuctionAddress: string) => {
   console.log('🍍 all nounlets for leaderboard data', vaultAddress)
 
   const { data } = await client.query<NounletsDataResponse>({
@@ -284,7 +284,12 @@ export const getAllNounlets = async (vaultAddress: string) => {
     `
   })
 
-  const nounlets = data.vault.noun.nounlets
+  // Remove nounlet auction address
+  const nounlets = data.vault.noun.nounlets.filter(
+    (nounlet) =>
+      nounlet.holder.id.toLowerCase().split('-')[1] !== nounletAuctionAddress.toLowerCase()
+  )
+
   const accounts: Record<string, { holding: { id: string; delegate: string }[]; votes: number }> =
     {}
 
@@ -342,7 +347,11 @@ export const getAllNounlets = async (vaultAddress: string) => {
   }
 }
 
-export const getNounletVotes = async (nounletTokenAddress: string, nounletTokenId: string) => {
+export const getNounletVotes = async (
+  nounletTokenAddress: string,
+  nounletTokenId: string,
+  nounletAuctionAddress: string
+) => {
   const { data } = await client.query<{ nounlet: Nounlet }>({
     query: gql`
     {
@@ -356,5 +365,10 @@ export const getNounletVotes = async (nounletTokenAddress: string, nounletTokenI
       }
     }`
   })
+
+  const filteredVotes = data.nounlet.delegateVotes.filter(
+    (vote) => vote.delegate.id.toLowerCase().split('-')[1] !== nounletAuctionAddress.toLowerCase()
+  )
+  data.nounlet.delegateVotes = filteredVotes
   return data
 }

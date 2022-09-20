@@ -19,6 +19,8 @@ const metamaskNetworkName = () => {
       return 'Ethereum Mainnet'
     case 4:
       return 'Rinkeby Test Network'
+    case 5:
+      return 'Goerli Test Network'
     default:
       return `Network ${CHAIN_ID}`
   }

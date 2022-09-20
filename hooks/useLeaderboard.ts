@@ -29,7 +29,7 @@ export default function useLeaderboard() {
     canFetchLeaderboard && { name: 'Leaderboard' },
     async (key) => {
       console.log('🌽🌽🌽🌽🌽 Fetching new leaderboard data')
-      const leaderboardData = await getAllNounlets(vaultAddress)
+      const leaderboardData = await getAllNounlets(vaultAddress, sdk!.NounletAuction.address)
       console.groupCollapsed('🌽🌽🌽🌽🌽 Fetched new leaderboard data')
       console.log({ leaderboardData })
       console.groupEnd()

@@ -4,6 +4,7 @@ import IconSpinner from 'components/icons/icon-spinner'
 import IconTime from 'components/icons/icon-time'
 import dayjs from 'dayjs'
 import useDisplayedNounlet from 'hooks/useDisplayedNounlet'
+import useSdk from 'hooks/useSdk'
 import { getNounletVotes } from 'lib/graphql/queries'
 import { getNounVotes } from 'lib/utils/getNounsVotes'
 import { useMemo, useState } from 'react'
@@ -13,43 +14,40 @@ import { buildEtherscanAddressLink } from '../../lib/utils/etherscan'
 import SimpleAddress from '../simple-address'
 
 export default function HomeVotesFromNounlet(): JSX.Element {
+  const sdk = useSdk()
   const { nid, nounletTokenAddress, auctionInfo, endedAuctionInfo } = useDisplayedNounlet()
   const [showAll, setShowAll] = useState(false)
 
   const voteShowLimit = 5
   const { data } = useSWR(
-    nid != null && { name: 'NounletVotes', nounletId: nid },
+    sdk != null && nid != null && { name: 'NounletVotes', nounletId: nid },
     async () => {
-      return await getNounletVotes(nounletTokenAddress, nid as string)
+      return await getNounletVotes(nounletTokenAddress, nid as string, sdk!.NounletAuction.address)
     },
     {
-      dedupingInterval: 15000
+      dedupingInterval: 4000,
+      refreshInterval(latestData) {
+        if ((latestData?.nounlet.delegateVotes.length ?? 0) === 0) {
+          return 10000
+        }
+        return 60000
+      }
     }
   )
 
   const nounletVotes = useMemo(() => {
-    if (data?.nounlet == null)
+    if (data?.nounlet == null || data.nounlet.delegateVotes.length === 0)
       return (
         <div className="flex items-center justify-center">
           <IconSpinner className="animate-spin text-gray-4" />
         </div>
       )
 
-    // if (data.nounlet.delegateVotes.length === 0)
-    //   return (
-    //     <p className="font-500 text-px20 leading-px28 text-gray-4">
-    //       This nounlet has not yet voted for a Delegate
-    //     </p>
-    //   )
-
-    // const firstId = `${endedAuctionInfo?.heldByAddress}-${endedAuctionInfo?.wonByAddress}`
-    // const initialVote = {delegate: { id: firstId }, id: firstId, timestamp: endedAuctionInfo?.endedOn}
-    //
-    // const delegateVotesIncludingInitial = [initialVote, ...data.nounlet.delegateVotes]
-
     const votes = data.nounlet.delegateVotes.map((vote) => {
       const formattedTimestamp = dayjs.unix(+vote.timestamp).format('MMM D, YYYY, h:mmA')
       const address = vote.delegate.id.split('-')[1]
+
+      console.log(address)
 
       return (
         <div className="votes-list-tile" key={vote.id}>
