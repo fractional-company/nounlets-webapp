@@ -115,8 +115,8 @@ export default function AppHeader(): JSX.Element {
               <IconNounletsLogo className="flex-shrink-0 w-20 h-20 md:w-[108px] md:h-[108px]" />
             </a>
           </Link>
-          <div className="flex flex-1 -mt-4 md:-mt-8">
-            <div className="flex-1 pr-4">
+          <div className="flex flex-1 -mt-4 md:-mt-8 min-w-0">
+            <div className="flex flex-1 pr-4 min-w-0">
               {isLive && (
                 <Link href="/governance">
                   <div className="hidden md:inline-flex items-center px-4 h-12 rounded-px10 bg-white space-x-2 cursor-pointer overflow-hidden">

@@ -20,7 +20,7 @@ export default function CountdownTimer(props: ComponentProps): JSX.Element {
     setAuctionTimer(timeLeft)
 
     if (timeLeft <= 0) {
-      console.log('⏱ Timer ended!')
+      // console.log('⏱ Timer ended!')
       setAuctionTimer(0)
       onTimerFinished?.()
     } else {

@@ -145,7 +145,7 @@ export const getNounletAuctionData = async (
   // console.groupEnd()
 
   if ((data.vault.noun?.nounlets?.length ?? 0) === 0) {
-    console.log('BE doesnt have data yet')
+    // console.log('BE doesnt have data yet')
     return null
   }
 
