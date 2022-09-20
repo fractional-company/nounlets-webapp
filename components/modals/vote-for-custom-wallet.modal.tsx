@@ -1,6 +1,4 @@
-import { useResolveName } from '@usedapp/core'
 import Button from 'components/buttons/button'
-import SimpleAddress from 'components/simple-address'
 import SimpleModalWrapper from 'components/SimpleModalWrapper'
 import { ethers } from 'ethers'
 import { useDebounced } from 'hooks/useDebounced'
@@ -10,7 +8,6 @@ import useToasts from 'hooks/useToasts'
 import { shortenAddress } from 'lib/utils/common'
 import { WrappedTransactionReceiptState } from 'lib/utils/tx-with-error-handling'
 import { useMemo, useState } from 'react'
-import { useAppStore } from 'store/application'
 
 type ComponentProps = {
   onClose?: () => void
@@ -19,9 +16,11 @@ type ComponentProps = {
 export default function VoteForCustomWalletModal(props: ComponentProps): JSX.Element {
   const [searchInputValue, setSearchinputValue] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const { setVoteForDelegateModalForAddress } = useAppStore()
+  const [isNotEnoughtNounletsModalShown, setIsNotEnoughtNounletsModalShown] = useState(false)
+  const [isForbiddenModalShown, setIsForbiddenModalShown] = useState(false)
+
   const { toastSuccess, toastError } = useToasts()
-  const { delegateVotes } = useLeaderboard()
+  const { myNounlets, delegateVotes } = useLeaderboard()
 
   const debouncedSearchInputValue = useDebounced(searchInputValue, 500)
   const {
@@ -38,12 +37,21 @@ export default function VoteForCustomWalletModal(props: ComponentProps): JSX.Ele
   }, [isLoadingENSName, ensAddress, ensAddressError])
 
   const shortenedAddress = useMemo(() => {
-    if (ensAddress == null || ensAddress === debouncedSearchInputValue) return ''
+    if (ensAddress == null) return ''
     return shortenAddress(ensAddress, 6).toLowerCase()
-  }, [ensAddress, debouncedSearchInputValue])
+  }, [ensAddress])
 
   const handleVoteForDelegate = async () => {
     if (ensAddress == null) return
+    if (ensAddress === ethers.constants.AddressZero) {
+      setIsForbiddenModalShown(true)
+      return
+    }
+    if (myNounlets.length === 0) {
+      setIsNotEnoughtNounletsModalShown(true)
+      return
+    }
+
     setIsLoading(true)
     try {
       const response = await delegateVotes(ensAddress)
@@ -74,13 +82,13 @@ export default function VoteForCustomWalletModal(props: ComponentProps): JSX.Ele
           <input
             value={searchInputValue}
             onChange={(event) => setSearchinputValue(event.target.value.trim())}
-            className="leading-px48 rounded-px10 px-4 font-500 text-px20 outline-none w-full md:w-[400px] truncate"
+            className="leading-px48 rounded-px10 px-4 font-500 text-px20 outline-none w-full md:w-[512px] truncate"
             type="text"
-            placeholder="eth wallet address or ENS"
+            placeholder="ETH wallet address or ENS"
           />
         </div>
         {shortenedAddress && (
-          <p className="font-londrina font-500 text-px20 leading-px20 truncate text-gray-4 py-2 text-center">
+          <p className="font-500 text-px20 leading-px20 truncate text-black py-2 text-center">
             {shortenedAddress}
           </p>
         )}
@@ -96,6 +104,48 @@ export default function VoteForCustomWalletModal(props: ComponentProps): JSX.Ele
           Vote for delegate
         </Button>
       </div>
+
+      <SimpleModalWrapper
+        isShown={isNotEnoughtNounletsModalShown}
+        onClose={() => setIsNotEnoughtNounletsModalShown(false)}
+        className="md:min-w-[400px] !max-w-[400px]"
+      >
+        <h2 className="font-londrina text-px42 -mt-3 -mb-4 pr-4">No nounlets :(</h2>
+        <div className="mt-8 flex flex-col gap-6">
+          <p className="font-500 text-px20 leading-px30 text-gray-4">
+            You need to own at least one Nounlet to be able to vote.
+          </p>
+          <Button
+            className="primary"
+            onClick={() => {
+              setIsNotEnoughtNounletsModalShown(false)
+            }}
+          >
+            Okay
+          </Button>
+        </div>
+      </SimpleModalWrapper>
+
+      <SimpleModalWrapper
+        isShown={isForbiddenModalShown}
+        onClose={() => setIsForbiddenModalShown(false)}
+        className="md:min-w-[400px] !max-w-[400px]"
+      >
+        <h2 className="font-londrina text-px42 -mt-3 -mb-4 pr-4">Blasphemy! ⚡️</h2>
+        <div className="mt-8 flex flex-col gap-6">
+          <p className="font-500 text-px20 leading-px30 text-gray-4">
+            The blockchain Gods forbid thy action!
+          </p>
+          <Button
+            className="primary"
+            onClick={() => {
+              setIsForbiddenModalShown(false)
+            }}
+          >
+            <span>{"Okay, I'm sorry"}</span>
+          </Button>
+        </div>
+      </SimpleModalWrapper>
     </div>
   )
 }

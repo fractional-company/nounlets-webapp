@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useVaultStore } from 'store/vaultStore'
-import useSWR, { useSWRConfig } from 'swr'
+import useSWR, { useSWRConfig, mutate as globalMutate } from 'swr'
+import useLocalStorage from './useLocalStorage'
 import useSdk from './useSdk'
 
 interface NounletImageData {
@@ -17,6 +18,7 @@ interface NounletImageData {
 }
 
 export default function useNounletImageData(nounletId: string | null) {
+  const { setNounletImageCache } = useLocalStorage()
   const sdk = useSdk()
   const { isLive, vaultAddress, nounletTokenAddress } = useVaultStore()
 
@@ -45,35 +47,35 @@ export default function useNounletImageData(nounletId: string | null) {
   const { data } = useSWR<NounletImageData>(
     canFetch && swrKey,
     async (key) => {
-      console.log('🍧🍧🍧🍧 fetcheing image data', nid)
       const nounletToken = sdk!.NounletToken.attach(nounletTokenAddress)
-      try {
-        const [data, seed] = await Promise.all([
-          nounletToken.uri(nid as string),
-          nounletToken.seeds(nid as string)
-          // nounletToken.generateSeed(nid as string)
-        ])
-        const base = data.split(',')[1]
-        const json = JSON.parse(atob(base))
-        json.seed = {
-          accessory: seed.accessory,
-          background: seed.background,
-          body: seed.body,
-          glasses: seed.glasses,
-          head: seed.head
-        }
 
-        console.log('🍧🍧🍧🍧 fetched image data', nid, json.seed)
-        return json
-      } catch (error) {
-        console.error('error while fetching nounlet image', error)
+      const [data, seed] = await Promise.all([
+        nounletToken.uri(nid as string),
+        nounletToken.seeds(nid as string)
+        // nounletToken.generateSeed(nid as string)
+      ])
+      const base = data.split(',')[1]
+      const json = JSON.parse(atob(base))
+      json.seed = {
+        accessory: seed.accessory,
+        background: seed.background,
+        body: seed.body,
+        glasses: seed.glasses,
+        head: seed.head
       }
-      return null
+
+      return json
     },
     {
+      onSuccess(data, key) {
+        if (data != null) {
+          setNounletImageCache(key, data)
+        }
+      },
       revalidateIfStale: false,
       revalidateOnFocus: false,
-      revalidateOnReconnect: false
+      revalidateOnReconnect: false,
+      errorRetryCount: 3
     }
   )
 

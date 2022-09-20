@@ -34,7 +34,7 @@ export default function LeaderboardVotesDots(props: any): JSX.Element {
     <SimplePopover>
       {element}
       <div>
-        You have <span className="font-700">{myVotes}</span> Nounlets voting for this delegate.
+        You have <span className="font-700">{myVotes}</span> Nounlet(s) voting for this delegate.
       </div>
     </SimplePopover>
   )

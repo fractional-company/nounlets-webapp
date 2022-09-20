@@ -1,14 +1,16 @@
 import { ethers } from 'ethers'
 import { Nounlet } from 'lib/graphql/graphql.models'
 import { getNounletAuctionData, getNounletAuctionDataBC } from 'lib/graphql/queries'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { useVaultStore } from 'store/vaultStore'
 import useSWR, { unstable_serialize, useSWRConfig } from 'swr'
+import useLocalStorage from './useLocalStorage'
 import useSdk from './useSdk'
 
 export default function useNounletAuctionInfo(nounletId: string | null) {
+  const { setNounletAuctionsCache } = useLocalStorage()
   const sdk = useSdk()
-  const { cache } = useSWRConfig()
+  const { cache, mutate: globalMutate } = useSWRConfig()
   const { isLive, vaultAddress, nounletTokenAddress, latestNounletTokenId } = useVaultStore()
 
   const nid = useMemo(() => {
@@ -30,20 +32,73 @@ export default function useNounletAuctionInfo(nounletId: string | null) {
     }
   }, [isLive, nid, vaultAddress, nounletTokenAddress])
 
-  const cachedDataAuctionSettled = useMemo(() => {
-    if (swrKey == null) return false
-    const data: Nounlet | null = cache.get(unstable_serialize(swrKey))
-    if (data == null) return false
+  const unserializedKey = useMemo(() => {
+    if (swrKey == null) return null
 
+    return unstable_serialize(swrKey)
+  }, [swrKey])
+
+  const cachedData = cache.get(unserializedKey) || null
+
+  const cachedDataHasAuctionSettled = useMemo(() => {
+    if (cachedData == null) return false
     // Is settled is manually set if the auction has settled on the BC but BE hasn't
     // caught up yet. This is so we can show the "settled" state on the home-hero.
-    // But until the BE has cought up, the transaction hash is ZeroAddress
+    // But until the BE has caught up, the transaction hash is ZeroAddress
     // so we show a "indexing..." button
     return (
-      !!data.auction?.settled &&
-      data.auction.settledTransactionHash !== ethers.constants.AddressZero
+      !!cachedData.auction?.settled &&
+      cachedData.auction.settledTransactionHash !== ethers.constants.AddressZero
     )
-  }, [cache, swrKey])
+  }, [cachedData])
+
+  const chachedActionTimeLeft = useMemo(() => {
+    if (cachedData == null) return 1
+    if (cachedData.auction == null) return 1
+
+    const now = Date.now() + 2000 // add 2 second buffer
+    const endTime = cachedData.auction.endTime * 1000
+    const timeLeft = endTime - now
+    return timeLeft
+  }, [cachedData])
+
+  const cachedDataAuctionRefreshInterval = useMemo(() => {
+    try {
+      if (cachedData == null) return 0
+      if (cachedData.auction == null) return 0
+
+      // No need to refresh since its DONE
+      if (cachedDataHasAuctionSettled) {
+        // console.log('⚱️ ⚱️ ⚱️ Ended AND settled. Stop retrying')
+        return 0
+      }
+
+      const timeLeft = chachedActionTimeLeft
+      const hasAuctionEnded = chachedActionTimeLeft <= 0
+
+      // Ended but not yet settled, try every minute
+      if (hasAuctionEnded) {
+        return 60_000
+      }
+      // More than 2 hours left
+      if (timeLeft >= 7200_000) {
+        return 3600_000
+      }
+      // More than 20 minutes left
+      if (timeLeft >= 1200_000) {
+        return 600_000
+      }
+      // More than 2 minutes left
+      if (timeLeft >= 120_000) {
+        return 60_000
+      }
+
+      return 10_000
+    } catch (error) {}
+
+    // Fallback
+    return 60_000
+  }, [cachedData, cachedDataHasAuctionSettled, chachedActionTimeLeft])
 
   const canFetch = useMemo(() => {
     if (!isLive) return false
@@ -57,11 +112,12 @@ export default function useNounletAuctionInfo(nounletId: string | null) {
     canFetch && swrKey,
     async (key) => {
       const isAuctionOld = +key.nounletId < +latestNounletTokenId
-      console.log('👩‍⚖️ Fetching auction', { isAuctionOld, key })
       let response: Awaited<ReturnType<typeof getNounletAuctionData>>
+      // console.log('👩‍⚖️ Fetching auction', { isAuctionOld, key })
 
+      // The auction has already settled on the BC
       if (isAuctionOld) {
-        console.log('👩‍⚖️ Old auction')
+        // console.log('👩‍⚖️ Old auction')
         try {
           response = await getNounletAuctionData(
             key.vaultAddress,
@@ -69,33 +125,71 @@ export default function useNounletAuctionInfo(nounletId: string | null) {
             key.nounletId as string
           )
 
-          if (!response.settled) {
-            console.log('👩‍⚖️👩‍⚖️ Old auction not yet synced. get from BC')
-          } else {
-            return { auction: response, fetchedAt: Date.now() }
+          if (response == null || !response.settled) {
+            // console.log('👩‍⚖️👩‍⚖️ Old auction not yet synced. get from BC')
+            response = await getNounletAuctionDataBC(
+              key.vaultAddress,
+              key.nounletTokenAddress,
+              key.nounletId,
+              sdk!.NounletAuction
+            )
+            response.settled = true // Fake it
           }
+          return { auction: response, fetchedAt: Date.now() }
         } catch (error) {
           console.log('Error in subgraph', error)
+          // return { auction: null, fetchedAt: Date.now() }
         }
       }
+      // Check for auction info every once in a while
+      // console.log('👩‍⚖️👩‍⚖️👩‍⚖️👩‍⚖️ Just checking')
+      try {
+        response = await getNounletAuctionData(
+          key.vaultAddress,
+          key.nounletTokenAddress,
+          key.nounletId as string
+        )
 
-      response = await getNounletAuctionDataBC(
-        key.vaultAddress,
-        key.nounletTokenAddress,
-        key.nounletId,
-        sdk!.NounletAuction
-      )
-
-      if (isAuctionOld) {
-        console.log('👩‍⚖️👩‍⚖️ Data for unsynced auction should now be fixed')
-        response.settled = true
+        if (response == null || !response.settled) {
+          // console.log('👩‍⚖️👩‍⚖️👩‍⚖️👩‍⚖️ Auction not yet synced. get from BC')
+          response = await getNounletAuctionDataBC(
+            key.vaultAddress,
+            key.nounletTokenAddress,
+            key.nounletId,
+            sdk!.NounletAuction
+          )
+          // response.settled = true // Dont fake it
+        }
+        return { auction: response, fetchedAt: Date.now() }
+      } catch (error) {
+        console.log('Error in subgraph', error)
+        throw error
       }
-
-      return { auction: response, fetchedAt: Date.now() }
     },
     {
-      dedupingInterval: 2000,
-      revalidateIfStale: !cachedDataAuctionSettled
+      onSuccess(data, key) {
+        if (data != null && data.auction != null) {
+          if (data.auction.settled === true) {
+            if (data.auction.id === latestNounletTokenId) {
+              globalMutate(
+                unstable_serialize({
+                  name: 'VaultMetadata',
+                  vaultAddress: vaultAddress
+                })
+              )
+            }
+          }
+          if (
+            data.auction.settled === true &&
+            data.auction.settledTransactionHash !== ethers.constants.AddressZero
+          ) {
+            setNounletAuctionsCache(key, data)
+          }
+        }
+      },
+      dedupingInterval: 5000,
+      refreshInterval: cachedDataAuctionRefreshInterval,
+      revalidateIfStale: !cachedDataHasAuctionSettled
     }
   )
 

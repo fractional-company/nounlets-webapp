@@ -14,11 +14,17 @@ import { useAppStore } from 'store/application'
 export default function VoteForDelegateModal(): JSX.Element {
   const { voteForDelegateModal, setVoteForDelegateModalForAddress } = useAppStore()
   const { myNounlets, delegateVotes } = useLeaderboard()
-  const [isLoading, setIsLoading] = useState(false)
   const { toastSuccess, toastError } = useToasts()
+  const [isLoading, setIsLoading] = useState(false)
+  const [isNotEnoughtNounletsModalShown, setIsNotEnoughtNounletsModalShown] = useState(false)
 
   const handleVoteForDelegate = async () => {
     if (voteForDelegateModal.address == null) return
+    if (myNounlets.length === 0) {
+      setIsNotEnoughtNounletsModalShown(true)
+      return
+    }
+
     setIsLoading(true)
     try {
       const response = await delegateVotes(voteForDelegateModal.address)
@@ -74,6 +80,27 @@ export default function VoteForDelegateModal(): JSX.Element {
           </Button>
         </div>
       </div>
+
+      <SimpleModalWrapper
+        isShown={isNotEnoughtNounletsModalShown}
+        onClose={() => setIsNotEnoughtNounletsModalShown(false)}
+        className="md:min-w-[400px] !max-w-[400px]"
+      >
+        <h2 className="font-londrina text-px42 -mt-3 -mb-4 pr-4">No nounlets :(</h2>
+        <div className="mt-8 flex flex-col gap-6">
+          <p className="font-500 text-px20 leading-px30 text-gray-4">
+            You need to own at least one Nounlet to be able to vote.
+          </p>
+          <Button
+            className="primary"
+            onClick={() => {
+              setIsNotEnoughtNounletsModalShown(false)
+            }}
+          >
+            Okay
+          </Button>
+        </div>
+      </SimpleModalWrapper>
     </SimpleModalWrapper>
   )
 }

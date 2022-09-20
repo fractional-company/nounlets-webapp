@@ -1,5 +1,6 @@
 import dayjs from 'dayjs'
 import { BigNumber, BigNumberish } from 'ethers'
+import { debounce } from 'lodash'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
@@ -7,10 +8,11 @@ type ComponentProps = {
   showEndTime?: boolean
   auctionEnd: BigNumberish
   onTimerFinished?: () => void
+  onTimerTick?: () => void
 }
 
 export default function CountdownTimer(props: ComponentProps): JSX.Element {
-  const { showEndTime, auctionEnd, onTimerFinished } = props
+  const { showEndTime, auctionEnd, onTimerFinished, onTimerTick } = props
   const [auctionTimer, setAuctionTimer] = useState(0)
 
   useEffect(() => {
@@ -18,11 +20,37 @@ export default function CountdownTimer(props: ComponentProps): JSX.Element {
     setAuctionTimer(timeLeft)
 
     if (timeLeft <= 0) {
-      console.log('⏱ Timer ended!')
+      // console.log('⏱ Timer ended!')
       setAuctionTimer(0)
       onTimerFinished?.()
     } else {
       const timer = setTimeout(() => {
+        // console.log(auctionTimer)
+        // Handled in the useNounletAuctionInfo refresh interval
+        // More than an hour left
+        // if (auctionTimer >= 3600) {
+        //   if (auctionTimer % 3600 === 0) {
+        //     // Every hour
+        //     onTimerTick?.()
+        //   }
+        //   // More than 10 minutes left
+        // } else if (auctionTimer >= 600) {
+        //   if (auctionTimer % 600 === 0) {
+        //     // Every 10 min
+        //     onTimerTick?.()
+        //   }
+        //   // More than 1 minute left
+        // } else if (auctionTimer >= 60) {
+        //   if (auctionTimer % 60 === 0) {
+        //     // Every minute
+        //     onTimerTick?.()
+        //   }
+        // } else if (auctionTimer >= 20) {
+        //   if (auctionTimer % 20 === 0) {
+        //     // Every 20 seconds
+        //     onTimerTick?.()
+        //   }
+        // }
         setAuctionTimer((v) => v - 1)
       }, 1000)
 
@@ -30,10 +58,9 @@ export default function CountdownTimer(props: ComponentProps): JSX.Element {
         clearTimeout(timer)
       }
     }
-  }, [auctionEnd, auctionTimer, onTimerFinished])
+  }, [auctionEnd, auctionTimer, onTimerFinished, onTimerTick])
 
   const formattedTime = useMemo(() => {
-    console.log('auctione nd', auctionEnd)
     const endTime = dayjs.unix(BigNumber.from(auctionEnd).toNumber()).local()
     return endTime.format('h:mm:ss a')
   }, [auctionEnd])

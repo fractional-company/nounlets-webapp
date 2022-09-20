@@ -71,6 +71,10 @@ export type Account = {
   nounletsHeld: Array<Nounlet>
   /** Bids the Account has offered */
   bids: Array<Bid>
+  /** The delegate this Account voted for with their Nounlets */
+  delegate?: Maybe<Delegate>
+  /** Delegate votes this Account is a delegator of */
+  delegateVotes: Array<DelegateVote>
 }
 
 export type Delegate = {
@@ -149,6 +153,8 @@ export type DelegateVote = {
   id: Scalars['ID']
   /** Nounlet that casts a vote. Can be NULL if vote was casted as a consequence of  */
   nounlet: Nounlet
+  /** The Account that delegated the vote */
+  delegator?: Maybe<Account>
   /** Delegate receiving a vote */
   delegate: Delegate
   /** The amount of votes */

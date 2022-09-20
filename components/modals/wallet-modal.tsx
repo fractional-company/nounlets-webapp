@@ -40,6 +40,14 @@ export default function WalletModal(): JSX.Element {
     }
   }, [account, setConnectModalOpen])
 
+  const connectMetamask = async () => {
+    try {
+      await activateBrowserWallet()
+    } catch (error) {
+      console.log('Metamask error', error)
+    }
+  }
+
   const wallets = (
     <div className="wallet-buttons-list grid grid-cols-1 md:grid-cols-2 gap-3 justify-items-stretch md:justify-items-start">
       <style jsx global>{`
@@ -49,13 +57,8 @@ export default function WalletModal(): JSX.Element {
           }
         }
       `}</style>
-      <WalletButton
-        onClick={async () => {
-          await activateBrowserWallet()
-        }}
-        walletType={WALLET_TYPE.metamask}
-      />
-      <WalletButton
+      <WalletButton onClick={connectMetamask} walletType={WALLET_TYPE.metamask} />
+      {/* <WalletButton
         onClick={() => {
           const fortmatic = new FortmaticConnector({
             apiKey: 'pk_live_60FAF077265B4CBA',
@@ -64,7 +67,8 @@ export default function WalletModal(): JSX.Element {
           activate(fortmatic)
         }}
         walletType={WALLET_TYPE.fortmatic}
-      />
+      /> */}
+      <WalletButton onClick={() => activateBrowserWallet()} walletType={WALLET_TYPE.brave} />
       <WalletButton
         onClick={() => {
           const walletConnect = new WalletConnectConnector({
@@ -90,7 +94,7 @@ export default function WalletModal(): JSX.Element {
         }}
         walletType={WALLET_TYPE.coinbaseWallet}
       />
-      <WalletButton onClick={() => activateBrowserWallet()} walletType={WALLET_TYPE.brave} />
+
       {/* <WalletButton
         onClick={() => {
           const ledger = new LedgerConnector({
@@ -132,17 +136,23 @@ export default function WalletModal(): JSX.Element {
           <SimpleCheckbox isChecked={areConditionsAccepted} onChange={setAreConditionsAccepted} />
           <p className="font-500 font-px12 leading-px20 text-white">
             I have read and accept the site&apos;s{' '}
-            <Link href="/">
-              <a className="text-primary hover:text-white transition-colors">Disclaimer</a>
-            </Link>
-            {', '}
-            <Link href="/">
-              <a className="text-primary hover:text-white transition-colors">Privacy Policy</a>
-            </Link>
-            {', and '}
-            <Link href="/">
-              <a className="text-primary hover:text-white transition-colors">Terms of Use</a>
-            </Link>
+            <a
+              href="https://tessera.co/privacy"
+              target="_blank"
+              rel="noreferrer"
+              className="text-primary hover:text-white transition-colors"
+            >
+              Privacy Policy
+            </a>
+            {' and '}
+            <a
+              href="https://tessera.co/terms"
+              target="_blank"
+              rel="noreferrer"
+              className="text-primary hover:text-white transition-colors"
+            >
+              Terms of Use
+            </a>
             .
           </p>
         </div>
@@ -156,7 +166,6 @@ export default function WalletModal(): JSX.Element {
         <Button
           className="link text-px14 font-700 text-gray-3 hover:text-secondary-blue w-full --sm"
           onClick={() => {
-            console.log(localStorage.removeItem('walletconnect'))
             deactivate()
             setIsSuccessModalOpen(true)
           }}

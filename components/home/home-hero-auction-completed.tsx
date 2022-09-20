@@ -18,23 +18,26 @@ import IconLock from '../icons/icon-lock'
 import IconVerified from '../icons/icon-verified'
 import { WrappedTransactionReceiptState } from 'lib/utils/tx-with-error-handling'
 import useToasts from 'hooks/useToasts'
+import { unstable_serialize, useSWRConfig } from 'swr'
 
 export default function HomeHeroAuctionCompleted(): JSX.Element {
   const { account } = useEthers()
-  const { setBidModalOpen, setCongratulationsModalForNounletId } = useAppStore()
+  const { mutate: globalMutate } = useSWRConfig()
+  const { setBidModalOpen, setCongratulationsModalForNounletId, setConnectModalOpen } =
+    useAppStore()
   const { toastSuccess, toastError } = useToasts()
-  const { nid, endedAuctionInfo, settleAuction, historicBids } = useDisplayedNounlet()
+  const { nid, vaultAddress, endedAuctionInfo, settleAuction, historicBids } = useDisplayedNounlet()
 
   const formattedData = useMemo(() => {
     const isLoading = endedAuctionInfo == null
     const winningBid = FixedNumber.from(formatEther(endedAuctionInfo?.winningBid ?? 0))
       .round(NEXT_PUBLIC_BID_DECIMALS)
       .toString()
+    const hasBids = endedAuctionInfo?.winningBid !== '0'
     const heldByAddress = endedAuctionInfo?.heldByAddress || ethers.constants.AddressZero
     const endedOn = dayjs((endedAuctionInfo?.endedOn ?? 0) * 1000).format('h:mmA, MMMM D, YYYY')
     const wonByAddress = endedAuctionInfo?.wonByAddress || ethers.constants.AddressZero
 
-    console.log({ endedAuctionInfo })
     return {
       isLoading,
       isSettled: !!endedAuctionInfo?.isSettled,
@@ -43,19 +46,22 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
       winningBid,
       heldByAddress,
       endedOn,
+      hasBids,
       wonByAddress
     }
   }, [endedAuctionInfo])
 
   const [isSettlingAuction, setIsSettlingAuction] = useState(false)
   const handleSettleAuction = async () => {
-    console.log('handle settle!')
+    if (account == null) {
+      setConnectModalOpen(true)
+      return
+    }
     setIsSettlingAuction(true)
 
     try {
       const nounletId = '' + nid
       const response = await settleAuction()
-      console.log('result of settling', response)
 
       if (
         response.status === WrappedTransactionReceiptState.SUCCESS ||
@@ -65,7 +71,14 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
           setCongratulationsModalForNounletId(true, nounletId)
           // setIsCongratulationsModalShown(true)
         }
-        toastSuccess('Auction settled 🎊', 'On to the next one!')
+        await globalMutate(
+          unstable_serialize({
+            name: 'VaultMetadata',
+            vaultAddress: vaultAddress
+          })
+        )
+        const message = nounletId === '100' ? "Aaaaaand we're done!" : 'On to the next one!'
+        toastSuccess('Auction settled 🎊', message)
         // await mutateDisplayedNounletAuctionInfo() // not needed since there is no new events
       } else {
         throw response
@@ -105,7 +118,9 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
           <p className="text-px18 leading-px22 font-500 text-gray-4">Winning bid</p>
           <div className="flex items-center space-x-3">
             <IconEth className="flex-shrink-0" />
-            <p className="text-px32 leading-[38px] font-700">{formattedData.winningBid}</p>
+            <p className="text-px32 leading-[38px] font-700">
+              {formattedData.hasBids ? formattedData.winningBid : 'n/a'}
+            </p>
           </div>
         </div>
         <div className="sm:border-r-2 border-black/20"></div>
@@ -124,7 +139,6 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
           </div>
         </div>
       </div>
-
       <div className="flex items-center !mt-6">
         <IconLock className="mb-1" />
         <p className="text-px18 font-500 ml-2">
@@ -134,7 +148,7 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
       <div className="flex items-center mt-3">
         <IconHeart />
         <div className="text-px18 font-500 ml-2">
-          Won by{' '}
+          {formattedData.hasBids ? 'Won by ' : 'No bids: Nounlet transferred to curator '}
           <SimpleAddress
             address={formattedData.wonByAddress}
             className="font-700 gap-2 flex-1 text-secondary-blue inline-flex"
@@ -180,9 +194,8 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
               className="primary !h-[52px] w-full"
               loading={isSettlingAuction}
               onClick={() => handleSettleAuction()}
-              disabled={account == null}
             >
-              Settle & start next auction
+              Settle{'' + nid !== '100' ? ' & start next auction' : ''}
             </Button>
           </>
         )}

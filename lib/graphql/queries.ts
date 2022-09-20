@@ -103,9 +103,9 @@ export const getNounletAuctionData = async (
   nounletTokenAddress: string,
   nounletTokenId: string
 ) => {
-  console.groupCollapsed('🚀 Fetching auction data from BE')
-  console.table({ vaultAddress, nounletTokenAddress, nounletTokenId })
-  console.groupEnd()
+  // console.groupCollapsed('🚀 Fetching auction data from BE')
+  // console.table({ vaultAddress, nounletTokenAddress, nounletTokenId })
+  // console.groupEnd()
 
   const { data } = await client.query<AuctionDataResponse>({
     query: gql`
@@ -140,11 +140,16 @@ export const getNounletAuctionData = async (
     }`
   })
 
-  console.groupCollapsed('🚀 Fetched auction data from BE')
-  console.log(data)
-  console.groupEnd()
+  // console.groupCollapsed('🚀 Fetched auction data from BE')
+  // console.log(data)
+  // console.groupEnd()
 
-  const auction = data.vault.noun!.nounlets[0].auction
+  if ((data.vault.noun?.nounlets?.length ?? 0) === 0) {
+    // console.log('BE doesnt have data yet')
+    return null
+  }
+
+  const auction = data.vault.noun.nounlets[0].auction
   auction.id = splitKey(auction.id)
   if (auction.highestBidder) {
     auction.highestBidder = {
@@ -170,9 +175,9 @@ export const getNounletAuctionDataBC = async (
   nounletTokenId: string,
   nounletAuction: NounletsSDK['NounletAuction']
 ) => {
-  console.groupCollapsed('🔩 Fetching auction data from Blockchain')
-  console.table({ vaultAddress, nounletTokenAddress, nounletTokenId })
-  console.groupEnd()
+  // console.groupCollapsed('🔩 Fetching auction data from Blockchain')
+  // console.table({ vaultAddress, nounletTokenAddress, nounletTokenId })
+  // console.groupEnd()
 
   const bidFilter = nounletAuction.filters.Bid(
     vaultAddress,
@@ -204,7 +209,8 @@ export const getNounletAuctionDataBC = async (
       }
     })
     .sort((a, b) => {
-      return BigNumber.from(b.amount).sub(BigNumber.from(a.amount)).toNumber()
+      // return BigNumber.from(b.amount).sub(BigNumber.from(a.amount)).toNumber() // This can overflow
+      return BigNumber.from(b.amount).gte(BigNumber.from(a.amount)) ? 1 : -1
     })
 
   // TODO id toLowerCase() if needed
@@ -223,9 +229,9 @@ export const getNounletAuctionDataBC = async (
     bids: [...formattedBids]
   }
 
-  console.groupCollapsed('🔩 Fetched auction data from Blockchain')
-  console.log(auction)
-  console.groupEnd()
+  // console.groupCollapsed('🔩 Fetched auction data from Blockchain')
+  // console.log(auction)
+  // console.groupEnd()
 
   return auction
 }
@@ -248,9 +254,7 @@ type NounletsDataResponse = {
   _meta: _Meta
 }
 
-export const getAllNounlets = async (vaultAddress: string) => {
-  console.log('🍍 all nounlets for leaderboard data', vaultAddress)
-
+export const getAllNounlets = async (vaultAddress: string, nounletAuctionAddress: string) => {
   const { data } = await client.query<NounletsDataResponse>({
     query: gql`
     {
@@ -278,7 +282,12 @@ export const getAllNounlets = async (vaultAddress: string) => {
     `
   })
 
-  const nounlets = data.vault.noun.nounlets
+  // Remove nounlet auction address
+  const nounlets = data.vault.noun.nounlets.filter(
+    (nounlet) =>
+      nounlet.holder.id.toLowerCase().split('-')[1] !== nounletAuctionAddress.toLowerCase()
+  )
+
   const accounts: Record<string, { holding: { id: string; delegate: string }[]; votes: number }> =
     {}
 
@@ -307,13 +316,17 @@ export const getAllNounlets = async (vaultAddress: string) => {
   })
 
   const currentDelegate = data.vault.noun.currentDelegate
+  let doesDelegateHaveMostVotes = false
 
-  // console.log({ data })
-  console.log({
-    accounts,
-    currentDelegate,
-    doesDelegateHaveMostVotes: currentDelegate === mostVotesAddress
-  })
+  if (
+    currentDelegate !== ethers.constants.AddressZero &&
+    mostVotesAddress !== ethers.constants.AddressZero
+  ) {
+    if (accounts[currentDelegate].votes >= mostVotes) {
+      mostVotesAddress = currentDelegate
+      doesDelegateHaveMostVotes = true
+    }
+  }
 
   return {
     accounts,
@@ -325,13 +338,17 @@ export const getAllNounlets = async (vaultAddress: string) => {
   }
 }
 
-export const getNounletVotes = async (nounletTokenAddress: string, nounletTokenId: string) => {
+export const getNounletVotes = async (
+  nounletTokenAddress: string,
+  nounletTokenId: string,
+  nounletAuctionAddress: string
+) => {
   const { data } = await client.query<{ nounlet: Nounlet }>({
     query: gql`
     {
       nounlet (id: "${nounletTokenAddress.toLowerCase()}-${nounletTokenId}") {
         id
-        delegateVotes {
+        delegateVotes (orderBy: timestamp orderDirection: desc){
           id,
           delegate {id}
           timestamp
@@ -339,5 +356,10 @@ export const getNounletVotes = async (nounletTokenAddress: string, nounletTokenI
       }
     }`
   })
+
+  const filteredVotes = data.nounlet.delegateVotes.filter(
+    (vote) => vote.delegate.id.toLowerCase().split('-')[1] !== nounletAuctionAddress.toLowerCase()
+  )
+  data.nounlet.delegateVotes = filteredVotes
   return data
 }

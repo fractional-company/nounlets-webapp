@@ -7,7 +7,7 @@ import { BidEvent } from 'lib/utils/types'
 import { useRouter } from 'next/router'
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { useVaultStore } from 'store/vaultStore'
-import useSWR, { useSWRConfig } from 'swr'
+import useSWR, { unstable_serialize, useSWRConfig } from 'swr'
 import debounce from 'lodash/debounce'
 import OnMounted from './utils/on-mounted'
 import useLeaderboard from 'hooks/useLeaderboard'
@@ -17,9 +17,17 @@ import IconBug from './icons/icon-bug'
 import { NEXT_PUBLIC_SHOW_DEBUG } from 'config'
 
 export default function ChainUpdater() {
+  return (
+    <>
+      <OnMounted>{NEXT_PUBLIC_SHOW_DEBUG && <LittleBug />}</OnMounted>
+      <VaultUpdater />
+      <LeaderboardUpdater />
+    </>
+  )
+}
+
+function LittleBug() {
   const [showDebugInfo, setShowDebugInfo] = useState(false)
-  const router = useRouter()
-  const sdk = useContext(SDKContext)
   const {
     isLive,
     isLoading,
@@ -31,7 +39,6 @@ export default function ChainUpdater() {
     latestNounletTokenId
   } = useVaultStore()
 
-  // url nid listener
   const { nid, auctionInfo } = useDisplayedNounlet()
   const { isOutOfSync, leaderboardData } = useLeaderboard()
 
@@ -51,31 +58,42 @@ export default function ChainUpdater() {
     ...leaderboardData
   }
 
+  const testSentry = () => {
+    console.error('Testing sentry 1')
+    try {
+      throw new Error('Testing Sentry 2')
+    } catch (error) {
+      console.error('Testing Sentry 2', error)
+    }
+    throw new Error('Testing Sentry 3')
+  }
+
   return (
     <>
       {NEXT_PUBLIC_SHOW_DEBUG && (
         <>
           <div
-            className="absolute cursor-pointer p-1"
+            className="absolute z-50 cursor-pointer p-1"
             onClick={() => setShowDebugInfo(!showDebugInfo)}
           >
             <IconBug className={showDebugInfo ? 'animate-spin' : ''} />
           </div>
           {showDebugInfo && (
             <div className="overflow-hidden p-1 pt-8 text-px14 bg-secondary-red/25">
+              <Button className="basic" onClick={testSentry}>
+                Test Sentry Error
+              </Button>
               <pre>{JSON.stringify({ nid, vaultMetadata, auctionInfo, leaderboard }, null, 4)}</pre>
             </div>
           )}
         </>
       )}
-
-      <VaultUpdater />
-      <LeaderboardUpdater />
     </>
   )
 }
 
 function VaultUpdater() {
+  const { cache, mutate: globalMutate } = useSWRConfig()
   const router = useRouter()
   const sdk = useSdk()
   const {
@@ -102,9 +120,9 @@ function VaultUpdater() {
       },
     async (key) => {
       if (sdk == null) throw new Error('sdk not initialized')
-      console.groupCollapsed('🏳️ fetching vault metadata ...')
-      console.log({ ...key })
-      console.groupEnd()
+      // console.groupCollapsed('🏳️ fetching vault metadata ...')
+      // console.log({ ...key })
+      // console.groupEnd()
 
       const [vaultMetadata, vaultInfo /*, currentDelegate*/] = await Promise.all([
         getVaultData(key.vaultAddress),
@@ -112,16 +130,22 @@ function VaultUpdater() {
         // sdk.NounletGovernance.currentDelegate(vaultAddress)
       ])
 
+      const tmp = {
+        ...vaultInfo
+      }
+      if (+tmp.currentId.toString() >= 100) {
+        tmp.currentId = BigNumber.from(100)
+      }
+
       return {
         ...vaultMetadata,
-        ...vaultInfo
+        ...tmp
         // currentDelegate
       }
     },
     {
       dedupingInterval: 5000,
       onErrorRetry: (error, key, config, revalidate, { retryCount }) => {
-        console.log(error, retryCount)
         if (error.status === 404) return
         if (error === 'vault not found') {
           console.log('🐉 Checking for vault again in 30 seconds 🐉')
@@ -134,9 +158,9 @@ function VaultUpdater() {
         setTimeout(() => revalidate({ retryCount }), 5000)
       },
       onSuccess: (data, key, config) => {
-        console.groupCollapsed('🏴 fetched vault metadata ...')
-        console.table(data)
-        console.groupEnd()
+        // console.groupCollapsed('🏴 fetched vault metadata ...')
+        // console.table(data)
+        // console.groupEnd()
 
         if (data.isLive) {
           setNounletTokenAddress(data.nounletTokenAddress)
@@ -152,39 +176,48 @@ function VaultUpdater() {
           // Retry after 15 seconds.
           setTimeout(() => mutate(), 15000)
         }
-      }
+      },
+      refreshInterval: 5 * 60000
     }
   )
 
-  const debouncedMutate = useMemo(() => debounce(mutate, 1000), [mutate])
+  // const debouncedMutate = useMemo(() => debounce(mutate, 1000), [mutate])
 
-  useEffect(() => {
-    if (sdk == null) return
-    if (!isLive) return
+  // useEffect(() => {
+  //   if (sdk == null) return
+  //   if (!isLive) return
 
-    console.log('🍁 setting SETTLED listener for ', latestNounletTokenId)
-    const nounletAuction = sdk.NounletAuction
-    const settledFilter = sdk.NounletAuction.filters.Settled(
-      vaultAddress,
-      nounletTokenAddress,
-      latestNounletTokenId
-    )
+  //   console.log('🍁 setting SETTLED listener for ', latestNounletTokenId)
+  //   const nounletAuction = sdk.NounletAuction
+  //   const settledFilter = sdk.NounletAuction.filters.Settled(
+  //     vaultAddress,
+  //     nounletTokenAddress
+  //     // latestNounletTokenId
+  //   )
 
-    const listener = (...eventData: any) => {
-      const event = eventData.at(-1)
-      console.log('🍁🍁🍁 Settled event', eventData)
-      console.log('event data', event)
-      debouncedMutate()
-    }
+  //   const listener = (...eventData: any) => {
+  //     const event = eventData.at(-1)
+  //     console.log('🍁🍁🍁 Settled event', eventData)
+  //     console.log('event data', event)
+  //     debouncedMutate()
+  //   }
 
-    nounletAuction.on(settledFilter, listener)
+  //   // nounletAuction.on(settledFilter, listener)
 
-    return () => {
-      console.log('🍁 removing SETTLED listener for ', latestNounletTokenId)
-      nounletAuction.off(settledFilter, listener)
-    }
-  }, [isLive, vaultAddress, nounletTokenAddress, latestNounletTokenId, sdk, debouncedMutate])
+  //   return () => {
+  //     console.log('🍁 removing SETTLED listener for ', latestNounletTokenId)
+  //     nounletAuction.off(settledFilter, listener)
+  //   }
+  // }, [isLive, vaultAddress, nounletTokenAddress, latestNounletTokenId, sdk, debouncedMutate])
 
+  // const lala = () => {
+  //   globalMutate(
+  //     unstable_serialize({
+  //       name: 'VaultMetadata',
+  //       vaultAddress: vaultAddress
+  //     })
+  //   )
+  // }
   return <></>
 }
 
@@ -204,16 +237,16 @@ function LeaderboardUpdater() {
     if (!isLive || sdk == null) return
 
     // TODO Maybe be more specific with the events?
-    console.log('🍉 listen to any event on NounletToken', vaultAddress, nounletTokenAddress)
+    // console.log('🍉 listen to any event on NounletToken', vaultAddress, nounletTokenAddress)
     const nounletToken = sdk.NounletToken.attach(nounletTokenAddress)
     const nounletAuction = sdk.NounletAuction
     const nounletGovernance = sdk.NounletGovernance
 
     const listener = (...eventData: any) => {
       const event = eventData.at(-1)
-      console.groupCollapsed('🍉🍉🍉 any event', event?.blockNumber, eventData)
-      console.log('event data', event)
-      console.groupEnd()
+      // console.groupCollapsed('🍉🍉🍉 any event', event?.blockNumber, eventData)
+      // console.log('event data', event)
+      // console.groupEnd()
 
       setLeaderboardBlockNumber(event?.blockNumber || 0)
       debouncedMutate()
@@ -224,7 +257,7 @@ function LeaderboardUpdater() {
     nounletGovernance.on(nounletGovernance, listener)
 
     return () => {
-      console.log('🍉 stop listening to any event on NounletToken')
+      // console.log('🍉 stop listening to any event on NounletToken')
       nounletToken.off(nounletToken, listener)
       nounletAuction.off(nounletAuction, listener)
       nounletGovernance.off(nounletGovernance, listener)

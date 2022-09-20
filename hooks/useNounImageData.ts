@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useVaultStore } from 'store/vaultStore'
 import useSWR, { useSWRConfig } from 'swr'
+import useLocalStorage from './useLocalStorage'
 import useSdk from './useSdk'
 
 interface NounImageData {
@@ -17,6 +18,7 @@ interface NounImageData {
 }
 
 export default function useNounImageData(nounId: string | null) {
+  const { setNounletImageCache } = useLocalStorage()
   const sdk = useSdk()
   const { isLive, vaultAddress, nounletTokenAddress } = useVaultStore()
 
@@ -60,7 +62,6 @@ export default function useNounImageData(nounId: string | null) {
           glasses: seed.glasses,
           head: seed.head
         }
-        console.log('🍕 fetched image data', nid, json.seed)
         return json
       } catch (error) {
         console.log('error while fetching nounlet image', error)
@@ -68,6 +69,11 @@ export default function useNounImageData(nounId: string | null) {
       return null
     },
     {
+      onSuccess(data, key) {
+        if (data != null) {
+          setNounletImageCache(key, data)
+        }
+      },
       revalidateIfStale: false,
       revalidateOnFocus: false,
       revalidateOnReconnect: false

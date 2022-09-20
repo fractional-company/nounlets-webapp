@@ -19,7 +19,7 @@ export function NounletImage(props: { id: string | null }) {
   ) : (
     <Image
       src={nouneltData.image}
-      alt="nounelt"
+      alt="nounlet"
       layout="responsive"
       width={320}
       height={320}

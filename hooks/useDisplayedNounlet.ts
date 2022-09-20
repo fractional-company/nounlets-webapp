@@ -1,5 +1,5 @@
 import { useEthers } from '@usedapp/core'
-import { BigNumber, ethers } from 'ethers'
+import { BigNumber, ethers, FixedNumber } from 'ethers'
 import txWithErrorHandling from 'lib/utils/tx-with-error-handling'
 import { useRouter } from 'next/router'
 import { useCallback, useMemo } from 'react'
@@ -105,7 +105,7 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
   }, [auctionInfo])
 
   const hasAuctionEnded = useMemo(() => {
-    const now = Date.now() + 5000 // add 5 second buffer
+    const now = Date.now() + 2000 // add 2 second buffer
     return auctionInfo != null && auctionEndTime * 1000 <= now
   }, [auctionInfo, auctionEndTime])
 
@@ -114,7 +114,7 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
   }, [auctionInfo])
 
   const endedAuctionInfo = useMemo(() => {
-    if (auctionInfo == null || nid == null) return null
+    if (auctionInfo == null || nid == null || auctionInfo.auction == null) return null
 
     let heldByAddress = nounletHolderAddress || ethers.constants.AddressZero
     let wonByAddress = auctionInfo.auction!.highestBidder?.id || ethers.constants.AddressZero
@@ -128,7 +128,7 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
     }
 
     return {
-      isSettled: +nid < +latestNounletTokenId,
+      isSettled: auctionInfo.auction.settled, // +nid < +latestNounletTokenId,
       settledTransactionHash: auctionInfo.auction.settledTransactionHash,
       winningBid: auctionInfo.auction!.highestBidAmount.toString(),
       heldByAddress,
@@ -140,7 +140,6 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
     auctionEndTime,
     auctionInfo,
     nid,
-    latestNounletTokenId,
     vaultCuratorAddress,
     nounletHolderAddress
   ])
@@ -151,8 +150,10 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
     if (library == null) throw new Error('no library')
     if (vaultAddress == null) throw new Error('no vault')
 
+    const gasLimit = await sdk.NounletAuction.estimateGas.bid(vaultAddress, { value: bidAmount })
     const tx = await sdk.NounletAuction.connect(library.getSigner()).bid(vaultAddress, {
-      value: bidAmount
+      value: bidAmount,
+      gasLimit: gasLimit.mul(12).div(10)
     })
     return txWithErrorHandling(tx)
   }

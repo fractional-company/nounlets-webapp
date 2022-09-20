@@ -19,6 +19,8 @@ import { Auction } from '../../lib/wrappers/nounsAuction'
 import { useAppStore } from '../../store/application'
 import SimpleModalWrapper from '../SimpleModalWrapper'
 import { debounce } from 'lodash'
+import useToasts from 'hooks/useToasts'
+import { WrappedTransactionReceiptState } from 'lib/utils/tx-with-error-handling'
 
 type ComponentProps = {
   auction?: Auction
@@ -27,6 +29,7 @@ type ComponentProps = {
 export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Element {
   const { account } = useEthers()
   const sdk = useSdk()
+  const { toastSuccess, toastError } = useToasts()
 
   const { vaultAddress, nounletTokenAddress, minBidIncrease } = useVaultStore()
   const {
@@ -37,7 +40,7 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
     mutateAuctionInfo,
     bid
   } = useDisplayedNounlet(false)
-  const { setBidModalOpen } = useAppStore()
+  const { setBidModalOpen, setConnectModalOpen } = useAppStore()
   const [showEndTime, setShowEndTime] = useState(false)
   const bidInputRef = useRef<HTMLInputElement>(null)
   const [bidInputValue, setBidInputValue] = useState('')
@@ -56,19 +59,17 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
 
   const formattedValues = useMemo(() => {
     return {
-      currrentBid: currentBidFX.round(NEXT_PUBLIC_BID_DECIMALS).toString(),
+      currentBid: currentBidFX.round(NEXT_PUBLIC_BID_DECIMALS).toString(),
       minNextBid: minNextBidFX.round(NEXT_PUBLIC_BID_DECIMALS).toString()
     }
   }, [currentBidFX, minNextBidFX])
 
   const isBidButtonEnabled = useMemo(() => {
     if (bidInputValue === '') return false
-    if (account == null) return false
     return true
-  }, [bidInputValue, account])
+  }, [bidInputValue])
 
   const latestBidsList: JSX.Element[] = useMemo(() => {
-    console.log('latestbits', historicBids)
     return historicBids.slice(0, 3).map((bid) => {
       const ethValue = FixedNumber.from(formatEther(bid.amount.toString()))
         .round(NEXT_PUBLIC_BID_DECIMALS)
@@ -98,7 +99,6 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
 
   const debouncedMutateAuctionInfo = useMemo(() => {
     return debounce(() => {
-      console.log('🍓🍓🍓🍓🍓 calling debouncedMutateAuctionInfo')
       return mutateAuctionInfo()
     }, 1000)
   }, [mutateAuctionInfo])
@@ -107,7 +107,7 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
     if (sdk == null) return
     if (nounletId === '0') return
 
-    console.log('👍 setting bid listener for ', nounletId)
+    // console.log('👍 setting bid listener for ', nounletId)
     const nounletAuction = sdk.NounletAuction
     const bidFilter = nounletAuction.filters.Bid(
       vaultAddress,
@@ -124,22 +124,26 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
       bidder: string,
       amount: BigNumber,
       extendedTime: BigNumber,
-      event: any // IDK why this isnt BidEvent
+      event: any // IDK why this isn't BidEvent
     ) => {
-      console.log('🖐 bid event!', vault, token, id, bidder, amount, extendedTime, event)
+      // console.log('🖐 bid event!', vault, token, id, bidder, amount, extendedTime, event)
       debouncedMutateAuctionInfo()
     }
     nounletAuction.on(bidFilter, listener)
 
     return () => {
-      console.log('👎 removing listener for', nounletId)
+      // console.log('👎 removing listener for', nounletId)
       nounletAuction.off(bidFilter, listener)
     }
   }, [vaultAddress, nounletTokenAddress, nounletId, sdk, debouncedMutateAuctionInfo])
 
   const handleTimerFinished = useCallback(() => {
     debouncedMutateAuctionInfo()
-    console.log('finished timer!')
+  }, [debouncedMutateAuctionInfo])
+
+  // Currently unused
+  const handleTimerTick = useCallback(() => {
+    debouncedMutateAuctionInfo()
   }, [debouncedMutateAuctionInfo])
 
   const handleBidInputValue = (event: ChangeEvent<HTMLInputElement>) => {
@@ -155,21 +159,34 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
 
   const [isBidding, setIsBidding] = useState(false)
   const handleBid = async () => {
+    if (account == null) {
+      setConnectModalOpen(true)
+      return
+    }
     if (bidInputValue === '') return
+
     setIsBidding(true)
     try {
       const bidAmount = parseEther(bidInputValue)
       if (bidAmount.gte(parseEther(formattedValues.minNextBid))) {
-        console.log('Proceed with bid!', bidAmount)
-        const result = await bid(bidAmount)
-        await mutateAuctionInfo() // TODO maybe remove this
-        console.log('yas bid!', result)
-        setBidInputValue('')
+        const response = await bid(bidAmount)
+        if (
+          response.status === WrappedTransactionReceiptState.SUCCESS ||
+          response.status === WrappedTransactionReceiptState.SPEDUP
+        ) {
+          await mutateAuctionInfo() // TODO maybe remove this
+          toastSuccess('Bid accepted 🎉', 'woohooooo!')
+          setBidInputValue('')
+        } else if (response.status === WrappedTransactionReceiptState.ERROR) {
+          throw response.data
+        } else if (response.status === WrappedTransactionReceiptState.CANCELLED) {
+          toastError('Transaction canceled', 'Please try again.')
+        }
       } else {
         setShowWrongBidModal(true)
       }
     } catch (error) {
-      console.error(error)
+      toastError('Bid failed', 'Please try again.')
     }
     setIsBidding(false)
   }
@@ -181,7 +198,7 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
           <p className="text-px18 leading-px22 font-500 text-gray-4">Current bid</p>
           <div className="flex items-center space-x-3">
             <IconEth className="flex-shrink-0" />
-            <p className="text-px32 leading-[38px] font-700">{formattedValues.currrentBid}</p>
+            <p className="text-px32 leading-[38px] font-700">{formattedValues.currentBid}</p>
           </div>
         </div>
         <div className="sm:border-r-2 border-black/20"></div>
@@ -197,6 +214,7 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
               showEndTime={showEndTime}
               auctionEnd={auctionEndTime}
               onTimerFinished={handleTimerFinished}
+              onTimerTick={handleTimerTick}
             />
           </div>
         </div>
@@ -206,7 +224,14 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
         <IconQuestionCircle className="flex-shrink-0" />
         <p>
           You are bidding for 1% ownership of the Noun.{' '}
-          <span className="font-700 text-secondary-blue">Read more</span>
+          <a
+            href="https://medium.com/@deeze/b76bbb4e42cc"
+            target="_blank"
+            className="font-700 text-secondary-blue"
+            rel="noreferrer"
+          >
+            Read more
+          </a>
         </p>
       </div>
 
