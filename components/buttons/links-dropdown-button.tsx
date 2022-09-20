@@ -31,7 +31,7 @@ export default function LinksDropdownButton(): JSX.Element {
           leaveFrom="transform opacity-100 scale-100"
           leaveTo="transform opacity-0 scale-95"
         >
-          <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md shadow-sm bg-white focus:outline-none overflow-hidden">
+          <Menu.Items className="absolute z-10 right-0 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md shadow-sm bg-white focus:outline-none overflow-hidden">
             <div className="divide-y divide-gray-1">
               <Menu.Item>
                 <Button className="basic w-full space-x-2 !justify-start !rounded-none">

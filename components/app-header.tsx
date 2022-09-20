@@ -63,23 +63,25 @@ export default function AppHeader(): JSX.Element {
       <Button
         className={classNames(
           account ? 'basic hover:!bg-secondary-red' : 'primary',
-          'relative group overflow-hidden'
+          'relative group'
         )}
         onClick={() => handleConnectButtonClick()}
       >
         {account ? (
-          <div className="flex items-center overflow-hidden">
+          <div className="flex items-center">
             {isCrownShown && (
               <IconCrown className="absolute w-[30px] h-auto left-[-12px] top-[-12px] rotate-[-40deg] text-[#fa8f2f]" />
             )}
-            <SimpleAddress
-              avatarSize={16}
-              address={account}
-              className="space-x-2 pointer-events-none group-hover:invisible"
-            />
-            <p className="absolute inset-0 pointer-events-none invisible group-hover:visible text-white leading-px48">
-              Disconnect
-            </p>
+            <div className="overflow-hidden">
+              <SimpleAddress
+                avatarSize={16}
+                address={account}
+                className="space-x-2 pointer-events-none group-hover:invisible"
+              />
+              <p className="absolute inset-0 pointer-events-none invisible group-hover:visible text-white leading-px48">
+                Disconnect
+              </p>
+            </div>
             {/* <IconCaretDropdown /> */}
           </div>
         ) : (
@@ -154,7 +156,7 @@ export default function AppHeader(): JSX.Element {
               <LinksDropdownButton />
               {connectButton}
             </div>
-            <div className="flex lg:hidden space-x-2 overflow-hidden">
+            <div className="flex lg:hidden space-x-2">
               {connectButton}
               <Button
                 className="basic space-x-2"
