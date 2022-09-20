@@ -214,7 +214,7 @@ export default function AppHeader(): JSX.Element {
                 </Button>
               </a>
               <a
-                href="https://medium.com/@deeze/b76bbb4e42cc"
+                href="https://medium.com/tessera-nft/nounlets-explained-faq-57e9bc537d93"
                 target="_blank"
                 rel="noreferrer"
                 className="space-x-2 w-full flex justify-center"

@@ -55,7 +55,7 @@ export const getVaultData = async (vaultAddress: string) => {
   })
 
   if (data == null || data.vault == null || data.vault.noun == null) {
-    throw 'vault not found'
+    throw new Error('vault not found')
   }
 
   return {

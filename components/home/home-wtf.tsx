@@ -28,7 +28,7 @@ export default function HomeWTF(): JSX.Element {
           <p className="mb-16">
             Learn more below, or by visiting and reviewing the{' '}
             <a
-              href="https://www.notion.so/EXTERNAL-Nouns-fa66ae7a59f147118bd67eaf4b83432b"
+              href="https://nouns.wtf/"
               className="text-secondary-blue"
               target="_blank"
               rel="noreferrer"
@@ -149,7 +149,7 @@ export default function HomeWTF(): JSX.Element {
                   <a
                     target="_blank"
                     rel="noreferrer"
-                    href="https://medium.com/@deeze/ba4a1bcabdde"
+                    href="https://medium.com/tessera-nft/nounlets-explained-faq-57e9bc537d93"
                     className="text-secondary-blue"
                   >
                     FAQ
