@@ -129,10 +129,12 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
       // console.log('🖐 bid event!', vault, token, id, bidder, amount, extendedTime, event)
       debouncedMutateAuctionInfo()
     }
+    //@ts-ignore // WETH address is public on mainnet
     nounletAuction.on(bidFilter, listener)
 
     return () => {
       // console.log('👎 removing listener for', nounletId)
+      //@ts-ignore // WETH address is public on mainnet
       nounletAuction.off(bidFilter, listener)
     }
   }, [vaultAddress, nounletTokenAddress, nounletId, sdk, debouncedMutateAuctionInfo])
