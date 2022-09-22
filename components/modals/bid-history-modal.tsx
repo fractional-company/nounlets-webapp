@@ -1,5 +1,5 @@
 import { Dialog } from '@headlessui/react'
-import { Mainnet, Rinkeby } from '@usedapp/core'
+import { Goerli, Mainnet, Rinkeby } from '@usedapp/core'
 import { NounletImage } from 'components/NounletImage'
 import { CHAIN_ID, NEXT_PUBLIC_BID_DECIMALS } from 'config'
 import dayjs from 'dayjs'
@@ -29,7 +29,7 @@ const BidHistoryModal = (): JSX.Element => {
         const explorerLink =
           CHAIN_ID === 1
             ? Mainnet.getExplorerTransactionLink(bid.id)
-            : Rinkeby.getExplorerTransactionLink(bid.id)
+            : Goerli.getExplorerTransactionLink(bid.id)
         return (
           <div
             key={bid.id.toString()}

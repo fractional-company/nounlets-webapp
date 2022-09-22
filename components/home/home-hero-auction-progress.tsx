@@ -5,7 +5,7 @@ import IconQuestionCircle from 'components/icons/icon-question-circle'
 import { formatEther, parseEther } from 'ethers/lib/utils'
 import useDisplayedNounlet from 'hooks/useDisplayedNounlet'
 
-import { Mainnet, Rinkeby, useEthers } from '@usedapp/core'
+import { Goerli, Mainnet, Rinkeby, useEthers } from '@usedapp/core'
 import IconLinkOffsite from 'components/icons/icon-link-offsite'
 import SimpleAddress from 'components/simple-address'
 import OnMounted from 'components/utils/on-mounted'
@@ -78,7 +78,7 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
       const explorerLink =
         CHAIN_ID === 1
           ? Mainnet.getExplorerTransactionLink(bid.id)
-          : Rinkeby.getExplorerTransactionLink(bid.id)
+          : Goerli.getExplorerTransactionLink(bid.id)
 
       return (
         <div key={bid.id.toString()} className="flex items-center flex-1 py-3 overflow-hidden">
@@ -129,12 +129,10 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
       // console.log('🖐 bid event!', vault, token, id, bidder, amount, extendedTime, event)
       debouncedMutateAuctionInfo()
     }
-    //@ts-ignore // WETH address is public on mainnet
     nounletAuction.on(bidFilter, listener)
 
     return () => {
       // console.log('👎 removing listener for', nounletId)
-      //@ts-ignore // WETH address is public on mainnet
       nounletAuction.off(bidFilter, listener)
     }
   }, [vaultAddress, nounletTokenAddress, nounletId, sdk, debouncedMutateAuctionInfo])

@@ -5,7 +5,7 @@ interface AppConfig {
   subgraphApiUri: string
 }
 
-type SupportedChains = ChainId.Rinkeby | ChainId.Goerli | ChainId.Mainnet
+type SupportedChains = ChainId.Goerli | ChainId.Mainnet
 
 export const CHAIN_ID: SupportedChains = parseInt(process.env.NEXT_PUBLIC_CHAIN_ID ?? '1')
 export const NEXT_PUBLIC_NOUN_VAULT_ADDRESS = process.env.NEXT_PUBLIC_NOUN_VAULT_ADDRESS

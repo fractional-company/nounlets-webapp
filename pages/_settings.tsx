@@ -14,13 +14,13 @@ import { useVaultStore } from 'store/vaultStore'
 import SEO from '../components/seo'
 
 const Settings: NextPage<{ url: string }> = ({ url }) => {
-  const router = useRouter()
+  // const router = useRouter()
 
-  useEffect(() => {
-    router.replace('/')
-  })
+  // useEffect(() => {
+  //   router.replace('/')
+  // })
 
-  return null
+  // return null
 
   const { account, library } = useEthers()
   const sdk = useSdk()
