@@ -8,6 +8,8 @@ const networkName = () => {
       return 'Ethereum Mainnet'
     case 4:
       return 'the Rinkeby network'
+    case 5:
+      return 'the Goerli network'
     default:
       return `Network ${CHAIN_ID}`
   }
