@@ -1,24 +1,29 @@
 import Document, { Html, Head, Main, NextScript } from 'next/document'
 import Script from 'next/script'
+import { CHAIN_ID, NEXT_PUBLIC_CACHE_VERSION, NEXT_PUBLIC_NOUN_VAULT_ADDRESS } from 'config'
 
 class MyDocument extends Document {
   render() {
     return (
       <Html lang="en">
         <Head>
-          {/* TODO: Uncomment before launch <Script
-            src="https://www.googletagmanager.com/gtag/js?id=G-T3PEPVT1PH"
-            strategy="afterInteractive"
-          />
-          <Script id="google-analytics" strategy="afterInteractive">
-            {`
-           window.dataLayer = window.dataLayer || [];
-           function gtag(){dataLayer.push(arguments);}
-           gtag('js', new Date());
+          {CHAIN_ID === 1 && (
+            <Script
+              src="https://www.googletagmanager.com/gtag/js?id=G-T3PEPVT1PH"
+              strategy="afterInteractive"
+            />
+          )}
+          {CHAIN_ID === 1 && (
+            <Script id="google-analytics" strategy="afterInteractive">
+              {`
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
 
-           gtag('config', 'G-T3PEPVT1PH');
-        `}
-          </Script> */}
+                  gtag('config', 'G-T3PEPVT1PH');
+                `}
+            </Script>
+          )}
         </Head>
         <body className="font-ptRootUI">
           <Main />

@@ -253,12 +253,14 @@ function LeaderboardUpdater() {
     }
 
     nounletToken.on(nounletToken, listener)
+    //@ts-ignore // WETH address is public on mainnet
     nounletAuction.on(nounletAuction, listener)
     nounletGovernance.on(nounletGovernance, listener)
 
     return () => {
       // console.log('🍉 stop listening to any event on NounletToken')
       nounletToken.off(nounletToken, listener)
+      //@ts-ignore // WETH address is public on mainnet
       nounletAuction.off(nounletAuction, listener)
       nounletGovernance.off(nounletGovernance, listener)
     }
