@@ -45,8 +45,9 @@ const socialTagsFacebook = ({
     { name: 'og:title', content: title },
     { name: 'og:description', content: description },
     { name: 'og:image', content: image },
-    { name: 'og:url', content: url },
-    { name: 'og:type', content: openGraphType },
+    // { name: 'og:url', content: url },
+    { name: 'og:url', content: title }, // wtf?
+    { name: 'og:type', content: 'website' },
     { name: 'og:site_name', content: 'Nounlets' }
     // {
     //   name: 'og:published_time',
@@ -74,6 +75,9 @@ const SEO = (props: SocialTagsProps) => {
       {/* <title>{title + ' | Nounlets'}</title> */}
       {/* <title>{props2.title || defaults.title}</title>
       <meta name="description" content={props2.description || defaults.description} /> */}
+
+      {/* <meta itemProp="test1" content={props.image || defaults.title} />
+      <meta itemProp="test2" content={defaults.title} /> */}
 
       {/*<!-- Google / Search Engine Tags -->*/}
       {/* <meta itemProp="name" content={props2.title || defaults.title} />
