@@ -49,7 +49,7 @@ const Home: NextPage<{ url: string }> = ({ url }) => {
 export const getServerSideProps = (context: any) => {
   return {
     props: {
-      url: context?.req?.headers?.host
+      url: 'https://' + context?.req?.headers?.host
     }
   }
 }
