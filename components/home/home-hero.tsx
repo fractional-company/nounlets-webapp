@@ -45,7 +45,7 @@ export default function HomeHero(): JSX.Element {
   const moveToNounletDirection = (direction: number) => {
     if (nid == null) return
 
-    router.push(`/nounlet/${+nid + direction}`)
+    router.push(`/nounlet/${+nid + direction}`, undefined, { shallow: true })
   }
 
   return (

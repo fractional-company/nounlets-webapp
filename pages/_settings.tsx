@@ -13,14 +13,6 @@ import { useEffect } from 'react'
 import { useVaultStore } from 'store/vaultStore'
 import SEO from '../components/seo'
 
-export const getServerSideProps = (context: any) => {
-  return {
-    props: {
-      url: context?.req?.headers?.host
-    }
-  }
-}
-
 const Settings: NextPage<{ url: string }> = ({ url }) => {
   const router = useRouter()
 
@@ -129,13 +121,6 @@ const Settings: NextPage<{ url: string }> = ({ url }) => {
 
   return (
     <div className="p-4 flex flex-col gap-3 text-px12">
-      <SEO
-        url={`${url}/post`}
-        openGraphType="website"
-        title="Settings"
-        description="The only thing we learn from history, it has been said, 'is that men never learn from history'..."
-        image={`${url}/img/noun.jpg`}
-      />
       <h1 className="font-600">Settings</h1>
 
       <div className="px-4">
