@@ -10,7 +10,7 @@ import NetworkAlert from '../NetworkAlert'
 import AlertModal from '../Modal'
 import { AvatarProvider } from '@davatar/react'
 import { NounletsSDK } from 'hooks/useSdk'
-import { getMainnetSdk, getRinkebySdk, getGoerliSdk, RinkebySdk } from '@dethcrypto/eth-sdk-client'
+import { getMainnetSdk, getGoerliSdk } from '@dethcrypto/eth-sdk-client'
 import { useRouter } from 'next/router'
 
 export const SDKContext = createContext<NounletsSDK | null>(null)
@@ -48,19 +48,12 @@ export default function WalletConfig(props: { children: ReactNode }) {
     if (library) {
       if (chainId === CHAIN_ID) {
         if (chainId === 1) {
-          setSdk((getMainnetSdk(library) as RinkebySdk).nounlets)
-        } else if (chainId === 4) {
-          setSdk(getRinkebySdk(library).nounlets)
+          setSdk(getMainnetSdk(library).nounlets)
         } else if (chainId === 5) {
           setSdk(getGoerliSdk(library).nounlets)
         } else {
           setSdk(null)
         }
-
-        // setSdk(
-        //   (CHAIN_ID === 4 ? getRinkebySdk(library) : (getMainnetSdk(library) as RinkebySdk))
-        //     .nounlets
-        // )
       }
     }
   }, [library, chainId])

@@ -5,7 +5,7 @@ import IconQuestionCircle from 'components/icons/icon-question-circle'
 import { formatEther, parseEther } from 'ethers/lib/utils'
 import useDisplayedNounlet from 'hooks/useDisplayedNounlet'
 
-import { Mainnet, Rinkeby, useEthers } from '@usedapp/core'
+import { Goerli, Mainnet, Rinkeby, useEthers } from '@usedapp/core'
 import IconLinkOffsite from 'components/icons/icon-link-offsite'
 import SimpleAddress from 'components/simple-address'
 import OnMounted from 'components/utils/on-mounted'
@@ -78,7 +78,7 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
       const explorerLink =
         CHAIN_ID === 1
           ? Mainnet.getExplorerTransactionLink(bid.id)
-          : Rinkeby.getExplorerTransactionLink(bid.id)
+          : Goerli.getExplorerTransactionLink(bid.id)
 
       return (
         <div key={bid.id.toString()} className="flex items-center flex-1 py-3 overflow-hidden">
