@@ -29,7 +29,7 @@ const Home: NextPage<{ url: string }> = ({ url }) => {
         image={`${url}/img/noun.jpg`}
       />
       <SimpleModalWrapper
-        className="md:w-[600px] !max-w-[600px]"
+        className="md:!w-[600px] !max-w-[600px]"
         onClose={() => setBidModalOpen(false)}
         isShown={isBidModalOpen}
       >
