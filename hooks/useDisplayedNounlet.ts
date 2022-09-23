@@ -166,8 +166,8 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
 
     const merkleTree = await sdk.NounletProtoform.generateMerkleTree([
       sdk.NounletAuction.address,
-      sdk.OptimisticBid.address,
-      sdk.NounletGovernance.address
+      sdk.NounletGovernance.address,
+      sdk.OptimisticBid.address
     ])
 
     const mintProof = await sdk.NounletProtoform.getProof(merkleTree, 0)
