@@ -14,7 +14,7 @@ import useLeaderboard from 'hooks/useLeaderboard'
 import { useBlockNumberCheckpointStore } from 'store/blockNumberCheckpointStore'
 import { SDKContext } from './WalletConfig'
 import IconBug from './icons/icon-bug'
-import { NEXT_PUBLIC_SHOW_DEBUG } from 'config'
+import { NEXT_PUBLIC_MAX_NOUNLETS, NEXT_PUBLIC_SHOW_DEBUG } from 'config'
 
 export default function ChainUpdater() {
   return (
@@ -104,6 +104,7 @@ function VaultUpdater() {
     latestNounletTokenId,
     setIsLive,
     setIsLoading,
+    setWereAllNounletsAuctioned,
     setVaultCuratorAddress,
     setNounTokenId,
     setCurrentDelegate,
@@ -127,14 +128,13 @@ function VaultUpdater() {
       const [vaultMetadata, vaultInfo /*, currentDelegate*/] = await Promise.all([
         getVaultData(key.vaultAddress),
         sdk.NounletAuction.vaultInfo(vaultAddress)
-        // sdk.NounletGovernance.currentDelegate(vaultAddress)
       ])
 
       const tmp = {
         ...vaultInfo
       }
-      if (+tmp.currentId.toString() >= 100) {
-        tmp.currentId = BigNumber.from(100)
+      if (+tmp.currentId.toString() >= NEXT_PUBLIC_MAX_NOUNLETS) {
+        tmp.currentId = BigNumber.from(NEXT_PUBLIC_MAX_NOUNLETS)
       }
 
       return {
@@ -158,9 +158,9 @@ function VaultUpdater() {
         setTimeout(() => revalidate({ retryCount }), 5000)
       },
       onSuccess: (data, key, config) => {
-        // console.groupCollapsed('🏴 fetched vault metadata ...')
-        // console.table(data)
-        // console.groupEnd()
+        console.groupCollapsed('🏴 fetched vault metadata ...')
+        console.table(data)
+        console.groupEnd()
 
         if (data.isLive) {
           setNounletTokenAddress(data.nounletTokenAddress)
@@ -169,6 +169,7 @@ function VaultUpdater() {
           setCurrentDelegate(data.backendCurrentDelegate)
           setBackendLatestNounletTokenId(`${data.nounletCount}`)
           setLatestNounletTokenId(`${data.currentId.toString()}`)
+          setWereAllNounletsAuctioned(data.wereAllNounletsAuctioned)
           setIsLive(true)
           setIsLoading(false)
         } else {

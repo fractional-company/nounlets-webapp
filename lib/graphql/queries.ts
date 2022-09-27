@@ -27,6 +27,9 @@ type VaultDataResponse = {
       currentDelegate: Scalars['String']
       nounlets: {
         id: Scalars['ID']
+        auction: {
+          settled: Scalars['Boolean']
+        }
       }[]
     }
   }
@@ -47,6 +50,9 @@ export const getVaultData = async (vaultAddress: string) => {
             currentDelegate,
             nounlets {
               id,
+              auction {
+                settled
+              }
             }
           }
         }
@@ -58,13 +64,18 @@ export const getVaultData = async (vaultAddress: string) => {
     throw new Error('vault not found')
   }
 
+  const wereAllNounletsAuctioned = data.vault.noun.nounlets.every(
+    (nounlet) => nounlet.auction.settled
+  )
+
   return {
     isLive: true,
     vaultAddress: data.vault.id.toLowerCase(),
     nounletTokenAddress: data.vault.token.id.toLowerCase(),
     nounTokenId: data.vault.noun.id,
     nounletCount: data.vault.noun.nounlets.length,
-    backendCurrentDelegate: data.vault.noun.currentDelegate.toLowerCase()
+    backendCurrentDelegate: data.vault.noun.currentDelegate.toLowerCase(),
+    wereAllNounletsAuctioned
   }
 }
 

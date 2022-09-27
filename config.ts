@@ -8,8 +8,9 @@ interface AppConfig {
 type SupportedChains = ChainId.Goerli | ChainId.Mainnet
 
 export const CHAIN_ID: SupportedChains = parseInt(process.env.NEXT_PUBLIC_CHAIN_ID ?? '1')
+export const NEXT_PUBLIC_MAX_NOUNLETS = parseInt(process.env.NEXT_PUBLIC_MAX_NOUNLETS ?? '100')
 export const NEXT_PUBLIC_NOUN_VAULT_ADDRESS = process.env.NEXT_PUBLIC_NOUN_VAULT_ADDRESS
-export const NEXT_PUBLIC_BLOCKS_PER_DAY = 7_000
+export const NEXT_PUBLIC_BLOCKS_PER_DAY = parseInt(process.env.NEXT_PUBLIC_BLOCKS_PER_DAY ?? '7500')
 export const NEXT_PUBLIC_BID_DECIMALS = +(process.env.NEXT_PUBLIC_BID_DECIMALS || 2)
 export const NEXT_PUBLIC_CACHE_VERSION = +(process.env.NEXT_PUBLIC_CACHE_VERSION || -1)
 export const NEXT_PUBLIC_SHOW_DEBUG =

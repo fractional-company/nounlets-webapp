@@ -16,6 +16,7 @@ interface StoreState {
   isLoading: boolean
   isLeaderboardOutOfSync: boolean
   isCurrentDelegateOutOfSync: boolean
+  wereAllNounletsAuctioned: boolean
   currentDelegate: string
   latestNounletTokenId: string
   backendLatestNounletTokenId: string
@@ -34,6 +35,7 @@ interface StoreActions {
   setIsLoading: (flag: boolean) => void
   setIsLeaderboardOutOfSync: (flag: boolean) => void
   setIsCurrentDelegateOutOfSync: (flag: boolean) => void
+  setWereAllNounletsAuctioned: (flag: boolean) => void
   setCurrentDelegate: (address: string) => void
   setLatestNounletTokenId: (id: string) => void
   setBackendLatestNounletTokenId: (id: string) => void
@@ -57,6 +59,7 @@ const initialState: StoreState = {
   isLoading: true,
   isLeaderboardOutOfSync: false,
   isCurrentDelegateOutOfSync: false,
+  wereAllNounletsAuctioned: false,
   currentDelegate: ethers.constants.AddressZero,
   latestNounletTokenId: '',
   backendLatestNounletTokenId: ''
@@ -114,6 +117,11 @@ export const useVaultStore = createTrackedSelector(
       setIsCurrentDelegateOutOfSync: (flag) => {
         set((state) => {
           state.isCurrentDelegateOutOfSync = flag
+        })
+      },
+      setWereAllNounletsAuctioned: (flag) => {
+        set((state) => {
+          state.wereAllNounletsAuctioned = flag
         })
       },
       setCurrentDelegate: (address) => {

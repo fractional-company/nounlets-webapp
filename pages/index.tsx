@@ -15,7 +15,7 @@ import SEO from '../components/seo'
 
 const Home: NextPage<{ url: string }> = ({ url }) => {
   const { setBidModalOpen, isBidModalOpen } = useAppStore()
-  const { isLive } = useVaultStore()
+  const { isLive, wereAllNounletsAuctioned } = useVaultStore()
 
   const { isLatestNounlet, hasAuctionSettled } = useDisplayedNounlet()
 
@@ -35,9 +35,19 @@ const Home: NextPage<{ url: string }> = ({ url }) => {
       >
         <BidHistoryModal />
       </SimpleModalWrapper>
+
       <div className="space-y-16">
-        <HomeHero />
-        {isLive && hasAuctionSettled && <HomeVotesFromNounlet />}
+        {wereAllNounletsAuctioned ? (
+          <>
+            <p>{'' + wereAllNounletsAuctioned}</p>
+          </>
+        ) : (
+          <>
+            <HomeHero />
+            {isLive && hasAuctionSettled && <HomeVotesFromNounlet />}
+          </>
+        )}
+
         {isLive && <HomeLeaderboard />}
         {isLive && <HomeCollectiveOwnership />}
         <HomeWTF />
