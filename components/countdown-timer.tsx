@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import dayjs from 'dayjs'
 import { BigNumber, BigNumberish } from 'ethers'
 import { debounce } from 'lodash'
@@ -5,6 +6,7 @@ import { debounce } from 'lodash'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 type ComponentProps = {
+  className?: string
   showEndTime?: boolean
   auctionEnd: BigNumberish
   onTimerFinished?: () => void
@@ -91,7 +93,12 @@ export default function CountdownTimer(props: ComponentProps): JSX.Element {
 
   return (
     <div className="countdown-timer">
-      <div className="flex items-center text-px32 leading-[38px] font-700 space-x-2">
+      <div
+        className={classNames(
+          'flex items-center text-px32 leading-[38px] font-700 space-x-2',
+          props.className
+        )}
+      >
         {showEndTime ? (
           <p>
             <span>{formattedTime}</span>

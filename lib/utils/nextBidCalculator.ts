@@ -1,6 +1,8 @@
 import { NEXT_PUBLIC_BID_DECIMALS } from 'config'
 import { BigNumber, BigNumberish, FixedNumber } from 'ethers'
 
+export const ONLY_NUMBERS_REGEX = new RegExp(`^\\d+\\.?\\d{0,${NEXT_PUBLIC_BID_DECIMALS}}$`)
+
 export function calculateNextBid(
   amount: BigNumberish,
   increaseMultiplier: BigNumberish,

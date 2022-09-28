@@ -1,14 +1,12 @@
 import Button from 'components/buttons/button'
 import IconEth from 'components/icons/icon-eth'
 import IconQuestionCircle from 'components/icons/icon-question-circle'
-import MainNounImage from 'components/main-noun-image'
 import SimplePopover from 'components/simple-popover'
 import { FixedNumber } from 'ethers'
 import Link from 'next/link'
 import { ChangeEvent, useMemo, useRef, useState } from 'react'
 import BuyoutYourWallet from './buyout-your-wallet'
 import { OfferDetails } from './buyout-offer-modal'
-import { formatOfferDetails } from 'pages/buyout'
 import { useBuyoutOfferModalStore } from 'store/buyout/buyout-offer-modal.store'
 import useBuyoutNoun from 'hooks/useBuyoutNoun'
 import { NounImage, NounletImage } from 'components/NounletImage'
@@ -16,6 +14,7 @@ import useNounBuyout from 'hooks/useNounBuyout'
 import { ONLY_NUMBERS_REGEX } from 'lib/utils/nextBidCalculator'
 import useToasts from 'hooks/useToasts'
 import { WrappedTransactionReceiptState } from 'lib/utils/tx-with-error-handling'
+import { formatOfferDetails } from 'lib/utils/formatBuyoutInfo'
 
 type ComponentProps = {
   initialFullPriceOffer: FixedNumber

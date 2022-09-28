@@ -15,6 +15,8 @@ import { useBlockNumberCheckpointStore } from 'store/blockNumberCheckpointStore'
 import { SDKContext } from './WalletConfig'
 import IconBug from './icons/icon-bug'
 import { NEXT_PUBLIC_MAX_NOUNLETS, NEXT_PUBLIC_SHOW_DEBUG } from 'config'
+import { useBuyoutStore } from 'store/buyout/buyout.store'
+import { getBuyoutBidInfo } from 'lib/utils/buyoutInfoUtils'
 
 export default function ChainUpdater() {
   return (
@@ -22,6 +24,7 @@ export default function ChainUpdater() {
       <OnMounted>{NEXT_PUBLIC_SHOW_DEBUG && <LittleBug />}</OnMounted>
       <VaultUpdater />
       <LeaderboardUpdater />
+      <BuyoutUpdater />
     </>
   )
 }
@@ -275,6 +278,89 @@ function LeaderboardUpdater() {
       >
         Update leaderboard
       </Button> */}
+    </>
+  )
+}
+
+function BuyoutUpdater() {
+  const sdk = useSdk()
+  const { isLive, wereAllNounletsAuctioned, vaultAddress, nounletTokenAddress } = useVaultStore()
+  const { setIsLoading, setBuyoutInfo } = useBuyoutStore()
+
+  const { mutate } = useSWR(
+    isLive && wereAllNounletsAuctioned && sdk != null && 'VaultBuyout',
+    async (key) => {
+      if (sdk == null) throw new Error('sdk not initialized')
+      const buyoutData = await sdk.OptimisticBid.bidInfo(vaultAddress)
+      return {
+        ...buyoutData,
+        endTime: buyoutData.startTime.add(604800)
+      }
+    },
+    {
+      dedupingInterval: 5000,
+      onSuccess: (data, key, config) => {
+        console.group('🚀 fetched vault buyout ...')
+        console.log({ data })
+        console.groupEnd()
+
+        const buyoutInfo = {
+          startTime: data.startTime,
+          endTime: data.endTime,
+          proposer: data.proposer,
+          state: data.state,
+          fractionPrice: data.fractionPrice,
+          ethBalance: data.ethBalance,
+          lastTotalSupply: data.lastTotalSupply,
+          fractionsOffered: [],
+          fractionsOfferedCount: BigNumber.from(0),
+          fractionsOfferedPrice: BigNumber.from(0),
+          initialEthBalance: data.ethBalance
+        }
+
+        setBuyoutInfo(buyoutInfo)
+        setIsLoading(false)
+      },
+      refreshInterval: 5 * 60000
+    }
+  )
+
+  const debouncedMutate = useMemo(() => debounce(mutate, 1000), [mutate])
+
+  useEffect(() => {
+    if (sdk == null) return
+    if (!isLive) return
+
+    const optimisticBid = sdk.OptimisticBid.attach(vaultAddress)
+
+    const listener = (...eventData: any) => {
+      const event = eventData.at(-1)
+      console.log('Optimistic event', event, eventData)
+      // debouncedMutate()
+    }
+
+    console.log('Listen to optimitic bids')
+    optimisticBid.on(optimisticBid, listener)
+
+    return () => {
+      console.log('removing Optimistic listener')
+      optimisticBid.off(optimisticBid, listener)
+    }
+  }, [isLive, vaultAddress, sdk, debouncedMutate])
+
+  const handleTest = async () => {
+    if (sdk == null) return
+    if (!isLive) return
+
+    const currentState = await getBuyoutBidInfo(sdk, vaultAddress, nounletTokenAddress)
+
+    console.log({ currentState })
+  }
+
+  return (
+    <>
+      {/* <button onClick={() => mutate()}>mutate</button> */}
+      <button onClick={() => handleTest()}>handleTest</button>
     </>
   )
 }

@@ -42,7 +42,6 @@ export default function useNounBuyout() {
 
     console.log('submitting offer', { offerDetails })
     if (account == null) throw new Error('No address')
-    // await mockDelayedPromise()
 
     // Approve
     const nounletToken = sdk.NounletToken.attach(nounletTokenAddress).connect(library.getSigner())

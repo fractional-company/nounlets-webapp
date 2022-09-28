@@ -4,7 +4,10 @@ import useNounBuyout from 'hooks/useNounBuyout'
 import { useMemo } from 'react'
 import { BuyoutState, useBuyoutStore } from 'store/buyout/buyout.store'
 import { useVaultStore } from 'store/vaultStore'
+import BuyoutLiveRejectionsCard from './buyout-live-rejections-card'
 import BuyoutOfferCard from './buyout-offer-card'
+import BuyoutOfferLiveCard from './buyout-offer-live-card'
+import BuyoutOfferingDisplay from './buyout-offering-display'
 import BuyoutPastOffers from './buyout-past-offers'
 import BuyoutSecondaryMarketCard from './buyout-secondary-market-card'
 
@@ -48,17 +51,20 @@ export default function BuyoutHero() {
                 </div>
               </>
             )}
-            {/* {(buyoutInfo.state === BuyoutState.LIVE ||
-                buyoutInfo.state === BuyoutState.SUCCESS) && (
-                <div className="buyout-inactive space-y-4">
-                  <div className="space-y-4">
-                    <h1 className="font-londrina text-px42 leading-px48">Offer for Noun {nounTokenId}</h1>
-                    <BuyoutOfferLiveCard />
-                    <BuyoutLiveRejectionsCard />
-                    <BuyoutOfferingDisplay />
-                  </div>
+            {(buyoutInfo.state === BuyoutState.LIVE ||
+              buyoutInfo.state === BuyoutState.SUCCESS) && (
+              <div className="buyout-inactive space-y-4">
+                <div className="space-y-4">
+                  <h1 className="font-londrina text-px42 leading-px48">
+                    Offer for Noun {nounTokenId}
+                  </h1>
+                  <pre>{JSON.stringify(buyoutInfo, null, 4)}</pre>
+                  <BuyoutOfferLiveCard />
+                  <BuyoutLiveRejectionsCard />
+                  <BuyoutOfferingDisplay />
                 </div>
-              )} */}
+              </div>
+            )}
           </div>
         </div>
       </div>

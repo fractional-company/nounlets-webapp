@@ -1,6 +1,6 @@
 import { BigNumber, ethers, FixedNumber } from 'ethers'
 import { parseEther } from 'ethers/lib/utils'
-import { toBuyoutInfoFixedNumber, toBuyoutInfoFormatted } from 'lib/utils/format-buyout-info'
+import { toBuyoutInfoFixedNumber, toBuyoutInfoFormatted } from 'lib/utils/formatBuyoutInfo'
 import create from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 
