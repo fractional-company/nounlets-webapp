@@ -59,9 +59,13 @@ export default function useNounBuyout() {
     return nounletsOffered.length
   }, [nounletsOffered])
 
-  const nounletsRemainingCount = useMemo(() => {
-    return nounletsOffered.filter((n) => n.isAvailable).length
+  const nounletsRemaining = useMemo(() => {
+    return nounletsOffered.filter((n) => n.isAvailable)
   }, [nounletsOffered])
+
+  const nounletsRemainingCount = useMemo(() => {
+    return nounletsRemaining.length
+  }, [nounletsRemaining])
 
   const nounletPercentage = useMemo(() => {
     if (nounletsRemainingCount === 0 || nounletsOfferedCount === 0) return 1.0
@@ -108,7 +112,6 @@ export default function useNounBuyout() {
     })
 
     const vault = sdk.OptimisticBid.connect(library.getSigner())
-
     const tx = await vault.start(vaultAddress, fractionsOffered, amountsOffered, {
       value: initialEthBalance
     })
@@ -144,7 +147,7 @@ export default function useNounBuyout() {
       nounletIds,
       nounletIds.map((_) => 1),
       {
-        value: buyoutInfo.fractionPrice
+        value: buyoutInfo.fractionPrice.mul(nounletIds.length)
       }
     )
     return txWithErrorHandling(tx)
@@ -160,6 +163,7 @@ export default function useNounBuyout() {
     // Old
     nounletsOffered,
     nounletsOfferedCount,
+    nounletsRemaining,
     nounletsRemainingCount,
     nounletPercentage,
     // User

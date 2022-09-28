@@ -11,7 +11,7 @@ export default function SimpleXImage(props: ComponentProps): JSX.Element {
   return (
     <div
       className={classNames(
-        'simple-x-image relative z-0 w-10 h-10 border-[3px] rounded-px8',
+        'simple-x-image relative z-0 w-10 h-10 border-[3px] rounded-px8 overflow-hidden',
         props.className,
         props.isXed ? 'border-secondary-red' : 'border-white'
       )}

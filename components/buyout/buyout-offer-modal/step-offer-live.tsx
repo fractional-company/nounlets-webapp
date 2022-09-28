@@ -12,8 +12,7 @@ export default function StepOfferLive(): JSX.Element {
   const { buyoutInfo } = useBuyoutStore()
 
   const [showEndTime, setShowEndTime] = useState(false)
-  const startTime = useMemo(() => buyoutInfo.startTime, [buyoutInfo])
-  const endTime = useMemo(() => startTime.add(60 * 60 * 5), [startTime])
+  const endTime = useMemo(() => buyoutInfo.endTime, [buyoutInfo.endTime])
 
   return (
     <div className="step-offer-live">

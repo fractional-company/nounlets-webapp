@@ -97,18 +97,26 @@ async function getStartEventFractions(
 ) {
   const nounletToken = sdk.NounletToken.attach(nounletTokenAddres)
   const tx = await event.tx.getTransactionReceipt()
-  const fractionsOffered: BigNumber[] = tx.logs
-    .filter((log) => {
-      return log.address.toLowerCase() === nounletToken.address.toLowerCase()
-    })
-    .map((log) => nounletToken.interface.parseLog(log))
-    .filter(
-      (log) =>
-        log.name ===
-        nounletToken.interface.events['TransferBatch(address,address,address,uint256[],uint256[])']
-          .name
-    )
-    .map((event) => event.args[3][0] || [])
+  const fractionsOffered: BigNumber[] =
+    tx.logs
+      .filter((log) => {
+        return log.address.toLowerCase() === nounletToken.address.toLowerCase()
+      })
+      .map((log) => nounletToken.interface.parseLog(log))
+      .filter((log) => {
+        console.log({ log })
+        return (
+          log.name ===
+          nounletToken.interface.events[
+            'TransferBatch(address,address,address,uint256[],uint256[])'
+          ].name
+        )
+      })
+      .map((event) => {
+        console.log('*******', event, event.args[3] || [])
+        return event.args[3] || []
+      })[0] || []
+
   const fractionsRemaining = await getOptimisticBidBalances(
     sdk,
     nounletTokenAddres,
@@ -133,12 +141,16 @@ async function getOptimisticBidBalances(
     fractionsOffered
   )
 
+  console.log({ balances })
+
   const fractionsRemaining: BigNumber[] = []
   fractionsOffered.forEach((nounletId, index) => {
     if (balances[index].eq(1)) {
-      fractionsRemaining.push(balances[index])
+      fractionsRemaining.push(fractionsOffered[index])
     }
   })
+
+  console.log({ fractionsRemaining })
 
   return fractionsRemaining
 }

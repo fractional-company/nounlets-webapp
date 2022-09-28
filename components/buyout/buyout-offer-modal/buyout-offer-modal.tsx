@@ -19,12 +19,12 @@ export default function BuyoutOfferModal(props: ComponentProps): JSX.Element {
   const { buyoutOfferStep } = useBuyoutOfferModalStore()
 
   return (
-    <div className="buyout-offer-modal">
-      {buyoutOfferStep === 0 ? (
-        <StepReviewOffer initialFullPriceOffer={props.initialFullPriceOffer} />
-      ) : (
-        <StepOfferLive />
-      )}
-    </div>
+    <StepReviewOffer initialFullPriceOffer={props.initialFullPriceOffer} />
+    // <div className="buyout-offer-modal">
+    //   {buyoutOfferStep === 0 ? (
+    //   ) : (
+    //     <StepOfferLive />
+    //   )}
+    // </div>
   )
 }

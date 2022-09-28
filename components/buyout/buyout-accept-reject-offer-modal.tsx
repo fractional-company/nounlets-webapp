@@ -1,6 +1,7 @@
 import classNames from 'classnames'
 import Button from 'components/buttons/button'
 import CountdownTimer from 'components/countdown-timer'
+import { NounletImage } from 'components/NounletImage'
 import SimpleProgressIndicator from 'components/simple-progress-indicator'
 import SimpleXImage from 'components/simple-x-image'
 import { BigNumber, FixedNumber } from 'ethers'
@@ -20,25 +21,36 @@ export default function BuyoutAcceptRejectOfferModal(props: ComponentProps): JSX
     buyoutInfo,
     nounletsOffered,
     nounletsOfferedCount,
+    nounletsRemaining,
     nounletsRemainingCount,
     nounletPercentage,
     buyNounlet
   } = useNounBuyout()
 
+  console.log({ nounletsRemaining, nounletsRemainingCount })
   const [showEndTime, setShowEndTime] = useState(false)
-  const startTime = useMemo(() => buyoutInfo.startTime, [buyoutInfo])
-  const endTime = useMemo(() => startTime.add(60 * 60 * 5), [startTime])
+  const endTime = useMemo(() => buyoutInfo.endTime, [buyoutInfo])
 
   const handleBuyNounlet = async (nounletId: number) => {
     console.log('buyign nounlet with id', nounletId)
-    const result = await buyNounlet([nounletId])
+    const result = await buyNounlet([2])
 
     console.log('result?', { result })
   }
 
+  const handleBuyAllRemainingNounlets = async () => {
+    console.log(
+      'buyign ALL nounlet with',
+      nounletsRemaining.map((nounlet) => nounlet.id)
+    )
+    const result = await buyNounlet(nounletsRemaining.map((nounlet) => nounlet.id))
+
+    console.log('result2?', { result })
+  }
+
   return (
     <div className="buyout-accept-reject-offer-modal">
-      <div className="flex flex-col gap-4 -mt-6">
+      <div className="flex flex-col gap-4">
         {props.isRejecting ? (
           <p className="text-px24 font-londrina text-gray-4">👎 Rejecting the offer</p>
         ) : (
@@ -88,7 +100,7 @@ export default function BuyoutAcceptRejectOfferModal(props: ComponentProps): JSX
                 {nounletsOffered.map((nounlet) => {
                   return (
                     <SimpleXImage key={nounlet.id} isXed={!nounlet.isAvailable}>
-                      <Image src={nounImage} layout="responsive" alt="Noun" />
+                      <NounletImage id={nounlet.id + ''} />
                     </SimpleXImage>
                   )
                 })}
@@ -104,7 +116,10 @@ export default function BuyoutAcceptRejectOfferModal(props: ComponentProps): JSX
                 Buy a Nounlet to reject the offer
               </p>
               <div className="bg-white rounded-px10 p-2">
-                <Button className="default-outline --sm w-full">
+                <Button
+                  className="default-outline --sm w-full"
+                  onClick={handleBuyAllRemainingNounlets}
+                >
                   Buy all ({nounletsRemainingCount}) Nounlets
                 </Button>
               </div>

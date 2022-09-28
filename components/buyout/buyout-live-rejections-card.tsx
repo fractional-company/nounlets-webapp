@@ -1,3 +1,4 @@
+import { NounletImage } from 'components/NounletImage'
 import SimpleProgressIndicator from 'components/simple-progress-indicator'
 import SimpleXImage from 'components/simple-x-image'
 import useNounBuyout from 'hooks/useNounBuyout'
@@ -39,7 +40,7 @@ export default function BuyoutLiveRejectionsCard(): JSX.Element {
             {nounletsOffered.map((nounlet) => {
               return (
                 <SimpleXImage key={nounlet.id} isXed={!nounlet.isAvailable}>
-                  <Image src={nounImage} layout="responsive" alt="Noun" />
+                  <NounletImage id={nounlet.id + ''} />
                 </SimpleXImage>
               )
             })}

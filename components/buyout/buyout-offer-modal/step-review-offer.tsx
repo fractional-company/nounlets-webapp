@@ -14,12 +14,15 @@ import { ONLY_NUMBERS_REGEX } from 'lib/utils/nextBidCalculator'
 import useToasts from 'hooks/useToasts'
 import { WrappedTransactionReceiptState } from 'lib/utils/tx-with-error-handling'
 import { formatOfferDetails } from 'lib/utils/formatBuyoutInfo'
+import { NEXT_PUBLIC_MAX_NOUNLETS } from 'config'
+import { useSWRConfig } from 'swr'
 
 type ComponentProps = {
   initialFullPriceOffer: FixedNumber
 }
 
 export default function StepReviewOffer(props: ComponentProps): JSX.Element {
+  const { cache, mutate: globalMutate } = useSWRConfig()
   const { nounTokenId, myNounlets, submitOffer } = useNounBuyout()
   const { setBuyoutOfferStep } = useBuyoutOfferModalStore()
   const { toastSuccess, toastError } = useToasts()
@@ -81,7 +84,7 @@ export default function StepReviewOffer(props: ComponentProps): JSX.Element {
       if (inputFullPriceValue === '') return tempOfferDetails
 
       const fullPrice = FixedNumber.from(inputFullPriceValue)
-      const pricePerNounlet = fullPrice.divUnsafe(FixedNumber.from('100'))
+      const pricePerNounlet = fullPrice.divUnsafe(FixedNumber.from(NEXT_PUBLIC_MAX_NOUNLETS))
 
       tempOfferDetails.fullPrice = fullPrice
       tempOfferDetails.pricePerNounlet = pricePerNounlet
@@ -109,7 +112,7 @@ export default function StepReviewOffer(props: ComponentProps): JSX.Element {
 
   const handleSubmitOffer = async () => {
     try {
-      console.log('handleOnSubmit')
+      console.log('handleOnSubmit', offerDetails)
       setIsSubmittingOffer(true)
       const response = await submitOffer(offerDetails) // TODO get actual buyout info
 
@@ -117,9 +120,9 @@ export default function StepReviewOffer(props: ComponentProps): JSX.Element {
         response.status === WrappedTransactionReceiptState.SUCCESS ||
         response.status === WrappedTransactionReceiptState.SPEDUP
       ) {
-        // await mutateAuctionInfo() // TODO maybe remove this
+        await globalMutate('VaultBuyout') // TODO maybe remove this
         toastSuccess('Buyout started! 🚀', 'LFG!')
-        // setBuyoutOfferStep(1)
+        setBuyoutOfferStep(1)
       } else if (response.status === WrappedTransactionReceiptState.ERROR) {
         throw response.data
       } else if (response.status === WrappedTransactionReceiptState.CANCELLED) {

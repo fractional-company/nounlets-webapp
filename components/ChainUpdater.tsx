@@ -328,12 +328,12 @@ function BuyoutUpdater() {
     if (sdk == null) return
     if (!isLive) return
 
-    const optimisticBid = sdk.OptimisticBid.attach(vaultAddress)
+    const optimisticBid = sdk.OptimisticBid
 
     const listener = (...eventData: any) => {
       const event = eventData.at(-1)
       console.log('Optimistic event', event, eventData)
-      // debouncedMutate()
+      debouncedMutate()
     }
 
     console.log('Listen to optimitic bids')

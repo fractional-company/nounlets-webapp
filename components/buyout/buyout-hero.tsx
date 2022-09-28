@@ -12,9 +12,8 @@ import BuyoutPastOffers from './buyout-past-offers'
 import BuyoutSecondaryMarketCard from './buyout-secondary-market-card'
 
 export default function BuyoutHero() {
-  const { nounTokenId, myNounlets, buyoutInfo, offers, nounBackground } = useNounBuyout()
+  const { isLoading, nounTokenId, myNounlets, buyoutInfo, offers, nounBackground } = useNounBuyout()
 
-  const myNounletsCount = myNounlets.length
   return (
     <div className="buyout-hero" style={{ background: nounBackground }}>
       <div className="lg:container mx-auto px-4">
@@ -58,10 +57,19 @@ export default function BuyoutHero() {
                   <h1 className="font-londrina text-px42 leading-px48">
                     Offer for Noun {nounTokenId}
                   </h1>
+                  {isLoading ? (
+                    <></>
+                  ) : (
+                    <>
+                      <BuyoutOfferLiveCard />
+                      <BuyoutLiveRejectionsCard />
+                      <BuyoutOfferingDisplay />
+                    </>
+                  )}
                   {/* <pre>{JSON.stringify(buyoutInfo, null, 4)}</pre> */}
-                  <BuyoutOfferLiveCard />
+                  {/* <BuyoutOfferLiveCard />
                   <BuyoutLiveRejectionsCard />
-                  <BuyoutOfferingDisplay />
+                  <BuyoutOfferingDisplay /> */}
                 </div>
               </div>
             )}
