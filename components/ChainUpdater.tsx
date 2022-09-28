@@ -291,34 +291,31 @@ function BuyoutUpdater() {
     isLive && wereAllNounletsAuctioned && sdk != null && 'VaultBuyout',
     async (key) => {
       if (sdk == null) throw new Error('sdk not initialized')
-      const buyoutData = await sdk.OptimisticBid.bidInfo(vaultAddress)
-      return {
-        ...buyoutData,
-        endTime: buyoutData.startTime.add(604800)
-      }
+      const buyoutBidInfo = await getBuyoutBidInfo(sdk, vaultAddress, nounletTokenAddress)
+      return buyoutBidInfo
     },
     {
       dedupingInterval: 5000,
       onSuccess: (data, key, config) => {
-        console.group('🚀 fetched vault buyout ...')
+        console.group('🤑 fetched vault buyout ...')
         console.log({ data })
         console.groupEnd()
 
-        const buyoutInfo = {
-          startTime: data.startTime,
-          endTime: data.endTime,
-          proposer: data.proposer,
-          state: data.state,
-          fractionPrice: data.fractionPrice,
-          ethBalance: data.ethBalance,
-          lastTotalSupply: data.lastTotalSupply,
-          fractionsOffered: [],
-          fractionsOfferedCount: BigNumber.from(0),
-          fractionsOfferedPrice: BigNumber.from(0),
-          initialEthBalance: data.ethBalance
-        }
+        // const buyoutInfo = {
+        //   startTime: data.startTime,
+        //   endTime: data.endTime,
+        //   proposer: data.proposer,
+        //   state: data.state,
+        //   fractionPrice: data.fractionPrice,
+        //   ethBalance: data.ethBalance,
+        //   lastTotalSupply: data.lastTotalSupply,
+        //   fractionsOffered: [],
+        //   fractionsOfferedCount: BigNumber.from(0),
+        //   fractionsOfferedPrice: BigNumber.from(0),
+        //   initialEthBalance: data.ethBalance
+        // }
 
-        setBuyoutInfo(buyoutInfo)
+        setBuyoutInfo(data)
         setIsLoading(false)
       },
       refreshInterval: 5 * 60000

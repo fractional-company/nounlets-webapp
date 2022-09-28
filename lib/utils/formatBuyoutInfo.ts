@@ -1,4 +1,5 @@
 import { OfferDetails } from 'components/buyout/buyout-offer-modal/buyout-offer-modal'
+import { NEXT_PUBLIC_MAX_NOUNLETS } from 'config'
 import { FixedNumber } from 'ethers'
 import { formatEther } from 'ethers/lib/utils'
 import { BuyoutInfo, BuyoutInfoFixedNumber, BuyoutInfoFormatted } from 'store/buyout/buyout.store'
@@ -40,8 +41,8 @@ export function toBuyoutInfoFixedNumber(buyoutInfo: BuyoutInfo): BuyoutInfoFixed
 
   try {
     const fractionPriceFX = FixedNumber.from(formatEther(buyoutInfo.fractionPrice))
-    const fullPriceFX = FixedNumber.from(100).mulUnsafe(fractionPriceFX)
-    const lastTotalSupplyFX = FixedNumber.from(100)
+    const fullPriceFX = FixedNumber.from(NEXT_PUBLIC_MAX_NOUNLETS).mulUnsafe(fractionPriceFX)
+    const lastTotalSupplyFX = FixedNumber.from(NEXT_PUBLIC_MAX_NOUNLETS)
     const ethBalanceFX = FixedNumber.from(formatEther(buyoutInfo.ethBalance))
     const fractionsOfferedCountFX = FixedNumber.from(buyoutInfo.fractionsOffered.length)
     const fractionsOfferedPriceFX = fractionsOfferedCountFX.mulUnsafe(fractionPriceFX)

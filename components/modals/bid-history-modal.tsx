@@ -1,7 +1,7 @@
 import { Dialog } from '@headlessui/react'
 import { Goerli, Mainnet, Rinkeby } from '@usedapp/core'
 import { NounletImage } from 'components/NounletImage'
-import { CHAIN_ID, NEXT_PUBLIC_BID_DECIMALS } from 'config'
+import { CHAIN_ID, NEXT_PUBLIC_BID_DECIMALS, NEXT_PUBLIC_MAX_NOUNLETS } from 'config'
 import dayjs from 'dayjs'
 import { FixedNumber } from 'ethers'
 import { formatEther } from 'ethers/lib/utils'
@@ -72,7 +72,9 @@ const BidHistoryModal = (): JSX.Element => {
           </div>
           <div className="flex flex-col font-londrina">
             <h4 className="text-px24 text-gray-4">Bids for</h4>
-            <h2 className="text-px42 font-900 leading-px42">Nounlet {nid}/100</h2>
+            <h2 className="text-px42 font-900 leading-px42">
+              Nounlet {nid}/{NEXT_PUBLIC_MAX_NOUNLETS}
+            </h2>
           </div>
         </div>
       </Dialog.Title>

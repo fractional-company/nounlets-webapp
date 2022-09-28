@@ -2,23 +2,23 @@ import Button from 'components/buttons/button'
 import CountdownTimer from 'components/countdown-timer'
 import IconEth from 'components/icons/icon-eth'
 import { BigNumber } from 'ethers'
-import useBuyoutNoun from 'hooks/useBuyoutNoun'
 import { useMemo, useState } from 'react'
 import { useBuyoutHowDoesItWorkModalStore } from 'store/buyout/buyout-how-does-it-work-modal.store'
 import { BuyoutState, useBuyoutStore } from 'store/buyout/buyout.store'
 import BuyoutAcceptRejectOfferModal from './buyout-accept-reject-offer-modal'
 import SimpleModalWrapper from '../SimpleModalWrapper'
+import useNounBuyout from 'hooks/useNounBuyout'
 
 export default function BuyoutOfferLiveCard(): JSX.Element {
   const { openBuyoutHowDoesItWorkModal } = useBuyoutHowDoesItWorkModalStore()
-  const { buyoutInfo } = useBuyoutNoun()
+  const { buyoutInfo } = useNounBuyout()
 
   const [isRejectingModalMode, setIsRejectingModalMode] = useState(true)
   const [showAcceptRejectModal, setShowAcceptRejectModal] = useState(false)
 
   const [showEndTime, setShowEndTime] = useState(false)
   const startTime = useMemo(() => buyoutInfo.startTime, [buyoutInfo])
-  const endTime = useMemo(() => startTime.add(60 * 60 * 5), [startTime])
+  const endTime = useMemo(() => buyoutInfo.endTime, [buyoutInfo])
 
   const canWithdrawNoun = true
   const canWithdrawEth = true

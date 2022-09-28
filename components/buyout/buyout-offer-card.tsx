@@ -3,10 +3,9 @@ import Button from 'components/buttons/button'
 import IconEth from 'components/icons/icon-eth'
 import IconQuestionCircle from 'components/icons/icon-question-circle'
 import SimplePopover from 'components/simple-popover'
-import { NEXT_PUBLIC_BID_DECIMALS } from 'config'
+import { NEXT_PUBLIC_BID_DECIMALS, NEXT_PUBLIC_MAX_NOUNLETS } from 'config'
 import { FixedNumber } from 'ethers'
 import { formatEther, parseEther } from 'ethers/lib/utils'
-import useBuyoutNoun from 'hooks/useBuyoutNoun'
 import useNounBuyout from 'hooks/useNounBuyout'
 import { ONLY_NUMBERS_REGEX } from 'lib/utils/nextBidCalculator'
 import Link from 'next/link'
@@ -34,7 +33,7 @@ export default function BuyoutOfferCard(): JSX.Element {
     if (inputValue === '') return '0'
     try {
       const fullPrice = FixedNumber.from(inputValue)
-      const singlePrice = fullPrice.divUnsafe(FixedNumber.from(100))
+      const singlePrice = fullPrice.divUnsafe(FixedNumber.from(NEXT_PUBLIC_MAX_NOUNLETS))
       return singlePrice.toString()
     } catch (error) {
       console.error('oneNounletPrice error', error)

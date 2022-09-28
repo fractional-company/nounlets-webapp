@@ -1,6 +1,6 @@
 import SimpleProgressIndicator from 'components/simple-progress-indicator'
 import SimpleXImage from 'components/simple-x-image'
-import useBuyoutNoun from 'hooks/useBuyoutNoun'
+import useNounBuyout from 'hooks/useNounBuyout'
 import Image from 'next/image'
 import nounImage from 'public/img/noun.png'
 import { BuyoutState } from 'store/buyout/buyout.store'
@@ -12,7 +12,7 @@ export default function BuyoutLiveRejectionsCard(): JSX.Element {
     nounletsOfferedCount,
     nounletsRemainingCount,
     nounletPercentage
-  } = useBuyoutNoun()
+  } = useNounBuyout()
 
   return (
     <div className="buyout-live-rejections-card">

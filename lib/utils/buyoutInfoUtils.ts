@@ -1,116 +1,78 @@
 import { BigNumber } from 'ethers'
 import { NounletsSDK } from 'hooks/useSdk'
+import { BuyoutInfo, BuyoutInfoPartial, BuyoutOffer } from 'store/buyout/buyout.store'
 
 const REJECTION_PERIOD = 3600 // TODO get from SC
-
-type DepositedNounlet = { id: number; isOwnedByOptimisticBid: boolean }
-type FullBidInfo = {
-  hasEnded: boolean
-  hasSettled: boolean
-  startTime: number
-  endTime: number
-  proposer: string
-  state: number
-  fractionPrice: BigNumber
-  ethBalance: BigNumber
-  lastTotalSupply: BigNumber
-  depositedNounlets: DepositedNounlet[]
-  doesOptimisticBidOwnAnyNounlets: boolean
-}
 
 export async function getBuyoutBidInfo(
   sdk: NounletsSDK,
   vaultAddress: string,
   nounletTokenAddres: string
-) {
+): Promise<BuyoutInfo> {
   const bidInfo = await getBidInfo(sdk, vaultAddress)
   const startEvents = await getStartEvents(sdk, vaultAddress)
   const lastStartEvent = startEvents.at(-1)
+  let fractionsOffered: BigNumber[] = []
+  let fractionsRemaining: BigNumber[] = []
+  let fractionsOfferedCount = BigNumber.from(0)
+  let fractionsOfferedPrice = BigNumber.from(0)
 
   console.log({ bidInfo, startEvents, lastStartEvent })
-
   console.log('Current bid info', { bidInfo })
 
   // Is the buyout in progress or end state?
   if (bidInfo.state !== 0 && lastStartEvent) {
     if (
       lastStartEvent.proposer === bidInfo.proposer &&
-      lastStartEvent.startTime === bidInfo.startTime
+      lastStartEvent.startTime.eq(bidInfo.startTime)
     ) {
-      const nounletToken = sdk.NounletToken.attach(nounletTokenAddres)
-      const tx = await lastStartEvent.tx.getTransactionReceipt()
-
-      const depositedNounletIds: number[] =
-        tx.logs
-          .filter((log) => {
-            return log.address.toLowerCase() === nounletToken.address.toLowerCase()
-          })
-          .map((log) => nounletToken.interface.parseLog(log))
-          .filter(
-            (log) =>
-              log.name ===
-              nounletToken.interface.events[
-                'TransferBatch(address,address,address,uint256[],uint256[])'
-              ].name
-          )
-          .map((event) => event.args[3].map((bn: BigNumber) => bn.toNumber()))[0] || []
-
-      const balances = await getOptimisticBidBalances(sdk, nounletTokenAddres, depositedNounletIds)
-      bidInfo.depositedNounlets = balances
-      bidInfo.doesOptimisticBidOwnAnyNounlets = balances.some(
-        (balance) => balance.isOwnedByOptimisticBid
+      const [offered, remaining] = await getStartEventFractions(
+        sdk,
+        nounletTokenAddres,
+        lastStartEvent
       )
+      fractionsOffered = offered
+      fractionsRemaining = remaining
+      fractionsOfferedCount = BigNumber.from(offered.length)
+      fractionsOfferedPrice = fractionsOfferedCount.mul(bidInfo.fractionPrice)
     }
   }
 
+  const offers: BuyoutOffer[] = startEvents.map((event) => {
+    return {
+      id: event.tx.transactionHash,
+      sender: event.proposer,
+      value: event.buyoutPrice,
+      txHash: event.tx.transactionHash
+    }
+  })
+
   return {
-    bidInfo
-    // events
+    ...bidInfo,
+    fractionsOffered,
+    fractionsRemaining,
+    fractionsOfferedCount,
+    fractionsOfferedPrice,
+    offers
   }
 }
 
-export async function getOptimisticBidBalances(
-  sdk: NounletsSDK,
-  nounletTokenAddres: string,
-  depositedNounletIds: number[]
-): Promise<DepositedNounlet[]> {
-  const nounletToken = sdk.NounletToken.attach(nounletTokenAddres)
-  const optimisticBid = sdk.OptimisticBid
-
-  console.log('sdfsdfs', depositedNounletIds)
-
-  const balances = await nounletToken.balanceOfBatch(
-    depositedNounletIds.map((_) => optimisticBid.address),
-    depositedNounletIds
-  )
-
-  return depositedNounletIds.map((nounletId, index) => ({
-    id: nounletId,
-    isOwnedByOptimisticBid: balances[index].eq(1)
-  }))
-}
-
-export async function getBidInfo(sdk: NounletsSDK, vaultAddress: string): Promise<FullBidInfo> {
+async function getBidInfo(sdk: NounletsSDK, vaultAddress: string): Promise<BuyoutInfoPartial> {
   const bidInfo = await sdk.OptimisticBid.bidInfo(vaultAddress)
-  const endTime = bidInfo.startTime.toNumber() + REJECTION_PERIOD
-  const hasEnded = Date.now() >= endTime * 1000
-  const hasSettled = bidInfo.state === 2
+  const endTime = bidInfo.startTime.add(REJECTION_PERIOD)
   return {
-    hasEnded,
-    hasSettled,
-    startTime: bidInfo.startTime.toNumber(),
-    endTime: bidInfo.startTime.toNumber() + REJECTION_PERIOD,
+    startTime: bidInfo.startTime,
+    endTime: endTime,
     proposer: bidInfo.proposer,
     state: bidInfo.state,
     fractionPrice: bidInfo.fractionPrice,
     ethBalance: bidInfo.ethBalance,
     lastTotalSupply: bidInfo.lastTotalSupply,
-    depositedNounlets: [] as DepositedNounlet[],
-    doesOptimisticBidOwnAnyNounlets: true
+    initialEthBalance: bidInfo.ethBalance
   }
 }
 
-export async function getStartEvents(sdk: NounletsSDK, vaultAddress: string) {
+async function getStartEvents(sdk: NounletsSDK, vaultAddress: string) {
   const filter = sdk.OptimisticBid.filters.Start(vaultAddress)
   const events = await sdk.OptimisticBid.queryFilter(filter)
   const formattedEvents = events
@@ -120,10 +82,63 @@ export async function getStartEvents(sdk: NounletsSDK, vaultAddress: string) {
         proposer: startEvent.args._proposer,
         buyoutPrice: startEvent.args._buyoutPrice,
         fractionPrice: startEvent.args._fractionPrice,
-        startTime: startEvent.args._startTime.toNumber(),
+        startTime: startEvent.args._startTime,
         tx: startEvent
       }
     })
-    .sort((a, b) => b.startTime - a.startTime)
+    .sort((a, b) => (a.startTime.gte(b.startTime) ? 1 : -1))
   return formattedEvents
+}
+
+async function getStartEventFractions(
+  sdk: NounletsSDK,
+  nounletTokenAddres: string,
+  event: Awaited<ReturnType<typeof getStartEvents>>[0]
+) {
+  const nounletToken = sdk.NounletToken.attach(nounletTokenAddres)
+  const tx = await event.tx.getTransactionReceipt()
+  const fractionsOffered: BigNumber[] = tx.logs
+    .filter((log) => {
+      return log.address.toLowerCase() === nounletToken.address.toLowerCase()
+    })
+    .map((log) => nounletToken.interface.parseLog(log))
+    .filter(
+      (log) =>
+        log.name ===
+        nounletToken.interface.events['TransferBatch(address,address,address,uint256[],uint256[])']
+          .name
+    )
+    .map((event) => event.args[3][0] || [])
+  const fractionsRemaining = await getOptimisticBidBalances(
+    sdk,
+    nounletTokenAddres,
+    fractionsOffered
+  )
+
+  return [fractionsOffered, fractionsRemaining]
+}
+
+async function getOptimisticBidBalances(
+  sdk: NounletsSDK,
+  nounletTokenAddres: string,
+  fractionsOffered: BigNumber[]
+): Promise<BigNumber[]> {
+  const nounletToken = sdk.NounletToken.attach(nounletTokenAddres)
+  const optimisticBid = sdk.OptimisticBid
+
+  console.log('sdfsdfs', fractionsOffered)
+
+  const balances = await nounletToken.balanceOfBatch(
+    fractionsOffered.map((_) => optimisticBid.address),
+    fractionsOffered
+  )
+
+  const fractionsRemaining: BigNumber[] = []
+  fractionsOffered.forEach((nounletId, index) => {
+    if (balances[index].eq(1)) {
+      fractionsRemaining.push(balances[index])
+    }
+  })
+
+  return fractionsRemaining
 }

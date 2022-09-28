@@ -1,5 +1,6 @@
 import { useEthers } from '@usedapp/core'
 import { OfferDetails } from 'components/buyout/buyout-offer-modal/buyout-offer-modal'
+import { NEXT_PUBLIC_MAX_NOUNLETS } from 'config'
 import { BigNumber, FixedNumber } from 'ethers'
 import { parseEther } from 'ethers/lib/utils'
 import { useMemo } from 'react'
@@ -37,18 +38,18 @@ export default function useBuyoutNoun() {
     const fractionsOffered = [BigNumber.from(0), BigNumber.from(1), BigNumber.from(2)]
     const initialEthBalance = parseEther(offerDetails.ethOffered.toString())
 
-    setBuyoutInfo({
-      startTime: BigNumber.from(1659437203),
-      proposer: account,
-      state: BuyoutState.LIVE,
-      fractionPrice,
-      ethBalance: initialEthBalance,
-      lastTotalSupply: BigNumber.from(100),
-      fractionsOffered: fractionsOffered,
-      fractionsOfferedCount: BigNumber.from(fractionsOffered.length),
-      fractionsOfferedPrice: fractionPrice.mul(fractionsOffered.length),
-      initialEthBalance
-    })
+    // setBuyoutInfo({
+    //   startTime: BigNumber.from(1659437203),
+    //   proposer: account,
+    //   state: BuyoutState.LIVE,
+    //   fractionPrice,
+    //   ethBalance: initialEthBalance,
+    //   lastTotalSupply: BigNumber.from(NEXT_PUBLIC_MAX_NOUNLETS),
+    //   fractionsOffered: fractionsOffered,
+    //   fractionsOfferedCount: BigNumber.from(fractionsOffered.length),
+    //   fractionsOfferedPrice: fractionPrice.mul(fractionsOffered.length),
+    //   initialEthBalance
+    // })
   }
 
   const nounletsOffered = useMemo(

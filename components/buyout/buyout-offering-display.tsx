@@ -1,9 +1,9 @@
 import IconEth from 'components/icons/icon-eth'
 import SimpleAddress from 'components/simple-address'
-import useBuyoutNoun from 'hooks/useBuyoutNoun'
+import useNounBuyout from 'hooks/useNounBuyout'
 
 export default function BuyoutOfferingDisplay(): JSX.Element {
-  const { buyoutInfo } = useBuyoutNoun()
+  const { buyoutInfo } = useNounBuyout()
 
   return (
     <div className="buyout-offering-display">

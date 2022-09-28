@@ -1,6 +1,6 @@
 import { useEtherBalance, useEthers } from '@usedapp/core'
 import { OfferDetails } from 'components/buyout/buyout-offer-modal/buyout-offer-modal'
-import { BigNumber } from 'ethers'
+import { BigNumber, FixedNumber } from 'ethers'
 import { parseEther } from 'ethers/lib/utils'
 import txWithErrorHandling from 'lib/utils/tx-with-error-handling'
 import { useMemo } from 'react'
@@ -32,6 +32,46 @@ export default function useNounBuyout() {
     if (nounImageData == null) return 'transparent'
     return backgrounds[nounImageData.seed.background] || 'transparent'
   }, [nounImageData, backgrounds])
+
+  const currentOffer = parseEther('13.66')
+  const pastOffers = useMemo(() => {
+    return [...(buyoutInfo.offers ?? [])].reverse()
+  }, [buyoutInfo.offers])
+
+  const userOwnedNounletCount = useMemo(() => {
+    return myNounlets.length
+  }, [myNounlets])
+
+  const nounletsOffered = useMemo(() => {
+    const offered = buyoutInfo.fractionsOffered.map((id) => id.toNumber())
+    const remaining = buyoutInfo.fractionsRemaining.map((id) => id.toNumber())
+    const mapped = offered.map((id) => {
+      return {
+        id: id,
+        isAvailable: remaining.includes(id)
+      }
+    })
+
+    return mapped
+  }, [buyoutInfo])
+
+  const nounletsOfferedCount = useMemo(() => {
+    return nounletsOffered.length
+  }, [nounletsOffered])
+
+  const nounletsRemainingCount = useMemo(() => {
+    return nounletsOffered.filter((n) => n.isAvailable).length
+  }, [nounletsOffered])
+
+  const nounletPercentage = useMemo(() => {
+    if (nounletsRemainingCount === 0 || nounletsOfferedCount === 0) return 1.0
+    return (
+      1.0 -
+      FixedNumber.from('' + nounletsRemainingCount / nounletsOfferedCount)
+        .round(2)
+        .toUnsafeFloat()
+    )
+  }, [nounletsOfferedCount, nounletsRemainingCount])
 
   const submitOffer = async (offerDetails: OfferDetails) => {
     if (sdk == null) throw new Error('no sdk')
@@ -90,15 +130,48 @@ export default function useNounBuyout() {
     // })
   }
 
+  const buyNounlet = async (nounletIds: number[]) => {
+    if (sdk == null) throw new Error('no sdk')
+    if (account == null) throw new Error('no signer')
+    if (library == null) throw new Error('no library')
+    if (vaultAddress == null) throw new Error('no vault')
+    if (nounletTokenAddress == null) throw new Error('no token address')
+    if (account == null) throw new Error('No address')
+
+    const optimisticBid = sdk.OptimisticBid.connect(library.getSigner())
+    const tx = await optimisticBid.buyFractions(
+      vaultAddress,
+      nounletIds,
+      nounletIds.map((_) => 1),
+      {
+        value: buyoutInfo.fractionPrice
+      }
+    )
+    return txWithErrorHandling(tx)
+  }
+
   return {
     isLoading: isLoadingVault && isLoading,
-    nounTokenId,
-    account,
-    userBalance,
-    myNounlets,
-    buyoutInfo,
-    offers,
     nounBackground,
-    submitOffer
+    userBalance,
+    nounTokenId,
+    myNounlets,
+    offers,
+    // Old
+    nounletsOffered,
+    nounletsOfferedCount,
+    nounletsRemainingCount,
+    nounletPercentage,
+    // User
+    account,
+    balance: userBalance,
+    userOwnedNounletCount,
+    // Buyout
+    buyoutInfo,
+    currentOffer,
+    pastOffers,
+    // Methods
+    submitOffer,
+    buyNounlet
   }
 }

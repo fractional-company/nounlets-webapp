@@ -4,7 +4,7 @@ import CountdownTimer from 'components/countdown-timer'
 import SimpleProgressIndicator from 'components/simple-progress-indicator'
 import SimpleXImage from 'components/simple-x-image'
 import { BigNumber, FixedNumber } from 'ethers'
-import useBuyoutNoun from 'hooks/useBuyoutNoun'
+import useNounBuyout from 'hooks/useNounBuyout'
 import Image from 'next/image'
 import nounImage from 'public/img/noun.png'
 import { useMemo, useState } from 'react'
@@ -21,12 +21,20 @@ export default function BuyoutAcceptRejectOfferModal(props: ComponentProps): JSX
     nounletsOffered,
     nounletsOfferedCount,
     nounletsRemainingCount,
-    nounletPercentage
-  } = useBuyoutNoun()
+    nounletPercentage,
+    buyNounlet
+  } = useNounBuyout()
 
   const [showEndTime, setShowEndTime] = useState(false)
   const startTime = useMemo(() => buyoutInfo.startTime, [buyoutInfo])
   const endTime = useMemo(() => startTime.add(60 * 60 * 5), [startTime])
+
+  const handleBuyNounlet = async (nounletId: number) => {
+    console.log('buyign nounlet with id', nounletId)
+    const result = await buyNounlet([nounletId])
+
+    console.log('result?', { result })
+  }
 
   return (
     <div className="buyout-accept-reject-offer-modal">
@@ -122,7 +130,12 @@ export default function BuyoutAcceptRejectOfferModal(props: ComponentProps): JSX
                         </p>
                       </div>
                       {nounlet.isAvailable ? (
-                        <Button className="primary --sm">Buy</Button>
+                        <Button
+                          className="primary --sm"
+                          onClick={() => handleBuyNounlet(nounlet.id)}
+                        >
+                          Buy
+                        </Button>
                       ) : (
                         <div className="inline-flex items-center justify-center h-10 px-4 rounded-px10 text-white bg-gray-4 font-700 text-px16 leading-px16">
                           Sold

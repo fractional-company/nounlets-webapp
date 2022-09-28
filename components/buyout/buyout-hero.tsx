@@ -47,7 +47,7 @@ export default function BuyoutHero() {
                     )}
                     <BuyoutOfferCard />
                   </div>
-                  {/* <BuyoutPastOffers /> */}
+                  <BuyoutPastOffers />
                 </div>
               </>
             )}
@@ -58,7 +58,7 @@ export default function BuyoutHero() {
                   <h1 className="font-londrina text-px42 leading-px48">
                     Offer for Noun {nounTokenId}
                   </h1>
-                  <pre>{JSON.stringify(buyoutInfo, null, 4)}</pre>
+                  {/* <pre>{JSON.stringify(buyoutInfo, null, 4)}</pre> */}
                   <BuyoutOfferLiveCard />
                   <BuyoutLiveRejectionsCard />
                   <BuyoutOfferingDisplay />

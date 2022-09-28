@@ -2,6 +2,7 @@ import Button from 'components/buttons/button'
 import IconArrow from 'components/icons/icon-arrow'
 import CongratulationsModal from 'components/modals/congratulations-modal'
 import { NounletImage } from 'components/NounletImage'
+import { NEXT_PUBLIC_MAX_NOUNLETS } from 'config'
 import useCurrentBackground from 'hooks/useCurrentBackground'
 import useDisplayedNounlet from 'hooks/useDisplayedNounlet'
 import Image from 'next/image'
@@ -38,7 +39,7 @@ export default function HomeHero(): JSX.Element {
   const isButtonNextDisabled = useMemo(() => {
     if (nid == null) return true
     if (+nid >= +latestNounletTokenId) return true
-    if (+nid === 100) return true
+    if (+nid === NEXT_PUBLIC_MAX_NOUNLETS) return true
     return false
   }, [nid, latestNounletTokenId])
 
