@@ -322,6 +322,9 @@ export const getAllNounlets = async (vaultAddress: string, nounletAuctionAddress
     currentDelegate !== ethers.constants.AddressZero &&
     mostVotesAddress !== ethers.constants.AddressZero
   ) {
+    if (!accounts[currentDelegate]) {
+      accounts[currentDelegate] = { holding: [], votes: 0 }
+    }
     if (accounts[currentDelegate].votes >= mostVotes) {
       mostVotesAddress = currentDelegate
       doesDelegateHaveMostVotes = true

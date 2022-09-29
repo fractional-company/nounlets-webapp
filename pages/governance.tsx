@@ -79,8 +79,8 @@ export default Governance
 function GovernanceCurrentDelegate() {
   const { account } = useEthers()
   const { setConnectModalOpen } = useAppStore()
-  const { currentDelegate, isCurrentDelegateOutOfSync } = useVaultStore()
-  const { myNounlets, myNounletsVotes, mostVotesAcc, claimDelegate } = useLeaderboard()
+  const { currentDelegate, currentNounDelegate, isCurrentDelegateOutOfSyncOnVaultContract, isCurrentDelegateOutOfSyncOnNounContract } = useVaultStore()
+  const { myNounlets, myNounletsVotes, mostVotesAcc, claimNounsDelegate, claimVaultDelegate } = useLeaderboard()
   const { toastSuccess, toastError } = useToasts()
   const [isClaiming, setIsClaiming] = useState(false)
 
@@ -108,14 +108,26 @@ function GovernanceCurrentDelegate() {
 
     if (mostVotesAcc.address !== ethers.constants.AddressZero) setIsClaiming(true)
     try {
-      const response = await claimDelegate(mostVotesAcc.address)
-      console.log('yasss', response)
-      toastSuccess('Delegate updated 👑', 'Leaderboard will refresh momentarily.')
+      if (mostVotesAcc.address === currentDelegate && mostVotesAcc.address === currentNounDelegate) {
+        return
+      }
+      if (mostVotesAcc.address !== currentDelegate) {
+        await claimVaultDelegate(mostVotesAcc.address)
+        toastSuccess('Delegate updated 👑', 'Leaderboard will refresh momentarily.')
+        if (account.toLowerCase() === mostVotesAcc.address) {
+          toastSuccess('Hey delegate!', 'To be able to vote, you must also set yourself as delegate on the Nouns contract!')
+        }
+      }
+      if (mostVotesAcc.address !== currentNounDelegate && account.toLowerCase() === mostVotesAcc.address) {
+        await claimNounsDelegate(mostVotesAcc.address)
+        toastSuccess('Congrats', 'You can now vote on proposals on behalf of the Noun!')
+      }
     } catch (error) {
       toastError('Update delegate failed', 'Please try again.')
+    } finally {
       setIsClaiming(false)
     }
-  }, [account, mostVotesAcc, claimDelegate, toastError, toastSuccess, setConnectModalOpen])
+  }, [account, mostVotesAcc, claimVaultDelegate, toastError, toastSuccess, setConnectModalOpen])
 
   return (
     <div className="mt-10 border-2 rounded-px16 p-4 lg:p-8 border-gray-2">
@@ -124,15 +136,17 @@ function GovernanceCurrentDelegate() {
           <div className="flex flex-col xs:flex-row items-center xs:gap-3">
             <p className="font-londrina text-px24 text-gray-4 leading-[40px]">Current delegate</p>
 
-            {isCurrentDelegateOutOfSync && (
+            {isCurrentDelegateOutOfSyncOnVaultContract && (
               <div className="flex items-center">
                 <SimplePopover>
                   <h1 className="font-700 text-px18 text-gray-4">
                     <span className="text-secondary-orange">⚠</span> Out of sync
                   </h1>
                   <div>
-                    This delegate is currently out of sync. There is another wallet with more votes.
-                    You can update the delegate with a transaction.
+                    This vault delegate is currently out of sync. There is another wallet with more votes.
+                    You can update the vault delegate with a transaction.
+                    <br/><br/>To claim delegate on Nouns contract, the new delegate will have to perform another transaction,
+                    available after this one.
                   </div>
                 </SimplePopover>
 
@@ -144,6 +158,32 @@ function GovernanceCurrentDelegate() {
                   <span>Update</span>
                 </Button>
               </div>
+            )}
+            {!isCurrentDelegateOutOfSyncOnVaultContract && isCurrentDelegateOutOfSyncOnNounContract && (
+                <div className="flex items-center">
+                  <SimplePopover>
+                    <h1 className="font-700 text-px18 text-gray-4">
+                      <span className="text-secondary-orange">⚠</span> Claim Noun delegate
+                    </h1>
+                    <div>
+                      To be able to vote on behalf of the Noun, vault delegate must set himself as a delegate on Nouns contract.
+                    </div>
+                  </SimplePopover>
+                  <SimplePopover isDisabled={currentDelegate === account?.toLowerCase()}>
+                    <Button
+                        disabled={currentDelegate !== account?.toLowerCase()}
+                        loading={isClaiming}
+                        onClick={() => handleUpdateDelegate()}
+                        className="hidden lg:flex ml-4 items-center justify-center text-secondary-blue hover:text-secondary-green text-px18 font-700 border-2 border-transparent h-10 rounded-px10"
+                    >
+                      <span>Update</span>
+                    </Button>
+                    <div>
+                      Only a vault delegate can perform this action
+                    </div>
+                  </SimplePopover>
+
+                </div>
             )}
           </div>
 
