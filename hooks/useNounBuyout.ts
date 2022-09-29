@@ -1,4 +1,4 @@
-import { useEtherBalance, useEthers } from '@usedapp/core'
+import { multicall, useEtherBalance, useEthers } from '@usedapp/core'
 import { OfferDetails } from 'components/buyout/buyout-offer-modal/buyout-offer-modal'
 import { BigNumber, FixedNumber } from 'ethers'
 import { parseEther } from 'ethers/lib/utils'
@@ -25,7 +25,7 @@ export default function useNounBuyout() {
     latestNounletTokenId
   } = useVaultStore()
   const { isLoading, buyoutInfo, offers } = useBuyoutStore()
-  const { myNounlets } = useLeaderboard()
+  const { data, myNounlets } = useLeaderboard()
   const { data: nounImageData } = useNounImageData(nounTokenId)
 
   const nounBackground = useMemo(() => {
@@ -76,6 +76,11 @@ export default function useNounBuyout() {
         .toUnsafeFloat()
     )
   }, [nounletsOfferedCount, nounletsRemainingCount])
+
+  const hasEnded = useMemo(() => {
+    const endTime = buyoutInfo.endTime
+    return endTime.mul(1000).lte(BigNumber.from(Date.now()))
+  }, [buyoutInfo])
 
   const submitOffer = async (offerDetails: OfferDetails) => {
     if (sdk == null) throw new Error('no sdk')
@@ -153,8 +158,75 @@ export default function useNounBuyout() {
     return txWithErrorHandling(tx)
   }
 
+  const settleOffer = async () => {
+    if (sdk == null) throw new Error('no sdk')
+    if (account == null) throw new Error('no signer')
+    if (library == null) throw new Error('no library')
+    if (vaultAddress == null) throw new Error('no vault')
+    if (nounletTokenAddress == null) throw new Error('no token address')
+    if (account == null) throw new Error('No address')
+
+    const merkleTree = await sdk.NounletProtoform.generateMerkleTree([
+      sdk.NounletAuction.address,
+      sdk.NounletGovernance.address,
+      sdk.OptimisticBid.address
+    ])
+    const burnProof = await sdk.NounletProtoform.getProof(merkleTree, 6)
+    const optimisticBid = sdk.OptimisticBid.connect(library.getSigner())
+
+    console.log({
+      burnProof,
+      myNounlets: buyoutInfo.fractionsRemaining,
+      ids: buyoutInfo.fractionsRemaining.map((n) => n.toNumber()),
+      amounts: buyoutInfo.fractionsRemaining.map((_) => 1)
+    })
+
+    const tx = await optimisticBid.end(
+      vaultAddress,
+      buyoutInfo.fractionsRemaining.map((n) => n.toNumber()),
+      buyoutInfo.fractionsRemaining.map((_) => 1),
+      burnProof
+    )
+    return txWithErrorHandling(tx)
+  }
+
+  const cashOut = async () => {
+    if (sdk == null) throw new Error('no sdk')
+    if (account == null) throw new Error('no signer')
+    if (library == null) throw new Error('no library')
+    if (vaultAddress == null) throw new Error('no vault')
+    if (nounletTokenAddress == null) throw new Error('no token address')
+    if (account == null) throw new Error('No address')
+    if (myNounlets.length === 0) throw new Error('No nounlets held')
+
+    const merkleTree = await sdk.NounletProtoform.generateMerkleTree([
+      sdk.NounletAuction.address,
+      sdk.NounletGovernance.address,
+      sdk.OptimisticBid.address
+    ])
+    const burnProof = await sdk.NounletProtoform.getProof(merkleTree, 6)
+    const optimisticBid = sdk.OptimisticBid.connect(library.getSigner())
+
+    console.log({
+      burnProof,
+      myNounlets: myNounlets,
+      ids: myNounlets.map((n) => n.id),
+      amounts: myNounlets.map((_) => 1)
+    })
+
+    const tx = await optimisticBid.end(
+      vaultAddress,
+      myNounlets.map((n) => n.id),
+      myNounlets.map((_) => 1),
+      burnProof
+    )
+    return txWithErrorHandling(tx)
+  }
+
+  const withdrawNoun = async () => {}
+
   return {
-    isLoading: isLoadingVault && isLoading,
+    isLoading: isLoadingVault || isLoading || data == null,
     nounBackground,
     userBalance,
     nounTokenId,
@@ -174,8 +246,12 @@ export default function useNounBuyout() {
     buyoutInfo,
     currentOffer,
     pastOffers,
+    hasEnded,
     // Methods
     submitOffer,
-    buyNounlet
+    settleOffer,
+    buyNounlet,
+    cashOut,
+    withdrawNoun
   }
 }

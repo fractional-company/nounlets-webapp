@@ -1,6 +1,7 @@
 import { BigNumber, BigNumberish, ethers, FixedNumber } from 'ethers'
 import { parseEther } from 'ethers/lib/utils'
 import { toBuyoutInfoFixedNumber, toBuyoutInfoFormatted } from 'lib/utils/formatBuyoutInfo'
+import { createTrackedSelector } from 'react-tracked'
 import create from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 
@@ -58,6 +59,7 @@ export type BuyoutOffer = {
   sender: string
   value: BigNumber
   txHash: string
+  state: BuyoutState
 }
 
 type BuyoutStoreState = {
@@ -102,49 +104,54 @@ export const initialBuyoutStateData: BuyoutStoreState = {
       id: 'BigNumber.from(0)',
       sender: '0x497F34f8A6EaB10652f846fD82201938e58d72E0',
       value: parseEther('10.23'),
-      txHash: '0xe0bf8f9e5c849e8481c48eef312dfe34b94796dff44b2705a6a8fe5f717a1c3d'
+      txHash: '0xe0bf8f9e5c849e8481c48eef312dfe34b94796dff44b2705a6a8fe5f717a1c3d',
+      state: 0
     },
     {
       id: 'BigNumber.from(1)',
       sender: '0x497F34f8A6EaB10652f846fD82201938e58d72E0',
       value: parseEther('11.00'),
-      txHash: '0xe0bf8f9e5c849e8481c48eef312dfe34b94796dff44b2705a6a8fe5f717a1c3d'
+      txHash: '0xe0bf8f9e5c849e8481c48eef312dfe34b94796dff44b2705a6a8fe5f717a1c3d',
+      state: 0
     },
     {
       id: 'BigNumber.from(2)',
       sender: '0x497F34f8A6EaB10652f846fD82201938e58d72E0',
       value: parseEther('12.34'),
-      txHash: '0xe0bf8f9e5c849e8481c48eef312dfe34b94796dff44b2705a6a8fe5f717a1c3d'
+      txHash: '0xe0bf8f9e5c849e8481c48eef312dfe34b94796dff44b2705a6a8fe5f717a1c3d',
+      state: 0
     }
   ]
 }
 
-export const useBuyoutStore = create(
-  immer<BuyoutStoreState & BuyoutStoreMethods>((set) => ({
-    ...initialBuyoutStateData,
-    setIsLoading(flag = true) {
-      set((state) => {
-        state.isLoading = flag
-      })
-    },
-    setBuyoutInfo(buyoutInfo) {
-      set((state) => {
-        const buyoutInfoFixedNumber = toBuyoutInfoFixedNumber(buyoutInfo)
-        const BuyoutInfoFormatted = toBuyoutInfoFormatted(buyoutInfoFixedNumber)
+export const useBuyoutStore = createTrackedSelector(
+  create(
+    immer<BuyoutStoreState & BuyoutStoreMethods>((set) => ({
+      ...initialBuyoutStateData,
+      setIsLoading(flag = true) {
+        set((state) => {
+          state.isLoading = flag
+        })
+      },
+      setBuyoutInfo(buyoutInfo) {
+        set((state) => {
+          const buyoutInfoFixedNumber = toBuyoutInfoFixedNumber(buyoutInfo)
+          const BuyoutInfoFormatted = toBuyoutInfoFormatted(buyoutInfoFixedNumber)
 
-        state.buyoutInfo = {
-          ...buyoutInfo,
-          startTime: BigNumber.from(buyoutInfo.startTime),
-          fractionPrice: BigNumber.from(buyoutInfo.fractionPrice),
-          ethBalance: BigNumber.from(buyoutInfo.ethBalance),
-          lastTotalSupply: BigNumber.from(buyoutInfo.lastTotalSupply),
-          fractionsOfferedCount: BigNumber.from(buyoutInfo.fractionsOfferedCount),
-          fractionsOfferedPrice: BigNumber.from(buyoutInfo.fractionsOfferedPrice),
-          initialEthBalance: BigNumber.from(buyoutInfo.initialEthBalance),
-          fixedNumber: buyoutInfoFixedNumber,
-          formatted: BuyoutInfoFormatted
-        }
-      })
-    }
-  }))
+          state.buyoutInfo = {
+            ...buyoutInfo,
+            startTime: BigNumber.from(buyoutInfo.startTime),
+            fractionPrice: BigNumber.from(buyoutInfo.fractionPrice),
+            ethBalance: BigNumber.from(buyoutInfo.ethBalance),
+            lastTotalSupply: BigNumber.from(buyoutInfo.lastTotalSupply),
+            fractionsOfferedCount: BigNumber.from(buyoutInfo.fractionsOfferedCount),
+            fractionsOfferedPrice: BigNumber.from(buyoutInfo.fractionsOfferedPrice),
+            initialEthBalance: BigNumber.from(buyoutInfo.initialEthBalance),
+            fixedNumber: buyoutInfoFixedNumber,
+            formatted: BuyoutInfoFormatted
+          }
+        })
+      }
+    }))
+  )
 )

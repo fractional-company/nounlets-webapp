@@ -94,15 +94,15 @@ const Settings: NextPage<{ url: string }> = ({ url }) => {
     /*
     // nounletAuction
     mintProof = protoform.getProof(merkleTree, 0);
-    // optimisticBid
-    batchBurnProof = protoform.getProof(merkleTree, 1);
-    withdrawERC721Proof = protoform.getProof(merkleTree, 2);
     // nounletGovernance
-    castVoteProof = protoform.getProof(merkleTree, 3);
-    castVoteWithReasonProof = protoform.getProof(merkleTree, 4);
-    cancelProof = protoform.getProof(merkleTree, 5);
-    proposeProof = protoform.getProof(merkleTree, 6);
-    delegateProof = protoform.getProof(merkleTree, 7);
+    castVoteProof = protoform.getProof(merkleTree, 1);
+    castVoteWithReasonProof = protoform.getProof(merkleTree, 2);
+    cancelProof = protoform.getProof(merkleTree, 3);
+    proposeProof = protoform.getProof(merkleTree, 4);
+    delegateProof = protoform.getProof(merkleTree, 5);
+    // optimisticBid
+    batchBurnProof = protoform.getProof(merkleTree, 6);
+    withdrawERC721Proof = protoform.getProof(merkleTree, 7);
     */
     const mintProof = await sdk.NounletProtoform.getProof(merkleTree, 0)
     console.log({ mintProof })

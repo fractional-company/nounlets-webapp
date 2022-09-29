@@ -1,6 +1,6 @@
 import { BigNumber } from 'ethers'
 import { NounletsSDK } from 'hooks/useSdk'
-import { BuyoutInfo, BuyoutInfoPartial, BuyoutOffer } from 'store/buyout/buyout.store'
+import { BuyoutInfo, BuyoutInfoPartial, BuyoutOffer, BuyoutState } from 'store/buyout/buyout.store'
 
 const REJECTION_PERIOD = 3600 // TODO get from SC
 
@@ -22,6 +22,7 @@ export async function getBuyoutBidInfo(
 
   // Is the buyout in progress or end state?
   if (bidInfo.state !== 0 && lastStartEvent) {
+    console.log('bidinfofood', bidInfo.state, lastStartEvent)
     if (
       lastStartEvent.proposer === bidInfo.proposer &&
       lastStartEvent.startTime.eq(bidInfo.startTime)
@@ -39,11 +40,22 @@ export async function getBuyoutBidInfo(
   }
 
   const offers: BuyoutOffer[] = startEvents.map((event) => {
+    if (event === lastStartEvent) {
+      return {
+        id: event.tx.transactionHash,
+        sender: event.proposer,
+        value: event.buyoutPrice,
+        txHash: event.tx.transactionHash,
+        state: bidInfo.state
+      }
+    }
+
     return {
       id: event.tx.transactionHash,
       sender: event.proposer,
       value: event.buyoutPrice,
-      txHash: event.tx.transactionHash
+      txHash: event.tx.transactionHash,
+      state: BuyoutState.INACTIVE
     }
   })
 

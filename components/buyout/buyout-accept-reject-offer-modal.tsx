@@ -6,6 +6,8 @@ import SimpleProgressIndicator from 'components/simple-progress-indicator'
 import SimpleXImage from 'components/simple-x-image'
 import { BigNumber, FixedNumber } from 'ethers'
 import useNounBuyout from 'hooks/useNounBuyout'
+import useToasts from 'hooks/useToasts'
+import { WrappedTransactionReceiptState } from 'lib/utils/tx-with-error-handling'
 import Image from 'next/image'
 import nounImage from 'public/img/noun.png'
 import { useMemo, useState } from 'react'
@@ -26,26 +28,63 @@ export default function BuyoutAcceptRejectOfferModal(props: ComponentProps): JSX
     nounletPercentage,
     buyNounlet
   } = useNounBuyout()
+  const { toastSuccess, toastError } = useToasts()
+  const [isBuyingNounlet, setIsBuyingNounlet] = useState(false)
 
-  console.log({ nounletsRemaining, nounletsRemainingCount })
   const [showEndTime, setShowEndTime] = useState(false)
   const endTime = useMemo(() => buyoutInfo.endTime, [buyoutInfo])
 
   const handleBuyNounlet = async (nounletId: number) => {
     console.log('buyign nounlet with id', nounletId)
-    const result = await buyNounlet([2])
+    try {
+      setIsBuyingNounlet(true)
+      const response = await buyNounlet([nounletId])
+      console.log('response?', { response })
 
-    console.log('result?', { result })
+      if (
+        response.status === WrappedTransactionReceiptState.SUCCESS ||
+        response.status === WrappedTransactionReceiptState.SPEDUP
+      ) {
+        toastSuccess('Snatched one! 💫', "Bam, it's yours!")
+      } else if (response.status === WrappedTransactionReceiptState.ERROR) {
+        throw response.data
+      } else if (response.status === WrappedTransactionReceiptState.CANCELLED) {
+        toastError('Transaction canceled', 'Please try again.')
+      }
+    } catch (error) {
+      console.log(error)
+      toastError('Buying failed :(', 'Please try again.')
+    } finally {
+      setIsBuyingNounlet(false)
+    }
   }
 
   const handleBuyAllRemainingNounlets = async () => {
     console.log(
-      'buyign ALL nounlet with',
+      'buyign all nounlets',
       nounletsRemaining.map((nounlet) => nounlet.id)
     )
-    const result = await buyNounlet(nounletsRemaining.map((nounlet) => nounlet.id))
+    try {
+      setIsBuyingNounlet(true)
+      const response = await buyNounlet(nounletsRemaining.map((nounlet) => nounlet.id))
+      console.log('response?', { response })
 
-    console.log('result2?', { result })
+      if (
+        response.status === WrappedTransactionReceiptState.SUCCESS ||
+        response.status === WrappedTransactionReceiptState.SPEDUP
+      ) {
+        toastSuccess("Gotta catch 'em all ⭐️", 'Nounlet...mons?')
+      } else if (response.status === WrappedTransactionReceiptState.ERROR) {
+        throw response.data
+      } else if (response.status === WrappedTransactionReceiptState.CANCELLED) {
+        toastError('Transaction canceled', 'Please try again.')
+      }
+    } catch (error) {
+      console.log(error)
+      toastError('Buying all failed :(', 'Please try again.')
+    } finally {
+      setIsBuyingNounlet(false)
+    }
   }
 
   return (
@@ -119,6 +158,7 @@ export default function BuyoutAcceptRejectOfferModal(props: ComponentProps): JSX
                 <Button
                   className="default-outline --sm w-full"
                   onClick={handleBuyAllRemainingNounlets}
+                  loading={isBuyingNounlet}
                 >
                   Buy all ({nounletsRemainingCount}) Nounlets
                 </Button>
@@ -148,6 +188,7 @@ export default function BuyoutAcceptRejectOfferModal(props: ComponentProps): JSX
                         <Button
                           className="primary --sm"
                           onClick={() => handleBuyNounlet(nounlet.id)}
+                          loading={isBuyingNounlet}
                         >
                           Buy
                         </Button>

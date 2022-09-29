@@ -7,38 +7,54 @@ import { FixedNumber } from 'ethers'
 import { formatEther } from 'ethers/lib/utils'
 import useNounBuyout from 'hooks/useNounBuyout'
 import { useMemo } from 'react'
+import { BuyoutState } from 'store/buyout/buyout.store'
 
 export default function BuyoutPastOffers(): JSX.Element {
   const { pastOffers } = useNounBuyout()
   const pastOffersList: JSX.Element[] = useMemo(() => {
-    return pastOffers.slice(0, 3).map((bid) => {
-      const ethValue = FixedNumber.from(formatEther(bid.value.toString()))
-        .round(NEXT_PUBLIC_BID_DECIMALS)
-        .toString()
+    return pastOffers
+      .filter((offer) => offer.state !== BuyoutState.LIVE)
+      .slice(0, 3)
+      .map((bid) => {
+        const ethValue = FixedNumber.from(formatEther(bid.value.toString()))
+          .round(NEXT_PUBLIC_BID_DECIMALS)
+          .toString()
 
-      const explorerLink =
-        CHAIN_ID === 1
-          ? Mainnet.getExplorerTransactionLink(bid.id)
-          : Goerli.getExplorerTransactionLink(bid.id)
+        const explorerLink =
+          CHAIN_ID === 1
+            ? Mainnet.getExplorerTransactionLink(bid.id)
+            : Goerli.getExplorerTransactionLink(bid.id)
 
-      return (
-        <div key={bid.id.toString()} className="flex items-center flex-1 py-3 overflow-hidden">
-          <SimpleAddress
-            avatarSize={24}
-            address={bid.sender}
-            className="text-px18 leading-px28 font-700 gap-2"
-          />
-          <div className="rounded-px6 flex-shrink-0 bg-secondary-red text-white font-700 text-px12 leading-px20 px-2 mx-4">
-            Rejected
+        return (
+          <div key={bid.id.toString()} className="flex items-center flex-1 py-3 overflow-hidden">
+            <SimpleAddress
+              avatarSize={24}
+              address={bid.sender}
+              className="text-px18 leading-px28 font-700 gap-2"
+            />
+            {bid.state === BuyoutState.INACTIVE && (
+              <div className="rounded-px6 flex-shrink-0 bg-secondary-red text-white font-700 text-px12 leading-px20 px-2 mx-4">
+                Rejected
+              </div>
+            )}
+            {bid.state === BuyoutState.LIVE && (
+              <div className="rounded-px6 flex-shrink-0 bg-secondary-orange text-white font-700 text-px12 leading-px20 px-2 mx-4">
+                In progress
+              </div>
+            )}
+            {bid.state === BuyoutState.SUCCESS && (
+              <div className="rounded-px6 flex-shrink-0 bg-secondary-green text-white font-700 text-px12 leading-px20 px-2 mx-4">
+                Accepted
+              </div>
+            )}
+            <IconEth className="flex-shrink-0 h-[12px] ml-auto" />
+            <p className="ml-1 text-px18 leading-px28 font-700">{ethValue}</p>
+            <a href={explorerLink} target="_blank" rel="noreferrer">
+              <IconLinkOffsite className="ml-3 flex-shrink-0 h-[12px]" />
+            </a>
           </div>
-          <IconEth className="flex-shrink-0 h-[12px] ml-auto" />
-          <p className="ml-1 text-px18 leading-px28 font-700">{ethValue}</p>
-          <a href={explorerLink} target="_blank" rel="noreferrer">
-            <IconLinkOffsite className="ml-3 flex-shrink-0 h-[12px]" />
-          </a>
-        </div>
-      )
-    })
+        )
+      })
   }, [pastOffers])
 
   return (

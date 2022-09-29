@@ -11,6 +11,9 @@ import BuyoutOfferingDisplay from './buyout-offering-display'
 import BuyoutPastOffers from './buyout-past-offers'
 import BuyoutSecondaryMarketCard from './buyout-secondary-market-card'
 
+import nounCloudImage from 'public/img/cloud-lg.png'
+import Image from 'next/image'
+
 export default function BuyoutHero() {
   const { isLoading, nounTokenId, myNounlets, buyoutInfo, offers, nounBackground } = useNounBuyout()
 
@@ -62,15 +65,12 @@ export default function BuyoutHero() {
                   ) : (
                     <>
                       <BuyoutOfferLiveCard />
-                      <BuyoutLiveRejectionsCard />
+                      {buyoutInfo.state === BuyoutState.LIVE && <BuyoutLiveRejectionsCard />}
                       <BuyoutOfferingDisplay />
                     </>
                   )}
-                  {/* <pre>{JSON.stringify(buyoutInfo, null, 4)}</pre> */}
-                  {/* <BuyoutOfferLiveCard />
-                  <BuyoutLiveRejectionsCard />
-                  <BuyoutOfferingDisplay /> */}
                 </div>
+                <BuyoutPastOffers />
               </div>
             )}
           </div>

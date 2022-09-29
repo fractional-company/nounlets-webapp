@@ -119,7 +119,8 @@ module.exports = {
       animation: {
         wiggle: 'wiggle 10s linear infinite',
         in: 'animate-in 0.3s ease-out forwards',
-        out: 'animate-out 0.3s ease-in forwards'
+        out: 'animate-out 0.3s ease-in forwards',
+        float: 'float 5s ease-in-out infinite'
       },
       keyframes: {
         wiggle: {
@@ -137,6 +138,11 @@ module.exports = {
         'animate-out': {
           '0%': { transform: 'translate(0px, 0px)', opacity: '1' },
           '100%': { transform: 'translate(0px, -40px)', opacity: '0' }
+        },
+        float: {
+          '0%': { transform: 'translate(0px, 0px)' },
+          '50%': { transform: 'translate(0px, 10px)' },
+          '100%': { transform: 'translate(0px, 0px)' }
         }
       }
     }
