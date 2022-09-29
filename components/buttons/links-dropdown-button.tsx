@@ -75,6 +75,19 @@ export default function LinksDropdownButton(): JSX.Element {
               <Menu.Item>
                 <Button className="basic w-full space-x-2 !justify-start !rounded-none">
                   <a
+                    href="https://discord.com/invite/8a34wmRjWB"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="space-x-2 w-full h-full items-center flex"
+                  >
+                    <IconDiscord className="h-[15px] w-auto" />
+                    <span>Discord</span>
+                  </a>
+                </Button>
+              </Menu.Item>
+              <Menu.Item>
+                <Button className="basic w-full space-x-2 !justify-start !rounded-none">
+                  <a
                     href={buildEtherscanAddressLink(process.env.NEXT_PUBLIC_NOUN_VAULT_ADDRESS!)}
                     target="_blank"
                     rel="noreferrer"

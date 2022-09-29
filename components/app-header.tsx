@@ -17,6 +17,7 @@ import IconEtherscan from './icons/icon-etherscan'
 import IconFractionalLogo from './icons/icon-fractional-logo'
 import IconHeartHollow from './icons/icon-heart-hollow'
 import IconMedium from './icons/icon-medium'
+import IconNounlets from './icons/icon-nounlets'
 import IconNounletsLogo from './icons/icon-nounlets-logo'
 import IconTwitter from './icons/icon-twitter'
 import VoteForDelegateModal from './modals/vote-for-delegate-modal'
@@ -142,17 +143,12 @@ export default function AppHeader(): JSX.Element {
                   <span>Vote</span>
                 </Button>
               </Link>
-              <Button className="basic">
-                <a
-                  href="https://discord.com/invite/8a34wmRjWB"
-                  target="_blank"
-                  className="flex space-x-2 items-center"
-                  rel="noreferrer"
-                >
-                  <IconDiscord className="h-[11px] w-auto" />
-                  <span>Discord</span>
-                </a>
-              </Button>
+              <Link href="/nounlet/1">
+                <Button className="basic space-x-2">
+                  <IconNounlets className="h-[12px] w-auto" />
+                  <span>Nounlets</span>
+                </Button>
+              </Link>
               <LinksDropdownButton />
               {connectButton}
             </div>
@@ -200,6 +196,15 @@ export default function AppHeader(): JSX.Element {
                 >
                   <Image src={IconPeople} alt="votes" height={14} />
                   <span>Vote</span>
+                </Button>
+              </Link>
+              <Link href="/nounlet/1">
+                <Button
+                  className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40"
+                  onClick={() => setIsModalMenuOpen(false)}
+                >
+                  <IconNounlets className="h-[12px] w-auto" />
+                  <span>Nounlets</span>
                 </Button>
               </Link>
               <a

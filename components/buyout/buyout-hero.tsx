@@ -28,50 +28,54 @@ export default function BuyoutHero() {
           </div>
 
           <div className="px-4 py-12 lg:pb-0 lg:pt-4 md:p-12 lg:pl-6 lg:pr-10 -mx-4 lg:-mx-0 bg-white lg:bg-transparent space-y-3">
-            {buyoutInfo.state === BuyoutState.INACTIVE && (
+            {!isLoading && (
               <>
-                <div className="buyout-inactive space-y-4">
-                  <div className="space-y-4">
-                    <h1 className="font-londrina text-px42 leading-px48">
-                      {myNounlets.length === 0 ? (
-                        <>Nounlets of Noun {nounTokenId}</>
-                      ) : (
-                        <>Offer to buy Noun {nounTokenId}</>
-                      )}
-                    </h1>
-                    <BuyoutSecondaryMarketCard />
-                  </div>
-                  <div className="space-y-4">
-                    {myNounlets.length === 0 && (
+                {buyoutInfo.state === BuyoutState.INACTIVE && (
+                  <>
+                    <div className="buyout-inactive space-y-4">
+                      <div className="space-y-4">
+                        <h1 className="font-londrina text-px42 leading-px48">
+                          {myNounlets.length === 0 ? (
+                            <>Nounlets of Noun {nounTokenId}</>
+                          ) : (
+                            <>Offer to buy Noun {nounTokenId}</>
+                          )}
+                        </h1>
+                        <BuyoutSecondaryMarketCard />
+                      </div>
+                      <div className="space-y-4">
+                        {myNounlets.length === 0 && (
+                          <h1 className="font-londrina text-px42 leading-px48">
+                            Offer to buy Noun {nounTokenId}
+                          </h1>
+                        )}
+                        <BuyoutOfferCard />
+                      </div>
+                      <BuyoutPastOffers />
+                    </div>
+                  </>
+                )}
+                {(buyoutInfo.state === BuyoutState.LIVE ||
+                  buyoutInfo.state === BuyoutState.SUCCESS) && (
+                  <div className="buyout-inactive space-y-4">
+                    <div className="space-y-4">
                       <h1 className="font-londrina text-px42 leading-px48">
-                        Offer to buy Noun {nounTokenId}
+                        Offer for Noun {nounTokenId}
                       </h1>
-                    )}
-                    <BuyoutOfferCard />
+                      {isLoading ? (
+                        <></>
+                      ) : (
+                        <>
+                          <BuyoutOfferLiveCard />
+                          {buyoutInfo.state === BuyoutState.LIVE && <BuyoutLiveRejectionsCard />}
+                          <BuyoutOfferingDisplay />
+                        </>
+                      )}
+                    </div>
+                    <BuyoutPastOffers />
                   </div>
-                  <BuyoutPastOffers />
-                </div>
+                )}
               </>
-            )}
-            {(buyoutInfo.state === BuyoutState.LIVE ||
-              buyoutInfo.state === BuyoutState.SUCCESS) && (
-              <div className="buyout-inactive space-y-4">
-                <div className="space-y-4">
-                  <h1 className="font-londrina text-px42 leading-px48">
-                    Offer for Noun {nounTokenId}
-                  </h1>
-                  {isLoading ? (
-                    <></>
-                  ) : (
-                    <>
-                      <BuyoutOfferLiveCard />
-                      {buyoutInfo.state === BuyoutState.LIVE && <BuyoutLiveRejectionsCard />}
-                      <BuyoutOfferingDisplay />
-                    </>
-                  )}
-                </div>
-                <BuyoutPastOffers />
-              </div>
             )}
           </div>
         </div>
