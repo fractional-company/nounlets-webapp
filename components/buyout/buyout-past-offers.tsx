@@ -46,7 +46,7 @@ export default function BuyoutPastOffers(): JSX.Element {
       <div className="space-y-4 pt-4">
         <p className="font-500 text-px18 leading-px22 text-gray-4">Past offers</p>
         <div className="flex flex-col divide-y divide-black/10">{pastOffersList}</div>
-        <p className="text-center text-gray-4 text-px16 leading-px24 font-500 cursor-pointer">
+        <p className="text-center text-gray-4 text-px16 leading-px24 font-500 cursor-pointer pb-2">
           View all past offers
         </p>
       </div>

@@ -1,5 +1,5 @@
 import Button from 'components/buttons/button'
-import { BigNumber } from 'ethers'
+import { BigNumber, FixedNumber } from 'ethers'
 import useDisplayedNounlet from 'hooks/useDisplayedNounlet'
 import useSdk from 'hooks/useSdk'
 import { getVaultData } from 'lib/graphql/queries'
@@ -17,6 +17,8 @@ import IconBug from './icons/icon-bug'
 import { NEXT_PUBLIC_MAX_NOUNLETS, NEXT_PUBLIC_SHOW_DEBUG } from 'config'
 import { useBuyoutStore } from 'store/buyout/buyout.store'
 import { getBuyoutBidInfo } from 'lib/utils/buyoutInfoUtils'
+import { useEthers } from '@usedapp/core'
+import { useCoingeckoPrice } from '@usedapp/coingecko'
 
 export default function ChainUpdater() {
   return (
@@ -286,6 +288,7 @@ function BuyoutUpdater() {
   const sdk = useSdk()
   const { isLive, wereAllNounletsAuctioned, vaultAddress, nounletTokenAddress } = useVaultStore()
   const { setIsLoading, setBuyoutInfo } = useBuyoutStore()
+  const { library } = useEthers()
 
   const { mutate } = useSWR(
     isLive && wereAllNounletsAuctioned && sdk != null && 'VaultBuyout',
@@ -347,6 +350,7 @@ function BuyoutUpdater() {
 
   const handleTest = async () => {
     if (sdk == null) return
+    if (library == null) return
     if (!isLive) return
 
     const currentState = await getBuyoutBidInfo(sdk, vaultAddress, nounletTokenAddress)

@@ -1,13 +1,17 @@
-import { BigNumber, FixedNumber } from 'ethers'
-import { parseEther, parseUnits } from 'ethers/lib/utils'
-import { useState } from 'react'
+import { useCoingeckoPrice } from '@usedapp/coingecko'
+import { FixedNumber } from 'ethers'
+import { useEffect, useState } from 'react'
 
-// TODO check the prices
 export default function useCurrentEthPrice() {
-  const [usdInEth, setUsdInEth] = useState(FixedNumber.from('1632.13'))
-  const [ethInUsd, setEthInUsd] = useState(
-    FixedNumber.from('1').divUnsafe(FixedNumber.from('1632.13'))
-  )
+  const etherPrice = useCoingeckoPrice('ethereum', 'usd')
+
+  const [usdInEth, setUsdInEth] = useState(FixedNumber.from(0))
+  const [ethInUsd, setEthInUsd] = useState(FixedNumber.from(0))
+
+  useEffect(() => {
+    setUsdInEth(FixedNumber.from(etherPrice || 0))
+    setEthInUsd(FixedNumber.from('1').divUnsafe(FixedNumber.from(etherPrice || 1)))
+  }, [etherPrice])
 
   return {
     usdInEth,
