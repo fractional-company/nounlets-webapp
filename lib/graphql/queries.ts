@@ -70,7 +70,6 @@ export const getVaultData = async (vaultAddress: string) => {
 
   // TODO remove when BE fixes
   data.vault.noun.nounlets = data.vault.noun.nounlets.filter((nounlet) => {
-    console.log({ nounlet })
     return nounlet.id.split('-')[0].toLowerCase() === data.vault.token.id.toLowerCase()
   })
 
@@ -315,8 +314,6 @@ export const getAllNounlets = async (vaultAddress: string, nounletAuctionAddress
       (nounlet) =>
         nounlet.holder.id.toLowerCase().split('-')[1] !== nounletAuctionAddress.toLowerCase()
     )
-
-  console.log('all nounlets', { nounlets })
 
   const accounts: Record<string, { holding: { id: string; delegate: string }[]; votes: number }> =
     {}

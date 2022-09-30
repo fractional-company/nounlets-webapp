@@ -57,6 +57,8 @@ export default function BuyoutPastOffers(): JSX.Element {
       })
   }, [pastOffers])
 
+  if (pastOffersList.length === 0) return <></>
+
   return (
     <div className="buyout-past-offers">
       <div className="space-y-4 pt-4">
