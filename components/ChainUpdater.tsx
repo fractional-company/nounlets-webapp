@@ -1,24 +1,21 @@
+import { useEthers } from '@usedapp/core'
 import Button from 'components/buttons/button'
-import { BigNumber, FixedNumber } from 'ethers'
+import { NEXT_PUBLIC_MAX_NOUNLETS, NEXT_PUBLIC_SHOW_DEBUG } from 'config'
+import { BigNumber } from 'ethers'
 import useDisplayedNounlet from 'hooks/useDisplayedNounlet'
+import useLeaderboard from 'hooks/useLeaderboard'
 import useSdk from 'hooks/useSdk'
 import { getVaultData } from 'lib/graphql/queries'
-import { BidEvent } from 'lib/utils/types'
-import { useRouter } from 'next/router'
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
-import { useVaultStore } from 'store/vaultStore'
-import useSWR, { unstable_serialize, useSWRConfig } from 'swr'
-import debounce from 'lodash/debounce'
-import OnMounted from './utils/on-mounted'
-import useLeaderboard from 'hooks/useLeaderboard'
-import { useBlockNumberCheckpointStore } from 'store/blockNumberCheckpointStore'
-import { SDKContext } from './WalletConfig'
-import IconBug from './icons/icon-bug'
-import { NEXT_PUBLIC_MAX_NOUNLETS, NEXT_PUBLIC_SHOW_DEBUG } from 'config'
-import { useBuyoutStore } from 'store/buyout/buyout.store'
 import { getBuyoutBidInfo } from 'lib/utils/buyoutInfoUtils'
-import { useEthers } from '@usedapp/core'
-import { useCoingeckoPrice } from '@usedapp/coingecko'
+import debounce from 'lodash/debounce'
+import { useRouter } from 'next/router'
+import { useEffect, useMemo, useState } from 'react'
+import { useBlockNumberCheckpointStore } from 'store/blockNumberCheckpointStore'
+import { useBuyoutStore } from 'store/buyout/buyout.store'
+import { useVaultStore } from 'store/vaultStore'
+import useSWR, { useSWRConfig } from 'swr'
+import IconBug from './icons/icon-bug'
+import OnMounted from './utils/on-mounted'
 
 export default function ChainUpdater() {
   return (
@@ -290,38 +287,19 @@ function BuyoutUpdater() {
   const { setIsLoading, setBuyoutInfo } = useBuyoutStore()
   const { library } = useEthers()
 
-  const { mutate } = useSWR(
+  const { data, mutate } = useSWR(
     isLive && wereAllNounletsAuctioned && sdk != null && 'VaultBuyout',
-    async (key) => {
-      if (sdk == null) throw new Error('sdk not initialized')
-      const buyoutBidInfo = await getBuyoutBidInfo(sdk, vaultAddress, nounletTokenAddress)
-      return buyoutBidInfo
-    },
+    async (key) => getBuyoutBidInfo(sdk!, vaultAddress, nounletTokenAddress),
     {
       dedupingInterval: 5000,
+      refreshInterval: 5 * 60000,
       onSuccess: (data, key, config) => {
         console.group('🤑 fetched vault buyout ...')
         console.log({ data })
         console.groupEnd()
-
-        // const buyoutInfo = {
-        //   startTime: data.startTime,
-        //   endTime: data.endTime,
-        //   proposer: data.proposer,
-        //   state: data.state,
-        //   fractionPrice: data.fractionPrice,
-        //   ethBalance: data.ethBalance,
-        //   lastTotalSupply: data.lastTotalSupply,
-        //   fractionsOffered: [],
-        //   fractionsOfferedCount: BigNumber.from(0),
-        //   fractionsOfferedPrice: BigNumber.from(0),
-        //   initialEthBalance: data.ethBalance
-        // }
-
         setBuyoutInfo(data)
         setIsLoading(false)
-      },
-      refreshInterval: 5 * 60000
+      }
     }
   )
 

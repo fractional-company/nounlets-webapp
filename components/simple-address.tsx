@@ -27,6 +27,7 @@ export default function SimpleAddress(props: ComponentProps): JSX.Element {
 
   return (
     <div
+      key={address}
       className={classNames('simple-address flex items-center overflow-hidden', props.className)}
     >
       <OnMounted>

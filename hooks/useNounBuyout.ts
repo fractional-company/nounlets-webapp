@@ -196,7 +196,6 @@ export default function useNounBuyout() {
     if (library == null) throw new Error('no library')
     if (vaultAddress == null) throw new Error('no vault')
     if (nounletTokenAddress == null) throw new Error('no token address')
-    if (account == null) throw new Error('No address')
     if (myNounlets.length === 0) throw new Error('No nounlets held')
 
     const merkleTree = await sdk.NounletProtoform.generateMerkleTree([
@@ -214,16 +213,41 @@ export default function useNounBuyout() {
       amounts: myNounlets.map((_) => 1)
     })
 
-    const tx = await optimisticBid.end(
+    const tx = await optimisticBid.cash(
       vaultAddress,
       myNounlets.map((n) => n.id),
-      myNounlets.map((_) => 1),
       burnProof
     )
     return txWithErrorHandling(tx)
   }
 
-  const withdrawNoun = async () => {}
+  const withdrawNoun = async () => {
+    if (sdk == null) throw new Error('no sdk')
+    if (account == null) throw new Error('no signer')
+    if (library == null) throw new Error('no library')
+    if (vaultAddress == null) throw new Error('no vault')
+    if (nounletTokenAddress == null) throw new Error('no token address')
+    if (account.toLowerCase() !== buyoutInfo.proposer.toLowerCase())
+      throw new Error('not the proposer')
+
+    const merkleTree = await sdk.NounletProtoform.generateMerkleTree([
+      sdk.NounletAuction.address,
+      sdk.NounletGovernance.address,
+      sdk.OptimisticBid.address
+    ])
+
+    const withdrawProof = await sdk.NounletProtoform.getProof(merkleTree, 7)
+    const optimisticBid = sdk.OptimisticBid.connect(library.getSigner())
+
+    const tx = await optimisticBid.withdrawERC721(
+      vaultAddress,
+      sdk.NounsToken.address,
+      account,
+      nounTokenId,
+      withdrawProof
+    )
+    return txWithErrorHandling(tx)
+  }
 
   return {
     isLoading: isLoadingVault || isLoading || data == null,

@@ -16,6 +16,7 @@ export async function getBuyoutBidInfo(
   let fractionsRemaining: BigNumber[] = []
   let fractionsOfferedCount = BigNumber.from(0)
   let fractionsOfferedPrice = BigNumber.from(0)
+  let wasNounWithdrawn = false
 
   console.log({ bidInfo, startEvents, lastStartEvent })
   console.log('Current bid info', { bidInfo })
@@ -36,6 +37,10 @@ export async function getBuyoutBidInfo(
       fractionsRemaining = remaining
       fractionsOfferedCount = BigNumber.from(offered.length)
       fractionsOfferedPrice = fractionsOfferedCount.mul(bidInfo.fractionPrice)
+    }
+
+    if (bidInfo.state === BuyoutState.SUCCESS) {
+      console.log('cehck if withdrawn')
     }
   }
 
@@ -65,7 +70,8 @@ export async function getBuyoutBidInfo(
     fractionsRemaining,
     fractionsOfferedCount,
     fractionsOfferedPrice,
-    offers
+    offers,
+    wasNounWithdrawn
   }
 }
 

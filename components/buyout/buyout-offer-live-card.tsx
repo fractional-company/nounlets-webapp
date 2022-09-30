@@ -32,7 +32,8 @@ export default function BuyoutOfferLiveCard(): JSX.Element {
   const canWithdrawNoun = useMemo(() => {
     return (
       buyoutInfo.state === BuyoutState.SUCCESS &&
-      buyoutInfo.proposer.toLowerCase() === account?.toLowerCase()
+      buyoutInfo.proposer.toLowerCase() === account?.toLowerCase() &&
+      !buyoutInfo.wasNounWithdrawn
     )
   }, [account, buyoutInfo])
 
@@ -77,8 +78,6 @@ export default function BuyoutOfferLiveCard(): JSX.Element {
 
   const [isCashingOut, setIsCashingOut] = useState(false)
   const handleCashOut = async () => {
-    console.log('settling')
-
     try {
       setIsCashingOut(true)
       const response = await cashOut()
@@ -87,7 +86,7 @@ export default function BuyoutOfferLiveCard(): JSX.Element {
         response.status === WrappedTransactionReceiptState.SUCCESS ||
         response.status === WrappedTransactionReceiptState.SPEDUP
       ) {
-        await globalMutate('VaultBuyout') // TODO maybe remove this
+        await globalMutate('VaultBuyout')
         toastSuccess('Cashed out! 💰', 'Cha Ching')
       } else if (response.status === WrappedTransactionReceiptState.ERROR) {
         throw response.data
@@ -96,9 +95,9 @@ export default function BuyoutOfferLiveCard(): JSX.Element {
       }
     } catch (error) {
       console.log(error)
+      setIsCashingOut(false)
       toastError('Cash out failed :(', 'Please try again.')
     } finally {
-      setIsCashingOut(false)
     }
   }
 
@@ -106,6 +105,31 @@ export default function BuyoutOfferLiveCard(): JSX.Element {
     if (myNounlets.length === 0) return '0'
     return formatEther(buyoutInfo.fractionPrice.mul(myNounlets.length))
   }, [buyoutInfo, myNounlets])
+
+  const [isWithdrawing, setIsWithdrawing] = useState(false)
+  const handleWithdrawNoun = async () => {
+    try {
+      setIsWithdrawing(true)
+      const response = await withdrawNoun()
+
+      if (
+        response.status === WrappedTransactionReceiptState.SUCCESS ||
+        response.status === WrappedTransactionReceiptState.SPEDUP
+      ) {
+        await globalMutate('VaultBuyout')
+        toastSuccess('Nounlets ASSEMBLE! 🎊', 'Congratulations! 🎉🎉🎉')
+      } else if (response.status === WrappedTransactionReceiptState.ERROR) {
+        throw response.data
+      } else if (response.status === WrappedTransactionReceiptState.CANCELLED) {
+        toastError('Transaction canceled', 'Please try again.')
+      }
+    } catch (error) {
+      console.log(error)
+      setIsWithdrawing(false)
+      toastError('Withdraw failed :(', 'Please try again.')
+    } finally {
+    }
+  }
 
   return (
     <div className="buyout-offer-live-card">
@@ -225,7 +249,13 @@ export default function BuyoutOfferLiveCard(): JSX.Element {
                 <>
                   {canWithdrawNoun && (
                     <div className="space-y-2">
-                      <Button className="primary w-full">Claim Noun {nounTokenId}</Button>
+                      <Button
+                        className="primary w-full"
+                        onClick={handleWithdrawNoun}
+                        loading={isWithdrawing}
+                      >
+                        Claim Noun {nounTokenId}
+                      </Button>
                     </div>
                   )}
 

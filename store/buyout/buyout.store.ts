@@ -52,6 +52,7 @@ export type BuyoutFractionsOffered = {
 export type BuyoutInfo = BuyoutInfoPartial &
   BuyoutFractionsOffered & {
     offers: BuyoutOffer[]
+    wasNounWithdrawn: boolean
   }
 
 export type BuyoutOffer = {
@@ -86,7 +87,8 @@ const initialBuyoutInfo: BuyoutInfo = {
   fractionsOfferedCount: BigNumber.from(0),
   fractionsOfferedPrice: BigNumber.from(0),
   initialEthBalance: BigNumber.from(0),
-  offers: []
+  offers: [],
+  wasNounWithdrawn: false
 }
 
 const buyoutInfoFixedNumber = toBuyoutInfoFixedNumber(initialBuyoutInfo)
