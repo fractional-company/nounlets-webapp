@@ -2,6 +2,7 @@ import { ethers } from 'ethers'
 import create from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 import { createTrackedSelector } from 'react-tracked'
+import { NEXT_PUBLIC_NOUN_VAULT_ADDRESS } from 'config'
 
 interface StoreState {
   // Constants
@@ -43,7 +44,7 @@ interface StoreActions {
 
 const initialState: StoreState = {
   // Constants
-  vaultAddress: (process.env.NEXT_PUBLIC_NOUN_VAULT_ADDRESS || '').toLowerCase(),
+  vaultAddress: NEXT_PUBLIC_NOUN_VAULT_ADDRESS.toLowerCase(),
   nounTokenId: '',
   vaultCuratorAddress: ethers.constants.AddressZero,
   nounletTokenAddress: '',
