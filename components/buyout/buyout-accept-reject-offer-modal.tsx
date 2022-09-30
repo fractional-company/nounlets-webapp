@@ -175,7 +175,7 @@ export default function BuyoutAcceptRejectOfferModal(props: ComponentProps): JSX
                     >
                       <div className="flex-shrink-0">
                         <SimpleXImage isXed={!nounlet.isAvailable}>
-                          <Image src={nounImage} layout="responsive" alt="Noun" />
+                          <NounletImage id={'' + nounlet.id} />
                         </SimpleXImage>
                       </div>
                       <div className="flex flex-col flex-1 text-start">

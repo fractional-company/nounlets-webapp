@@ -151,15 +151,10 @@ async function getOptimisticBidBalances(
 ): Promise<BigNumber[]> {
   const nounletToken = sdk.NounletToken.attach(nounletTokenAddres)
   const optimisticBid = sdk.OptimisticBid
-
-  console.log('sdfsdfs', fractionsOffered)
-
   const balances = await nounletToken.balanceOfBatch(
     fractionsOffered.map((_) => optimisticBid.address),
     fractionsOffered
   )
-
-  console.log({ balances })
 
   const fractionsRemaining: BigNumber[] = []
   fractionsOffered.forEach((nounletId, index) => {
