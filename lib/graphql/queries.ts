@@ -68,6 +68,12 @@ export const getVaultData = async (vaultAddress: string) => {
     (nounlet) => nounlet.auction.settled
   )
 
+  // TODO remove when BE fixes
+  data.vault.noun.nounlets = data.vault.noun.nounlets.filter((nounlet) => {
+    console.log({ nounlet })
+    return nounlet.id.split('-')[0].toLowerCase() === data.vault.token.id.toLowerCase()
+  })
+
   return {
     isLive: true,
     vaultAddress: data.vault.id.toLowerCase(),
@@ -249,6 +255,9 @@ export const getNounletAuctionDataBC = async (
 
 type NounletsDataResponse = {
   vault: {
+    token: {
+      id: Scalars['String']
+    }
     noun: {
       currentDelegate: Scalars['String']
       nounlets: {
@@ -270,6 +279,9 @@ export const getAllNounlets = async (vaultAddress: string, nounletAuctionAddress
     query: gql`
     {
       vault(id:"${vaultAddress}") {
+        token {
+          id
+        },
         noun {
           currentDelegate
           nounlets {
@@ -294,10 +306,17 @@ export const getAllNounlets = async (vaultAddress: string, nounletAuctionAddress
   })
 
   // Remove nounlet auction address
-  const nounlets = data.vault.noun.nounlets.filter(
-    (nounlet) =>
-      nounlet.holder.id.toLowerCase().split('-')[1] !== nounletAuctionAddress.toLowerCase()
-  )
+  const nounlets = data.vault.noun.nounlets
+    // TODO remove when BE fixes
+    .filter((nounlet) => {
+      return nounlet.id.split('-')[0].toLowerCase() === data.vault.token.id.toLowerCase()
+    })
+    .filter(
+      (nounlet) =>
+        nounlet.holder.id.toLowerCase().split('-')[1] !== nounletAuctionAddress.toLowerCase()
+    )
+
+  console.log('all nounlets', { nounlets })
 
   const accounts: Record<string, { holding: { id: string; delegate: string }[]; votes: number }> =
     {}
