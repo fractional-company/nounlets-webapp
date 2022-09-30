@@ -115,7 +115,7 @@ function GovernanceCurrentDelegate() {
         await claimVaultDelegate(mostVotesAcc.address)
         toastSuccess('Delegate updated 👑', 'Leaderboard will refresh momentarily.')
         if (account.toLowerCase() === mostVotesAcc.address) {
-          toastSuccess('Hey delegate!', 'To be able to vote, you must also set yourself as delegate on the Nouns contract!')
+          toastSuccess('Hey delegate!', 'To be able to vote, you must also set yourself as delegate on the Nouns contract!', 10000)
         }
       }
       if (mostVotesAcc.address !== currentNounDelegate && account.toLowerCase() === mostVotesAcc.address) {
@@ -166,7 +166,7 @@ function GovernanceCurrentDelegate() {
                       <span className="text-secondary-orange">⚠</span> Claim Noun delegate
                     </h1>
                     <div>
-                      To be able to vote on behalf of the Noun, vault delegate must set himself as a delegate on Nouns contract.
+                      To be able to vote in NounsDao on behalf of this Noun the current delegate must set themselves as the delegate on the Nouns contract
                     </div>
                   </SimplePopover>
                   <SimplePopover isDisabled={currentDelegate === account?.toLowerCase()}>
