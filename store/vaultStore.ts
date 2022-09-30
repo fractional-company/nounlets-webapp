@@ -15,8 +15,10 @@ interface StoreState {
   isLive: boolean // Has BE picked up the vault yet?
   isLoading: boolean
   isLeaderboardOutOfSync: boolean
-  isCurrentDelegateOutOfSync: boolean
+  isCurrentDelegateOutOfSyncOnVaultContract: boolean
+  isCurrentDelegateOutOfSyncOnNounContract: boolean
   currentDelegate: string
+  currentNounDelegate: string
   latestNounletTokenId: string
   backendLatestNounletTokenId: string
 }
@@ -33,8 +35,10 @@ interface StoreActions {
   setIsLive: (flag: boolean) => void
   setIsLoading: (flag: boolean) => void
   setIsLeaderboardOutOfSync: (flag: boolean) => void
-  setIsCurrentDelegateOutOfSync: (flag: boolean) => void
+  setIsCurrentDelegateOutOfSyncOnVaultContract: (flag: boolean) => void
+  setIsCurrentDelegateOutOfSyncOnNounContract: (flag: boolean) => void
   setCurrentDelegate: (address: string) => void
+  setCurrentNounDelegate: (address: string) => void
   setLatestNounletTokenId: (id: string) => void
   setBackendLatestNounletTokenId: (id: string) => void
 }
@@ -56,8 +60,10 @@ const initialState: StoreState = {
   isLive: false,
   isLoading: true,
   isLeaderboardOutOfSync: false,
-  isCurrentDelegateOutOfSync: false,
+    isCurrentDelegateOutOfSyncOnVaultContract: false,
+    isCurrentDelegateOutOfSyncOnNounContract: false,
   currentDelegate: ethers.constants.AddressZero,
+  currentNounDelegate: ethers.constants.AddressZero,
   latestNounletTokenId: '',
   backendLatestNounletTokenId: ''
 }
@@ -111,14 +117,24 @@ export const useVaultStore = createTrackedSelector(
           state.isLeaderboardOutOfSync = flag
         })
       },
-      setIsCurrentDelegateOutOfSync: (flag) => {
+        setIsCurrentDelegateOutOfSyncOnVaultContract: (flag) => {
         set((state) => {
-          state.isCurrentDelegateOutOfSync = flag
+          state.isCurrentDelegateOutOfSyncOnVaultContract = flag
+        })
+      },
+        setIsCurrentDelegateOutOfSyncOnNounContract: (flag) => {
+        set((state) => {
+          state.isCurrentDelegateOutOfSyncOnNounContract = flag
         })
       },
       setCurrentDelegate: (address) => {
         set((state) => {
           state.currentDelegate = address
+        })
+      },
+      setCurrentNounDelegate: (address) => {
+        set((state) => {
+          state.currentNounDelegate = address
         })
       },
       setLatestNounletTokenId: (id) => {
