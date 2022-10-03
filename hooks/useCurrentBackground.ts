@@ -18,7 +18,6 @@ export default function useCurrentBackground() {
   }, [nounletBackground])
 
   const currentBackground = useMemo(() => {
-    if (!router.isReady) return 'transparent'
     if (wereAllNounletsAuctioned) {
       if (router.route === '/' || router.route === '/governance') {
         return nounBackground
