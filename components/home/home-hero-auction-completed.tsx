@@ -34,7 +34,7 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
       .round(NEXT_PUBLIC_BID_DECIMALS)
       .toString()
     const hasBids = endedAuctionInfo?.winningBid !== '0'
-    const heldByAddress = endedAuctionInfo?.heldByAddress || ethers.constants.AddressZero
+    const heldByAddress = endedAuctionInfo?.heldByAddress
     const endedOn = dayjs((endedAuctionInfo?.endedOn ?? 0) * 1000).format('h:mmA, MMMM D, YYYY')
     const wonByAddress = endedAuctionInfo?.wonByAddress || ethers.constants.AddressZero
 
@@ -93,7 +93,7 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
   }
 
   const isLoadingHeldByAddress = useMemo(() => {
-    return formattedData.heldByAddress === ethers.constants.AddressZero
+    return formattedData.heldByAddress == null
   }, [formattedData.heldByAddress])
 
   const isSettledTransactionIndexing = useMemo(() => {
@@ -125,18 +125,29 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
         </div>
         <div className="sm:border-r-2 border-black/20"></div>
         <div className="flex flex-col space-y-3 cursor-pointer">
-          <p className="text-px18 leading-px22 font-500 text-gray-4">Nounlet held by</p>
-          <div className="flex items-center">
-            {isLoadingHeldByAddress ? (
-              <IconSpinner className="animate-spin text-gray-3" />
-            ) : (
-              <SimpleAddress
-                avatarSize={32}
-                address={formattedData.heldByAddress}
-                className="text-px32 leading-[38px] font-700 gap-2 flex-1"
-              />
-            )}
-          </div>
+          {formattedData.heldByAddress === ethers.constants.AddressZero ? (
+            <>
+              <p className="text-px18 leading-px22 font-500 text-gray-4">Nounlet held by</p>
+              <div className="flex items-center">
+                <p className="text-px32 leading-[38px] font-700 text-secondary-red">🔥🔥🔥</p>
+              </div>
+            </>
+          ) : (
+            <>
+              <p className="text-px18 leading-px22 font-500 text-gray-4">Nounlet held by</p>
+              <div className="flex items-center">
+                {isLoadingHeldByAddress ? (
+                  <IconSpinner className="animate-spin text-gray-3" />
+                ) : (
+                  <SimpleAddress
+                    avatarSize={32}
+                    address={formattedData.heldByAddress!}
+                    className="text-px32 leading-[38px] font-700 gap-2 flex-1"
+                  />
+                )}
+              </div>
+            </>
+          )}
         </div>
       </div>
       <div className="flex items-center !mt-6">
