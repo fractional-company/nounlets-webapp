@@ -11,7 +11,7 @@ import debounce from 'lodash/debounce'
 import { useRouter } from 'next/router'
 import { useEffect, useMemo, useState } from 'react'
 import { useBlockNumberCheckpointStore } from 'store/blockNumberCheckpointStore'
-import { useBuyoutStore } from 'store/buyout/buyout.store'
+import { BuyoutInfo, BuyoutState, useBuyoutStore } from 'store/buyout/buyout.store'
 import { useVaultStore } from 'store/vaultStore'
 import useSWR, { useSWRConfig } from 'swr'
 import IconBug from './icons/icon-bug'
@@ -282,17 +282,27 @@ function LeaderboardUpdater() {
 }
 
 function BuyoutUpdater() {
+  const { cache } = useSWRConfig()
   const sdk = useSdk()
   const { isLive, wereAllNounletsAuctioned, vaultAddress, nounletTokenAddress } = useVaultStore()
   const { setIsLoading, setBuyoutInfo } = useBuyoutStore()
   const { library } = useEthers()
+
+  const cachedData: BuyoutInfo | null = cache.get('VaultBuyout') || null
+
+  const refreshInterval = useMemo(() => {
+    if (cachedData === null) return 1 * 60 * 1000
+    if (cachedData.state === BuyoutState.SUCCESS) return 0
+
+    return 1 * 60 * 1000
+  }, [cachedData])
 
   const { data, mutate } = useSWR(
     isLive && wereAllNounletsAuctioned && sdk != null && 'VaultBuyout',
     async (key) => getBuyoutBidInfo(sdk!, vaultAddress, nounletTokenAddress),
     {
       dedupingInterval: 5000,
-      refreshInterval: 5 * 60000,
+      refreshInterval: refreshInterval,
       onSuccess: (data, key, config) => {
         console.group('🤑 fetched vault buyout ...')
         console.log({ data })

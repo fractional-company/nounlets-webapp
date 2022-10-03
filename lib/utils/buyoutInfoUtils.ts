@@ -23,7 +23,7 @@ export async function getBuyoutBidInfo(
 
   // Is the buyout in progress or end state?
   if (bidInfo.state !== 0 && lastStartEvent) {
-    console.log('bidinfofood', bidInfo.state, lastStartEvent)
+    console.log('getBuyoutBidInfo', bidInfo.state, lastStartEvent)
     if (
       lastStartEvent.proposer === bidInfo.proposer &&
       lastStartEvent.startTime.eq(bidInfo.startTime)
@@ -40,7 +40,7 @@ export async function getBuyoutBidInfo(
     }
 
     if (bidInfo.state === BuyoutState.SUCCESS) {
-      console.log('cehck if withdrawn')
+      console.log('cehck if withdrawn') // TODO
     }
   }
 
@@ -122,7 +122,6 @@ async function getStartEventFractions(
       })
       .map((log) => nounletToken.interface.parseLog(log))
       .filter((log) => {
-        console.log({ log })
         return (
           log.name ===
           nounletToken.interface.events[
@@ -131,7 +130,6 @@ async function getStartEventFractions(
         )
       })
       .map((event) => {
-        console.log('*******', event, event.args[3] || [])
         return event.args[3] || []
       })[0] || []
 
