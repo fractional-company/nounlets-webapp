@@ -284,7 +284,8 @@ function LeaderboardUpdater() {
 function BuyoutUpdater() {
   const { cache } = useSWRConfig()
   const sdk = useSdk()
-  const { isLive, wereAllNounletsAuctioned, vaultAddress, nounletTokenAddress } = useVaultStore()
+  const { isLive, wereAllNounletsAuctioned, vaultAddress, nounletTokenAddress, nounTokenId } =
+    useVaultStore()
   const { setIsLoading, setBuyoutInfo } = useBuyoutStore()
   const { library } = useEthers()
 
@@ -299,7 +300,7 @@ function BuyoutUpdater() {
 
   const { data, mutate } = useSWR(
     isLive && wereAllNounletsAuctioned && sdk != null && 'VaultBuyout',
-    async (key) => getBuyoutBidInfo(sdk!, vaultAddress, nounletTokenAddress),
+    async (key) => getBuyoutBidInfo(sdk!, vaultAddress, nounletTokenAddress, nounTokenId),
     {
       dedupingInterval: 5000,
       refreshInterval: refreshInterval,
@@ -341,7 +342,7 @@ function BuyoutUpdater() {
     if (library == null) return
     if (!isLive) return
 
-    const currentState = await getBuyoutBidInfo(sdk, vaultAddress, nounletTokenAddress)
+    const currentState = await getBuyoutBidInfo(sdk, vaultAddress, nounletTokenAddress, nounTokenId)
 
     console.log({ currentState })
   }

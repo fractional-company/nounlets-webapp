@@ -42,7 +42,6 @@ export default function useNounBuyout() {
     return backgrounds[nounImageData.seed.background] || 'transparent'
   }, [nounImageData, backgrounds])
 
-  const currentOffer = parseEther('13.66')
   const pastOffers = useMemo(() => {
     return [...(buyoutInfo.offers ?? [])].reverse()
   }, [buyoutInfo.offers])
@@ -289,7 +288,6 @@ export default function useNounBuyout() {
     userOwnedNounletCount,
     // Buyout
     buyoutInfo,
-    currentOffer,
     pastOffers,
     hasEnded,
     // Methods

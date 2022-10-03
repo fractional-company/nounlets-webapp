@@ -103,6 +103,10 @@ export default function LeaderboardListTile(props: {
     return ZeroAddressTile({ percentageString, numberOfOwnedNounlets, numberOfVotes })
   }
 
+  if (isOptimisticBidAddress) {
+    return OptimisticBidTile({ percentageString, numberOfOwnedNounlets, numberOfVotes })
+  }
+
   return (
     <div className="leaderboard-list-tile">
       <div
@@ -236,13 +240,78 @@ function ZeroAddressTile(props: {
             >
               {props.percentageString}
             </div>
-            <div className="text-px26 font-700 text-secondary-red">BUUUUUURN 🔥</div>
+            <div className="text-px26 font-700 text-secondary-red">
+              BUUUUUURN<span className="text-px14">ed</span> 🔥
+            </div>
           </div>
 
           {/* Display on mobile */}
           <div className="grid lg:hidden items-center grid-cols-3">
             <div
               className={classNames('text-px26 font-700  mr-2 leading-px32 outline-secondary-red')}
+            >
+              {props.percentageString}
+            </div>
+            <div className="text-right">
+              <p className="text-px16 text-gray-4 font-500">Nounlets</p>
+              <p className="text-px18 font-700">{props.numberOfOwnedNounlets}</p>
+            </div>
+
+            <div className="text-right">
+              <p className="text-px16 text-gray-4 font-500">Votes</p>
+              <div className="flex items-center justify-end">
+                <p className="text-px18 font-700">🔥</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Display on desktop */}
+          <div className="hidden lg:flex items-center justify-end">
+            <p className="text-px18 font-700">{props.numberOfOwnedNounlets}</p>
+          </div>
+
+          <div className="hidden lg:flex items-center justify-end">
+            <p className="text-px18 font-700">🔥</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function OptimisticBidTile(props: {
+  percentageString: string
+  numberOfOwnedNounlets: number
+  numberOfVotes: number
+}) {
+  return (
+    <div className="leaderboard-list-tile">
+      <div
+        className={classNames('border-2 rounded-px16 px-4 py-4', {
+          'border-transparent outline-[3px] outline-dashed outline-secondary-orange': true
+        })}
+      >
+        <div
+          className="flex flex-col space-y-4 lg:grid lg:-mx-4 lg:space-y-0 min-h-[40px]"
+          style={{ gridTemplateColumns: 'auto 100px 140px 160px' }}
+        >
+          <div className="flex items-center flex-grow-1 overflow-hidden lg:flex-grow-0 lg:pl-4">
+            <div
+              className={classNames(
+                'hidden lg:block text-px26 font-700 mr-4 leading-px32 text-secondary-orange'
+              )}
+            >
+              {props.percentageString}
+            </div>
+            <div className="text-px26 font-700 text-secondary-orange">BUUUUUURN 🔥</div>
+          </div>
+
+          {/* Display on mobile */}
+          <div className="grid lg:hidden items-center grid-cols-3">
+            <div
+              className={classNames(
+                'text-px26 font-700  mr-2 leading-px32 outline-secondary-orange'
+              )}
             >
               {props.percentageString}
             </div>

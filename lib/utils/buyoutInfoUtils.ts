@@ -2,12 +2,13 @@ import { BigNumber } from 'ethers'
 import { NounletsSDK } from 'hooks/useSdk'
 import { BuyoutInfo, BuyoutInfoPartial, BuyoutOffer, BuyoutState } from 'store/buyout/buyout.store'
 
-const REJECTION_PERIOD = 3600 // TODO get from SC
+let REJECTION_PERIOD: number | null = null
 
 export async function getBuyoutBidInfo(
   sdk: NounletsSDK,
   vaultAddress: string,
-  nounletTokenAddres: string
+  nounletTokenAddres: string,
+  nounTokenId: string
 ): Promise<BuyoutInfo> {
   const bidInfo = await getBidInfo(sdk, vaultAddress)
   const startEvents = await getStartEvents(sdk, vaultAddress)
@@ -37,10 +38,15 @@ export async function getBuyoutBidInfo(
       fractionsRemaining = remaining
       fractionsOfferedCount = BigNumber.from(offered.length)
       fractionsOfferedPrice = fractionsOfferedCount.mul(bidInfo.fractionPrice)
+      bidInfo.initialEthBalance = lastStartEvent.buyoutPrice
     }
 
     if (bidInfo.state === BuyoutState.SUCCESS) {
-      console.log('cehck if withdrawn') // TODO
+      try {
+        const currentOwner = (await sdk.NounsToken.ownerOf(nounTokenId)).toLowerCase()
+        const isHeldByVault = currentOwner === vaultAddress.toLowerCase()
+        wasNounWithdrawn = !isHeldByVault
+      } catch (error) {}
     }
   }
 
@@ -77,6 +83,11 @@ export async function getBuyoutBidInfo(
 
 async function getBidInfo(sdk: NounletsSDK, vaultAddress: string): Promise<BuyoutInfoPartial> {
   const bidInfo = await sdk.OptimisticBid.bidInfo(vaultAddress)
+
+  if (REJECTION_PERIOD == null) {
+    REJECTION_PERIOD = (await sdk.OptimisticBid.REJECTION_PERIOD()).toNumber()
+  }
+
   const endTime = bidInfo.startTime.add(REJECTION_PERIOD)
   return {
     startTime: bidInfo.startTime,
