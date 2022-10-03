@@ -177,7 +177,7 @@ export default function BuyoutOfferLiveCard(): JSX.Element {
                       👍 Accept offer
                     </Button>
                     <p className="font-500 text-px12 leading-px18 text-gray-3 truncate">
-                      Wait till time runs out
+                      Wait till the time runs out
                     </p>
                   </div>
                 </div>
@@ -198,7 +198,7 @@ export default function BuyoutOfferLiveCard(): JSX.Element {
                       👎 Reject offer
                     </Button>
                     <p className="font-500 text-px12 leading-px18 text-gray-3 truncate">
-                      Buy remaining nounlets
+                      Buy remaining Nounlets
                     </p>
                   </div>
                 </div>

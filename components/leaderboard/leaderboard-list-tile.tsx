@@ -3,7 +3,9 @@ import classNames from 'classnames'
 import Button from 'components/buttons/button'
 import IconUpdateDelegate from 'components/icons/icon-update-delegate'
 import SimpleAddress from 'components/simple-address'
+import { ethers } from 'ethers'
 import useLeaderboard from 'hooks/useLeaderboard'
+import useSdk from 'hooks/useSdk'
 import useToasts from 'hooks/useToasts'
 import { WrappedTransactionReceiptState } from 'lib/utils/tx-with-error-handling'
 import { useMemo, useState } from 'react'
@@ -26,6 +28,7 @@ export type LeaderboardListTileProps = {
 export default function LeaderboardListTile(props: {
   data: LeaderboardListTileProps
 }): JSX.Element {
+  const sdk = useSdk()
   const { account } = useEthers()
   const { claimDelegate } = useLeaderboard()
   const { setVoteForDelegateModalForAddress, setConnectModalOpen } = useAppStore()
@@ -82,6 +85,19 @@ export default function LeaderboardListTile(props: {
     }
     setIsClaiming(false)
   }
+
+  // Special cases
+  // Optimistic bid holding nounlets during buyout
+
+  const isOptimisticBidAddress = useMemo(() => {
+    return walletAddress.toLowerCase() === sdk?.OptimisticBid.address.toLowerCase()
+  }, [walletAddress, sdk])
+
+  // Zero address burning nounlets
+
+  const isZeroAddress = useMemo(() => {
+    return walletAddress.toLowerCase() === ethers.constants.AddressZero.toLowerCase()
+  }, [walletAddress])
 
   return (
     <div className="leaderboard-list-tile">

@@ -15,6 +15,7 @@ import { WrappedTransactionReceiptState } from 'lib/utils/tx-with-error-handling
 import { formatOfferDetails } from 'lib/utils/formatBuyoutInfo'
 import { NEXT_PUBLIC_MAX_NOUNLETS } from 'config'
 import { useSWRConfig } from 'swr'
+import SimpleModalWrapper from 'components/SimpleModalWrapper'
 
 type ComponentProps = {
   initialFullPriceOffer: FixedNumber
@@ -30,9 +31,13 @@ export type OfferDetails = {
 
 export default function BuyoutOfferModal(props: ComponentProps): JSX.Element {
   const { cache, mutate: globalMutate } = useSWRConfig()
-  const { nounTokenId, myNounlets, submitOffer } = useNounBuyout()
+  const { nounTokenId, myNounlets, submitOffer, getIsApprovedToStartBuyout, approveBuyoutOffer } =
+    useNounBuyout()
   const { setBuyoutOfferStep, closeBuyoutOfferModal } = useBuyoutOfferModalStore()
   const { toastSuccess, toastError } = useToasts()
+
+  const [isApproveModalShown, setIsApproveModalShown] = useState(false)
+  const [isApproving, setIsApproving] = useState(false)
 
   const [isSubmittingOffer, setIsSubmittingOffer] = useState(false)
   // Full price input
@@ -121,6 +126,14 @@ export default function BuyoutOfferModal(props: ComponentProps): JSX.Element {
     try {
       console.log('handleOnSubmit', offerDetails)
       setIsSubmittingOffer(true)
+
+      const isApproved = await getIsApprovedToStartBuyout()
+
+      if (!isApproved) {
+        setIsApproveModalShown(true)
+        return
+      }
+
       const response = await submitOffer(offerDetails)
 
       if (
@@ -140,6 +153,28 @@ export default function BuyoutOfferModal(props: ComponentProps): JSX.Element {
       toastError('Starting buyout failed :(', 'Please try again.')
     } finally {
       setIsSubmittingOffer(false)
+    }
+  }
+
+  const handleApprove = async () => {
+    try {
+      setIsApproving(true)
+      const response = await approveBuyoutOffer()
+      if (
+        response.status === WrappedTransactionReceiptState.SUCCESS ||
+        response.status === WrappedTransactionReceiptState.SPEDUP
+      ) {
+        toastSuccess('Approved!', 'Now submit the offer!')
+        setIsApproveModalShown(false)
+      } else if (response.status === WrappedTransactionReceiptState.ERROR) {
+        throw response.data
+      } else if (response.status === WrappedTransactionReceiptState.CANCELLED) {
+        toastError('Transaction canceled', 'Please try again.')
+      }
+    } catch (error) {
+      toastError('Approving failed', 'Please try again.')
+    } finally {
+      setIsApproving(false)
     }
   }
 
@@ -247,6 +282,29 @@ export default function BuyoutOfferModal(props: ComponentProps): JSX.Element {
           </Button>
         </div>
       </div>
+
+      <SimpleModalWrapper
+        isShown={isApproveModalShown}
+        onClose={() => setIsApproveModalShown(false)}
+        className="md:min-w-[400px] !max-w-[400px]"
+      >
+        <h2 className="font-londrina text-px42 -mt-3 -mb-4 pr-4">Approval</h2>
+        <div className="mt-8 flex flex-col gap-6">
+          <p className="font-500 text-px20 leading-px30 text-gray-4">
+            The contract needs your approval to take your Nounlet(s) and lock them in the buyout
+            offer.
+          </p>
+          <Button
+            className="primary"
+            onClick={() => {
+              handleApprove()
+            }}
+            loading={isApproving}
+          >
+            <span>Fine! Take them!</span>
+          </Button>
+        </div>
+      </SimpleModalWrapper>
     </div>
   )
 }

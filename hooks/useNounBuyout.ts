@@ -6,11 +6,13 @@ import txWithErrorHandling from 'lib/utils/tx-with-error-handling'
 import { useMemo } from 'react'
 import { useBuyoutStore } from 'store/buyout/buyout.store'
 import { useVaultStore } from 'store/vaultStore'
+import { useSWRConfig } from 'swr'
 import useLeaderboard from './useLeaderboard'
 import useNounImageData from './useNounImageData'
 import useSdk from './useSdk'
 
 export default function useNounBuyout() {
+  const { mutate: globalMutate } = useSWRConfig()
   const { account, library } = useEthers()
   const userBalance = useEtherBalance(account)
   const sdk = useSdk()
@@ -27,6 +29,13 @@ export default function useNounBuyout() {
   const { isLoading, buyoutInfo, offers } = useBuyoutStore()
   const { data, myNounlets } = useLeaderboard()
   const { data: nounImageData } = useNounImageData(nounTokenId)
+  const mutate = useMemo(
+    () => () => {
+      console.log('Mutating VaultBuyout')
+      return globalMutate('VaultBuyout')
+    },
+    [globalMutate]
+  )
 
   const nounBackground = useMemo(() => {
     if (nounImageData == null) return 'transparent'
@@ -82,6 +91,32 @@ export default function useNounBuyout() {
     return endTime.mul(1000).lte(BigNumber.from(Date.now()))
   }, [buyoutInfo])
 
+  const getIsApprovedToStartBuyout = async () => {
+    if (sdk == null) throw new Error('no sdk')
+    if (account == null) throw new Error('no signer')
+    if (library == null) throw new Error('no library')
+    if (vaultAddress == null) throw new Error('no vault')
+    if (nounletTokenAddress == null) throw new Error('no token address')
+
+    // Approve
+    const nounletToken = sdk.NounletToken.attach(nounletTokenAddress).connect(library.getSigner())
+    const isApprovedForAll = await nounletToken.isApprovedForAll(account, sdk.OptimisticBid.address)
+    return isApprovedForAll
+  }
+
+  const approveBuyoutOffer = async () => {
+    if (sdk == null) throw new Error('no sdk')
+    if (account == null) throw new Error('no signer')
+    if (library == null) throw new Error('no library')
+    if (vaultAddress == null) throw new Error('no vault')
+    if (nounletTokenAddress == null) throw new Error('no token address')
+
+    // Approve
+    const nounletToken = sdk.NounletToken.attach(nounletTokenAddress).connect(library.getSigner())
+    const tx = await nounletToken.setApprovalForAll(sdk.OptimisticBid.address, true)
+    return txWithErrorHandling(tx)
+  }
+
   const submitOffer = async (offerDetails: OfferDetails) => {
     if (sdk == null) throw new Error('no sdk')
     if (account == null) throw new Error('no signer')
@@ -90,20 +125,6 @@ export default function useNounBuyout() {
     if (nounletTokenAddress == null) throw new Error('no token address')
 
     console.log('submitting offer', { offerDetails })
-    if (account == null) throw new Error('No address')
-
-    // Approve
-    const nounletToken = sdk.NounletToken.attach(nounletTokenAddress).connect(library.getSigner())
-    const isApprovedForAll = await nounletToken.isApprovedForAll(account, sdk.OptimisticBid.address)
-
-    if (!isApprovedForAll) {
-      const tx = await nounletToken.setApprovalForAll(sdk.OptimisticBid.address, true)
-      await tx.wait()
-    }
-
-    // const fractionPrice = parseEther(offerDetails.pricePerNounlet.toString())
-    // const fractionsOffered = [BigNumber.from(0), BigNumber.from(1), BigNumber.from(2)]
-
     const initialEthBalance = parseEther(offerDetails.ethOffered.toString())
     const nounletsOffered = myNounlets.slice(0, +offerDetails.nounletsOffered.toUnsafeFloat())
     const fractionsOffered = nounletsOffered.map((nounlet) => +nounlet.id)
@@ -272,6 +293,9 @@ export default function useNounBuyout() {
     pastOffers,
     hasEnded,
     // Methods
+    getIsApprovedToStartBuyout,
+    approveBuyoutOffer,
+    mutate,
     submitOffer,
     settleOffer,
     buyNounlet,

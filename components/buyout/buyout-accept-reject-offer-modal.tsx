@@ -26,7 +26,8 @@ export default function BuyoutAcceptRejectOfferModal(props: ComponentProps): JSX
     nounletsRemaining,
     nounletsRemainingCount,
     nounletPercentage,
-    buyNounlet
+    buyNounlet,
+    mutate
   } = useNounBuyout()
   const { toastSuccess, toastError } = useToasts()
   const [isBuyingNounlet, setIsBuyingNounlet] = useState(false)
@@ -35,17 +36,15 @@ export default function BuyoutAcceptRejectOfferModal(props: ComponentProps): JSX
   const endTime = useMemo(() => buyoutInfo.endTime, [buyoutInfo])
 
   const handleBuyNounlet = async (nounletId: number) => {
-    console.log('buyign nounlet with id', nounletId)
     try {
       setIsBuyingNounlet(true)
       const response = await buyNounlet([nounletId])
-      console.log('response?', { response })
-
       if (
         response.status === WrappedTransactionReceiptState.SUCCESS ||
         response.status === WrappedTransactionReceiptState.SPEDUP
       ) {
         toastSuccess('Snatched one! 💫', "Bam, it's yours!")
+        await mutate()
       } else if (response.status === WrappedTransactionReceiptState.ERROR) {
         throw response.data
       } else if (response.status === WrappedTransactionReceiptState.CANCELLED) {
@@ -60,20 +59,15 @@ export default function BuyoutAcceptRejectOfferModal(props: ComponentProps): JSX
   }
 
   const handleBuyAllRemainingNounlets = async () => {
-    console.log(
-      'buyign all nounlets',
-      nounletsRemaining.map((nounlet) => nounlet.id)
-    )
     try {
       setIsBuyingNounlet(true)
       const response = await buyNounlet(nounletsRemaining.map((nounlet) => nounlet.id))
-      console.log('response?', { response })
-
       if (
         response.status === WrappedTransactionReceiptState.SUCCESS ||
         response.status === WrappedTransactionReceiptState.SPEDUP
       ) {
         toastSuccess("Gotta catch 'em all ⭐️", 'Nounlet...mons?')
+        await mutate()
       } else if (response.status === WrappedTransactionReceiptState.ERROR) {
         throw response.data
       } else if (response.status === WrappedTransactionReceiptState.CANCELLED) {
