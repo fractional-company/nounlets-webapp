@@ -13,10 +13,12 @@ import { ethers } from 'ethers'
 import { useDebounced } from 'hooks/useDebounced'
 import useLeaderboard from 'hooks/useLeaderboard'
 import useToasts from 'hooks/useToasts'
+import { WrappedTransactionReceiptState } from 'lib/utils/tx-with-error-handling'
 import { NextPage } from 'next'
 import Link from 'next/link'
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
 import { useAppStore } from 'store/application'
+import { useBlockNumberCheckpointStore } from 'store/blockNumberCheckpointStore'
 import { useVaultStore } from 'store/vaultStore'
 import SEO from '../components/seo'
 import { useReverseRecords } from '../lib/utils/useReverseRecords'
@@ -79,10 +81,17 @@ export default Governance
 function GovernanceCurrentDelegate() {
   const { account } = useEthers()
   const { setConnectModalOpen } = useAppStore()
-  const { currentDelegate, currentNounDelegate, isCurrentDelegateOutOfSyncOnVaultContract, isCurrentDelegateOutOfSyncOnNounContract } = useVaultStore()
-  const { myNounlets, myNounletsVotes, mostVotesAcc, claimNounsDelegate, claimVaultDelegate } = useLeaderboard()
+  const {
+    currentDelegate,
+    currentNounDelegate,
+    isCurrentDelegateOutOfSyncOnVaultContract,
+    isCurrentDelegateOutOfSyncOnNounContract
+  } = useVaultStore()
+  const { myNounlets, myNounletsVotes, mostVotesAcc, claimNounsDelegate, claimVaultDelegate } =
+    useLeaderboard()
   const { toastSuccess, toastError, toastInfo } = useToasts()
   const [isClaiming, setIsClaiming] = useState(false)
+  const { setLeaderboardBlockNumber } = useBlockNumberCheckpointStore()
 
   const areMyVotesSplit = useMemo(() => {
     return Object.keys(myNounletsVotes).length > 1
@@ -100,7 +109,7 @@ function GovernanceCurrentDelegate() {
     )
   }, [currentDelegate])
 
-  const handleUpdateDelegate = useCallback(async () => {
+  const handleUpdateDelegate = async () => {
     if (account == null) {
       setConnectModalOpen(true)
       return
@@ -108,26 +117,74 @@ function GovernanceCurrentDelegate() {
 
     if (mostVotesAcc.address !== ethers.constants.AddressZero) setIsClaiming(true)
     try {
-      if (mostVotesAcc.address === currentDelegate && mostVotesAcc.address === currentNounDelegate) {
+      if (
+        mostVotesAcc.address === currentDelegate &&
+        mostVotesAcc.address === currentNounDelegate
+      ) {
         return
       }
       if (mostVotesAcc.address !== currentDelegate) {
-        await claimVaultDelegate(mostVotesAcc.address)
-        toastSuccess('Delegate updated 👑', 'Leaderboard will refresh momentarily.')
-        if (account.toLowerCase() === mostVotesAcc.address) {
-          toastInfo('Hey delegate!', 'Please sign the next transaction in order to vote in NounsDao.', 10000)
+        const response = await claimVaultDelegate(mostVotesAcc.address)
+
+        if (
+          response.status === WrappedTransactionReceiptState.SUCCESS ||
+          response.status === WrappedTransactionReceiptState.SPEDUP
+        ) {
+          if (response?.receipt?.blockNumber != null) {
+            setLeaderboardBlockNumber(response.receipt.blockNumber)
+          }
+          toastSuccess('Delegate updated 👑', 'Leaderboard will refresh momentarily.')
+          if (account.toLowerCase() === mostVotesAcc.address) {
+            toastInfo(
+              'Hey delegate!',
+              'Please sign the next transaction in order to vote in NounsDao.',
+              10000
+            )
+          }
+        } else if (response.status === WrappedTransactionReceiptState.ERROR) {
+          throw response.data
+        } else if (response.status === WrappedTransactionReceiptState.CANCELLED) {
+          toastError('Transaction canceled', 'Please try again.')
         }
       }
-      if (mostVotesAcc.address !== currentNounDelegate && account.toLowerCase() === mostVotesAcc.address) {
-        await claimNounsDelegate(mostVotesAcc.address)
-        toastSuccess('Congrats', 'You can now vote on proposals on behalf of the Noun!')
+      if (
+        mostVotesAcc.address !== currentNounDelegate &&
+        account.toLowerCase() === mostVotesAcc.address
+      ) {
+        await handleClaimNounsDelegate()
       }
     } catch (error) {
       toastError('Update delegate failed', 'Please try again.')
     } finally {
       setIsClaiming(false)
     }
-  }, [account, mostVotesAcc, claimVaultDelegate, toastError, toastSuccess, setConnectModalOpen])
+  }
+
+  const handleClaimNounsDelegate = async () => {
+    if (account == null) {
+      setConnectModalOpen(true)
+      return
+    }
+
+    try {
+      if (account.toLowerCase() === mostVotesAcc.address) {
+        const response = await claimNounsDelegate(mostVotesAcc.address)
+
+        if (
+          response.status === WrappedTransactionReceiptState.SUCCESS ||
+          response.status === WrappedTransactionReceiptState.SPEDUP
+        ) {
+          toastSuccess('Congrats', 'You can now vote on proposals on behalf of the Noun!')
+        } else if (response.status === WrappedTransactionReceiptState.ERROR) {
+          throw response.data
+        } else if (response.status === WrappedTransactionReceiptState.CANCELLED) {
+          toastError('Transaction canceled', 'Please try again.')
+        }
+      }
+    } catch (error) {
+      toastError('Update Nouns delegate failed', 'Please try again.')
+    }
+  }
 
   return (
     <div className="mt-10 border-2 rounded-px16 p-4 lg:p-8 border-gray-2">
@@ -143,10 +200,12 @@ function GovernanceCurrentDelegate() {
                     <span className="text-secondary-orange">⚠</span> Out of sync
                   </h1>
                   <div>
-                    This vault delegate is currently out of sync. There is another wallet with more votes.
-                    You can update the vault delegate with a transaction.
-                    <br/><br/>To claim delegate on Nouns contract, the new delegate will have to perform another transaction,
-                    available after this one.
+                    This vault delegate is currently out of sync. There is another wallet with more
+                    votes. You can update the vault delegate with a transaction.
+                    <br />
+                    <br />
+                    To claim delegate on Nouns contract, the new delegate will have to perform
+                    another transaction, available after this one.
                   </div>
                 </SimplePopover>
 
@@ -159,32 +218,31 @@ function GovernanceCurrentDelegate() {
                 </Button>
               </div>
             )}
-            {!isCurrentDelegateOutOfSyncOnVaultContract && isCurrentDelegateOutOfSyncOnNounContract && (
+            {!isCurrentDelegateOutOfSyncOnVaultContract &&
+              isCurrentDelegateOutOfSyncOnNounContract && (
                 <div className="flex items-center">
                   <SimplePopover>
                     <h1 className="font-700 text-px18 text-gray-4">
                       <span className="text-secondary-orange">⚠</span> Claim Noun delegate
                     </h1>
                     <div>
-                      To be able to vote in NounsDao on behalf of this Noun the current delegate must set themselves as the delegate on the Nouns contract
+                      To be able to vote in NounsDao on behalf of this Noun the current delegate
+                      must set themselves as the delegate on the Nouns contract
                     </div>
                   </SimplePopover>
                   <SimplePopover isDisabled={currentDelegate === account?.toLowerCase()}>
                     <Button
-                        disabled={currentDelegate !== account?.toLowerCase()}
-                        loading={isClaiming}
-                        onClick={() => handleUpdateDelegate()}
-                        className="hidden lg:flex ml-4 items-center justify-center text-secondary-blue hover:text-secondary-green text-px18 font-700 border-2 border-transparent h-10 rounded-px10"
+                      disabled={currentDelegate !== account?.toLowerCase()}
+                      loading={isClaiming}
+                      onClick={() => handleUpdateDelegate()}
+                      className="hidden lg:flex ml-4 items-center justify-center text-secondary-blue hover:text-secondary-green text-px18 font-700 border-2 border-transparent h-10 rounded-px10"
                     >
                       <span>Update</span>
                     </Button>
-                    <div>
-                      Only a vault delegate can perform this action
-                    </div>
+                    <div>Only a vault delegate can perform this action</div>
                   </SimplePopover>
-
                 </div>
-            )}
+              )}
           </div>
 
           <div className="flex items-center mt-4">{currentDelegateRC}</div>
