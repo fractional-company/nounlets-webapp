@@ -228,11 +228,12 @@ function LeaderboardUpdater() {
   const sdk = useSdk()
   const { isLive, vaultAddress, nounletTokenAddress } = useVaultStore()
   const { setLeaderboardBlockNumber } = useBlockNumberCheckpointStore()
-  const { mutate } = useLeaderboard()
+  const { mutate, delegateMutate } = useLeaderboard()
 
   const debouncedMutate = useMemo(() => {
     return debounce(() => {
-      return mutate()
+      mutate()
+      delegateMutate()
     }, 1000)
   }, [mutate])
 

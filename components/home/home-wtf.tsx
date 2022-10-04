@@ -111,6 +111,7 @@ export default function HomeWTF(): JSX.Element {
                   elected on-chain in the nouns contract. The active delegate will be able to join
                   the official nouns-private discord channel, vote in governance and submit
                   governance proposals. Each Nounlet has 1 vote on the delegate.
+                  When a Nounlet is transferred the delegate will be automatically assigned to the receivers wallet address.
                 </p>
               </div>
             </SimpleAccordion>

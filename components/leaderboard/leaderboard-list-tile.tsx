@@ -7,7 +7,6 @@ import { ethers } from 'ethers'
 import useLeaderboard from 'hooks/useLeaderboard'
 import useSdk from 'hooks/useSdk'
 import useToasts from 'hooks/useToasts'
-import { WrappedTransactionReceiptState } from 'lib/utils/tx-with-error-handling'
 import { useMemo, useState } from 'react'
 import { useAppStore } from 'store/application'
 import { useBlockNumberCheckpointStore } from 'store/blockNumberCheckpointStore'
@@ -30,7 +29,7 @@ export default function LeaderboardListTile(props: {
 }): JSX.Element {
   const sdk = useSdk()
   const { account } = useEthers()
-  const { claimDelegate } = useLeaderboard()
+  const { claimVaultDelegate, claimNounsDelegate, mostVotesAcc } = useLeaderboard()
   const { setVoteForDelegateModalForAddress, setConnectModalOpen } = useAppStore()
   const { toastSuccess, toastError } = useToasts()
   const { setLeaderboardBlockNumber } = useBlockNumberCheckpointStore()
@@ -75,15 +74,21 @@ export default function LeaderboardListTile(props: {
 
     setIsClaiming(true)
     try {
-      const response = await claimDelegate(address)
+      const response = await claimVaultDelegate(address)
       if (response?.receipt?.blockNumber != null) {
         setLeaderboardBlockNumber(response.receipt.blockNumber)
       }
       toastSuccess('Delegate updated 👑', 'Leaderboard will refresh momentarily.')
+      if (account.toLowerCase() === mostVotesAcc.address) {
+        toastSuccess('Hey delegate!', 'To be able to vote, you must also set yourself as delegate on the Nouns contract!', 10000)
+        await claimNounsDelegate(mostVotesAcc.address)
+        toastSuccess('Congrats', 'You can now vote on proposals on behalf of the Noun!')
+      }
     } catch (error) {
       toastError('Update delegate failed', 'Please try again.')
+    } finally {
+      setIsClaiming(false)
     }
-    setIsClaiming(false)
   }
 
   // Special cases

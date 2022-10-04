@@ -4,6 +4,7 @@ export default defineConfig({
   contracts: {
     mainnet: {
       nounlets: {
+        Multicall3: '0xcA11bde05977b3631167028862bE2a173976CA11',
         NounsDescriptorV2: '0x0Cfdb3Ba1694c2bb2CFACB0339ad7b1Ae5932B63',
         NounsToken: '0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03',
         NounletRegistry: '0xF5F93d5089ebf8eA0e6C1b69ED12F3baE9958982',
@@ -20,7 +21,7 @@ export default defineConfig({
     goerli: {
       nounlets: {
         MintHelper: '0x906DAc48bA7F05E1E530eFD69a6227d1a4697Cf8',
-
+        Multicall3: '0xcA11bde05977b3631167028862bE2a173976CA11',
         NounsDescriptorV2: '0x246F5405004fEe2B9adf4f2E5D9b394e62369CAC',
         NounsToken: '0xcB828eB951D629F45b4995C0B8E1dd4E1356B311',
         NounletRegistry: '0x920AE8dF5bb3ea54b02995488f656Af04767f7CF',

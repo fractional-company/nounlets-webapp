@@ -31,7 +31,7 @@ export default function AppHeader(): JSX.Element {
   const mobileMenuRef = useRef<HTMLDivElement>(null)
   const { setConnectModalOpen } = useAppStore()
   const { account, deactivate } = useEthers()
-  const { isLive, currentDelegate, backgrounds, isCurrentDelegateOutOfSync } = useVaultStore()
+  const { isLive, currentDelegate, isCurrentDelegateOutOfSyncOnVaultContract } = useVaultStore()
   const { currentBackground } = useCurrentBackground()
 
   useEffect(() => {
@@ -124,7 +124,7 @@ export default function AppHeader(): JSX.Element {
                     <span className="flex-shrink-0">Current delegate</span>
                     {currentDelegateRC}
 
-                    {isCurrentDelegateOutOfSync && (
+                    {isCurrentDelegateOutOfSyncOnVaultContract && (
                       <SimplePopover>
                         <h1 className="font-700 text-px18 text-gray-4">
                           <span className="text-secondary-orange">⚠</span>
@@ -170,7 +170,7 @@ export default function AppHeader(): JSX.Element {
                 <p>Current delegate</p>
                 <div className="flex items-center justify-center space-x-2 w-full">
                   <div className="truncate font-500">{currentDelegateRC}</div>
-                  {isCurrentDelegateOutOfSync && (
+                  {isCurrentDelegateOutOfSyncOnVaultContract && (
                     <SimplePopover>
                       <h1 className="font-700 text-px18 text-gray-4">
                         <span className="text-secondary-orange">⚠</span>
