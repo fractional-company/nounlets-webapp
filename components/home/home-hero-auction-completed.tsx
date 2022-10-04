@@ -9,16 +9,16 @@ import IconSpinner from 'components/icons/icon-spinner'
 import { NEXT_PUBLIC_BID_DECIMALS } from 'config'
 import dayjs from 'dayjs'
 import useDisplayedNounlet from 'hooks/useDisplayedNounlet'
+import useToasts from 'hooks/useToasts'
+import { getCurentChainExplorerTransactionLink } from 'lib/utils/common'
+import { WrappedTransactionReceiptState } from 'lib/utils/tx-with-error-handling'
 import { useMemo, useState } from 'react'
-import { buildEtherscanAddressLink, buildEtherscanTxLink } from '../../lib/utils/etherscan'
+import { unstable_serialize, useSWRConfig } from 'swr'
 import { useAppStore } from '../../store/application'
 import IconBidHistory from '../icons/icon-bid-history'
 import IconHeart from '../icons/icon-heart'
 import IconLock from '../icons/icon-lock'
 import IconVerified from '../icons/icon-verified'
-import { WrappedTransactionReceiptState } from 'lib/utils/tx-with-error-handling'
-import useToasts from 'hooks/useToasts'
-import { unstable_serialize, useSWRConfig } from 'swr'
 
 export default function HomeHeroAuctionCompleted(): JSX.Element {
   const { account } = useEthers()
@@ -179,7 +179,7 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
               <IconBidHistory className="mr-2.5" /> Bid history
             </Button>
             <a
-              href={buildEtherscanTxLink(formattedData.settledTransactionHash)}
+              href={getCurentChainExplorerTransactionLink(formattedData.settledTransactionHash)}
               target="_blank"
               rel="noreferrer"
               className={isSettledTransactionIndexing ? 'pointer-events-none' : ''}

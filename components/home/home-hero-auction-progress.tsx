@@ -15,18 +15,13 @@ import useSdk from 'hooks/useSdk'
 import { calculateNextBid } from 'lib/utils/nextBidCalculator'
 import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useVaultStore } from 'store/vaultStore'
-import { Auction } from '../../lib/wrappers/nounsAuction'
 import { useAppStore } from '../../store/application'
 import SimpleModalWrapper from '../SimpleModalWrapper'
 import { debounce } from 'lodash'
 import useToasts from 'hooks/useToasts'
 import { WrappedTransactionReceiptState } from 'lib/utils/tx-with-error-handling'
 
-type ComponentProps = {
-  auction?: Auction
-}
-
-export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Element {
+export default function HomeHeroAuctionProgress(): JSX.Element {
   const { account } = useEthers()
   const sdk = useSdk()
   const { toastSuccess, toastError } = useToasts()

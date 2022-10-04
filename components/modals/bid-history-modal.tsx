@@ -30,6 +30,7 @@ const BidHistoryModal = (): JSX.Element => {
           CHAIN_ID === 1
             ? Mainnet.getExplorerTransactionLink(bid.id)
             : Goerli.getExplorerTransactionLink(bid.id)
+
         return (
           <div
             key={bid.id.toString()}

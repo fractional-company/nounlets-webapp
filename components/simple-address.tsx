@@ -2,9 +2,8 @@ import Davatar from '@davatar/react'
 import { useEthers } from '@usedapp/core'
 import classNames from 'classnames'
 import { ethers } from 'ethers'
-import { shortenAddress } from 'lib/utils/common'
+import { getCurrentChainExplorerAddressLink, shortenAddress } from 'lib/utils/common'
 import { useReverseENSLookUp } from 'lib/utils/ensLookup'
-import { buildEtherscanAddressLink } from '../lib/utils/etherscan'
 import OnMounted from './utils/on-mounted'
 
 type ComponentProps = {
@@ -33,7 +32,7 @@ export default function SimpleAddress(props: ComponentProps): JSX.Element {
       <OnMounted>
         {!!avatarSize && (
           <a
-            href={buildEtherscanAddressLink(address)}
+            href={getCurrentChainExplorerAddressLink(address)}
             target="_blank"
             rel="noreferrer"
             className="overflow-hidden flex-shrink-0"
@@ -50,7 +49,7 @@ export default function SimpleAddress(props: ComponentProps): JSX.Element {
           </a>
         )}
         <div className="flex flex-col overflow-hidden">
-          <a href={buildEtherscanAddressLink(address)} target="_blank" rel="noreferrer">
+          <a href={getCurrentChainExplorerAddressLink(address)} target="_blank" rel="noreferrer">
             <p className={classNames('truncate ', props.textClassName)}>{ens || shortenedAddres}</p>
           </a>
           {props.subtitle}

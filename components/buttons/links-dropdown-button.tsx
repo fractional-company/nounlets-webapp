@@ -1,15 +1,15 @@
-import IconCaretDropdown from 'components/icons/icon-caret-dropdown'
-import IconLink from 'components/icons/icon-link'
-import Button from './button'
 import { Menu, Transition } from '@headlessui/react'
-import { Fragment } from 'react'
+import IconCaretDropdown from 'components/icons/icon-caret-dropdown'
 import IconDiscord from 'components/icons/icon-discord'
-import IconMedium from 'components/icons/icon-medium'
-import IconHeartHollow from 'components/icons/icon-heart-hollow'
-import IconTwitter from 'components/icons/icon-twitter'
 import IconEtherscan from 'components/icons/icon-etherscan'
 import IconFractionalLogo from 'components/icons/icon-fractional-logo'
-import { buildEtherscanAddressLink } from '../../lib/utils/etherscan'
+import IconHeartHollow from 'components/icons/icon-heart-hollow'
+import IconLink from 'components/icons/icon-link'
+import IconMedium from 'components/icons/icon-medium'
+import IconTwitter from 'components/icons/icon-twitter'
+import { getCurrentChainExplorerAddressLink } from 'lib/utils/common'
+import { Fragment } from 'react'
+import Button from './button'
 
 export default function LinksDropdownButton(): JSX.Element {
   return (
@@ -88,7 +88,9 @@ export default function LinksDropdownButton(): JSX.Element {
               <Menu.Item>
                 <Button className="basic w-full space-x-2 !justify-start !rounded-none">
                   <a
-                    href={buildEtherscanAddressLink(process.env.NEXT_PUBLIC_NOUN_VAULT_ADDRESS!)}
+                    href={getCurrentChainExplorerAddressLink(
+                      process.env.NEXT_PUBLIC_NOUN_VAULT_ADDRESS!
+                    )}
                     target="_blank"
                     rel="noreferrer"
                     className="w-full h-full items-center justify-items-start grid grid-cols-[32px_auto]"

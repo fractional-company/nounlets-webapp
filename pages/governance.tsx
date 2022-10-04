@@ -153,7 +153,8 @@ function GovernanceCurrentDelegate() {
     setConnectModalOpen,
     claimNounsDelegate,
     currentDelegate,
-    currentNounDelegate
+    currentNounDelegate,
+    toastInfo
   ])
 
   return (
