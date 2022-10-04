@@ -87,7 +87,7 @@ function GovernanceCurrentDelegate() {
   } = useVaultStore()
   const { myNounlets, myNounletsVotes, mostVotesAcc, claimNounsDelegate, claimVaultDelegate } =
     useLeaderboard()
-  const { toastSuccess, toastError } = useToasts()
+  const { toastSuccess, toastError, toastInfo } = useToasts()
   const [isClaiming, setIsClaiming] = useState(false)
 
   const areMyVotesSplit = useMemo(() => {
@@ -124,9 +124,9 @@ function GovernanceCurrentDelegate() {
         await claimVaultDelegate(mostVotesAcc.address)
         toastSuccess('Delegate updated 👑', 'Leaderboard will refresh momentarily.')
         if (account.toLowerCase() === mostVotesAcc.address) {
-          toastSuccess(
+          toastInfo(
             'Hey delegate!',
-            'To be able to vote, you must also set yourself as delegate on the Nouns contract!',
+            'Please sign the next transaction in order to vote in NounsDao.',
             10000
           )
         }

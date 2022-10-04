@@ -31,7 +31,7 @@ export default function LeaderboardListTile(props: {
   const { account } = useEthers()
   const { claimVaultDelegate, claimNounsDelegate, mostVotesAcc } = useLeaderboard()
   const { setVoteForDelegateModalForAddress, setConnectModalOpen } = useAppStore()
-  const { toastSuccess, toastError } = useToasts()
+  const { toastSuccess, toastError, toastInfo } = useToasts()
   const { setLeaderboardBlockNumber } = useBlockNumberCheckpointStore()
   const {
     isMe,
@@ -80,7 +80,7 @@ export default function LeaderboardListTile(props: {
       }
       toastSuccess('Delegate updated 👑', 'Leaderboard will refresh momentarily.')
       if (account.toLowerCase() === mostVotesAcc.address) {
-        toastSuccess('Hey delegate!', 'To be able to vote, you must also set yourself as delegate on the Nouns contract!', 10000)
+        toastInfo('Hey delegate!', 'Please sign the next transaction in order to vote in NounsDao.', 10000)
         await claimNounsDelegate(mostVotesAcc.address)
         toastSuccess('Congrats', 'You can now vote on proposals on behalf of the Noun!')
       }
