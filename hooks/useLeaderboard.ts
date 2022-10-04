@@ -1,10 +1,10 @@
-import {useEthers} from '@usedapp/core'
-import {ethers, FixedNumber} from 'ethers'
-import {getAllNounlets} from 'lib/graphql/queries'
+import { useEthers } from '@usedapp/core'
+import { ethers, FixedNumber } from 'ethers'
+import { getAllNounlets } from 'lib/graphql/queries'
 import txWithErrorHandling from 'lib/utils/tx-with-error-handling'
-import {useEffect, useMemo} from 'react'
-import {useBlockNumberCheckpointStore} from 'store/blockNumberCheckpointStore'
-import {useVaultStore} from 'store/vaultStore'
+import { useEffect, useMemo } from 'react'
+import { useBlockNumberCheckpointStore } from 'store/blockNumberCheckpointStore'
+import { useVaultStore } from 'store/vaultStore'
 import useSWR from 'swr'
 import useSdk from './useSdk'
 
@@ -29,19 +29,28 @@ export default function useLeaderboard() {
     return isLive && sdk != null && nounTokenId !== ''
   }, [isLive, sdk, nounTokenId])
 
-  const {mutate: delegateMutate} = useSWR(library && sdk && 'currentNounDelegate', async () => {
-    if (!sdk || !library) return
-    return sdk.NounsToken.delegates(vaultAddress)
-  },{onSuccess: (delegate) => {
-      if (!delegate) return
-      setCurrentNounDelegate(delegate.toLowerCase())
-    }, onError: (_) => {
-      console.log('Delegate error', _)
-    }})
+  const { mutate: delegateMutate } = useSWR(
+    library && sdk && 'currentNounDelegate',
+    async () => {
+      if (!sdk || !library) return
+      return sdk.NounsToken.delegates(vaultAddress)
+    },
+    {
+      onSuccess: (delegate) => {
+        if (!delegate) return
+        setCurrentNounDelegate(delegate.toLowerCase())
+      },
+      onError: (_) => {
+        console.log('Delegate error', _)
+      }
+    }
+  )
 
   useEffect(() => {
-    setIsCurrentDelegateOutOfSyncOnNounContract(currentNounDelegate.toLowerCase() !== currentDelegate.toLowerCase())
-  }, [currentDelegate, currentNounDelegate])
+    setIsCurrentDelegateOutOfSyncOnNounContract(
+      currentNounDelegate.toLowerCase() !== currentDelegate.toLowerCase()
+    )
+  }, [currentDelegate, currentNounDelegate, setIsCurrentDelegateOutOfSyncOnNounContract])
 
   const { data, mutate } = useSWR(
     canFetchLeaderboard && { name: 'Leaderboard' },
@@ -127,7 +136,10 @@ export default function useLeaderboard() {
     if (sdk == null || account == null || library == null) throw new Error('No signer')
     if (nounletTokenAddress == '') throw new Error('No nounlet token address')
     const nounletGovernance = sdk.NounletGovernance.connect(library.getSigner())
-    const gasLimitClaimDelegate = await nounletGovernance.estimateGas.claimDelegate(vaultAddress, toAddress)
+    const gasLimitClaimDelegate = await nounletGovernance.estimateGas.claimDelegate(
+      vaultAddress,
+      toAddress
+    )
     const txClaimDelegate = await nounletGovernance.claimDelegate(vaultAddress, toAddress, {
       gasLimit: gasLimitClaimDelegate.mul(13).div(10)
     })
@@ -138,8 +150,17 @@ export default function useLeaderboard() {
     if (sdk == null || account == null || library == null) throw new Error('No signer')
     if (nounletTokenAddress == '') throw new Error('No nounlet token address')
     const nounletGovernance = sdk.NounletGovernance.connect(library.getSigner())
-    const delegateProof = ['0xdc628af85b2520ddc303b6f1921db0ef0731eeb1d0a9f4f04110f2abca9c9be6','0x6c738a7e76f204dd8701ca750c99b5aadda355c37c47b2b54746260b6020a5c7','0x8c69ec1ca76af7b671cb0085923f5441521d607428a5a9eda3aacec37b562c0d']
-    const gasLimitDelegate = await nounletGovernance.estimateGas.delegate(vaultAddress, toAddress, delegateProof)
+    const merkleTree = await sdk.NounletProtoform.generateMerkleTree([
+      sdk.NounletAuction.address,
+      sdk.NounletGovernance.address,
+      sdk.OptimisticBid.address
+    ])
+    const delegateProof = await sdk.NounletProtoform.getProof(merkleTree, 5)
+    const gasLimitDelegate = await nounletGovernance.estimateGas.delegate(
+      vaultAddress,
+      toAddress,
+      delegateProof
+    )
     const txDelegate = await nounletGovernance.delegate(vaultAddress, toAddress, delegateProof, {
       gasLimit: gasLimitDelegate.mul(13).div(10)
     })
