@@ -20,6 +20,7 @@ import SimpleModalWrapper from '../SimpleModalWrapper'
 import { debounce } from 'lodash'
 import useToasts from 'hooks/useToasts'
 import { WrappedTransactionReceiptState } from 'lib/utils/tx-with-error-handling'
+import { getCurentChainExplorerTransactionLink } from 'lib/utils/common'
 
 export default function HomeHeroAuctionProgress(): JSX.Element {
   const { account } = useEthers()
@@ -70,11 +71,6 @@ export default function HomeHeroAuctionProgress(): JSX.Element {
         .round(NEXT_PUBLIC_BID_DECIMALS)
         .toString()
 
-      const explorerLink =
-        CHAIN_ID === 1
-          ? Mainnet.getExplorerTransactionLink(bid.id)
-          : Goerli.getExplorerTransactionLink(bid.id)
-
       return (
         <div key={bid.id.toString()} className="flex items-center flex-1 py-3 overflow-hidden">
           <SimpleAddress
@@ -84,7 +80,7 @@ export default function HomeHeroAuctionProgress(): JSX.Element {
           />
           <IconEth className="flex-shrink-0 h-[12px]" />
           <p className="ml-1 text-px18 leading-px28 font-700">{ethValue}</p>
-          <a href={explorerLink} target="_blank" rel="noreferrer">
+          <a href={getCurentChainExplorerTransactionLink(bid.id)} target="_blank" rel="noreferrer">
             <IconLinkOffsite className="ml-3 flex-shrink-0 h-[12px]" />
           </a>
         </div>

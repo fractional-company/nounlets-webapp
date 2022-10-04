@@ -7,6 +7,7 @@ import { FixedNumber } from 'ethers'
 import { formatEther } from 'ethers/lib/utils'
 import useCurrentBackground from 'hooks/useCurrentBackground'
 import useDisplayedNounlet from 'hooks/useDisplayedNounlet'
+import { getCurentChainExplorerTransactionLink } from 'lib/utils/common'
 import { useMemo } from 'react'
 import IconEth from '../icons/icon-eth'
 import IconLinkOffsite from '../icons/icon-link-offsite'
@@ -26,10 +27,6 @@ const BidHistoryModal = (): JSX.Element => {
         if (bid.blockTimestamp) {
           formattedTimestamp = dayjs.unix(+bid.blockTimestamp).format('MMM D, YYYY, h:mmA')
         }
-        const explorerLink =
-          CHAIN_ID === 1
-            ? Mainnet.getExplorerTransactionLink(bid.id)
-            : Goerli.getExplorerTransactionLink(bid.id)
 
         return (
           <div
@@ -54,7 +51,11 @@ const BidHistoryModal = (): JSX.Element => {
             <div className="flex items-center">
               <IconEth className="flex-shrink-0 h-[12px]" />
               <p className="ml-1 text-px18 leading-px28 font-700">{ethValue}</p>
-              <a href={explorerLink} target="_blank" rel="noreferrer">
+              <a
+                href={getCurentChainExplorerTransactionLink(bid.id)}
+                target="_blank"
+                rel="noreferrer"
+              >
                 <IconLinkOffsite className="ml-3 flex-shrink-0 h-[12px]" />
               </a>
             </div>

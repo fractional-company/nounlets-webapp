@@ -8,6 +8,7 @@ import { CHAIN_ID, NEXT_PUBLIC_BID_DECIMALS } from 'config'
 import { FixedNumber } from 'ethers'
 import { formatEther } from 'ethers/lib/utils'
 import useNounBuyout from 'hooks/useNounBuyout'
+import { getCurentChainExplorerTransactionLink } from 'lib/utils/common'
 import { useMemo, useState } from 'react'
 import { BuyoutState } from 'store/buyout/buyout.store'
 
@@ -22,11 +23,6 @@ export default function BuyoutPastOffers(): JSX.Element {
         const ethValue = FixedNumber.from(formatEther(bid.value.toString()))
           .round(NEXT_PUBLIC_BID_DECIMALS)
           .toString()
-
-        const explorerLink =
-          CHAIN_ID === 1
-            ? Mainnet.getExplorerTransactionLink(bid.id)
-            : Goerli.getExplorerTransactionLink(bid.id)
 
         return (
           <div key={bid.id.toString()} className="flex items-center flex-1 py-3 overflow-hidden">
@@ -52,7 +48,11 @@ export default function BuyoutPastOffers(): JSX.Element {
             )}
             <IconEth className="flex-shrink-0 h-[12px] ml-auto" />
             <p className="ml-1 text-px18 leading-px28 font-700">{ethValue}</p>
-            <a href={explorerLink} target="_blank" rel="noreferrer">
+            <a
+              href={getCurentChainExplorerTransactionLink(bid.id)}
+              target="_blank"
+              rel="noreferrer"
+            >
               <IconLinkOffsite className="ml-3 flex-shrink-0 h-[12px]" />
             </a>
           </div>
