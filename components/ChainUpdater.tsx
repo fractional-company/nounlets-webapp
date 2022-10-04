@@ -235,7 +235,7 @@ function LeaderboardUpdater() {
       mutate()
       delegateMutate()
     }, 1000)
-  }, [mutate])
+  }, [mutate, delegateMutate])
 
   useEffect(() => {
     if (!isLive || sdk == null) return
@@ -349,7 +349,7 @@ function BuyoutUpdater() {
   return (
     <>
       {/* <button onClick={() => mutate()}>mutate</button> */}
-      <button onClick={() => handleTest()}>handleTest</button>
+      {/* <button onClick={() => handleTest()}>handleTest</button> */}
     </>
   )
 }
