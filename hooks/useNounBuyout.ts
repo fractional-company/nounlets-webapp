@@ -31,7 +31,6 @@ export default function useNounBuyout() {
   const { data: nounImageData } = useNounImageData(nounTokenId)
   const mutate = useMemo(
     () => () => {
-      console.log('Mutating VaultBuyout')
       return globalMutate('VaultBuyout')
     },
     [globalMutate]
@@ -123,18 +122,10 @@ export default function useNounBuyout() {
     if (vaultAddress == null) throw new Error('no vault')
     if (nounletTokenAddress == null) throw new Error('no token address')
 
-    console.log('submitting offer', { offerDetails })
     const initialEthBalance = parseEther(offerDetails.ethOffered.toString())
     const nounletsOffered = myNounlets.slice(0, +offerDetails.nounletsOffered.toUnsafeFloat())
     const fractionsOffered = nounletsOffered.map((nounlet) => +nounlet.id)
     const amountsOffered = fractionsOffered.map((v) => 1)
-
-    console.log('Calling start', {
-      vaultAddress,
-      initialEthBalance,
-      fractionsOffered,
-      amountsOffered
-    })
 
     const vault = sdk.OptimisticBid.connect(library.getSigner())
     const tx = await vault.start(vaultAddress, fractionsOffered, amountsOffered, {
@@ -193,13 +184,6 @@ export default function useNounBuyout() {
     ])
     const burnProof = await sdk.NounletProtoform.getProof(merkleTree, 6)
     const optimisticBid = sdk.OptimisticBid.connect(library.getSigner())
-
-    console.log({
-      burnProof,
-      myNounlets: buyoutInfo.fractionsRemaining,
-      ids: buyoutInfo.fractionsRemaining.map((n) => n.toNumber()),
-      amounts: buyoutInfo.fractionsRemaining.map((_) => 1)
-    })
 
     const tx = await optimisticBid.end(
       vaultAddress,

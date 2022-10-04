@@ -17,7 +17,6 @@ export const useBuyoutOfferModalStore = create(
     isBuyoutOfferModalShown: false,
     buyoutOfferStep: 0,
     openBuyoutOfferModal: (initialFullPriceOffer: FixedNumber) => {
-      console.log('open?', initialFullPriceOffer)
       set((state) => {
         state.buyoutOfferStep = 0
         state.initialFullPriceOffer = initialFullPriceOffer

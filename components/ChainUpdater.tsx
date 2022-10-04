@@ -298,7 +298,7 @@ function BuyoutUpdater() {
     return 1 * 60 * 1000
   }, [cachedData])
 
-  const { data, mutate } = useSWR(
+  const { mutate } = useSWR(
     isLive && wereAllNounletsAuctioned && sdk != null && 'VaultBuyout',
     async (key) => getBuyoutBidInfo(sdk!, vaultAddress, nounletTokenAddress, nounTokenId),
     {
@@ -328,11 +328,9 @@ function BuyoutUpdater() {
       debouncedMutate()
     }
 
-    console.log('Listen to optimitic bids')
     optimisticBid.on(optimisticBid, listener)
 
     return () => {
-      console.log('removing Optimistic listener')
       optimisticBid.off(optimisticBid, listener)
     }
   }, [isLive, vaultAddress, sdk, debouncedMutate])

@@ -384,9 +384,14 @@ export const getNounletVotes = async (
     }`
   })
 
-  const filteredVotes = data.nounlet.delegateVotes.filter(
-    (vote) => vote.delegate.id.toLowerCase().split('-')[1] !== nounletAuctionAddress.toLowerCase()
-  )
+  const filteredVotes = data.nounlet.delegateVotes.filter((vote) => {
+    const delegateAddress = vote.delegate.id.toLowerCase().split('-')[1]
+
+    return (
+      delegateAddress !== nounletAuctionAddress.toLowerCase() &&
+      delegateAddress !== ethers.constants.AddressZero
+    )
+  })
   data.nounlet.delegateVotes = filteredVotes
   return data
 }

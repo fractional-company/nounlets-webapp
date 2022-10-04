@@ -20,11 +20,9 @@ export async function getBuyoutBidInfo(
   let wasNounWithdrawn = false
 
   console.log({ bidInfo, startEvents, lastStartEvent })
-  console.log('Current bid info', { bidInfo })
 
   // Is the buyout in progress or end state?
   if (bidInfo.state !== 0 && lastStartEvent) {
-    console.log('getBuyoutBidInfo', bidInfo.state, lastStartEvent)
     if (
       lastStartEvent.proposer === bidInfo.proposer &&
       lastStartEvent.startTime.eq(bidInfo.startTime)
@@ -38,7 +36,7 @@ export async function getBuyoutBidInfo(
       fractionsRemaining = remaining
       fractionsOfferedCount = BigNumber.from(offered.length)
       fractionsOfferedPrice = fractionsOfferedCount.mul(bidInfo.fractionPrice)
-      bidInfo.initialEthBalance = lastStartEvent.buyoutPrice
+      bidInfo.initialEthBalance = lastStartEvent.buyoutPrice.sub(fractionsOfferedPrice)
     }
 
     if (bidInfo.state === BuyoutState.SUCCESS) {

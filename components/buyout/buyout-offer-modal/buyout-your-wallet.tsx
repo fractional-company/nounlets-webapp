@@ -12,7 +12,7 @@ import { useMemo } from 'react'
 
 export default function BuyoutYourWallet(): JSX.Element {
   const { account, myNounlets, userBalance } = useNounBuyout()
-  const { usdInEth, ethInUsd } = useCurrentEthPrice() // TODO make this work
+  const { usdInEth, ethInUsd } = useCurrentEthPrice()
 
   const accountBalance = useMemo(() => {
     const usdPrice = FixedNumber.from(formatEther(userBalance || 0)).mulUnsafe(usdInEth)

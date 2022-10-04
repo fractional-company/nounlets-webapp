@@ -13,10 +13,12 @@ import { WrappedTransactionReceiptState } from 'lib/utils/tx-with-error-handling
 import { useSWRConfig } from 'swr'
 import { formatEther } from 'ethers/lib/utils'
 import { useEthers } from '@usedapp/core'
+import { useAppStore } from 'store/application'
 
 export default function BuyoutOfferLiveCard(): JSX.Element {
   const { account, library } = useEthers()
   const { cache, mutate: globalMutate } = useSWRConfig()
+  const { setConnectModalOpen } = useAppStore()
   const { openBuyoutHowDoesItWorkModal } = useBuyoutHowDoesItWorkModalStore()
   const { buyoutInfo, hasEnded, settleOffer, cashOut, withdrawNoun, myNounlets, nounTokenId } =
     useNounBuyout()
@@ -48,7 +50,10 @@ export default function BuyoutOfferLiveCard(): JSX.Element {
 
   const [isSettlingOffer, setIsSettlingOffer] = useState(false)
   const handleSettleOffer = async () => {
-    console.log('settling')
+    if (account == null) {
+      setConnectModalOpen(true)
+      return
+    }
 
     try {
       setIsSettlingOffer(true)

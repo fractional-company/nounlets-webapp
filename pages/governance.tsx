@@ -109,7 +109,6 @@ function GovernanceCurrentDelegate() {
     if (mostVotesAcc.address !== ethers.constants.AddressZero) setIsClaiming(true)
     try {
       const response = await claimDelegate(mostVotesAcc.address)
-      console.log('yasss', response)
       toastSuccess('Delegate updated 👑', 'Leaderboard will refresh momentarily.')
     } catch (error) {
       toastError('Update delegate failed', 'Please try again.')

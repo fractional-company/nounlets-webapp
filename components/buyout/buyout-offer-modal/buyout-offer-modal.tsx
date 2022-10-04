@@ -124,7 +124,6 @@ export default function BuyoutOfferModal(props: ComponentProps): JSX.Element {
 
   const handleSubmitOffer = async () => {
     try {
-      console.log('handleOnSubmit', offerDetails)
       setIsSubmittingOffer(true)
 
       const isApproved = await getIsApprovedToStartBuyout()
