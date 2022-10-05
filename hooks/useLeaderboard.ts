@@ -17,13 +17,40 @@ export default function useLeaderboard() {
     vaultAddress,
     nounTokenId,
     nounletTokenAddress,
-    setIsCurrentDelegateOutOfSync,
-    setCurrentDelegate
+    currentDelegate,
+    currentNounDelegate,
+    setIsCurrentDelegateOutOfSyncOnVaultContract,
+    setIsCurrentDelegateOutOfSyncOnNounContract,
+    setCurrentDelegate,
+    setCurrentNounDelegate
   } = useVaultStore()
 
   const canFetchLeaderboard = useMemo(() => {
     return isLive && sdk != null && nounTokenId !== ''
   }, [isLive, sdk, nounTokenId])
+
+  const { mutate: delegateMutate } = useSWR(
+    library && sdk && 'currentNounDelegate',
+    async () => {
+      if (!sdk || !library) return
+      return sdk.NounsToken.delegates(vaultAddress)
+    },
+    {
+      onSuccess: (delegate) => {
+        if (!delegate) return
+        setCurrentNounDelegate(delegate.toLowerCase())
+      },
+      onError: (_) => {
+        console.log('Delegate error', _)
+      }
+    }
+  )
+
+  useEffect(() => {
+    setIsCurrentDelegateOutOfSyncOnNounContract(
+      currentNounDelegate.toLowerCase() !== currentDelegate.toLowerCase()
+    )
+  }, [currentDelegate, currentNounDelegate, setIsCurrentDelegateOutOfSyncOnNounContract])
 
   const { data, mutate } = useSWR(
     canFetchLeaderboard && { name: 'Leaderboard' },
@@ -60,7 +87,7 @@ export default function useLeaderboard() {
         }
 
         setCurrentDelegate(data.currentDelegate)
-        setIsCurrentDelegateOutOfSync(data.mostVotesAddress !== data.currentDelegate)
+        setIsCurrentDelegateOutOfSyncOnVaultContract(data.mostVotesAddress !== data.currentDelegate)
 
         if (data._meta.block.number > leaderboardBlockNumber) {
           setLeaderboardBlockNumber(data._meta.block.number)
@@ -105,16 +132,39 @@ export default function useLeaderboard() {
     }
   }, [leaderboardData])
 
-  const claimDelegate = async (toAddress: string) => {
+  const claimVaultDelegate = async (toAddress: string) => {
     if (sdk == null || account == null || library == null) throw new Error('No signer')
     if (nounletTokenAddress == '') throw new Error('No nounlet token address')
-
     const nounletGovernance = sdk.NounletGovernance.connect(library.getSigner())
-    const gasLimit = await nounletGovernance.estimateGas.claimDelegate(vaultAddress, toAddress)
-    const tx = await nounletGovernance.claimDelegate(vaultAddress, toAddress, {
-      gasLimit: gasLimit.mul(13).div(10)
+    const gasLimitClaimDelegate = await nounletGovernance.estimateGas.claimDelegate(
+      vaultAddress,
+      toAddress
+    )
+    const txClaimDelegate = await nounletGovernance.claimDelegate(vaultAddress, toAddress, {
+      gasLimit: gasLimitClaimDelegate.mul(13).div(10)
     })
-    return txWithErrorHandling(tx)
+    return await txWithErrorHandling(txClaimDelegate)
+  }
+
+  const claimNounsDelegate = async (toAddress: string) => {
+    if (sdk == null || account == null || library == null) throw new Error('No signer')
+    if (nounletTokenAddress == '') throw new Error('No nounlet token address')
+    const nounletGovernance = sdk.NounletGovernance.connect(library.getSigner())
+    const merkleTree = await sdk.NounletProtoform.generateMerkleTree([
+      sdk.NounletAuction.address,
+      sdk.NounletGovernance.address,
+      sdk.OptimisticBid.address
+    ])
+    const delegateProof = await sdk.NounletProtoform.getProof(merkleTree, 5)
+    const gasLimitDelegate = await nounletGovernance.estimateGas.delegate(
+      vaultAddress,
+      toAddress,
+      delegateProof
+    )
+    const txDelegate = await nounletGovernance.delegate(vaultAddress, toAddress, delegateProof, {
+      gasLimit: gasLimitDelegate.mul(13).div(10)
+    })
+    return txWithErrorHandling(txDelegate)
   }
 
   const delegateVotes = async (toAddress: string) => {
@@ -134,8 +184,10 @@ export default function useLeaderboard() {
     mostVotesAcc,
     leaderboardData,
     mutate,
+    delegateMutate,
     delegateVotes,
-    claimDelegate
+    claimVaultDelegate,
+    claimNounsDelegate
   }
 }
 

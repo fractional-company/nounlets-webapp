@@ -27,9 +27,9 @@ export default function LeaderboardListTile(props: {
   data: LeaderboardListTileProps
 }): JSX.Element {
   const { account } = useEthers()
-  const { claimDelegate } = useLeaderboard()
+  const { claimVaultDelegate, claimNounsDelegate, mostVotesAcc } = useLeaderboard()
   const { setVoteForDelegateModalForAddress, setConnectModalOpen } = useAppStore()
-  const { toastSuccess, toastError } = useToasts()
+  const { toastSuccess, toastError, toastInfo } = useToasts()
   const { setLeaderboardBlockNumber } = useBlockNumberCheckpointStore()
   const {
     isMe,
@@ -72,15 +72,58 @@ export default function LeaderboardListTile(props: {
 
     setIsClaiming(true)
     try {
-      const response = await claimDelegate(address)
-      if (response?.receipt?.blockNumber != null) {
-        setLeaderboardBlockNumber(response.receipt.blockNumber)
+      const response = await claimVaultDelegate(address)
+
+      if (
+        response.status === WrappedTransactionReceiptState.SUCCESS ||
+        response.status === WrappedTransactionReceiptState.SPEDUP
+      ) {
+        if (response?.receipt?.blockNumber != null) {
+          setLeaderboardBlockNumber(response.receipt.blockNumber)
+        }
+        toastSuccess('Delegate updated 👑', 'Leaderboard will refresh momentarily.')
+        await handleClaimNounsDelegate()
+      } else if (response.status === WrappedTransactionReceiptState.ERROR) {
+        throw response.data
+      } else if (response.status === WrappedTransactionReceiptState.CANCELLED) {
+        toastError('Transaction canceled', 'Please try again.')
       }
-      toastSuccess('Delegate updated 👑', 'Leaderboard will refresh momentarily.')
     } catch (error) {
       toastError('Update delegate failed', 'Please try again.')
+    } finally {
+      setIsClaiming(false)
     }
-    setIsClaiming(false)
+  }
+
+  const handleClaimNounsDelegate = async () => {
+    if (account == null) {
+      setConnectModalOpen(true)
+      return
+    }
+
+    try {
+      if (account.toLowerCase() === mostVotesAcc.address) {
+        toastInfo(
+          'Hey delegate!',
+          'Please sign the next transaction in order to vote in NounsDao.',
+          10000
+        )
+        const response = await claimNounsDelegate(mostVotesAcc.address)
+
+        if (
+          response.status === WrappedTransactionReceiptState.SUCCESS ||
+          response.status === WrappedTransactionReceiptState.SPEDUP
+        ) {
+          toastSuccess('Congrats', 'You can now vote on proposals on behalf of the Noun!')
+        } else if (response.status === WrappedTransactionReceiptState.ERROR) {
+          throw response.data
+        } else if (response.status === WrappedTransactionReceiptState.CANCELLED) {
+          toastError('Transaction canceled', 'Please try again.')
+        }
+      }
+    } catch (error) {
+      toastError('Update Nouns delegate failed', 'Please try again.')
+    }
   }
 
   return (
