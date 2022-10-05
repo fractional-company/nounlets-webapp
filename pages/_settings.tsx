@@ -29,8 +29,6 @@ const Settings: NextPage<{ url: string }> = ({ url }) => {
   } else {
     return <DevelopmentSettings />
   }
-
-
 }
 export default Settings
 
@@ -38,7 +36,7 @@ function DevelopmentSettings() {
   const { account, library } = useEthers()
   const sdk = useSdk()
   const { isLive, isLoading, vaultAddress, nounletTokenAddress, latestNounletTokenId } =
-      useVaultStore()
+    useVaultStore()
 
   const { delegateVotes } = useLeaderboard()
 
@@ -57,7 +55,8 @@ function DevelopmentSettings() {
     isLoading,
     vaultAddress, // VaultContract
     nounletTokenAddress, // NouneltTokenContract (proxy?)
-    latestNounletTokenId
+    latestNounletTokenId,
+    version: 1
   }
 
   const createVault = async () => {
@@ -66,15 +65,15 @@ function DevelopmentSettings() {
     console.log('creating vault')
 
     const isApprovedForAll = await sdk.NounsToken.isApprovedForAll(
-        account,
-        sdk.NounletProtoform.address
+      account,
+      sdk.NounletProtoform.address
     )
 
     if (!isApprovedForAll) {
       console.log('not approved!')
       const tx = await sdk.NounsToken.connect(library.getSigner()).setApprovalForAll(
-          sdk.NounletProtoform.address,
-          true
+        sdk.NounletProtoform.address,
+        true
       )
       await tx.wait()
     }
@@ -113,42 +112,42 @@ function DevelopmentSettings() {
     // const gasPrice = await library.getGasPrice()
 
     const tx = await sdk.NounletProtoform.connect(library.getSigner()).deployVault(
-        [sdk.NounletAuction.address, sdk.NounletGovernance.address, sdk.OptimisticBid.address],
-        [],
-        [],
-        mintProof,
-        sdk.NounsDescriptorV2.address,
-        9
+      [sdk.NounletAuction.address, sdk.NounletGovernance.address, sdk.OptimisticBid.address],
+      [],
+      [],
+      mintProof,
+      sdk.NounsDescriptorV2.address,
+      9
     )
 
     return tx
-        .wait()
-        .then((res: any) => {
-          console.log('Vault deployed', res)
-          // nounletAuction.createAuction()
-        })
-        .catch((e: any) => {
-          console.log(e)
-        })
+      .wait()
+      .then((res: any) => {
+        console.log('Vault deployed', res)
+        // nounletAuction.createAuction()
+      })
+      .catch((e: any) => {
+        console.log(e)
+      })
   }
 
   return (
-      <div className="p-4 flex flex-col gap-3 text-px12">
-        <h1 className="font-600">Settings</h1>
+    <div className="p-4 flex flex-col gap-3 text-px12">
+      <h1 className="font-600">Settings</h1>
 
-        <div className="px-4">
-          <h1 className="font-600">ENV</h1>
-          <pre>{JSON.stringify(environment, null, 4)}</pre>
-        </div>
-
-        <div className="px-4">
-          <h1 className="font-600">Vault METADATA</h1>
-          <pre>{JSON.stringify(vaultMetadata, null, 4)}</pre>
-        </div>
-
-        <Button className="primary" onClick={() => createVault()}>
-          Create new vault
-        </Button>
+      <div className="px-4">
+        <h1 className="font-600">ENV</h1>
+        <pre>{JSON.stringify(environment, null, 4)}</pre>
       </div>
+
+      <div className="px-4">
+        <h1 className="font-600">Vault METADATA</h1>
+        <pre>{JSON.stringify(vaultMetadata, null, 4)}</pre>
+      </div>
+
+      <Button className="primary" onClick={() => createVault()}>
+        Create new vault
+      </Button>
+    </div>
   )
 }
