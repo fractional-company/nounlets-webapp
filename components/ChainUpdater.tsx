@@ -232,7 +232,7 @@ function LeaderboardUpdater() {
       mutate()
       delegateMutate()
     }, 1000)
-  }, [mutate])
+  }, [mutate, delegateMutate])
 
   useEffect(() => {
     if (!isLive || sdk == null) return
