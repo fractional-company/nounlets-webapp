@@ -216,7 +216,7 @@ function GovernanceCurrentDelegate() {
                     <Button
                       loading={isClaiming}
                       onClick={() => handleUpdateDelegate()}
-                  className="flex ml-4 items-center justify-center text-secondary-blue hover:text-secondary-green text-px18 font-700 border-2 border-transparent h-10 rounded-px10"
+                      className="flex ml-4 items-center justify-center text-secondary-blue hover:text-secondary-green text-px18 font-700 border-2 border-transparent h-10 rounded-px10"
                     >
                       <span>Update</span>
                     </Button>
@@ -239,15 +239,15 @@ function GovernanceCurrentDelegate() {
                           disabled={currentDelegate !== account?.toLowerCase()}
                           loading={isClaiming}
                           onClick={() => handleUpdateDelegate()}
-                      className="flex ml-4 items-center justify-center text-secondary-blue hover:text-secondary-green text-px18 font-700 border-2 border-transparent h-10 rounded-px10"
+                          className="flex ml-4 items-center justify-center text-secondary-blue hover:text-secondary-green text-px18 font-700 border-2 border-transparent h-10 rounded-px10"
                         >
                           <span>Update</span>
                         </Button>
-                    <div>Only a vault delegate can perform this action</div>
-                  </SimplePopover>
-                </div>
-              )}
-            </>
+                        <div>Only a vault delegate can perform this action</div>
+                      </SimplePopover>
+                    </div>
+                  )}
+              </>
             )}
           </div>
 
