@@ -212,7 +212,7 @@ function GovernanceCurrentDelegate() {
                 <Button
                   loading={isClaiming}
                   onClick={() => handleUpdateDelegate()}
-                  className="hidden lg:flex ml-4 items-center justify-center text-secondary-blue hover:text-secondary-green text-px18 font-700 border-2 border-transparent h-10 rounded-px10"
+                  className="flex ml-4 items-center justify-center text-secondary-blue hover:text-secondary-green text-px18 font-700 border-2 border-transparent h-10 rounded-px10"
                 >
                   <span>Update</span>
                 </Button>
@@ -235,7 +235,7 @@ function GovernanceCurrentDelegate() {
                       disabled={currentDelegate !== account?.toLowerCase()}
                       loading={isClaiming}
                       onClick={() => handleUpdateDelegate()}
-                      className="hidden lg:flex ml-4 items-center justify-center text-secondary-blue hover:text-secondary-green text-px18 font-700 border-2 border-transparent h-10 rounded-px10"
+                      className="flex ml-4 items-center justify-center text-secondary-blue hover:text-secondary-green text-px18 font-700 border-2 border-transparent h-10 rounded-px10"
                     >
                       <span>Update</span>
                     </Button>
@@ -245,7 +245,9 @@ function GovernanceCurrentDelegate() {
               )}
           </div>
 
-          <div className="flex items-center mt-4">{currentDelegateRC}</div>
+          <div className="flex items-center mt-4 justify-center xs:justify-start">
+            {currentDelegateRC}
+          </div>
         </div>
 
         {account && (
@@ -271,7 +273,7 @@ function GovernanceCurrentDelegate() {
                 )}
               </div>
 
-              <div className="flex items-center mt-4">
+              <div className="flex items-center mt-4 justify-center xs:justify-start">
                 <div className="flex items-center gap-2 flex-wrap">
                   <p className="text-px36 font-londrina leading-px42 w-10 h-10 flex-shrink-0 overflow-visible text-center">
                     {myNounlets.length}
@@ -368,14 +370,6 @@ function GovernanceLeaderboard() {
         {account == null ? (
           <div className="flex flex-col xs:flex-row items-center gap-2">
             <p className="font-500 text-px14 text-gray-3">Connect wallet to cast a vote</p>
-            {/* <Button
-              key={0}
-              className="text-px18 leading-px26 basic default !h-11"
-              onClick={() => setBidModalOpen(true)}
-              disabled={historicBids.length === 0}
-            >
-              <IconBidHistory className="mr-2.5" /> Bid history
-            </Button> */}
             <Button className="default --sm" onClick={() => setConnectModalOpen(true)}>
               Connect wallet
             </Button>
