@@ -6,11 +6,8 @@ import dayjs from 'dayjs'
 import useDisplayedNounlet from 'hooks/useDisplayedNounlet'
 import useSdk from 'hooks/useSdk'
 import { getNounletVotes } from 'lib/graphql/queries'
-import { getNounVotes } from 'lib/utils/getNounsVotes'
 import { useMemo, useState } from 'react'
 import useSWR from 'swr'
-import { useReverseENSLookUp } from '../../lib/utils/ensLookup'
-import { buildEtherscanAddressLink } from '../../lib/utils/etherscan'
 import SimpleAddress from '../simple-address'
 
 export default function HomeVotesFromNounlet(): JSX.Element {

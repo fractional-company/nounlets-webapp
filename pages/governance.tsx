@@ -186,6 +186,8 @@ function GovernanceCurrentDelegate() {
     }
   }
 
+  const isMostVotesAddressZero = mostVotesAcc.address === ethers.constants.AddressZero
+
   return (
     <div className="mt-10 border-2 rounded-px16 p-4 lg:p-8 border-gray-2">
       <div className="flex flex-col lg:flex-row gap-8">
@@ -193,56 +195,60 @@ function GovernanceCurrentDelegate() {
           <div className="flex flex-col xs:flex-row items-center xs:gap-3">
             <p className="font-londrina text-px24 text-gray-4 leading-[40px]">Current delegate</p>
 
-            {isCurrentDelegateOutOfSyncOnVaultContract && (
-              <div className="flex items-center">
-                <SimplePopover>
-                  <h1 className="font-700 text-px18 text-gray-4">
-                    <span className="text-secondary-orange">⚠</span> Out of sync
-                  </h1>
-                  <div>
-                    This vault delegate is currently out of sync. There is another wallet with more
-                    votes. You can update the vault delegate with a transaction.
-                    <br />
-                    <br />
-                    To claim delegate on Nouns contract, the new delegate will have to perform
-                    another transaction, available after this one.
-                  </div>
-                </SimplePopover>
+            {!isMostVotesAddressZero && (
+              <>
+                {isCurrentDelegateOutOfSyncOnVaultContract && (
+                  <div className="flex items-center">
+                    <SimplePopover>
+                      <h1 className="font-700 text-px18 text-gray-4">
+                        <span className="text-secondary-orange">⚠</span> Out of sync
+                      </h1>
+                      <div>
+                        This vault delegate is currently out of sync. There is another wallet with
+                        more votes. You can update the vault delegate with a transaction.
+                        <br />
+                        <br />
+                        To claim delegate on Nouns contract, the new delegate will have to perform
+                        another transaction, available after this one.
+                      </div>
+                    </SimplePopover>
 
-                <Button
-                  loading={isClaiming}
-                  onClick={() => handleUpdateDelegate()}
-                  className="flex ml-4 items-center justify-center text-secondary-blue hover:text-secondary-green text-px18 font-700 border-2 border-transparent h-10 rounded-px10"
-                >
-                  <span>Update</span>
-                </Button>
-              </div>
-            )}
-            {!isCurrentDelegateOutOfSyncOnVaultContract &&
-              isCurrentDelegateOutOfSyncOnNounContract && (
-                <div className="flex items-center">
-                  <SimplePopover>
-                    <h1 className="font-700 text-px18 text-gray-4">
-                      <span className="text-secondary-orange">⚠</span> Claim Noun delegate
-                    </h1>
-                    <div>
-                      To be able to vote in NounsDao on behalf of this Noun the current delegate
-                      must set themselves as the delegate on the Nouns contract
-                    </div>
-                  </SimplePopover>
-                  <SimplePopover isDisabled={currentDelegate === account?.toLowerCase()}>
                     <Button
-                      disabled={currentDelegate !== account?.toLowerCase()}
                       loading={isClaiming}
                       onClick={() => handleUpdateDelegate()}
                       className="flex ml-4 items-center justify-center text-secondary-blue hover:text-secondary-green text-px18 font-700 border-2 border-transparent h-10 rounded-px10"
                     >
                       <span>Update</span>
                     </Button>
-                    <div>Only a vault delegate can perform this action</div>
-                  </SimplePopover>
-                </div>
-              )}
+                  </div>
+                )}
+                {!isCurrentDelegateOutOfSyncOnVaultContract &&
+                  isCurrentDelegateOutOfSyncOnNounContract && (
+                    <div className="flex items-center">
+                      <SimplePopover>
+                        <h1 className="font-700 text-px18 text-gray-4">
+                          <span className="text-secondary-orange">⚠</span> Claim Noun delegate
+                        </h1>
+                        <div>
+                          To be able to vote in NounsDao on behalf of this Noun the current delegate
+                          must set themselves as the delegate on the Nouns contract
+                        </div>
+                      </SimplePopover>
+                      <SimplePopover isDisabled={currentDelegate === account?.toLowerCase()}>
+                        <Button
+                          disabled={currentDelegate !== account?.toLowerCase()}
+                          loading={isClaiming}
+                          onClick={() => handleUpdateDelegate()}
+                          className="flex ml-4 items-center justify-center text-secondary-blue hover:text-secondary-green text-px18 font-700 border-2 border-transparent h-10 rounded-px10"
+                        >
+                          <span>Update</span>
+                        </Button>
+                        <div>Only a vault delegate can perform this action</div>
+                      </SimplePopover>
+                    </div>
+                  )}
+              </>
+            )}
           </div>
 
           <div className="flex items-center mt-4 justify-center xs:justify-start">

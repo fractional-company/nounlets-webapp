@@ -15,18 +15,14 @@ import useSdk from 'hooks/useSdk'
 import { calculateNextBid } from 'lib/utils/nextBidCalculator'
 import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useVaultStore } from 'store/vaultStore'
-import { Auction } from '../../lib/wrappers/nounsAuction'
 import { useAppStore } from '../../store/application'
 import SimpleModalWrapper from '../SimpleModalWrapper'
 import { debounce } from 'lodash'
 import useToasts from 'hooks/useToasts'
 import { WrappedTransactionReceiptState } from 'lib/utils/tx-with-error-handling'
+import { getCurentChainExplorerTransactionLink } from 'lib/utils/common'
 
-type ComponentProps = {
-  auction?: Auction
-}
-
-export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Element {
+export default function HomeHeroAuctionProgress(): JSX.Element {
   const { account } = useEthers()
   const sdk = useSdk()
   const { toastSuccess, toastError } = useToasts()
@@ -75,11 +71,6 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
         .round(NEXT_PUBLIC_BID_DECIMALS)
         .toString()
 
-      const explorerLink =
-        CHAIN_ID === 1
-          ? Mainnet.getExplorerTransactionLink(bid.id)
-          : Goerli.getExplorerTransactionLink(bid.id)
-
       return (
         <div key={bid.id.toString()} className="flex items-center flex-1 py-3 overflow-hidden">
           <SimpleAddress
@@ -89,7 +80,7 @@ export default function HomeHeroAuctionProgress(props: ComponentProps): JSX.Elem
           />
           <IconEth className="flex-shrink-0 h-[12px]" />
           <p className="ml-1 text-px18 leading-px28 font-700">{ethValue}</p>
-          <a href={explorerLink} target="_blank" rel="noreferrer">
+          <a href={getCurentChainExplorerTransactionLink(bid.id)} target="_blank" rel="noreferrer">
             <IconLinkOffsite className="ml-3 flex-shrink-0 h-[12px]" />
           </a>
         </div>

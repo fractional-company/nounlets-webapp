@@ -2,6 +2,7 @@ import { ethers } from 'ethers'
 import create from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 import { createTrackedSelector } from 'react-tracked'
+import { NEXT_PUBLIC_NOUN_VAULT_ADDRESS } from 'config'
 
 interface StoreState {
   // Constants
@@ -17,6 +18,7 @@ interface StoreState {
   isLeaderboardOutOfSync: boolean
   isCurrentDelegateOutOfSyncOnVaultContract: boolean
   isCurrentDelegateOutOfSyncOnNounContract: boolean
+  wereAllNounletsAuctioned: boolean
   currentDelegate: string
   currentNounDelegate: string
   latestNounletTokenId: string
@@ -37,6 +39,7 @@ interface StoreActions {
   setIsLeaderboardOutOfSync: (flag: boolean) => void
   setIsCurrentDelegateOutOfSyncOnVaultContract: (flag: boolean) => void
   setIsCurrentDelegateOutOfSyncOnNounContract: (flag: boolean) => void
+  setWereAllNounletsAuctioned: (flag: boolean) => void
   setCurrentDelegate: (address: string) => void
   setCurrentNounDelegate: (address: string) => void
   setLatestNounletTokenId: (id: string) => void
@@ -45,7 +48,7 @@ interface StoreActions {
 
 const initialState: StoreState = {
   // Constants
-  vaultAddress: (process.env.NEXT_PUBLIC_NOUN_VAULT_ADDRESS || '').toLowerCase(),
+  vaultAddress: NEXT_PUBLIC_NOUN_VAULT_ADDRESS.toLowerCase(),
   nounTokenId: '',
   vaultCuratorAddress: ethers.constants.AddressZero,
   nounletTokenAddress: '',
@@ -60,8 +63,9 @@ const initialState: StoreState = {
   isLive: false,
   isLoading: true,
   isLeaderboardOutOfSync: false,
-    isCurrentDelegateOutOfSyncOnVaultContract: false,
-    isCurrentDelegateOutOfSyncOnNounContract: false,
+  isCurrentDelegateOutOfSyncOnVaultContract: false,
+  isCurrentDelegateOutOfSyncOnNounContract: false,
+  wereAllNounletsAuctioned: false,
   currentDelegate: ethers.constants.AddressZero,
   currentNounDelegate: ethers.constants.AddressZero,
   latestNounletTokenId: '',
@@ -125,6 +129,11 @@ export const useVaultStore = createTrackedSelector(
         setIsCurrentDelegateOutOfSyncOnNounContract: (flag) => {
         set((state) => {
           state.isCurrentDelegateOutOfSyncOnNounContract = flag
+        })
+      },
+      setWereAllNounletsAuctioned: (flag) => {
+        set((state) => {
+          state.wereAllNounletsAuctioned = flag
         })
       },
       setCurrentDelegate: (address) => {
