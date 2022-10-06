@@ -18,12 +18,14 @@ import IconFractionalLogo from './icons/icon-fractional-logo'
 import IconHeartHollow from './icons/icon-heart-hollow'
 import IconMedium from './icons/icon-medium'
 import IconNounlets from './icons/icon-nounlets'
+import IconHome from './icons/icon-home'
 import IconNounletsLogo from './icons/icon-nounlets-logo'
 import IconTwitter from './icons/icon-twitter'
 import VoteForDelegateModal from './modals/vote-for-delegate-modal'
 import WalletModal from './modals/wallet-modal'
 import SimpleAddress from './simple-address'
 import SimplePopover from './simple-popover'
+import IconVote from './icons/icon-vote'
 
 export default function AppHeader(): JSX.Element {
   const [isMobileMenuOpen, setIsModalMenuOpen] = useState(false)
@@ -136,10 +138,16 @@ export default function AppHeader(): JSX.Element {
                 </Link>
               )}
             </div>
-            <div className="hidden lg:flex items-center space-x-4">
+            <div className="hidden lg:flex items-center space-x-2 xl:space-x-4">
+              <Link href="/">
+                <Button className="basic space-x-2 flex-shrink-0">
+                  <IconHome className="h-[12px] w-auto" />
+                  <span>Home</span>
+                </Button>
+              </Link>
               <Link href="/governance">
                 <Button className="basic space-x-2 flex-shrink-0">
-                  <Image src={IconPeople} alt="votes" height={14} />
+                  <IconVote className="h-[16px] w-auto" />
                   <span>Vote</span>
                 </Button>
               </Link>
@@ -189,12 +197,21 @@ export default function AppHeader(): JSX.Element {
         >
           <div ref={mobileMenuRef}>
             <div className="space-y-2 pb-4">
+              <Link href="/">
+                <Button
+                  className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40"
+                  onClick={() => setIsModalMenuOpen(false)}
+                >
+                  <IconHome className="h-[12px] w-auto" />
+                  <span>Home</span>
+                </Button>
+              </Link>
               <Link href="/governance">
                 <Button
                   className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40"
                   onClick={() => setIsModalMenuOpen(false)}
                 >
-                  <Image src={IconPeople} alt="votes" height={14} />
+                  <IconVote className="h-[16px] w-auto" />
                   <span>Vote</span>
                 </Button>
               </Link>

@@ -43,6 +43,7 @@ function LittleBug() {
 
   const { nid, auctionInfo } = useDisplayedNounlet()
   const { isOutOfSync, leaderboardData } = useLeaderboard()
+  const { buyoutInfo } = useBuyoutStore()
 
   const vaultMetadata = {
     isLive,
@@ -70,6 +71,9 @@ function LittleBug() {
     throw new Error('Testing Sentry 3')
   }
 
+  const buyoutInfoTruncated = { ...buyoutInfo, fixedNumber: undefined }
+  const display = { nid, vaultMetadata, buyoutInfo: buyoutInfoTruncated, auctionInfo, leaderboard }
+
   return (
     <>
       {NEXT_PUBLIC_SHOW_DEBUG && (
@@ -85,7 +89,7 @@ function LittleBug() {
               <Button className="basic" onClick={testSentry}>
                 Test Sentry Error
               </Button>
-              <pre>{JSON.stringify({ nid, vaultMetadata, auctionInfo, leaderboard }, null, 4)}</pre>
+              <pre>{JSON.stringify(display, null, 4)}</pre>
             </div>
           )}
         </>
@@ -306,9 +310,9 @@ function BuyoutUpdater() {
       dedupingInterval: 5000,
       refreshInterval: refreshInterval,
       onSuccess: (data, key, config) => {
-        console.group('🤑 fetched vault buyout ...')
-        console.log({ data })
-        console.groupEnd()
+        // console.group('🤑 fetched vault buyout ...')
+        // console.log({ data })
+        // console.groupEnd()
         setBuyoutInfo(data)
         setIsLoading(false)
       }
@@ -325,7 +329,7 @@ function BuyoutUpdater() {
 
     const listener = (...eventData: any) => {
       const event = eventData.at(-1)
-      console.log('Optimistic event', event, eventData)
+      // console.log('Optimistic event', event, eventData)
       debouncedMutate()
     }
 
@@ -336,20 +340,5 @@ function BuyoutUpdater() {
     }
   }, [isLive, vaultAddress, sdk, debouncedMutate])
 
-  const handleTest = async () => {
-    if (sdk == null) return
-    if (library == null) return
-    if (!isLive) return
-
-    const currentState = await getBuyoutBidInfo(sdk, vaultAddress, nounletTokenAddress, nounTokenId)
-
-    console.log({ currentState })
-  }
-
-  return (
-    <>
-      {/* <button onClick={() => mutate()}>mutate</button> */}
-      {/* <button onClick={() => handleTest()}>handleTest</button> */}
-    </>
-  )
+  return <></>
 }
