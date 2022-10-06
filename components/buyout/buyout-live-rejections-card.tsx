@@ -29,7 +29,7 @@ export default function BuyoutLiveRejectionsCard(): JSX.Element {
             </p>
           </div>
         </div>
-        <p className="text-gray-4 text-px14 font-500 leading-px20">
+        <p className="text-gray-4 text-px16 font-500 leading-px20">
           If at least 1 Nounlet is remaining in the pool by the end of the time period, the offer
           will succeed.
         </p>

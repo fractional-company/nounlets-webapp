@@ -66,7 +66,7 @@ export default function BuyoutOfferCard(): JSX.Element {
             </p>
           ) : (
             <div className="flex flex-col gap-2 flex-1 text-center xs:text-start">
-              <p className="font-londrina text-px16 leading-px16">
+              <p className="font-londrina text-px18 leading-px18">
                 You own{' '}
                 <Link href="/governance">
                   <span className="text-secondary-blue cursor-pointer">{myNounlets.length}</span>
@@ -82,7 +82,7 @@ export default function BuyoutOfferCard(): JSX.Element {
 
           <Button
             onClick={openBuyoutHowDoesItWorkModal}
-            className="link font-500 text-secondary-blue hover:text-secondary-green text-px12 leading-px16 flex-shrink-0"
+            className="link font-500 text-secondary-blue hover:text-secondary-green text-px14 leading-px16 flex-shrink-0"
           >
             How does it work?
           </Button>

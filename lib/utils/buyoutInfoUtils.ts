@@ -19,8 +19,6 @@ export async function getBuyoutBidInfo(
   let fractionsOfferedPrice = BigNumber.from(0)
   let wasNounWithdrawn = false
 
-  console.log({ bidInfo, startEvents, lastStartEvent })
-
   // Is the buyout in progress or end state?
   if (bidInfo.state !== 0 && lastStartEvent) {
     if (
@@ -169,8 +167,6 @@ async function getOptimisticBidBalances(
       fractionsRemaining.push(fractionsOffered[index])
     }
   })
-
-  console.log({ fractionsRemaining })
 
   return fractionsRemaining
 }
