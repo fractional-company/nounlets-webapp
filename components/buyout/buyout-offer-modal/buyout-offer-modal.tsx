@@ -1,21 +1,22 @@
-import { useBuyoutOfferModalStore } from 'store/buyout/buyout-offer-modal.store'
 import Button from 'components/buttons/button'
 import IconEth from 'components/icons/icon-eth'
+import IconPlus from 'components/icons/icon-plus'
 import IconQuestionCircle from 'components/icons/icon-question-circle'
+import { NounImage } from 'components/NounletImage'
 import SimplePopover from 'components/simple-popover'
+import SimpleModalWrapper from 'components/SimpleModalWrapper'
+import { NEXT_PUBLIC_MAX_NOUNLETS } from 'config'
 import { FixedNumber } from 'ethers'
+import useNounBuyout from 'hooks/useNounBuyout'
+import useToasts from 'hooks/useToasts'
+import { formatOfferDetails } from 'lib/utils/formatBuyoutInfo'
+import { ONLY_NUMBERS_REGEX } from 'lib/utils/nextBidCalculator'
+import { WrappedTransactionReceiptState } from 'lib/utils/tx-with-error-handling'
 import Link from 'next/link'
 import { ChangeEvent, useMemo, useRef, useState } from 'react'
-import BuyoutYourWallet from './buyout-your-wallet'
-import { NounImage, NounletImage } from 'components/NounletImage'
-import useNounBuyout from 'hooks/useNounBuyout'
-import { ONLY_NUMBERS_REGEX } from 'lib/utils/nextBidCalculator'
-import useToasts from 'hooks/useToasts'
-import { WrappedTransactionReceiptState } from 'lib/utils/tx-with-error-handling'
-import { formatOfferDetails } from 'lib/utils/formatBuyoutInfo'
-import { NEXT_PUBLIC_MAX_NOUNLETS } from 'config'
+import { useBuyoutOfferModalStore } from 'store/buyout/buyout-offer-modal.store'
 import { useSWRConfig } from 'swr'
-import SimpleModalWrapper from 'components/SimpleModalWrapper'
+import BuyoutYourWallet from './buyout-your-wallet'
 
 type ComponentProps = {
   initialFullPriceOffer: FixedNumber
@@ -237,9 +238,9 @@ export default function BuyoutOfferModal(props: ComponentProps): JSX.Element {
           </div>
         </div>
         <div className="bg-black -mx-8 -mb-8 p-8 rounded-b-px24">
-          <div className="grid grid-cols-1 sm:grid-cols-[2fr,2fr] gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-[2fr,auto,2fr] sm:gap-6">
             <div className="flex flex-col">
-              <p className="text-white text-px18 font-500">Nounlets to offer</p>
+              <p className="text-white text-px18 font-500 leading-px28">Nounlets to offer</p>
               <div className=" mt-4 bid-input flex items-center space-x-1 bg-white rounded-px10 px-4 leading-[52px] outline-primary focus-within:outline-3 focus-within:outline-dashed flex-1">
                 <input
                   value={inputNounletsCountValue}
@@ -262,8 +263,13 @@ export default function BuyoutOfferModal(props: ComponentProps): JSX.Element {
                 = {offerDetailsFormatted.priceOfOfferedNounlets} ETH value
               </p>
             </div>
-            <div className="flex flex-col sm:border-l sm:border-white sm:pl-6">
-              <p className="text-white text-px18 font-500">ETH offer</p>
+            <div className="text-white font-700 text-px28 sm:pt-7">
+              <div className="sm:h-[52px] sm:mt-4 flex items-center justify-center">
+                <IconPlus className="w-5" />
+              </div>
+            </div>
+            <div className="flex flex-col">
+              <p className="text-white text-px18 font-500 leading-px28">ETH to offer</p>
               <div className="bid-input flex items-center space-x-1 rounded-px10 leading-[52px] mt-4 flex-grow-1 flex-grow-0">
                 <IconEth className="flex-shrink-0 h-[12px] text-white" />
                 <p className="text-[25px] font-700 w-full truncate text-white">
