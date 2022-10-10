@@ -60,8 +60,9 @@ export default function AppHeader(): JSX.Element {
     if (account == null) return false
     if (currentDelegate == null || currentDelegate === ethers.constants.AddressZero) return false
     if (account.toLowerCase() !== currentDelegate.toLowerCase()) return false
+    if (!isGovernanceEnabled) return false
     return true
-  }, [account, currentDelegate])
+  }, [account, currentDelegate, isGovernanceEnabled])
 
   const connectButton = useMemo(
     () => (
