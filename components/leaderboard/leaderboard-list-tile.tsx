@@ -344,7 +344,7 @@ function OptimisticBidTile(props: {
             >
               {props.percentageString}
             </div>
-            <div className="text-px26 font-700 text-secondary-oranger">Chillen in offer ⛱</div>
+            <div className="text-px26 font-700 text-secondary-oranger">Chillin in offer ⛱</div>
           </div>
 
           {/* Display on mobile */}

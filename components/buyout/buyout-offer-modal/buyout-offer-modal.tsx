@@ -141,7 +141,7 @@ export default function BuyoutOfferModal(props: ComponentProps): JSX.Element {
         response.status === WrappedTransactionReceiptState.SPEDUP
       ) {
         await globalMutate('VaultBuyout') // TODO maybe remove this
-        toastSuccess('Buyout started! 🚀', 'LFG!')
+        toastSuccess('Buyout started! 🚀', 'LFG')
         closeBuyoutOfferModal()
       } else if (response.status === WrappedTransactionReceiptState.ERROR) {
         throw response.data
