@@ -92,7 +92,7 @@ export default function BuyoutOfferLiveCard(): JSX.Element {
         response.status === WrappedTransactionReceiptState.SPEDUP
       ) {
         await globalMutate('VaultBuyout')
-        toastSuccess('Cashed out! 💰', 'Cha Ching')
+        toastSuccess('Cashed out! 💰', 'Cha-Ching')
       } else if (response.status === WrappedTransactionReceiptState.ERROR) {
         throw response.data
       } else if (response.status === WrappedTransactionReceiptState.CANCELLED) {
