@@ -17,7 +17,7 @@ export const formatOfferDetails = (offerDetails: OfferDetails) => {
     tempOfferDetailsFormatted.pricePerNounlet = offerDetails.pricePerNounlet.toString()
     tempOfferDetailsFormatted.nounletsOffered = offerDetails.nounletsOffered.toString()
     tempOfferDetailsFormatted.priceOfOfferedNounlets = offerDetails.priceOfOfferedNounlets
-      .round(4)
+      .round(NEXT_PUBLIC_MAX_NOUNLETS + 2)
       .toString()
     tempOfferDetailsFormatted.ethOffered = offerDetails.ethOffered.toString()
 
