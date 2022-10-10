@@ -11,7 +11,7 @@ export default function BuyoutSecondaryMarketCard(): JSX.Element {
           <p className="text-px14 leading-px18 font-700">
             All auctions for Nounlets of Noun {nounTokenId} have finished. You can buy a Nounlet on
             the{' '}
-            <a className="text-secondary-blue" href="https://opensea.io/" target="__blank">
+            <a className="text-secondary-blue" href="https://nounlets.market/" target="__blank">
               secondary market
             </a>{' '}
             or you can bid for the full Noun below.
@@ -22,12 +22,12 @@ export default function BuyoutSecondaryMarketCard(): JSX.Element {
           <p className="text-px14 leading-px18 font-700">
             All auctions for Nounlets of Noun {nounTokenId} have finished. You can buy a Nounlet on
             the{' '}
-            <a className="text-secondary-blue" href="https://opensea.io/" target="__blank">
+            <a className="text-secondary-blue" href="https://nounlets.market/" target="__blank">
               secondary market
             </a>
             .
           </p>
-          <a className="text-secondary-blue" href="https://opensea.io/" target="__blank">
+          <a className="text-secondary-blue" href="https://nounlets.market/" target="__blank">
             <Button className="primary w-full">Buy a Nounlet</Button>
           </a>
         </div>
