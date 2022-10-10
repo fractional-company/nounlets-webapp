@@ -38,7 +38,8 @@ function LittleBug() {
     nounletTokenAddress,
     currentDelegate,
     backendLatestNounletTokenId,
-    latestNounletTokenId
+    latestNounletTokenId,
+    isGovernanceEnabled
   } = useVaultStore()
 
   const { nid, auctionInfo } = useDisplayedNounlet()
@@ -53,7 +54,8 @@ function LittleBug() {
     nounTokenId,
     backendLatestNounletTokenId,
     latestNounletTokenId,
-    currentDelegate
+    currentDelegate,
+    isGovernanceEnabled
   }
 
   const leaderboard = {
@@ -108,6 +110,7 @@ function VaultUpdater() {
     nounletTokenAddress,
     vaultAddress,
     latestNounletTokenId,
+    isGovernanceEnabled,
     setIsLive,
     setIsLoading,
     setWereAllNounletsAuctioned,
@@ -179,7 +182,7 @@ function VaultUpdater() {
           setWereAllNounletsAuctioned(data.wereAllNounletsAuctioned)
           setIsLive(true)
           setIsLoading(false)
-          setIsGovernanceEnabled(!data.wereAllNounletsAuctioned)
+          setIsGovernanceEnabled(!data.wereAllNounletsAuctioned || isGovernanceEnabled)
         } else {
           console.log('Server returned null')
           // Retry after 15 seconds.
@@ -321,6 +324,7 @@ function BuyoutUpdater() {
         // console.group('🤑 fetched vault buyout ...')
         // console.log({ data })
         // console.groupEnd()
+
         setIsGovernanceEnabled(data.state !== BuyoutState.SUCCESS)
         setBuyoutInfo(data)
         setIsLoading(false)

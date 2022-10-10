@@ -128,7 +128,7 @@ export default function BuyoutOfferModal(props: ComponentProps): JSX.Element {
   }, [offerDetails])
 
   const canSubmitOffer = useMemo(() => {
-    return offerDetails.nounletsOffered.toUnsafeFloat() >= 1
+    return offerDetails.nounletsOffered.toUnsafeFloat() >= 1 && !offerDetails.fullPrice.isZero()
   }, [offerDetails])
 
   const handleSubmitOffer = async () => {
