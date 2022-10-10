@@ -16,7 +16,8 @@ import useToasts from 'hooks/useToasts'
 import { WrappedTransactionReceiptState } from 'lib/utils/tx-with-error-handling'
 import { NextPage } from 'next'
 import Link from 'next/link'
-import { ChangeEvent, useCallback, useMemo, useState } from 'react'
+import { useRouter } from 'next/router'
+import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import { useAppStore } from 'store/application'
 import { useBlockNumberCheckpointStore } from 'store/blockNumberCheckpointStore'
 import { useVaultStore } from 'store/vaultStore'
@@ -24,7 +25,14 @@ import SEO from '../components/seo'
 import { useReverseRecords } from '../lib/utils/useReverseRecords'
 
 const Governance: NextPage<{ url: string }> = ({ url }) => {
-  const { isLive, latestNounletTokenId } = useVaultStore()
+  const router = useRouter()
+  const { isLive, latestNounletTokenId, isGovernanceEnabled } = useVaultStore()
+
+  useEffect(() => {
+    if (isLive && !isGovernanceEnabled) {
+      router.replace('/')
+    }
+  }, [router, isLive, isGovernanceEnabled])
 
   return (
     <div className="page-governance lg:container mx-auto w-screen">

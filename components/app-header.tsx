@@ -26,6 +26,7 @@ import WalletModal from './modals/wallet-modal'
 import SimpleAddress from './simple-address'
 import SimplePopover from './simple-popover'
 import IconVote from './icons/icon-vote'
+import { BuyoutState, useBuyoutStore } from 'store/buyout/buyout.store'
 
 export default function AppHeader(): JSX.Element {
   const [isMobileMenuOpen, setIsModalMenuOpen] = useState(false)
@@ -33,7 +34,8 @@ export default function AppHeader(): JSX.Element {
   const mobileMenuRef = useRef<HTMLDivElement>(null)
   const { setConnectModalOpen } = useAppStore()
   const { account, deactivate } = useEthers()
-  const { isLive, currentDelegate, isCurrentDelegateOutOfSyncOnVaultContract } = useVaultStore()
+  const { isGovernanceEnabled, currentDelegate, isCurrentDelegateOutOfSyncOnVaultContract } =
+    useVaultStore()
   const { currentBackground } = useCurrentBackground()
 
   useEffect(() => {
@@ -44,7 +46,7 @@ export default function AppHeader(): JSX.Element {
     } else {
       setMobileMenuMaxHeight(0)
     }
-  }, [isMobileMenuOpen])
+  }, [isMobileMenuOpen, isGovernanceEnabled])
 
   const handleConnectButtonClick = useCallback(() => {
     if (account == null) {
@@ -120,7 +122,7 @@ export default function AppHeader(): JSX.Element {
           </Link>
           <div className="flex flex-1 -mt-4 md:-mt-8 min-w-0">
             <div className="flex flex-1 pr-4 min-w-0">
-              {isLive && (
+              {isGovernanceEnabled && (
                 <Link href="/governance">
                   <div className="hidden md:inline-flex items-center px-4 h-12 rounded-px10 bg-white space-x-2 cursor-pointer overflow-hidden">
                     <span className="flex-shrink-0">Current delegate</span>
@@ -145,12 +147,14 @@ export default function AppHeader(): JSX.Element {
                   <span>Home</span>
                 </Button>
               </Link>
-              <Link href="/governance">
-                <Button className="basic space-x-2 flex-shrink-0">
-                  <IconVote className="h-[16px] w-auto" />
-                  <span>Vote</span>
-                </Button>
-              </Link>
+              {isGovernanceEnabled && (
+                <Link href="/governance">
+                  <Button className="basic space-x-2 flex-shrink-0">
+                    <IconVote className="h-[16px] w-auto" />
+                    <span>Vote</span>
+                  </Button>
+                </Link>
+              )}
               <Link href="/nounlet/1">
                 <Button className="basic space-x-2">
                   <IconNounlets className="h-[12px] w-auto" />
@@ -171,7 +175,7 @@ export default function AppHeader(): JSX.Element {
             </div>
           </div>
         </div>
-        {isLive && (
+        {isGovernanceEnabled && (
           <Link href="/governance">
             <div className="md:hidden pb-4 cursor-pointer">
               <div className="flex flex-col items-center px-4 py-2 rounded-px10 bg-white space-y-2 justify-center overflow-hidden">
@@ -206,15 +210,17 @@ export default function AppHeader(): JSX.Element {
                   <span>Home</span>
                 </Button>
               </Link>
-              <Link href="/governance">
-                <Button
-                  className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40"
-                  onClick={() => setIsModalMenuOpen(false)}
-                >
-                  <IconVote className="h-[16px] w-auto" />
-                  <span>Vote</span>
-                </Button>
-              </Link>
+              {isGovernanceEnabled && (
+                <Link href="/governance">
+                  <Button
+                    className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40"
+                    onClick={() => setIsModalMenuOpen(false)}
+                  >
+                    <IconVote className="h-[16px] w-auto" />
+                    <span>Vote</span>
+                  </Button>
+                </Link>
+              )}
               <Link href="/nounlet/1">
                 <Button
                   className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40"

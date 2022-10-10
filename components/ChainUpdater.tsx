@@ -116,7 +116,8 @@ function VaultUpdater() {
     setCurrentDelegate,
     setNounletTokenAddress,
     setBackendLatestNounletTokenId,
-    setLatestNounletTokenId
+    setLatestNounletTokenId,
+    setIsGovernanceEnabled
   } = useVaultStore()
 
   const { mutate } = useSWR(
@@ -178,6 +179,7 @@ function VaultUpdater() {
           setWereAllNounletsAuctioned(data.wereAllNounletsAuctioned)
           setIsLive(true)
           setIsLoading(false)
+          setIsGovernanceEnabled(!data.wereAllNounletsAuctioned)
         } else {
           console.log('Server returned null')
           // Retry after 15 seconds.
@@ -289,8 +291,14 @@ function LeaderboardUpdater() {
 function BuyoutUpdater() {
   const { cache } = useSWRConfig()
   const sdk = useSdk()
-  const { isLive, wereAllNounletsAuctioned, vaultAddress, nounletTokenAddress, nounTokenId } =
-    useVaultStore()
+  const {
+    isLive,
+    wereAllNounletsAuctioned,
+    vaultAddress,
+    nounletTokenAddress,
+    nounTokenId,
+    setIsGovernanceEnabled
+  } = useVaultStore()
   const { setIsLoading, setBuyoutInfo } = useBuyoutStore()
   const { library } = useEthers()
 
@@ -313,6 +321,7 @@ function BuyoutUpdater() {
         // console.group('🤑 fetched vault buyout ...')
         // console.log({ data })
         // console.groupEnd()
+        setIsGovernanceEnabled(data.state !== BuyoutState.SUCCESS)
         setBuyoutInfo(data)
         setIsLoading(false)
       }

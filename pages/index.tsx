@@ -20,7 +20,7 @@ import BuyoutHowDoesItWorkModal from 'components/buyout/buyout-how-does-it-work-
 
 const Home: NextPage<{ url: string }> = ({ url }) => {
   const { setBidModalOpen, isBidModalOpen } = useAppStore()
-  const { isLive, wereAllNounletsAuctioned } = useVaultStore()
+  const { isLive, wereAllNounletsAuctioned, isGovernanceEnabled } = useVaultStore()
 
   const { isLatestNounlet, hasAuctionSettled } = useDisplayedNounlet()
 
@@ -74,7 +74,7 @@ const Home: NextPage<{ url: string }> = ({ url }) => {
           </>
         )}
 
-        {isLive && <HomeLeaderboard />}
+        {isLive && isGovernanceEnabled && <HomeLeaderboard />}
         {isLive && <HomeCollectiveOwnership />}
         <HomeWTF />
       </div>

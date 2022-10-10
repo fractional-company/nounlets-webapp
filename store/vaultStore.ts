@@ -23,6 +23,8 @@ interface StoreState {
   currentNounDelegate: string
   latestNounletTokenId: string
   backendLatestNounletTokenId: string
+  // Governance
+  isGovernanceEnabled: boolean
 }
 
 interface StoreActions {
@@ -44,6 +46,8 @@ interface StoreActions {
   setCurrentNounDelegate: (address: string) => void
   setLatestNounletTokenId: (id: string) => void
   setBackendLatestNounletTokenId: (id: string) => void
+  // Governance
+  setIsGovernanceEnabled: (flag: boolean) => void
 }
 
 const initialState: StoreState = {
@@ -69,7 +73,8 @@ const initialState: StoreState = {
   currentDelegate: ethers.constants.AddressZero,
   currentNounDelegate: ethers.constants.AddressZero,
   latestNounletTokenId: '',
-  backendLatestNounletTokenId: ''
+  backendLatestNounletTokenId: '',
+  isGovernanceEnabled: false
 }
 
 export const useVaultStore = createTrackedSelector(
@@ -121,12 +126,12 @@ export const useVaultStore = createTrackedSelector(
           state.isLeaderboardOutOfSync = flag
         })
       },
-        setIsCurrentDelegateOutOfSyncOnVaultContract: (flag) => {
+      setIsCurrentDelegateOutOfSyncOnVaultContract: (flag) => {
         set((state) => {
           state.isCurrentDelegateOutOfSyncOnVaultContract = flag
         })
       },
-        setIsCurrentDelegateOutOfSyncOnNounContract: (flag) => {
+      setIsCurrentDelegateOutOfSyncOnNounContract: (flag) => {
         set((state) => {
           state.isCurrentDelegateOutOfSyncOnNounContract = flag
         })
@@ -154,6 +159,12 @@ export const useVaultStore = createTrackedSelector(
       setBackendLatestNounletTokenId: (id) => {
         set((state) => {
           state.backendLatestNounletTokenId = id
+        })
+      },
+      // Governance
+      setIsGovernanceEnabled: (flag) => {
+        set((state) => {
+          state.isGovernanceEnabled = flag
         })
       }
     }))
