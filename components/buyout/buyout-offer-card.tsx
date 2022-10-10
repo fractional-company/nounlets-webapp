@@ -82,7 +82,7 @@ export default function BuyoutOfferCard(): JSX.Element {
 
           <Button
             onClick={openBuyoutHowDoesItWorkModal}
-            className="link font-500 text-secondary-blue hover:text-secondary-green text-px14 leading-px16 flex-shrink-0"
+            className="link font-700 text-secondary-blue text-px14 leading-px16 flex-shrink-0"
           >
             How does it work?
           </Button>
