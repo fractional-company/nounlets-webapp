@@ -72,6 +72,8 @@ export default function BuyoutOfferModal(props: ComponentProps): JSX.Element {
       if (event.target.value === '' || onlyNumbers.test(event.target.value)) {
         if (+event.target.value > myNounletCount) {
           setInputNounletsCountValue('' + myNounletCount)
+        } else if (+event.target.value < 1) {
+          setInputNounletsCountValue('' + 1)
         } else {
           setInputNounletsCountValue(event.target.value)
         }
