@@ -14,9 +14,8 @@ import Home from '../index'
 
 const Nounlet: NextPage<{ url: string }> = ({ url }) => {
   const { setBidModalOpen, isBidModalOpen } = useAppStore()
-  const { isLive } = useVaultStore()
-
-  const { isLatestNounlet, hasAuctionSettled } = useDisplayedNounlet()
+  const { isLive, isGovernanceEnabled } = useVaultStore()
+  const { hasAuctionSettled } = useDisplayedNounlet()
 
   return (
     <div className="page-home w-screen">
@@ -37,7 +36,7 @@ const Nounlet: NextPage<{ url: string }> = ({ url }) => {
       <div className="space-y-16">
         <HomeHero />
         {isLive && hasAuctionSettled && <HomeVotesFromNounlet />}
-        {isLive && <HomeLeaderboard />}
+        {isLive && isGovernanceEnabled && <HomeLeaderboard />}
         {isLive && <HomeCollectiveOwnership />}
         <HomeWTF />
       </div>
