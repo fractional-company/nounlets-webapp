@@ -69,7 +69,9 @@ export default function BuyoutOfferModal(props: ComponentProps): JSX.Element {
   const handleNounletsCountInputOnChange = (event: ChangeEvent<HTMLInputElement>) => {
     const onlyNumbers = /^\d+$/
     try {
-      if (event.target.value === '' || onlyNumbers.test(event.target.value)) {
+      if (event.target.value === '') {
+        setInputNounletsCountValue('')
+      } else if (onlyNumbers.test(event.target.value)) {
         if (+event.target.value > myNounletCount) {
           setInputNounletsCountValue('' + myNounletCount)
         } else if (+event.target.value < 1) {
@@ -123,6 +125,10 @@ export default function BuyoutOfferModal(props: ComponentProps): JSX.Element {
 
   const offerDetailsFormatted = useMemo(() => {
     return formatOfferDetails(offerDetails)
+  }, [offerDetails])
+
+  const canSubmitOffer = useMemo(() => {
+    return offerDetails.nounletsOffered.toUnsafeFloat() >= 1 && !offerDetails.fullPrice.isZero()
   }, [offerDetails])
 
   const handleSubmitOffer = async () => {
@@ -201,11 +207,14 @@ export default function BuyoutOfferModal(props: ComponentProps): JSX.Element {
         <p className="text-px16 leading-px24 font-500 text-gray-4">
           A pool with your Nounlets & ETH will be created as an offer to other Nounlet owners. They
           will have 7 days to reject the offer by buying your offered Nounlets for ETH.{' '}
-          <Link href="/">
-            <a className="text-secondary-blue hover:text-secondary-green transition-colors">
-              Learn More
-            </a>
-          </Link>
+          <a
+            href="https://medium.com/tessera-nft/nounlets-explained-faq-57e9bc537d93"
+            target="_blank"
+            rel="noreferrer"
+            className="text-secondary-blue hover:text-secondary-green transition-colors"
+          >
+            Learn More
+          </a>
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -284,6 +293,7 @@ export default function BuyoutOfferModal(props: ComponentProps): JSX.Element {
             className="primary w-full mt-6"
             onClick={handleSubmitOffer}
             loading={isSubmittingOffer}
+            disabled={!canSubmitOffer}
           >
             Submit offer
           </Button>
