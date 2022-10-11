@@ -98,7 +98,10 @@ export default function useNounBuyout() {
 
     // Approve
     const nounletToken = sdk.NounletToken.attach(nounletTokenAddress).connect(library.getSigner())
-    const isApprovedForAll = await nounletToken.isApprovedForAll(account, sdk.OptimisticBid.address)
+    const isApprovedForAll = await nounletToken.isApprovedForAll(
+      account,
+      sdk.OptimisticBidWrapper.address
+    )
     return isApprovedForAll
   }
 
@@ -111,7 +114,7 @@ export default function useNounBuyout() {
 
     // Approve
     const nounletToken = sdk.NounletToken.attach(nounletTokenAddress).connect(library.getSigner())
-    const tx = await nounletToken.setApprovalForAll(sdk.OptimisticBid.address, true)
+    const tx = await nounletToken.setApprovalForAll(sdk.OptimisticBidWrapper.address, true)
     return txWithErrorHandling(tx)
   }
 
@@ -127,7 +130,7 @@ export default function useNounBuyout() {
     const fractionsOffered = nounletsOffered.map((nounlet) => +nounlet.id)
     const amountsOffered = fractionsOffered.map((v) => 1)
 
-    const vault = sdk.OptimisticBid.connect(library.getSigner())
+    const vault = sdk.OptimisticBidWrapper.connect(library.getSigner())
     const tx = await vault.start(vaultAddress, fractionsOffered, amountsOffered, {
       value: initialEthBalance
     })
@@ -157,7 +160,7 @@ export default function useNounBuyout() {
     if (nounletTokenAddress == null) throw new Error('no token address')
     if (account == null) throw new Error('No address')
 
-    const optimisticBid = sdk.OptimisticBid.connect(library.getSigner())
+    const optimisticBid = sdk.OptimisticBidWrapper.connect(library.getSigner())
     const tx = await optimisticBid.buyFractions(
       vaultAddress,
       nounletIds,
@@ -183,7 +186,7 @@ export default function useNounBuyout() {
       sdk.OptimisticBid.address
     ])
     const burnProof = await sdk.NounletProtoform.getProof(merkleTree, 6)
-    const optimisticBid = sdk.OptimisticBid.connect(library.getSigner())
+    const optimisticBid = sdk.OptimisticBidWrapper.connect(library.getSigner())
 
     const tx = await optimisticBid.end(
       vaultAddress,
@@ -208,7 +211,7 @@ export default function useNounBuyout() {
       sdk.OptimisticBid.address
     ])
     const burnProof = await sdk.NounletProtoform.getProof(merkleTree, 6)
-    const optimisticBid = sdk.OptimisticBid.connect(library.getSigner())
+    const optimisticBid = sdk.OptimisticBidWrapper.connect(library.getSigner())
 
     console.log({
       burnProof,
@@ -217,10 +220,14 @@ export default function useNounBuyout() {
       amounts: myNounlets.map((_) => 1)
     })
 
+    // const tx = await optimisticBid.cash(
+    //   vaultAddress,
+    //   myNounlets.map((n) => n.id),
+    //   burnProof
+    // )
     const tx = await optimisticBid.cash(
-      vaultAddress,
       myNounlets.map((n) => n.id),
-      burnProof
+      myNounlets.map((n) => 1)
     )
     return txWithErrorHandling(tx)
   }
@@ -241,15 +248,16 @@ export default function useNounBuyout() {
     ])
 
     const withdrawProof = await sdk.NounletProtoform.getProof(merkleTree, 7)
-    const optimisticBid = sdk.OptimisticBid.connect(library.getSigner())
+    const optimisticBid = sdk.OptimisticBidWrapper.connect(library.getSigner())
 
-    const tx = await optimisticBid.withdrawERC721(
-      vaultAddress,
-      sdk.NounsToken.address,
-      account,
-      nounTokenId,
-      withdrawProof
-    )
+    // const tx = await optimisticBid.withdrawERC721(
+    //   vaultAddress,
+    //   sdk.NounsToken.address,
+    //   account,
+    //   nounTokenId,
+    //   withdrawProof
+    // )
+    const tx = await optimisticBid.withdrawNoun(withdrawProof)
     return txWithErrorHandling(tx)
   }
 
