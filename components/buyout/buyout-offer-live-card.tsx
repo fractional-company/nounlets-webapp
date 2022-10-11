@@ -20,8 +20,17 @@ export default function BuyoutOfferLiveCard(): JSX.Element {
   const { cache, mutate: globalMutate } = useSWRConfig()
   const { setConnectModalOpen } = useAppStore()
   const { openBuyoutHowDoesItWorkModal } = useBuyoutHowDoesItWorkModalStore()
-  const { buyoutInfo, hasEnded, settleOffer, cashOut, withdrawNoun, myNounlets, nounTokenId } =
-    useNounBuyout()
+  const {
+    buyoutInfo,
+    hasEnded,
+    settleOffer,
+    cashOut,
+    withdrawNoun,
+    myNounlets,
+    nounTokenId,
+    getIsApprovedToStartBuyoutOrCashOut,
+    approveBuyoutOffer
+  } = useNounBuyout()
   const { toastSuccess, toastError } = useToasts()
 
   const [isRejectingModalMode, setIsRejectingModalMode] = useState(true)
@@ -82,9 +91,21 @@ export default function BuyoutOfferLiveCard(): JSX.Element {
   }
 
   const [isCashingOut, setIsCashingOut] = useState(false)
+  const [isApproveModalShown, setIsApproveModalShown] = useState(false)
+  const [isApproving, setIsApproving] = useState(false)
+
   const handleCashOut = async () => {
     try {
       setIsCashingOut(true)
+
+      const isApproved = await getIsApprovedToStartBuyoutOrCashOut()
+
+      if (!isApproved) {
+        setIsApproveModalShown(true)
+        setIsCashingOut(false)
+        return
+      }
+
       const response = await cashOut()
 
       if (
@@ -110,6 +131,28 @@ export default function BuyoutOfferLiveCard(): JSX.Element {
     if (myNounlets.length === 0) return '0'
     return formatEther(buyoutInfo.fractionPrice.mul(myNounlets.length))
   }, [buyoutInfo, myNounlets])
+
+  const handleApprove = async () => {
+    try {
+      setIsApproving(true)
+      const response = await approveBuyoutOffer()
+      if (
+        response.status === WrappedTransactionReceiptState.SUCCESS ||
+        response.status === WrappedTransactionReceiptState.SPEDUP
+      ) {
+        toastSuccess('Approved!', 'Now try it again!')
+        setIsApproveModalShown(false)
+      } else if (response.status === WrappedTransactionReceiptState.ERROR) {
+        throw response.data
+      } else if (response.status === WrappedTransactionReceiptState.CANCELLED) {
+        toastError('Transaction canceled', 'Please try again.')
+      }
+    } catch (error) {
+      toastError('Approving failed', 'Please try again.')
+    } finally {
+      setIsApproving(false)
+    }
+  }
 
   const [isWithdrawing, setIsWithdrawing] = useState(false)
   const handleWithdrawNoun = async () => {
@@ -296,6 +339,30 @@ export default function BuyoutOfferLiveCard(): JSX.Element {
           </>
         )}
       </div>
+      <SimpleModalWrapper
+        isShown={isApproveModalShown}
+        onClose={() => setIsApproveModalShown(false)}
+        className="md:min-w-[400px] !max-w-[400px]"
+      >
+        <h2 className="font-londrina text-px42 -mt-3 -mb-4 pr-4">Approval</h2>
+        <div className="mt-8 flex flex-col gap-6">
+          <p className="font-500 text-px20 leading-px30 text-gray-4">
+            The contract needs your approval to take your Nounlet(s) and give you back some ETH.
+          </p>
+          <Button
+            className="primary"
+            onClick={() => {
+              handleApprove()
+            }}
+            loading={isApproving}
+          >
+            <div className="flex flex-col items-center">
+              <span>Gimmie the ETH!</span>
+              <span className="text-px10">(I really like ETH)</span>
+            </div>
+          </Button>
+        </div>
+      </SimpleModalWrapper>
     </div>
   )
 }
