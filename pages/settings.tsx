@@ -20,7 +20,7 @@ const Settings: NextPage<{ url: string }> = ({ url }) => {
     }
   }, [router])
 
-  if (CHAIN_ID === 1) return <div>hi</div>
+  if (CHAIN_ID === 1) return <></>
   return (
     <OnMounted>
       <_Settings />
