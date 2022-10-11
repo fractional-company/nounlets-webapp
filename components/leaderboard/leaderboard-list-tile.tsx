@@ -133,7 +133,7 @@ export default function LeaderboardListTile(props: {
   // Optimistic bid holding nounlets during buyout
 
   const isOptimisticBidAddress = useMemo(() => {
-    return walletAddress.toLowerCase() === sdk?.OptimisticBid.address.toLowerCase()
+    return walletAddress.toLowerCase() === sdk?.OptimisticBidWrapper.address.toLowerCase()
   }, [walletAddress, sdk])
 
   // Zero address burning nounlets

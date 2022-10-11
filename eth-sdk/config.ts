@@ -12,6 +12,7 @@ export default defineConfig({
         NounletAuction: '0x867cD80e464E8E2074a8c46aE3C983096395172F',
         NounletProtoform: '0x162a2D951E4d2864378B90d6ddDb0693E0C4bb07',
         OptimisticBid: '0x22592C894DC7762b99b1688b4A947aE0492FEEaE',
+        OptimisticBidWrapper: '0x70d958F7196Bc3A82EF11F307D3e9594E498Bc09', // TODO change this
 
         NounletGovernance: '0x9744c9EbFa3F8be2f4507759147fCbB1e0028D4a',
         NounletToken: '0x26f0ECEF411Fb856B267B0F2Fb21eE694fc056e9',
@@ -29,6 +30,7 @@ export default defineConfig({
         NounletAuction: '0x5b5a2f444753e600a85E30B7127F6597338E5b51',
         NounletProtoform: '0xe5DBA9c4c859dc14DD1f45AB624b0833Df856D99',
         OptimisticBid: '0xdDf0e892F0c514DD7197799762D2A3c9Dc823699',
+        OptimisticBidWrapper: '0x676C8a72F470D63845f6D747A61369c54eBEC835',
 
         NounletGovernance: '0xE15aAbDE61Acfb2429D38c0e38FCaf5BEC42Ab32',
         NounletToken: '0x6B6A6cb85E2F3a0aCC8a9AE041777D64566A9064',
