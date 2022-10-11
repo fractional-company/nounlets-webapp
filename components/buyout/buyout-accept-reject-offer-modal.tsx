@@ -1,3 +1,4 @@
+import { useEthers } from '@usedapp/core'
 import classNames from 'classnames'
 import Button from 'components/buttons/button'
 import CountdownTimer from 'components/countdown-timer'
@@ -11,6 +12,7 @@ import { WrappedTransactionReceiptState } from 'lib/utils/tx-with-error-handling
 import Image from 'next/image'
 import nounImage from 'public/img/noun.png'
 import { useMemo, useState } from 'react'
+import { useAppStore } from 'store/application'
 import { useBuyoutHowDoesItWorkModalStore } from 'store/buyout/buyout-how-does-it-work-modal.store'
 
 type ComponentProps = {
@@ -18,6 +20,7 @@ type ComponentProps = {
 }
 
 export default function BuyoutAcceptRejectOfferModal(props: ComponentProps): JSX.Element {
+  const { account } = useEthers()
   const { openBuyoutHowDoesItWorkModal } = useBuyoutHowDoesItWorkModalStore()
   const {
     buyoutInfo,
@@ -31,11 +34,17 @@ export default function BuyoutAcceptRejectOfferModal(props: ComponentProps): JSX
   } = useNounBuyout()
   const { toastSuccess, toastError } = useToasts()
   const [isBuyingNounlet, setIsBuyingNounlet] = useState(false)
+  const { setConnectModalOpen } = useAppStore()
 
   const [showEndTime, setShowEndTime] = useState(false)
   const endTime = useMemo(() => buyoutInfo.endTime, [buyoutInfo])
 
   const handleBuyNounlet = async (nounletId: number) => {
+    if (account == null) {
+      setConnectModalOpen(true)
+      return
+    }
+
     try {
       setIsBuyingNounlet(true)
       const response = await buyNounlet([nounletId])
@@ -59,6 +68,11 @@ export default function BuyoutAcceptRejectOfferModal(props: ComponentProps): JSX
   }
 
   const handleBuyAllRemainingNounlets = async () => {
+    if (account == null) {
+      setConnectModalOpen(true)
+      return
+    }
+
     try {
       setIsBuyingNounlet(true)
       const response = await buyNounlet(nounletsRemaining.map((nounlet) => nounlet.id))
