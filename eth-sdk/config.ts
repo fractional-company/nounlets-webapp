@@ -12,7 +12,7 @@ export default defineConfig({
         NounletAuction: '0x867cD80e464E8E2074a8c46aE3C983096395172F',
         NounletProtoform: '0x162a2D951E4d2864378B90d6ddDb0693E0C4bb07',
         OptimisticBid: '0x22592C894DC7762b99b1688b4A947aE0492FEEaE',
-        OptimisticBidWrapper: '0x70d958F7196Bc3A82EF11F307D3e9594E498Bc09', // TODO change this
+        OptimisticBidWrapper: '0x34f0f2dbbbb210e541dc60f289d31f986f55c521',
 
         NounletGovernance: '0x9744c9EbFa3F8be2f4507759147fCbB1e0028D4a',
         NounletToken: '0x26f0ECEF411Fb856B267B0F2Fb21eE694fc056e9',
