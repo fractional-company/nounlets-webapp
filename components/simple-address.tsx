@@ -4,6 +4,7 @@ import classNames from 'classnames'
 import { ethers } from 'ethers'
 import { getCurrentChainExplorerAddressLink, shortenAddress } from 'lib/utils/common'
 import { useReverseENSLookUp } from 'lib/utils/ensLookup'
+import Jazzicon, { jsNumberForAddress } from 'react-jazzicon'
 import OnMounted from './utils/on-mounted'
 
 type ComponentProps = {
@@ -44,7 +45,8 @@ export default function SimpleAddress(props: ComponentProps): JSX.Element {
               )}
               style={{ width: avatarSize, height: avatarSize }}
             >
-              <Davatar size={avatarSize} address={address} provider={provider} />
+              <Jazzicon diameter={avatarSize} seed={jsNumberForAddress('' + address)} />
+              {/* <Davatar size={avatarSize} address={address} provider={provider} /> */}
             </div>
           </a>
         )}

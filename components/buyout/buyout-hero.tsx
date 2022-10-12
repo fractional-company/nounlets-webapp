@@ -11,9 +11,6 @@ import BuyoutOfferingDisplay from './buyout-offering-display'
 import BuyoutPastOffers from './buyout-past-offers'
 import BuyoutSecondaryMarketCard from './buyout-secondary-market-card'
 
-import nounCloudImage from 'public/img/cloud-lg.png'
-import Image from 'next/image'
-
 export default function BuyoutHero() {
   const { isLoading, nounTokenId, myNounlets, buyoutInfo, offers, nounBackground } = useNounBuyout()
 
@@ -28,7 +25,22 @@ export default function BuyoutHero() {
           </div>
 
           <div className="px-4 py-12 lg:pb-0 lg:pt-4 md:p-12 lg:pl-6 lg:pr-10 -mx-4 lg:-mx-0 bg-white lg:bg-transparent space-y-3">
-            {!isLoading && (
+            {isLoading ? (
+              <>
+                <div className="buyout-inactive space-y-4">
+                  <div className="space-y-4">
+                    <h1 className="font-londrina text-px42 leading-px48">
+                      {myNounlets.length === 0 ? (
+                        <>Nounlets of Noun {nounTokenId}</>
+                      ) : (
+                        <>Offer to buy Noun {nounTokenId}</>
+                      )}
+                    </h1>
+                    <BuyoutSecondaryMarketCard />
+                  </div>
+                </div>
+              </>
+            ) : (
               <>
                 {buyoutInfo.state === BuyoutState.INACTIVE && (
                   <>

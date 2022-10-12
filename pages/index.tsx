@@ -17,10 +17,12 @@ import { useBuyoutOfferModalStore } from 'store/buyout/buyout-offer-modal.store'
 import { useBuyoutHowDoesItWorkModalStore } from 'store/buyout/buyout-how-does-it-work-modal.store'
 import BuyoutOfferModal from 'components/buyout/buyout-offer-modal/buyout-offer-modal'
 import BuyoutHowDoesItWorkModal from 'components/buyout/buyout-how-does-it-work-modal'
+import { useBuyoutStore } from 'store/buyout/buyout.store'
 
 const Home: NextPage<{ url: string }> = ({ url }) => {
   const { setBidModalOpen, isBidModalOpen } = useAppStore()
   const { isLive, wereAllNounletsAuctioned, isGovernanceEnabled } = useVaultStore()
+  const { isLoading } = useBuyoutStore()
 
   const { isLatestNounlet, hasAuctionSettled } = useDisplayedNounlet()
 

@@ -89,7 +89,7 @@ export default function useNounBuyout() {
     return endTime.mul(1000).lte(BigNumber.from(Date.now()))
   }, [buyoutInfo])
 
-  const getIsApprovedToStartBuyout = async () => {
+  const getIsApprovedToStartBuyoutOrCashOut = async () => {
     if (sdk == null) throw new Error('no sdk')
     if (account == null) throw new Error('no signer')
     if (library == null) throw new Error('no library')
@@ -213,13 +213,6 @@ export default function useNounBuyout() {
     const burnProof = await sdk.NounletProtoform.getProof(merkleTree, 6)
     const optimisticBid = sdk.OptimisticBidWrapper.connect(library.getSigner())
 
-    console.log({
-      burnProof,
-      myNounlets: myNounlets,
-      ids: myNounlets.map((n) => n.id),
-      amounts: myNounlets.map((_) => 1)
-    })
-
     // const tx = await optimisticBid.cash(
     //   vaultAddress,
     //   myNounlets.map((n) => n.id),
@@ -283,7 +276,7 @@ export default function useNounBuyout() {
     pastOffers,
     hasEnded,
     // Methods
-    getIsApprovedToStartBuyout,
+    getIsApprovedToStartBuyoutOrCashOut,
     approveBuyoutOffer,
     mutate,
     submitOffer,

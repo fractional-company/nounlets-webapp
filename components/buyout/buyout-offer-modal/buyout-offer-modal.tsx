@@ -32,8 +32,13 @@ export type OfferDetails = {
 
 export default function BuyoutOfferModal(props: ComponentProps): JSX.Element {
   const { cache, mutate: globalMutate } = useSWRConfig()
-  const { nounTokenId, myNounlets, submitOffer, getIsApprovedToStartBuyout, approveBuyoutOffer } =
-    useNounBuyout()
+  const {
+    nounTokenId,
+    myNounlets,
+    submitOffer,
+    getIsApprovedToStartBuyoutOrCashOut,
+    approveBuyoutOffer
+  } = useNounBuyout()
   const { setBuyoutOfferStep, closeBuyoutOfferModal } = useBuyoutOfferModalStore()
   const { toastSuccess, toastError } = useToasts()
 
@@ -135,7 +140,7 @@ export default function BuyoutOfferModal(props: ComponentProps): JSX.Element {
     try {
       setIsSubmittingOffer(true)
 
-      const isApproved = await getIsApprovedToStartBuyout()
+      const isApproved = await getIsApprovedToStartBuyoutOrCashOut()
 
       if (!isApproved) {
         setIsApproveModalShown(true)
