@@ -283,8 +283,12 @@ function ZeroAddressTile(props: {
             >
               {props.percentageString}
             </div>
-            <div className="text-px26 font-700 text-secondary-red">
-              BUUUUUURN<span className="text-px14">ed</span> 🔥
+            <div className="flex flex-col items-start text-secondary-red">
+              <p className="text-px26 font-700 leading-px20">
+                BUUUUUURN<span className="text-px14">ed</span>
+                <span className="text-px20">🔥</span>
+              </p>
+              <p className="text-px12 font-700">(for the greater good)</p>
             </div>
           </div>
 
