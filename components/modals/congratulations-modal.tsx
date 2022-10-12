@@ -1,5 +1,6 @@
 import Button from 'components/buttons/button'
 import SimpleModalWrapper from 'components/SimpleModalWrapper'
+import { NEXT_PUBLIC_MAX_NOUNLETS } from 'config'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useAppStore } from 'store/application'
@@ -27,7 +28,7 @@ export default function CongratulationsModal(props: ComponentProps): JSX.Element
             You now own
           </p>
           <p className="font-londrina text-px36 leading-px42 text-center">
-            Nounlet {congratulationsModal.nounletId}/100
+            Nounlet {congratulationsModal.nounletId}/{NEXT_PUBLIC_MAX_NOUNLETS}
           </p>
           <p className="font-500 text-px20 leading-px30 text-gray-4 text-center">
             You can change your vote to another delegate at any time.

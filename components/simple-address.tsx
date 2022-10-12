@@ -2,9 +2,9 @@ import Davatar from '@davatar/react'
 import { useEthers } from '@usedapp/core'
 import classNames from 'classnames'
 import { ethers } from 'ethers'
-import { shortenAddress } from 'lib/utils/common'
+import { getCurrentChainExplorerAddressLink, shortenAddress } from 'lib/utils/common'
 import { useReverseENSLookUp } from 'lib/utils/ensLookup'
-import { buildEtherscanAddressLink } from '../lib/utils/etherscan'
+import Jazzicon, { jsNumberForAddress } from 'react-jazzicon'
 import OnMounted from './utils/on-mounted'
 
 type ComponentProps = {
@@ -27,12 +27,13 @@ export default function SimpleAddress(props: ComponentProps): JSX.Element {
 
   return (
     <div
+      key={address}
       className={classNames('simple-address flex items-center overflow-hidden', props.className)}
     >
       <OnMounted>
         {!!avatarSize && (
           <a
-            href={buildEtherscanAddressLink(address)}
+            href={getCurrentChainExplorerAddressLink(address)}
             target="_blank"
             rel="noreferrer"
             className="overflow-hidden flex-shrink-0"
@@ -44,12 +45,13 @@ export default function SimpleAddress(props: ComponentProps): JSX.Element {
               )}
               style={{ width: avatarSize, height: avatarSize }}
             >
-              <Davatar size={avatarSize} address={address} provider={provider} />
+              <Jazzicon diameter={avatarSize} seed={jsNumberForAddress('' + address)} />
+              {/* <Davatar size={avatarSize} address={address} provider={provider} /> */}
             </div>
           </a>
         )}
         <div className="flex flex-col overflow-hidden">
-          <a href={buildEtherscanAddressLink(address)} target="_blank" rel="noreferrer">
+          <a href={getCurrentChainExplorerAddressLink(address)} target="_blank" rel="noreferrer">
             <p className={classNames('truncate ', props.textClassName)}>{ens || shortenedAddres}</p>
           </a>
           {props.subtitle}

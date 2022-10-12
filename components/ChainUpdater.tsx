@@ -1,20 +1,21 @@
+import { useEthers } from '@usedapp/core'
 import Button from 'components/buttons/button'
+import { NEXT_PUBLIC_MAX_NOUNLETS, NEXT_PUBLIC_SHOW_DEBUG } from 'config'
 import { BigNumber } from 'ethers'
 import useDisplayedNounlet from 'hooks/useDisplayedNounlet'
+import useLeaderboard from 'hooks/useLeaderboard'
 import useSdk from 'hooks/useSdk'
 import { getVaultData } from 'lib/graphql/queries'
-import { BidEvent } from 'lib/utils/types'
-import { useRouter } from 'next/router'
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
-import { useVaultStore } from 'store/vaultStore'
-import useSWR, { unstable_serialize, useSWRConfig } from 'swr'
+import { getBuyoutBidInfo } from 'lib/utils/buyoutInfoUtils'
 import debounce from 'lodash/debounce'
-import OnMounted from './utils/on-mounted'
-import useLeaderboard from 'hooks/useLeaderboard'
+import { useRouter } from 'next/router'
+import { useEffect, useMemo, useState } from 'react'
 import { useBlockNumberCheckpointStore } from 'store/blockNumberCheckpointStore'
-import { SDKContext } from './WalletConfig'
+import { BuyoutInfo, BuyoutState, useBuyoutStore } from 'store/buyout/buyout.store'
+import { useVaultStore } from 'store/vaultStore'
+import useSWR, { useSWRConfig } from 'swr'
 import IconBug from './icons/icon-bug'
-import { NEXT_PUBLIC_SHOW_DEBUG } from 'config'
+import OnMounted from './utils/on-mounted'
 
 export default function ChainUpdater() {
   return (
@@ -22,6 +23,7 @@ export default function ChainUpdater() {
       <OnMounted>{NEXT_PUBLIC_SHOW_DEBUG && <LittleBug />}</OnMounted>
       <VaultUpdater />
       <LeaderboardUpdater />
+      <BuyoutUpdater />
     </>
   )
 }
@@ -36,11 +38,13 @@ function LittleBug() {
     nounletTokenAddress,
     currentDelegate,
     backendLatestNounletTokenId,
-    latestNounletTokenId
+    latestNounletTokenId,
+    isGovernanceEnabled
   } = useVaultStore()
 
   const { nid, auctionInfo } = useDisplayedNounlet()
   const { isOutOfSync, leaderboardData } = useLeaderboard()
+  const { buyoutInfo } = useBuyoutStore()
 
   const vaultMetadata = {
     isLive,
@@ -50,7 +54,8 @@ function LittleBug() {
     nounTokenId,
     backendLatestNounletTokenId,
     latestNounletTokenId,
-    currentDelegate
+    currentDelegate,
+    isGovernanceEnabled
   }
 
   const leaderboard = {
@@ -68,6 +73,9 @@ function LittleBug() {
     throw new Error('Testing Sentry 3')
   }
 
+  const buyoutInfoTruncated = { ...buyoutInfo, fixedNumber: undefined }
+  const display = { nid, vaultMetadata, buyoutInfo: buyoutInfoTruncated, auctionInfo, leaderboard }
+
   return (
     <>
       {NEXT_PUBLIC_SHOW_DEBUG && (
@@ -83,7 +91,7 @@ function LittleBug() {
               <Button className="basic" onClick={testSentry}>
                 Test Sentry Error
               </Button>
-              <pre>{JSON.stringify({ nid, vaultMetadata, auctionInfo, leaderboard }, null, 4)}</pre>
+              <pre>{JSON.stringify(display, null, 4)}</pre>
             </div>
           )}
         </>
@@ -102,14 +110,17 @@ function VaultUpdater() {
     nounletTokenAddress,
     vaultAddress,
     latestNounletTokenId,
+    isGovernanceEnabled,
     setIsLive,
     setIsLoading,
+    setWereAllNounletsAuctioned,
     setVaultCuratorAddress,
     setNounTokenId,
     setCurrentDelegate,
     setNounletTokenAddress,
     setBackendLatestNounletTokenId,
-    setLatestNounletTokenId
+    setLatestNounletTokenId,
+    setIsGovernanceEnabled
   } = useVaultStore()
 
   const { mutate } = useSWR(
@@ -127,14 +138,13 @@ function VaultUpdater() {
       const [vaultMetadata, vaultInfo /*, currentDelegate*/] = await Promise.all([
         getVaultData(key.vaultAddress),
         sdk.NounletAuction.vaultInfo(vaultAddress)
-        // sdk.NounletGovernance.currentDelegate(vaultAddress)
       ])
 
       const tmp = {
         ...vaultInfo
       }
-      if (+tmp.currentId.toString() >= 100) {
-        tmp.currentId = BigNumber.from(100)
+      if (+tmp.currentId.toString() >= NEXT_PUBLIC_MAX_NOUNLETS) {
+        tmp.currentId = BigNumber.from(NEXT_PUBLIC_MAX_NOUNLETS)
       }
 
       return {
@@ -158,9 +168,9 @@ function VaultUpdater() {
         setTimeout(() => revalidate({ retryCount }), 5000)
       },
       onSuccess: (data, key, config) => {
-        // console.groupCollapsed('🏴 fetched vault metadata ...')
-        // console.table(data)
-        // console.groupEnd()
+        console.groupCollapsed('🏴 fetched vault metadata ...')
+        console.table(data)
+        console.groupEnd()
 
         if (data.isLive) {
           setNounletTokenAddress(data.nounletTokenAddress)
@@ -169,8 +179,10 @@ function VaultUpdater() {
           setCurrentDelegate(data.backendCurrentDelegate)
           setBackendLatestNounletTokenId(`${data.nounletCount}`)
           setLatestNounletTokenId(`${data.currentId.toString()}`)
+          setWereAllNounletsAuctioned(data.wereAllNounletsAuctioned)
           setIsLive(true)
           setIsLoading(false)
+          setIsGovernanceEnabled(!data.wereAllNounletsAuctioned || isGovernanceEnabled)
         } else {
           console.log('Server returned null')
           // Retry after 15 seconds.
@@ -277,4 +289,69 @@ function LeaderboardUpdater() {
       </Button> */}
     </>
   )
+}
+
+function BuyoutUpdater() {
+  const { cache } = useSWRConfig()
+  const sdk = useSdk()
+  const {
+    isLive,
+    wereAllNounletsAuctioned,
+    vaultAddress,
+    nounletTokenAddress,
+    nounTokenId,
+    setIsGovernanceEnabled
+  } = useVaultStore()
+  const { setIsLoading, setBuyoutInfo } = useBuyoutStore()
+  const { library } = useEthers()
+
+  const cachedData: BuyoutInfo | null = cache.get('VaultBuyout') || null
+
+  const refreshInterval = useMemo(() => {
+    if (cachedData === null) return 1 * 60 * 1000
+    if (cachedData.state === BuyoutState.SUCCESS) return 0
+
+    return 1 * 60 * 1000
+  }, [cachedData])
+
+  const { mutate } = useSWR(
+    isLive && wereAllNounletsAuctioned && sdk != null && 'VaultBuyout',
+    async (key) => getBuyoutBidInfo(sdk!, vaultAddress, nounletTokenAddress, nounTokenId),
+    {
+      dedupingInterval: 5000,
+      refreshInterval: refreshInterval,
+      onSuccess: (data, key, config) => {
+        // console.group('🤑 fetched vault buyout ...')
+        // console.log({ data })
+        // console.groupEnd()
+
+        setIsGovernanceEnabled(data.state !== BuyoutState.SUCCESS)
+        setBuyoutInfo(data)
+        setIsLoading(false)
+      }
+    }
+  )
+
+  const debouncedMutate = useMemo(() => debounce(mutate, 1000), [mutate])
+
+  useEffect(() => {
+    if (sdk == null) return
+    if (!isLive) return
+
+    const optimisticBid = sdk.OptimisticBidWrapper
+
+    const listener = (...eventData: any) => {
+      const event = eventData.at(-1)
+      // console.log('Optimistic event', event, eventData)
+      debouncedMutate()
+    }
+
+    optimisticBid.on(optimisticBid, listener)
+
+    return () => {
+      optimisticBid.off(optimisticBid, listener)
+    }
+  }, [isLive, vaultAddress, sdk, debouncedMutate])
+
+  return <></>
 }

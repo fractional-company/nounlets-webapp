@@ -116,10 +116,10 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
   const endedAuctionInfo = useMemo(() => {
     if (auctionInfo == null || nid == null || auctionInfo.auction == null) return null
 
-    let heldByAddress = nounletHolderAddress || ethers.constants.AddressZero
+    let heldByAddress = nounletHolderAddress || null
     let wonByAddress = auctionInfo.auction!.highestBidder?.id || ethers.constants.AddressZero
 
-    if (heldByAddress === ethers.constants.AddressZero && !hasAuctionSettled) {
+    if (heldByAddress == null && !hasAuctionSettled) {
       heldByAddress = vaultCuratorAddress
     }
 

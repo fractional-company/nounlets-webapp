@@ -54,4 +54,11 @@
     @apply border-2 border-primary bg-primary;
     @apply hover:bg-[#75c63a] hover:border-[#75c63a];
   }
+
+  &:global(.primary-danger) {
+    @apply inline-flex items-center justify-center h-12 px-4 rounded-px10;
+    @apply text-black font-700 text-px16 leading-px16;
+    @apply border-2 border-secondary-red bg-secondary-red;
+    @apply hover:bg-[#d73159] hover:border-[#d73159];
+  }
 }

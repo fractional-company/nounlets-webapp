@@ -27,6 +27,9 @@ type VaultDataResponse = {
       currentDelegate: Scalars['String']
       nounlets: {
         id: Scalars['ID']
+        auction: {
+          settled: Scalars['Boolean']
+        }
       }[]
     }
   }
@@ -47,6 +50,9 @@ export const getVaultData = async (vaultAddress: string) => {
             currentDelegate,
             nounlets {
               id,
+              auction {
+                settled
+              }
             }
           }
         }
@@ -58,13 +64,23 @@ export const getVaultData = async (vaultAddress: string) => {
     throw new Error('vault not found')
   }
 
+  const wereAllNounletsAuctioned = data.vault.noun.nounlets.every(
+    (nounlet) => nounlet.auction.settled
+  )
+
+  // TODO remove when BE fixes
+  data.vault.noun.nounlets = data.vault.noun.nounlets.filter((nounlet) => {
+    return nounlet.id.split('-')[0].toLowerCase() === data.vault.token.id.toLowerCase()
+  })
+
   return {
     isLive: true,
     vaultAddress: data.vault.id.toLowerCase(),
     nounletTokenAddress: data.vault.token.id.toLowerCase(),
     nounTokenId: data.vault.noun.id,
     nounletCount: data.vault.noun.nounlets.length,
-    backendCurrentDelegate: data.vault.noun.currentDelegate.toLowerCase()
+    backendCurrentDelegate: data.vault.noun.currentDelegate.toLowerCase(),
+    wereAllNounletsAuctioned
   }
 }
 
@@ -238,6 +254,9 @@ export const getNounletAuctionDataBC = async (
 
 type NounletsDataResponse = {
   vault: {
+    token: {
+      id: Scalars['String']
+    }
     noun: {
       currentDelegate: Scalars['String']
       nounlets: {
@@ -259,6 +278,9 @@ export const getAllNounlets = async (vaultAddress: string, nounletAuctionAddress
     query: gql`
     {
       vault(id:"${vaultAddress}") {
+        token {
+          id
+        },
         noun {
           currentDelegate
           nounlets {
@@ -283,10 +305,15 @@ export const getAllNounlets = async (vaultAddress: string, nounletAuctionAddress
   })
 
   // Remove nounlet auction address
-  const nounlets = data.vault.noun.nounlets.filter(
-    (nounlet) =>
-      nounlet.holder.id.toLowerCase().split('-')[1] !== nounletAuctionAddress.toLowerCase()
-  )
+  const nounlets = data.vault.noun.nounlets
+    // TODO remove when BE fixes
+    .filter((nounlet) => {
+      return nounlet.id.split('-')[0].toLowerCase() === data.vault.token.id.toLowerCase()
+    })
+    .filter(
+      (nounlet) =>
+        nounlet.holder.id.toLowerCase().split('-')[1] !== nounletAuctionAddress.toLowerCase()
+    )
 
   const accounts: Record<string, { holding: { id: string; delegate: string }[]; votes: number }> =
     {}
@@ -360,9 +387,14 @@ export const getNounletVotes = async (
     }`
   })
 
-  const filteredVotes = data.nounlet.delegateVotes.filter(
-    (vote) => vote.delegate.id.toLowerCase().split('-')[1] !== nounletAuctionAddress.toLowerCase()
-  )
+  const filteredVotes = data.nounlet.delegateVotes.filter((vote) => {
+    const delegateAddress = vote.delegate.id.toLowerCase().split('-')[1]
+
+    return (
+      delegateAddress !== nounletAuctionAddress.toLowerCase() &&
+      delegateAddress !== ethers.constants.AddressZero
+    )
+  })
   data.nounlet.delegateVotes = filteredVotes
   return data
 }
