@@ -98,13 +98,13 @@ export default function BuyoutOfferLiveCard(): JSX.Element {
     try {
       setIsCashingOut(true)
 
-      const isApproved = await getIsApprovedToStartBuyoutOrCashOut()
+      // const isApproved = await getIsApprovedToStartBuyoutOrCashOut()
 
-      if (!isApproved) {
-        setIsApproveModalShown(true)
-        setIsCashingOut(false)
-        return
-      }
+      // if (!isApproved) {
+      //   setIsApproveModalShown(true)
+      //   setIsCashingOut(false)
+      //   return
+      // }
 
       const response = await cashOut()
 
