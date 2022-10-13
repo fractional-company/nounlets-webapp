@@ -1,5 +1,5 @@
 import { OfferDetails } from 'components/buyout/buyout-offer-modal/buyout-offer-modal'
-import { NEXT_PUBLIC_MAX_NOUNLETS } from 'config'
+import { NEXT_PUBLIC_BID_DECIMALS, NEXT_PUBLIC_MAX_NOUNLETS } from 'config'
 import { FixedNumber } from 'ethers'
 import { formatEther } from 'ethers/lib/utils'
 import { BuyoutInfo, BuyoutInfoFixedNumber, BuyoutInfoFormatted } from 'store/buyout/buyout.store'
@@ -17,7 +17,7 @@ export const formatOfferDetails = (offerDetails: OfferDetails) => {
     tempOfferDetailsFormatted.pricePerNounlet = offerDetails.pricePerNounlet.toString()
     tempOfferDetailsFormatted.nounletsOffered = offerDetails.nounletsOffered.toString()
     tempOfferDetailsFormatted.priceOfOfferedNounlets = offerDetails.priceOfOfferedNounlets
-      .round(NEXT_PUBLIC_MAX_NOUNLETS + 2)
+      .round(NEXT_PUBLIC_BID_DECIMALS + 2)
       .toString()
     tempOfferDetailsFormatted.ethOffered = offerDetails.ethOffered.toString()
 
