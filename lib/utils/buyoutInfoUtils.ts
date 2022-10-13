@@ -78,10 +78,10 @@ export async function getBuyoutBidInfo(
 }
 
 async function getBidInfo(sdk: NounletsSDK, vaultAddress: string): Promise<BuyoutInfoPartial> {
-  const bidInfo = await sdk.OptimisticBidWrapper.bidInfo(vaultAddress)
+  const bidInfo = await sdk.OptimisticBid.bidInfo(vaultAddress)
 
   if (REJECTION_PERIOD == null) {
-    REJECTION_PERIOD = (await sdk.OptimisticBidWrapper.REJECTION_PERIOD()).toNumber()
+    REJECTION_PERIOD = (await sdk.OptimisticBid.REJECTION_PERIOD()).toNumber()
   }
 
   const endTime = bidInfo.startTime.add(REJECTION_PERIOD)
@@ -98,8 +98,8 @@ async function getBidInfo(sdk: NounletsSDK, vaultAddress: string): Promise<Buyou
 }
 
 async function getStartEvents(sdk: NounletsSDK, vaultAddress: string) {
-  const filter = sdk.OptimisticBidWrapper.filters.Start(vaultAddress)
-  const events = await sdk.OptimisticBidWrapper.queryFilter(filter)
+  const filter = sdk.OptimisticBid.filters.Start(vaultAddress)
+  const events = await sdk.OptimisticBid.queryFilter(filter)
   const formattedEvents = events
     .map((startEvent) => {
       return {
@@ -155,7 +155,7 @@ async function getOptimisticBidBalances(
   fractionsOffered: BigNumber[]
 ): Promise<BigNumber[]> {
   const nounletToken = sdk.NounletToken.attach(nounletTokenAddres)
-  const optimisticBid = sdk.OptimisticBidWrapper
+  const optimisticBid = sdk.OptimisticBid
   const balances = await nounletToken.balanceOfBatch(
     fractionsOffered.map((_) => optimisticBid.address),
     fractionsOffered
