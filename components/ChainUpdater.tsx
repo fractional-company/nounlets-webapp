@@ -338,7 +338,7 @@ function BuyoutUpdater() {
     if (sdk == null) return
     if (!isLive) return
 
-    const optimisticBid = sdk.OptimisticBidWrapper
+    const optimisticBid = sdk.OptimisticBid
 
     const listener = (...eventData: any) => {
       const event = eventData.at(-1)
