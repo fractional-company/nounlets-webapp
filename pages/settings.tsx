@@ -1,15 +1,15 @@
 import { getGoerliSdk } from '@dethcrypto/eth-sdk-client'
 import { useEthers } from '@usedapp/core'
-import Button from 'components/buttons/button'
-import OnMounted from 'components/utils/on-mounted'
+import Button from 'src/components/buttons/button'
+import OnMounted from 'src/components/utils/on-mounted'
 import { CHAIN_ID, NEXT_PUBLIC_NOUN_VAULT_ADDRESS } from 'config'
 import { BigNumber } from 'ethers'
-import useLeaderboard from 'hooks/useLeaderboard'
-import useSdk from 'hooks/useSdk'
+import useLeaderboard from 'src/hooks/useLeaderboard'
+import useSdk from 'src/hooks/useSdk'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import { useVaultStore } from 'store/vaultStore'
+import { useVaultStore } from 'src/store/vaultStore'
 
 const Settings: NextPage<{ url: string }> = ({ url }) => {
   const router = useRouter()

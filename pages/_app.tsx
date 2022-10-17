@@ -1,22 +1,22 @@
 import { ChainId, Config, DAppProvider, useEthers } from '@usedapp/core'
-import AppFooter from 'components/app-footer'
-import AppHeader from 'components/app-header'
+import AppFooter from 'src/components/app-footer'
+import AppHeader from 'src/components/app-header'
 import type { AppProps } from 'next/app'
 import { Toaster } from 'react-hot-toast'
-import WalletConfig from '../components/WalletConfig'
+import WalletConfig from '../src/components/WalletConfig'
 import '../styles/globals.css'
 
 import { SWRConfig } from 'swr'
-import ChainUpdater from '../components/ChainUpdater'
+import ChainUpdater from '../src/components/ChainUpdater'
 
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
 import utc from 'dayjs/plugin/utc'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { CHAIN_ID, NEXT_PUBLIC_CACHE_VERSION, NEXT_PUBLIC_NOUN_VAULT_ADDRESS } from 'config'
-import { useAppStore } from 'store/application'
-import CongratulationsModal from 'components/modals/congratulations-modal'
-import useLocalStorage from 'hooks/useLocalStorage'
+import { useAppStore } from 'src/store/application'
+import CongratulationsModal from 'src/components/modals/congratulations-modal'
+import useLocalStorage from 'src/hooks/useLocalStorage'
 
 dayjs.extend(duration)
 dayjs.extend(utc)

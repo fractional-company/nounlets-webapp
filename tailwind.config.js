@@ -1,7 +1,7 @@
 module.exports = {
   safelist: process.env.NODE_ENV === 'development' ? [{ pattern: /.*/ }] : [],
   darkMode: 'class',
-  content: ['./pages/**/*.{js,ts,jsx,tsx}', './components/**/*.{js,ts,jsx,tsx}'],
+  content: ['./pages/**/*.{js,ts,jsx,tsx}', './src/components/**/*.{js,ts,jsx,tsx}'],
   theme: {
     fontFamily: {
       inter: ['Inter', 'sans-serif'],
