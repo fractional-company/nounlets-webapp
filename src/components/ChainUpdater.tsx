@@ -1,5 +1,5 @@
 import { useEthers } from '@usedapp/core'
-import Button from 'src/components/buttons/button'
+import Button from 'src/components/common/buttons/Button'
 import { NEXT_PUBLIC_MAX_NOUNLETS, NEXT_PUBLIC_SHOW_DEBUG } from 'config'
 import { BigNumber } from 'ethers'
 import useDisplayedNounlet from 'src/hooks/useDisplayedNounlet'
@@ -14,8 +14,8 @@ import { useBlockNumberCheckpointStore } from 'src/store/blockNumberCheckpointSt
 import { BuyoutInfo, BuyoutState, useBuyoutStore } from 'src/store/buyout/buyout.store'
 import { useVaultStore } from 'src/store/vaultStore'
 import useSWR, { useSWRConfig } from 'swr'
-import IconBug from './icons/icon-bug'
-import OnMounted from './utils/on-mounted'
+import IconBug from './common/icons/IconBug'
+import OnMounted from './OnMounted'
 
 export default function ChainUpdater() {
   return (

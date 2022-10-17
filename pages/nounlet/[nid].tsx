@@ -1,11 +1,11 @@
-import HomeCollectiveOwnership from 'src/components/home/home-collective-ownership'
-import HomeHero from 'src/components/home/home-hero'
-import HomeLeaderboard from 'src/components/home/home-leaderboard'
-import HomeVotesFromNounlet from 'src/components/home/home-votes-from-nounlet'
-import HomeWTF from 'src/components/home/home-wtf'
-import BidHistoryModal from 'src/components/modals/bid-history-modal'
-import SEO from 'src/components/seo'
-import SimpleModalWrapper from 'src/components/SimpleModalWrapper'
+import HomeCollectiveOwnership from 'src/components/home/HomeCollectiveOwnership'
+import HomeHero from 'src/components/home/HomeHero'
+import HomeLeaderboard from 'src/components/home/HomeLeaderboard'
+import HomeVotesFromNounlet from 'src/components/home/HomeVotesFromNounlet'
+import HomeWtf from 'src/components/home/HomeWtf'
+import ModalBidHistory from 'src/components/modals/ModalBidHistory'
+import SEO from 'src/components/SEO'
+import SimpleModalWrapper from 'src/components/common/simple/SimpleModalWrapper'
 import useDisplayedNounlet from 'src/hooks/useDisplayedNounlet'
 import { NextPage } from 'next'
 import { useAppStore } from 'src/store/application'
@@ -31,14 +31,14 @@ const Nounlet: NextPage<{ url: string }> = ({ url }) => {
         onClose={() => setBidModalOpen(false)}
         isShown={isBidModalOpen}
       >
-        <BidHistoryModal />
+        <ModalBidHistory />
       </SimpleModalWrapper>
       <div className="space-y-16">
         <HomeHero />
         {isLive && hasAuctionSettled && <HomeVotesFromNounlet />}
         {isLive && isGovernanceEnabled && <HomeLeaderboard />}
         {isLive && <HomeCollectiveOwnership />}
-        <HomeWTF />
+        <HomeWtf />
       </div>
     </div>
   )

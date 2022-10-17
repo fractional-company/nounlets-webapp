@@ -1,14 +1,14 @@
 import { useEthers, useResolveName } from '@usedapp/core'
-import Button from 'src/components/buttons/button'
-import IconMagnify from 'src/components/icons/icon-magnify'
-import IconQuestionCircle from 'src/components/icons/icon-question-circle'
-import IconSpinner from 'src/components/icons/icon-spinner'
-import LeaderboardListTile from 'src/components/leaderboard/leaderboard-list-tile'
-import VoteForCustomWalletModal from 'src/components/modals/vote-for-custom-wallet.modal'
-import { NounletImage } from 'src/components/NounletImage'
-import SimpleAddress from 'src/components/simple-address'
-import SimplePopover from 'src/components/simple-popover'
-import SimpleModalWrapper from 'src/components/SimpleModalWrapper'
+import Button from 'src/components/common/buttons/Button'
+import IconMagnify from 'src/components/common/icons/IconMagnify'
+import IconQuestionCircle from 'src/components/common/icons/IconQuestionCircle'
+import IconSpinner from 'src/components/common/icons/IconSpinner'
+import LeaderboardListTile from 'src/components/leaderboard/LeaderboardListTile'
+import ModalVoteForCustomWallet from 'src/components/modals/ModalVoteForCustomWallet'
+import { NounletImage } from 'src/components/common/NounletImage'
+import SimpleAddress from 'src/components/common/simple/SimpleAddress'
+import SimplePopover from 'src/components/common/simple/SimplePopover'
+import SimpleModalWrapper from 'src/components/common/simple/SimpleModalWrapper'
 import { ethers } from 'ethers'
 import { useDebounced } from 'src/hooks/useDebounced'
 import useLeaderboard from 'src/hooks/useLeaderboard'
@@ -21,7 +21,7 @@ import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import { useAppStore } from 'src/store/application'
 import { useBlockNumberCheckpointStore } from 'src/store/blockNumberCheckpointStore'
 import { useVaultStore } from 'src/store/vaultStore'
-import SEO from '../src/components/seo'
+import SEO from '../src/components/SEO'
 import { useReverseRecords } from '../src/lib/utils/useReverseRecords'
 
 const Governance: NextPage<{ url: string }> = ({ url }) => {
@@ -454,7 +454,7 @@ function GovernanceLeaderboard() {
                   isShown={isVoteForDelegateModalShown}
                   onClose={() => setIsVoteForDelegateModalShown(false)}
                 >
-                  <VoteForCustomWalletModal onClose={() => setIsVoteForDelegateModalShown(false)} />
+                  <ModalVoteForCustomWallet onClose={() => setIsVoteForDelegateModalShown(false)} />
                 </SimpleModalWrapper>
               </>
             )}

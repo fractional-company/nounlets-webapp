@@ -1,8 +1,8 @@
 import classNames from 'classnames'
-import IconCheckmark from 'src/components/icons/icon-checkmark'
-import IconClose from 'src/components/icons/icon-close'
+import IconCheckmark from 'src/components/common/icons/IconCheckmark'
+import IconClose from 'src/components/common/icons/IconClose'
 import toast, { Toast } from 'react-hot-toast'
-import IconInfo from "../icons/icon-info";
+import IconInfo from "../common/icons/IconInfo";
 
 export function SuccessToast(props: { t: Toast; title: string; message: string }) {
   return (

@@ -1,4 +1,4 @@
-import { OfferDetails } from 'src/components/buyout/buyout-offer-modal/buyout-offer-modal'
+import { OfferDetails } from 'src/components/buyout/BuyoutOfferModal'
 import { NEXT_PUBLIC_BID_DECIMALS, NEXT_PUBLIC_MAX_NOUNLETS } from 'config'
 import { FixedNumber } from 'ethers'
 import { formatEther } from 'ethers/lib/utils'

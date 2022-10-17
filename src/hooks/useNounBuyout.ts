@@ -1,5 +1,5 @@
 import { multicall, useEtherBalance, useEthers } from '@usedapp/core'
-import { OfferDetails } from 'src/components/buyout/buyout-offer-modal/buyout-offer-modal'
+import { OfferDetails } from 'src/components/buyout/BuyoutOfferModal'
 import { BigNumber, FixedNumber } from 'ethers'
 import { parseEther } from 'ethers/lib/utils'
 import txWithErrorHandling from 'src/lib/utils/tx-with-error-handling'

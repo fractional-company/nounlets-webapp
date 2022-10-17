@@ -1,22 +1,22 @@
 import type { NextPage } from 'next'
 
-import HomeCollectiveOwnership from 'src/components/home/home-collective-ownership'
-import HomeHero from 'src/components/home/home-hero'
-import HomeLeaderboard from 'src/components/home/home-leaderboard'
-import HomeVotesFromNounlet from 'src/components/home/home-votes-from-nounlet'
-import HomeWTF from 'src/components/home/home-wtf'
+import HomeCollectiveOwnership from 'src/components/home/HomeCollectiveOwnership'
+import HomeHero from 'src/components/home/HomeHero'
+import HomeLeaderboard from 'src/components/home/HomeLeaderboard'
+import HomeVotesFromNounlet from 'src/components/home/HomeVotesFromNounlet'
+import HomeWtf from 'src/components/home/HomeWtf'
 import useDisplayedNounlet from 'src/hooks/useDisplayedNounlet'
 import { useVaultStore } from 'src/store/vaultStore'
-import BidHistoryModal from '../src/components/modals/bid-history-modal'
-import SimpleModalWrapper from '../src/components/SimpleModalWrapper'
+import ModalBidHistory from '../src/components/modals/ModalBidHistory'
+import SimpleModalWrapper from '../src/components/common/simple/SimpleModalWrapper'
 import { useAppStore } from '../src/store/application'
 import useCurrentBackground from 'src/hooks/useCurrentBackground'
-import SEO from '../src/components/seo'
-import BuyoutHero from 'src/components/buyout/buyout-hero'
+import SEO from '../src/components/SEO'
+import BuyoutHero from 'src/components/buyout/BuyoutHero'
 import { useBuyoutOfferModalStore } from 'src/store/buyout/buyout-offer-modal.store'
 import { useBuyoutHowDoesItWorkModalStore } from 'src/store/buyout/buyout-how-does-it-work-modal.store'
-import BuyoutOfferModal from 'src/components/buyout/buyout-offer-modal/buyout-offer-modal'
-import BuyoutHowDoesItWorkModal from 'src/components/buyout/buyout-how-does-it-work-modal'
+import BuyoutOfferModal from 'src/components/buyout/BuyoutOfferModal'
+import BuyoutHowDoesItWorkModal from 'src/components/buyout/BuyoutHowDoesItWorkModal'
 import { useBuyoutStore } from 'src/store/buyout/buyout.store'
 
 const Home: NextPage<{ url: string }> = ({ url }) => {
@@ -71,14 +71,14 @@ const Home: NextPage<{ url: string }> = ({ url }) => {
               onClose={() => setBidModalOpen(false)}
               isShown={isBidModalOpen}
             >
-              <BidHistoryModal />
+              <ModalBidHistory />
             </SimpleModalWrapper>
           </>
         )}
 
         {isLive && isGovernanceEnabled && <HomeLeaderboard />}
         {isLive && <HomeCollectiveOwnership />}
-        <HomeWTF />
+        <HomeWtf />
       </div>
     </div>
   )
