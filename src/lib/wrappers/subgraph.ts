@@ -1,7 +1,7 @@
-import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
-import { BigNumberish } from '@ethersproject/bignumber';
-import BigNumber from 'bignumber.js';
-
+import { ApolloClient, InMemoryCache, gql } from '@apollo/client'
+import { BigNumberish } from '@ethersproject/bignumber'
+import BigNumber from 'bignumber.js'
+/*
 export interface IBid {
   id: string;
   bidder: {
@@ -243,3 +243,4 @@ export const clientFactory = (uri: string) =>
     uri,
     cache: new InMemoryCache(),
   });
+*/

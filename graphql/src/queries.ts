@@ -1,9 +1,7 @@
-import { gql } from '@apollo/client'
 import { NEXT_PUBLIC_BLOCKS_PER_DAY } from 'config'
 import { BigNumber, ethers } from 'ethers'
 import { NounletsSDK } from 'src/hooks/useSdk'
-import client from '../../apollo-client'
-import { Account, Auction, Bid, Nounlet, Scalars, Vault, _Meta } from './graphql.models'
+import { getVaultGQL, getVaultNounletAuctionGQL, getVaultNounletVotesGQL } from './nounlets'
 
 function splitKey(key: string) {
   try {
@@ -16,51 +14,11 @@ function splitKey(key: string) {
   }
 }
 
-type VaultDataResponse = {
-  vault: {
-    id: Scalars['ID']
-    token: {
-      id: Scalars['String']
-    }
-    noun: {
-      id: Scalars['ID']
-      currentDelegate: Scalars['String']
-      nounlets: {
-        id: Scalars['ID']
-        auction: {
-          settled: Scalars['Boolean']
-        }
-      }[]
-    }
-  }
-}
-
 // Get the vault nounlets that BE knows about
 export const getVaultData = async (vaultAddress: string) => {
-  const { data } = await client.query<VaultDataResponse>({
-    query: gql`
-      {
-        vault(id: "${vaultAddress.toLowerCase()}") {
-          id,
-          token {
-            id
-          },
-          noun {
-            id,
-            currentDelegate,
-            nounlets {
-              id,
-              auction {
-                settled
-              }
-            }
-          }
-        }
-      }
-    `
-  })
+  const { data } = await getVaultGQL(vaultAddress)
 
-  if (data == null || data.vault == null || data.vault.noun == null) {
+  if (data?.vault?.noun == null) {
     throw new Error('vault not found')
   }
 
@@ -68,10 +26,12 @@ export const getVaultData = async (vaultAddress: string) => {
     (nounlet) => nounlet.auction.settled
   )
 
-  // TODO remove when BE fixes
+  // TODO remove when BE fixes - please write down what was wrong, I forget easily
   data.vault.noun.nounlets = data.vault.noun.nounlets.filter((nounlet) => {
-    return nounlet.id.split('-')[0].toLowerCase() === data.vault.token.id.toLowerCase()
+    return nounlet.id.split('-')[0].toLowerCase() === data.vault!.token.id.toLowerCase()
   })
+
+  console.log('vautl data', { data })
 
   return {
     isLive: true,
@@ -84,36 +44,6 @@ export const getVaultData = async (vaultAddress: string) => {
   }
 }
 
-type AuctionDataResponse = {
-  vault: {
-    noun: {
-      nounlets: {
-        id: Scalars['ID']
-        auction: {
-          id: Scalars['ID']
-          settled: Scalars['Boolean']
-          settledTransactionHash: Scalars['String']
-          highestBidAmount: Scalars['BigInt']
-          highestBidder?: {
-            id: Scalars['ID']
-          }
-          endTime: Scalars['BigInt']
-          bids: {
-            id: Scalars['ID']
-            bidder: {
-              id: Scalars['ID']
-            }
-            amount: Scalars['BigInt']
-            blockNumber: Scalars['BigInt']
-            blockTimestamp: Scalars['BigInt']
-            txIndex: Scalars['BigInt']
-          }[]
-        }
-      }[]
-    }
-  }
-}
-
 export const getNounletAuctionData = async (
   vaultAddress: string,
   nounletTokenAddress: string,
@@ -123,47 +53,17 @@ export const getNounletAuctionData = async (
   // console.table({ vaultAddress, nounletTokenAddress, nounletTokenId })
   // console.groupEnd()
 
-  const { data } = await client.query<AuctionDataResponse>({
-    query: gql`
-    {
-      vault(id: "${vaultAddress.toLowerCase()}") {
-        noun {
-          nounlets (where: { id: "${nounletTokenAddress.toLowerCase()}-${nounletTokenId}" }) {
-            id,
-            auction {
-              id
-              settled
-              settledTransactionHash
-              highestBidAmount
-              highestBidder {
-                id
-              }
-              endTime
-              bids(orderBy: amount orderDirection: desc) {
-                id
-                bidder {
-                  id
-                }
-                amount
-                blockNumber
-                blockTimestamp
-                txIndex
-              }
-            }
-          }
-        }
-      }
-    }`
-  })
+  const { data } = await getVaultNounletAuctionGQL(
+    vaultAddress,
+    `${nounletTokenAddress}-${nounletTokenId}`
+  )
 
   // console.groupCollapsed('🚀 Fetched auction data from BE')
   // console.log(data)
   // console.groupEnd()
 
-  if ((data.vault.noun?.nounlets?.length ?? 0) === 0) {
-    // console.log('BE doesnt have data yet')
-    return null
-  }
+  if (data?.vault?.noun == null) return null
+  if ((data.vault.noun.nounlets?.length ?? 0) === 0) return null
 
   const auction = data.vault.noun.nounlets[0].auction
   auction.id = splitKey(auction.id)
@@ -208,8 +108,12 @@ export const getNounletAuctionDataBC = async (
     nounletAuction.queryFilter(bidFilter, -NEXT_PUBLIC_BLOCKS_PER_DAY)
   ])
 
+  type AuctionBC = NonNullable<
+    NonNullable<Awaited<ReturnType<typeof getVaultNounletAuctionGQL>>['data']['vault']>['noun']
+  >['nounlets'][0]['auction']
+
   // Transform into GraphQL shape
-  type BidBC = AuctionDataResponse['vault']['noun']['nounlets'][0]['auction']['bids'][0]
+  type BidBC = AuctionBC['bids'][0]
   const formattedBids: BidBC[] = bids
     .map((bid) => {
       const value = bid.args._value.toString()
@@ -229,12 +133,9 @@ export const getNounletAuctionDataBC = async (
       return BigNumber.from(b.amount).gte(BigNumber.from(a.amount)) ? 1 : -1
     })
 
-  // TODO id toLowerCase() if needed
   const latestBid = formattedBids.at(0)
   const highestBidder = latestBid?.bidder || undefined
   const highestBidAmount = latestBid?.amount || 0
-
-  type AuctionBC = AuctionDataResponse['vault']['noun']['nounlets'][0]['auction']
   const auction: AuctionBC = {
     id: nounletTokenId,
     settled: false,
@@ -252,67 +153,19 @@ export const getNounletAuctionDataBC = async (
   return auction
 }
 
-type NounletsDataResponse = {
-  vault: {
-    token: {
-      id: Scalars['String']
-    }
-    noun: {
-      currentDelegate: Scalars['String']
-      nounlets: {
-        id: Scalars['ID']
-        holder: {
-          id: Scalars['ID']
-        }
-        delegate: {
-          id: Scalars['ID']
-        }
-      }[]
-    }
-  }
-  _meta: _Meta
-}
-
 export const getAllNounlets = async (vaultAddress: string, nounletAuctionAddress: string) => {
-  const { data } = await client.query<NounletsDataResponse>({
-    query: gql`
-    {
-      vault(id:"${vaultAddress}") {
-        token {
-          id
-        },
-        noun {
-          currentDelegate
-          nounlets {
-            id
-            holder {
-              id
-            }
-            delegate {
-              id
-            }
-          }
-        }
-      }
-      _meta {
-        block {
-          number,
-          timestamp
-        }
-      }
-    }
-    `
-  })
+  const { data } = await getVaultGQL(vaultAddress)
+
+  if (data?.vault?.noun == null) throw new Error('Noun not found')
 
   // Remove nounlet auction address
-  const nounlets = data.vault.noun.nounlets
-    // TODO remove when BE fixes
+  const nounlets = data.vault.noun.nounlets // TODO remove when BE fixes
     .filter((nounlet) => {
-      return nounlet.id.split('-')[0].toLowerCase() === data.vault.token.id.toLowerCase()
+      return nounlet.id.split('-')[0].toLowerCase() === data.vault!.token.id.toLowerCase()
     })
     .filter(
       (nounlet) =>
-        nounlet.holder.id.toLowerCase().split('-')[1] !== nounletAuctionAddress.toLowerCase()
+        nounlet.holder!.id.toLowerCase().split('-')[1] !== nounletAuctionAddress.toLowerCase()
     )
 
   const accounts: Record<string, { holding: { id: string; delegate: string }[]; votes: number }> =
@@ -323,8 +176,8 @@ export const getAllNounlets = async (vaultAddress: string, nounletAuctionAddress
 
   nounlets.forEach((nounlet) => {
     const id = splitKey(nounlet.id)
-    const holder = splitKey(nounlet.holder.id)
-    const delegate = splitKey(nounlet.delegate.id)
+    const holder = splitKey(nounlet.holder!.id)
+    const delegate = splitKey(nounlet.delegate!.id)
 
     if (accounts[holder] == null) {
       accounts[holder] = { holding: [], votes: 0 }
@@ -373,21 +226,8 @@ export const getNounletVotes = async (
   nounletTokenId: string,
   nounletAuctionAddress: string
 ) => {
-  const { data } = await client.query<{ nounlet: Nounlet }>({
-    query: gql`
-    {
-      nounlet (id: "${nounletTokenAddress.toLowerCase()}-${nounletTokenId}") {
-        id
-        delegateVotes (orderBy: timestamp orderDirection: desc){
-          id,
-          delegate {id}
-          timestamp
-        }
-      }
-    }`
-  })
-
-  const filteredVotes = data.nounlet.delegateVotes.filter((vote) => {
+  const { data } = await getVaultNounletVotesGQL(`${nounletTokenAddress}-${nounletTokenId}`)
+  const filteredVotes = data.nounlet!.delegateVotes.filter((vote) => {
     const delegateAddress = vote.delegate.id.toLowerCase().split('-')[1]
 
     return (
@@ -395,6 +235,6 @@ export const getNounletVotes = async (
       delegateAddress !== ethers.constants.AddressZero
     )
   })
-  data.nounlet.delegateVotes = filteredVotes
+  data.nounlet!.delegateVotes = filteredVotes
   return data
 }

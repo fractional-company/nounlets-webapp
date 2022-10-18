@@ -67,7 +67,7 @@ export default function useLeaderboard() {
       revalidateIfStale: false,
       refreshInterval: (latestData) => {
         if (latestData == null) return 15000
-        if (latestData._meta.block.number < leaderboardBlockNumber) {
+        if (latestData._meta!.block.number < leaderboardBlockNumber) {
           // console.log(
           //   '🐌 Leaderboard is outdated',
           //   latestData._meta.block.number,
@@ -89,8 +89,8 @@ export default function useLeaderboard() {
         setCurrentDelegate(data.currentDelegate)
         setIsCurrentDelegateOutOfSyncOnVaultContract(data.mostVotesAddress !== data.currentDelegate)
 
-        if (data._meta.block.number > leaderboardBlockNumber) {
-          setLeaderboardBlockNumber(data._meta.block.number)
+        if (data._meta!.block.number > leaderboardBlockNumber) {
+          setLeaderboardBlockNumber(data._meta!.block.number)
           return
         }
 
@@ -109,7 +109,7 @@ export default function useLeaderboard() {
   )
 
   const isOutOfSync = useMemo(() => {
-    return (data?._meta.block.number || 0) < leaderboardBlockNumber
+    return (data?._meta!.block.number || 0) < leaderboardBlockNumber
   }, [data, leaderboardBlockNumber])
 
   const leaderboardData = useMemo(() => {

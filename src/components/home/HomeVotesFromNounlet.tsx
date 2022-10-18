@@ -24,7 +24,7 @@ export default function HomeVotesFromNounlet(): JSX.Element {
     {
       dedupingInterval: 4000,
       refreshInterval(latestData) {
-        if ((latestData?.nounlet.delegateVotes.length ?? 0) === 0) {
+        if ((latestData?.nounlet!.delegateVotes.length ?? 0) === 0) {
           return 10000
         }
         return 60000
@@ -67,7 +67,7 @@ export default function HomeVotesFromNounlet(): JSX.Element {
     return votes.slice(0, voteShowLimit)
   }, [data, showAll])
 
-  const votesCount = useMemo(() => data?.nounlet.delegateVotes.length || 0, [data])
+  const votesCount = useMemo(() => data?.nounlet?.delegateVotes.length || 0, [data])
   const hasHiddenVotes = useMemo(() => votesCount > voteShowLimit, [votesCount])
 
   return (

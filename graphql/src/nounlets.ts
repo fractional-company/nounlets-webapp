@@ -2,7 +2,7 @@ import client from '../../apollo-client'
 import { graphql } from '../dist'
 
 export const getVaultListGQL = async () => {
-  const { data } = await client.query({
+  return client.query({
     query: graphql(`
       query VaultList {
         vaults {
@@ -30,13 +30,12 @@ export const getVaultListGQL = async () => {
       }
     `)
   })
-  return data
 }
 
-export const getVaultDataGQL = async (vaultID: string) => {
-  const { data } = await client.query({
+export const getVaultGQL = async (vaultID: string) => {
+  return client.query({
     query: graphql(`
-      query VaultData($vaultID: ID!) {
+      query Vault($vaultID: ID!) {
         vault(id: $vaultID) {
           id
           token {
@@ -71,13 +70,12 @@ export const getVaultDataGQL = async (vaultID: string) => {
       vaultID: vaultID.toLowerCase()
     }
   })
-  return data
 }
 
-export const getVaultNounletAuctionDataGQL = async (vaultID: string, nounletID: string) => {
-  const { data } = await client.query({
+export const getVaultNounletAuctionGQL = async (vaultID: string, nounletID: string) => {
+  return client.query({
     query: graphql(`
-      query VaultNounletAuctionData($vaultID: ID!, $nounletID: ID!) {
+      query VaultNounletAuction($vaultID: ID!, $nounletID: ID!) {
         vault(id: $vaultID) {
           noun {
             nounlets(where: { id: $nounletID }) {
@@ -105,6 +103,12 @@ export const getVaultNounletAuctionDataGQL = async (vaultID: string, nounletID: 
             }
           }
         }
+        _meta {
+          block {
+            number
+            timestamp
+          }
+        }
       }
     `),
     variables: {
@@ -112,14 +116,12 @@ export const getVaultNounletAuctionDataGQL = async (vaultID: string, nounletID: 
       nounletID: nounletID.toLowerCase()
     }
   })
-
-  return data
 }
 
-export const getVaultNounletVotesDataGQL = async (nounletID: string) => {
-  const { data } = await client.query({
+export const getVaultNounletVotesGQL = async (nounletID: string) => {
+  return client.query({
     query: graphql(`
-      query VaultNounletVotesData($nounletID: ID!) {
+      query VaultNounletVotes($nounletID: ID!) {
         nounlet(id: $nounletID) {
           id
           delegateVotes(orderBy: timestamp, orderDirection: desc) {
@@ -142,5 +144,4 @@ export const getVaultNounletVotesDataGQL = async (nounletID: string) => {
       nounletID: nounletID.toLowerCase()
     }
   })
-  return data
 }
