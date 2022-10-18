@@ -1,4 +1,4 @@
-import client from '../apollo-client'
+import client from '../../apollo-client'
 import { Nounlet } from './graphql.models'
 import { gql } from '@apollo/client'
 import { ethers } from 'ethers'

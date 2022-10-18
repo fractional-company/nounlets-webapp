@@ -1,6 +1,6 @@
 import { useEthers } from '@usedapp/core'
 import { ethers, FixedNumber } from 'ethers'
-import { getAllNounlets } from 'graphql/queries'
+import { getAllNounlets } from 'graphql/src/queries'
 import txWithErrorHandling from 'src/lib/utils/tx-with-error-handling'
 import { useEffect, useMemo } from 'react'
 import { useBlockNumberCheckpointStore } from 'src/store/blockNumberCheckpointStore'

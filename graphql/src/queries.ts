@@ -2,7 +2,7 @@ import { gql } from '@apollo/client'
 import { NEXT_PUBLIC_BLOCKS_PER_DAY } from 'config'
 import { BigNumber, ethers } from 'ethers'
 import { NounletsSDK } from 'src/hooks/useSdk'
-import client from '../apollo-client'
+import client from '../../apollo-client'
 import { Account, Auction, Bid, Nounlet, Scalars, Vault, _Meta } from './graphql.models'
 
 function splitKey(key: string) {

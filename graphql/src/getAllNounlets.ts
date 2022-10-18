@@ -1,5 +1,5 @@
 import { _Meta, Scalars } from './graphql.models'
-import client from '../apollo-client'
+import client from '../../apollo-client'
 import { gql } from '@apollo/client'
 import { ethers } from 'ethers'
 import { splitKey } from './getVaultData'

@@ -1,0 +1,11 @@
+query Query {
+    vaults {
+        id
+        nounInVault
+    }
+    _meta {
+        block {
+            number
+        }
+    }
+}

@@ -1,6 +1,6 @@
 import { ethers } from 'ethers'
-import { Nounlet } from 'graphql/graphql.models'
-import { getNounletAuctionData, getNounletAuctionDataBC } from 'graphql/queries'
+import { Nounlet } from 'graphql/src/graphql.models'
+import { getNounletAuctionData, getNounletAuctionDataBC } from 'graphql/src/queries'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useVaultStore } from 'src/store/vaultStore'
 import useSWR, { unstable_serialize, useSWRConfig } from 'swr'

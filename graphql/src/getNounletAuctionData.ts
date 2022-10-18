@@ -1,9 +1,9 @@
 import { Scalars } from './graphql.models'
-import client from '../apollo-client'
+import client from '../../apollo-client'
 import { gql } from '@apollo/client'
 import { splitKey } from './getVaultData'
-import { NounletsSDK } from '../src/hooks/useSdk'
-import { NEXT_PUBLIC_BLOCKS_PER_DAY } from '../config'
+import { NounletsSDK } from '../../src/hooks/useSdk'
+import { NEXT_PUBLIC_BLOCKS_PER_DAY } from '../../config'
 import { BigNumber, ethers } from 'ethers'
 
 type AuctionDataResponse = {
