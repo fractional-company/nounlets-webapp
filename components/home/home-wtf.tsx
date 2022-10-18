@@ -121,7 +121,7 @@ export default function HomeWTF(): JSX.Element {
                 <p>
                   All Nounlet owners will be able to vote on a delegate. The delegate will be
                   elected on-chain in the nouns contract. The selected delegate is the official
-                  representative to NounsDAO on behalf of each Nounlets community. Each Nounlet has
+                  representative to the NounsDAO on behalf of the underlying Noun. Each Nounlet has
                   1 vote on the delegate. When a Nounlet is transferred the delegate will be
                   automatically assigned to the receivers wallet address.
                 </p>

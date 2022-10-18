@@ -62,7 +62,7 @@ const Governance: NextPage<{ url: string }> = ({ url }) => {
             <p className="font-500 text-px20 leading-px28 text-gray-4 mt-6">
               All Nounlet owners will be able to vote on a delegate. The delegate will be elected
               on-chain in the Nouns contract. The selected delegate is the official representative
-              to NounsDAO on behalf of each Nounlets community. Each Nounlet has 1 vote on the
+              to the NounsDAO on behalf of the underlying Noun. Each Nounlet has 1 vote on the
               delegate.
             </p>
 
