@@ -1,19 +1,18 @@
-
-import type { CodegenConfig } from '@graphql-codegen/cli';
+import type { CodegenConfig } from '@graphql-codegen/cli'
 
 const config: CodegenConfig = {
   overwrite: true,
-  schema: "https://api.thegraph.com/subgraphs/name/fractional-company/nounlets-goerli",
-  documents: "graphql/src/**/*.ts",
+  schema: 'https://api.thegraph.com/subgraphs/name/fractional-company/nounlets-goerli',
+  documents: 'graphql/src/**/*.ts',
   generates: {
-    "graphql/dist": {
-      preset: "client",
+    'graphql/dist': {
+      preset: 'client',
       plugins: []
     },
-    "./graphql.schema.json": {
-      plugins: ["introspection"]
+    './graphql.schema.json': {
+      plugins: ['introspection']
     }
   }
-};
+}
 
-export default config;
+export default config
