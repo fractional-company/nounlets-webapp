@@ -1,7 +1,4 @@
 import type { CodegenConfig } from '@graphql-codegen/cli'
-import { CHAIN_ID } from './config'
-
-console.log('asd', CHAIN_ID)
 
 const config: CodegenConfig = {
   overwrite: true,

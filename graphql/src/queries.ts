@@ -1,7 +1,12 @@
 import { NEXT_PUBLIC_BLOCKS_PER_DAY } from 'config'
 import { BigNumber, ethers } from 'ethers'
 import { NounletsSDK } from 'src/hooks/useSdk'
-import { getVaultGQL, getVaultNounletAuctionGQL, getVaultNounletVotesGQL } from './nounlets'
+import {
+  getVaultGQL,
+  getVaultListGQL,
+  getVaultNounletAuctionGQL,
+  getVaultNounletVotesGQL
+} from './nounlets'
 
 function splitKey(key: string) {
   try {
@@ -12,6 +17,11 @@ function splitKey(key: string) {
     console.log('Error spliting key', key)
     return key
   }
+}
+
+export const getVaultList = async () => {
+  const { data } = await getVaultListGQL()
+  return data
 }
 
 // Get the vault nounlets that BE knows about

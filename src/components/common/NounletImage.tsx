@@ -28,9 +28,9 @@ export function NounletImage(props: { id: string | null }) {
   )
 }
 
-export function NounImage() {
+export function NounImage(props: { id?: string }) {
   const { nounTokenId } = useVaultStore()
-  const { data: nounData } = useNounImageData(nounTokenId)
+  const { data: nounData } = useNounImageData(props.id || nounTokenId)
 
   return nounData == null ? (
     <Image
