@@ -22,8 +22,8 @@ export default function HomeWTF(): JSX.Element {
               Noun
             </a>
             . Each Nounlet represents 1% of the vaulted Noun and has a vote in delegating the Noun’s
-            governance rights. The selected delegate is the official representative to NounsDAO on
-            behalf of each Nounlets community.
+            governance rights. The selected delegate is the official representative to the NounsDAO
+            on behalf of the underlying Noun.
           </p>
           <p className="mb-6">
             Learn more below, or by visiting and reviewing the{' '}
