@@ -11,7 +11,7 @@ export type _Meta = {
 }
 
 // Manually generated from https://transform.tools/graphql-to-typescript
-// using "./nounlets.schema.graphql"
+// using "./schema.graphql"
 
 export type Maybe<T> = T | null
 export type Exact<T extends { [key: string]: unknown }> = {
