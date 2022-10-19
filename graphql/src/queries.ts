@@ -2,6 +2,7 @@ import { NEXT_PUBLIC_BLOCKS_PER_DAY } from 'config'
 import { BigNumber, ethers } from 'ethers'
 import { NounletsSDK } from 'src/hooks/useSdk'
 import {
+  getVaultByNounGQL,
   getVaultGQL,
   getVaultListGQL,
   getVaultNounletAuctionGQL,
@@ -25,31 +26,33 @@ export const getVaultList = async () => {
 }
 
 // Get the vault nounlets that BE knows about
-export const getVaultData = async (vaultAddress: string) => {
-  const { data } = await getVaultGQL(vaultAddress)
+export const getVaultData = async (vaultAddressOrNounID: string) => {
+  let vault: Awaited<ReturnType<typeof getVaultGQL>>['data']['vault']
 
-  if (data?.vault?.noun == null) {
-    throw new Error('vault not found')
+  if (vaultAddressOrNounID.startsWith('0x')) {
+    vault = (await getVaultGQL(vaultAddressOrNounID)).data.vault
+  } else {
+    vault = (await getVaultByNounGQL(vaultAddressOrNounID)).data.vaults.at(0)
   }
 
-  const wereAllNounletsAuctioned = data.vault.noun.nounlets.every(
-    (nounlet) => nounlet.auction.settled
-  )
+  if (vault?.noun == null) {
+    return null
+  }
+
+  const wereAllNounletsAuctioned = vault.noun.nounlets.every((nounlet) => nounlet.auction.settled)
 
   // TODO remove when BE fixes - please write down what was wrong, I forget easily
-  data.vault.noun.nounlets = data.vault.noun.nounlets.filter((nounlet) => {
-    return nounlet.id.split('-')[0].toLowerCase() === data.vault!.token.id.toLowerCase()
+  vault.noun.nounlets = vault.noun.nounlets.filter((nounlet) => {
+    return nounlet.id.split('-')[0].toLowerCase() === vault!.token.id.toLowerCase()
   })
-
-  console.log('vautl data', { data })
 
   return {
     isLive: true,
-    vaultAddress: data.vault.id.toLowerCase(),
-    nounletTokenAddress: data.vault.token.id.toLowerCase(),
-    nounTokenId: data.vault.noun.id,
-    nounletCount: data.vault.noun.nounlets.length,
-    backendCurrentDelegate: data.vault.noun.currentDelegate.toLowerCase(),
+    vaultAddress: vault.id.toLowerCase(),
+    nounletTokenAddress: vault.token.id.toLowerCase(),
+    nounTokenId: vault.noun.id,
+    nounletCount: vault.noun.nounlets.length,
+    backendCurrentDelegate: vault.noun.currentDelegate.toLowerCase(),
     wereAllNounletsAuctioned
   }
 }
@@ -59,18 +62,18 @@ export const getNounletAuctionData = async (
   nounletTokenAddress: string,
   nounletTokenId: string
 ) => {
-  // console.groupCollapsed('🚀 Fetching auction data from BE')
-  // console.table({ vaultAddress, nounletTokenAddress, nounletTokenId })
-  // console.groupEnd()
+  console.groupCollapsed('🚀 Fetching auction data from BE')
+  console.table({ vaultAddress, nounletTokenAddress, nounletTokenId })
+  console.groupEnd()
 
   const { data } = await getVaultNounletAuctionGQL(
     vaultAddress,
     `${nounletTokenAddress}-${nounletTokenId}`
   )
 
-  // console.groupCollapsed('🚀 Fetched auction data from BE')
-  // console.log(data)
-  // console.groupEnd()
+  console.groupCollapsed('🚀 Fetched auction data from BE')
+  console.log(data)
+  console.groupEnd()
 
   if (data?.vault?.noun == null) return null
   if ((data.vault.noun.nounlets?.length ?? 0) === 0) return null

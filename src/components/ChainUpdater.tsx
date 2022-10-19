@@ -140,6 +140,10 @@ function VaultUpdater() {
         sdk.NounletAuction.vaultInfo(vaultAddress)
       ])
 
+      if (vaultMetadata == null) {
+        throw new Error('vault not found')
+      }
+
       const tmp = {
         ...vaultInfo
       }
