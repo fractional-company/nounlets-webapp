@@ -22,10 +22,10 @@ export default function HomeWtf(): JSX.Element {
               Noun
             </a>
             . Each Nounlet represents 1% of the vaulted Noun and has a vote in delegating the Noun’s
-            governance rights. The chosen delegate can join the official Nouns private discord
-            channel, vote in governance and submit governance proposals.
+            governance rights. The selected delegate is the official representative to the NounsDAO
+            on behalf of the underlying Noun.
           </p>
-          <p className="mb-16">
+          <p className="mb-6">
             Learn more below, or by visiting and reviewing the{' '}
             <a
               href="src/components/home/HomeWtf.tsx"
@@ -34,6 +34,18 @@ export default function HomeWtf(): JSX.Element {
               rel="noreferrer"
             >
               Nouns DAO homepage.
+            </a>
+          </p>
+          <p className="mb-16">
+            In addition to participating in governance, all Nounlet owners are invited to join the
+            Nounlets community in our{' '}
+            <a
+              href="https://discord.gg/AQ8dMm9S"
+              className="text-secondary-blue"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Discord.
             </a>
           </p>
 
@@ -108,10 +120,10 @@ export default function HomeWtf(): JSX.Element {
               <div className="space-y-4">
                 <p>
                   All Nounlet owners will be able to vote on a delegate. The delegate will be
-                  elected on-chain in the nouns contract. The active delegate will be able to join
-                  the official nouns-private discord channel, vote in governance and submit
-                  governance proposals. Each Nounlet has 1 vote on the delegate.
-                  When a Nounlet is transferred the delegate will be automatically assigned to the receivers wallet address.
+                  elected on-chain in the nouns contract. The selected delegate is the official
+                  representative to the NounsDAO on behalf of the underlying Noun. Each Nounlet has
+                  1 vote on the delegate. When a Nounlet is transferred the delegate will be
+                  automatically assigned to the receivers wallet address.
                 </p>
               </div>
             </SimpleAccordion>
