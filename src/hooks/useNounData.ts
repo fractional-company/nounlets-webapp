@@ -1,19 +1,20 @@
 import { NEXT_PUBLIC_MAX_NOUNLETS } from 'config'
 import { BigNumber } from 'ethers'
 import { getVaultData } from 'graphql/src/queries'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import useSdk from 'src/hooks/useSdk'
 import { useNounStore } from 'src/store/noun.store'
 import { useNounletStore } from 'src/store/nounlet.store'
 import useSWR from 'swr'
 
-export function useNounData(nounID: string, callback?: (data: any) => void) {
+export function useNounData(callback?: (data: any) => void) {
   const sdk = useSdk()
   const {
     isLive,
     isLoading,
     nounletTokenAddress,
     vaultAddress,
+    nounTokenId,
     latestNounletTokenId,
     isGovernanceEnabled,
     setIsLive,
@@ -28,17 +29,22 @@ export function useNounData(nounID: string, callback?: (data: any) => void) {
     setLatestNounletTokenId,
     setIsGovernanceEnabled
   } = useNounStore()
-  const { setIsLoading: setIsLoadingNounlet } = useNounletStore()
+
+  const [currentNounTokenId, setCurrentNounTokenId] = useState<string | null>(null)
 
   useEffect(() => {
-    setIsLoading(true)
-    setIsLoadingNounlet(true)
-  }, [nounID])
+    if (nounTokenId !== currentNounTokenId) {
+      setIsLive(false)
+      setIsLoading(true)
+      setCurrentNounTokenId(nounTokenId)
+    }
+  }, [nounTokenId, currentNounTokenId])
 
   const { data, mutate } = useSWR(
-    sdk && `noun/${nounID}`,
-    async () => {
-      const vaultData = await getVaultData(nounID)
+    sdk && currentNounTokenId != null && `noun/${currentNounTokenId}`,
+    async (key) => {
+      console.log('useNounData fetcher ran', key)
+      const vaultData = await getVaultData(currentNounTokenId!)
 
       if (vaultData == null) throw new Error('vault not found')
 

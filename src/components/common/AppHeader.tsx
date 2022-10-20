@@ -1,32 +1,23 @@
 import { useEthers } from '@usedapp/core'
 import classNames from 'classnames'
-import { ethers } from 'ethers'
-import useCurrentBackground from 'src/hooks/useCurrentBackground'
-import Image from 'next/image'
 import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import useCurrentBackground from 'src/hooks/useCurrentBackground'
 import { useVaultStore } from 'src/store/vaultStore'
-import IconPeople from '../../../public/img/icon-people.png'
 import { useAppStore } from '../../store/application'
+import ModalWallet from '../modals/ModalWallet'
 import Button from './buttons/Button'
 import ButtonLinksDropdown from './buttons/ButtonLinksDropdown'
 import IconCaretDropdown from './icons/IconCaretDropdown'
-import IconCrown from './icons/IconCrown'
 import IconDiscord from './icons/IconDiscord'
 import IconEtherscan from './icons/IconEtherscan'
 import IconFractionalLogo from './icons/IconFractionalLogo'
 import IconHeartHollow from './icons/iconHeartHollow'
-import IconMedium from './icons/IconMedium'
-import IconNounlets from './icons/IconNounlets'
 import IconHome from './icons/IconHome'
+import IconMedium from './icons/IconMedium'
 import IconNounletsLogo from './icons/IconNounletsLogo'
 import IconTwitter from './icons/IconTwitter'
-import ModalVoteForDelegate from '../modals/ModalVoteForDelegate'
-import ModalWallet from '../modals/ModalWallet'
 import SimpleAddress from './simple/SimpleAddress'
-import SimplePopover from './simple/SimplePopover'
-import IconVote from './icons/IconVote'
-import { BuyoutState, useBuyoutStore } from 'src/store/buyout/buyout.store'
 
 export default function AppHeader(): JSX.Element {
   const [isMobileMenuOpen, setIsModalMenuOpen] = useState(false)
@@ -34,8 +25,7 @@ export default function AppHeader(): JSX.Element {
   const mobileMenuRef = useRef<HTMLDivElement>(null)
   const { setConnectModalOpen } = useAppStore()
   const { account, deactivate } = useEthers()
-  const { isGovernanceEnabled, currentDelegate, isCurrentDelegateOutOfSyncOnVaultContract } =
-    useVaultStore()
+  const { isGovernanceEnabled } = useVaultStore()
   const { currentBackground } = useCurrentBackground()
 
   useEffect(() => {
@@ -56,14 +46,6 @@ export default function AppHeader(): JSX.Element {
     }
   }, [account, setConnectModalOpen, deactivate])
 
-  const isCrownShown = useMemo(() => {
-    if (account == null) return false
-    if (currentDelegate == null || currentDelegate === ethers.constants.AddressZero) return false
-    if (account.toLowerCase() !== currentDelegate.toLowerCase()) return false
-    if (!isGovernanceEnabled) return false
-    return true
-  }, [account, currentDelegate, isGovernanceEnabled])
-
   const connectButton = useMemo(
     () => (
       <Button
@@ -75,9 +57,6 @@ export default function AppHeader(): JSX.Element {
       >
         {account ? (
           <div className="flex items-center">
-            {isCrownShown && (
-              <IconCrown className="absolute w-[30px] h-auto left-[-12px] top-[-12px] rotate-[-40deg] text-[#fa8f2f]" />
-            )}
             <div className="overflow-hidden">
               <SimpleAddress
                 avatarSize={16}
@@ -88,33 +67,20 @@ export default function AppHeader(): JSX.Element {
                 Disconnect
               </p>
             </div>
-            {/* <IconCaretDropdown /> */}
           </div>
         ) : (
           <span>Connect</span>
         )}
       </Button>
     ),
-    [account, isCrownShown, handleConnectButtonClick]
+    [account, handleConnectButtonClick]
   )
-
-  const currentDelegateRC = useMemo(() => {
-    return currentDelegate === ethers.constants.AddressZero ? (
-      <span className="font-700 ml-2">no one :(</span>
-    ) : (
-      <SimpleAddress
-        className="inline-flex font-700 ml-2 pointer-events-none"
-        textClassName=""
-        address={currentDelegate}
-      />
-    )
-  }, [currentDelegate])
 
   return (
     <div className="app-header" style={{ background: currentBackground }}>
       <div className="lg:container mx-auto px-4">
         <ModalWallet />
-        <ModalVoteForDelegate />
+        {/*<ModalVoteForDelegate />*/}
         <div className="flex items-center h-full space-x-4 min-h-[88px]">
           <Link href="/">
             <a className="relative overflow-visible pt-2 mb-4">
@@ -122,44 +88,11 @@ export default function AppHeader(): JSX.Element {
             </a>
           </Link>
           <div className="flex flex-1 -mt-4 md:-mt-8 min-w-0">
-            <div className="flex flex-1 pr-4 min-w-0">
-              {isGovernanceEnabled && (
-                <Link href="/governance">
-                  <div className="hidden md:inline-flex items-center px-4 h-12 rounded-px10 bg-white space-x-2 cursor-pointer overflow-hidden">
-                    <span className="flex-shrink-0">Current delegate</span>
-                    {currentDelegateRC}
-
-                    {isCurrentDelegateOutOfSyncOnVaultContract && (
-                      <SimplePopover>
-                        <h1 className="font-700 text-px18 text-gray-4">
-                          <span className="text-secondary-orange">⚠</span>
-                        </h1>
-                        <div>Delegate is out of sync. You can update it on the vote page.</div>
-                      </SimplePopover>
-                    )}
-                  </div>
-                </Link>
-              )}
-            </div>
             <div className="hidden lg:flex items-center space-x-2 xl:space-x-4">
               <Link href="/">
                 <Button className="basic space-x-2 flex-shrink-0">
                   <IconHome className="h-[12px] w-auto" />
                   <span>Home</span>
-                </Button>
-              </Link>
-              {isGovernanceEnabled && (
-                <Link href="/governance">
-                  <Button className="basic space-x-2 flex-shrink-0">
-                    <IconVote className="h-[16px] w-auto" />
-                    <span>Vote</span>
-                  </Button>
-                </Link>
-              )}
-              <Link href="/nounlet/1">
-                <Button className="basic space-x-2">
-                  <IconNounlets className="h-[12px] w-auto" />
-                  <span>Nounlets</span>
                 </Button>
               </Link>
               <ButtonLinksDropdown />
@@ -176,26 +109,7 @@ export default function AppHeader(): JSX.Element {
             </div>
           </div>
         </div>
-        {isGovernanceEnabled && (
-          <Link href="/governance">
-            <div className="md:hidden pb-4 cursor-pointer">
-              <div className="flex flex-col items-center px-4 py-2 rounded-px10 bg-white space-y-2 justify-center overflow-hidden">
-                <p>Current delegate</p>
-                <div className="flex items-center justify-center space-x-2 w-full">
-                  <div className="truncate font-500">{currentDelegateRC}</div>
-                  {isCurrentDelegateOutOfSyncOnVaultContract && (
-                    <SimplePopover>
-                      <h1 className="font-700 text-px18 text-gray-4">
-                        <span className="text-secondary-orange">⚠</span>
-                      </h1>
-                      <div>Delegate is out of sync. You can update it on the vote page.</div>
-                    </SimplePopover>
-                  )}
-                </div>
-              </div>
-            </div>
-          </Link>
-        )}
+
         <div
           className="lg:hidden mobile-menu overflow-hidden transition-all ease-in-out"
           style={{ maxHeight: mobileMenuMaxHeight }}
@@ -209,26 +123,6 @@ export default function AppHeader(): JSX.Element {
                 >
                   <IconHome className="h-[12px] w-auto" />
                   <span>Home</span>
-                </Button>
-              </Link>
-              {isGovernanceEnabled && (
-                <Link href="/governance">
-                  <Button
-                    className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40"
-                    onClick={() => setIsModalMenuOpen(false)}
-                  >
-                    <IconVote className="h-[16px] w-auto" />
-                    <span>Vote</span>
-                  </Button>
-                </Link>
-              )}
-              <Link href="/nounlet/1">
-                <Button
-                  className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40"
-                  onClick={() => setIsModalMenuOpen(false)}
-                >
-                  <IconNounlets className="h-[12px] w-auto" />
-                  <span>Nounlets</span>
                 </Button>
               </Link>
               <a

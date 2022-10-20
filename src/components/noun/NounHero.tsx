@@ -11,51 +11,68 @@ import nounLoadingImage from 'public/img/loading-skull.gif'
 import nounImage from 'public/img/noun.png'
 import { useMemo } from 'react'
 import { useAppStore } from 'src/store/application'
+import { useNounStore } from 'src/store/noun.store'
+import { useNounletStore } from 'src/store/nounlet.store'
 // import HomeHeroAuctionCompleted from './HomeHeroAuctionCompleted'
 // import HomeHeroAuctionProgress from './HomeHeroAuctionProgress'
 
-export default function NounHero(props: { nounID: string; nounletID: string | null }): JSX.Element {
+export default function NounHero(): JSX.Element {
   const router = useRouter()
-  const {
-    isLoading,
-    nid,
-    latestNounletTokenId,
-    hasAuctionEnded,
-    auctionInfo,
-    mutateAuctionInfo: mutateDisplayedNounletAuctionInfo
-  } = useDisplayedNounlet()
-  const { currentBackground } = useCurrentBackground()
+  const { isLoading, nounTokenId, latestNounletTokenId } = useNounStore()
+  const { isLoading: isLoadingNounlet, nounletID } = useNounletStore()
 
-  const nounletNumberString = useMemo(() => {
-    return nid ?? '???'
-  }, [nid])
+  // const {
+  //   isLoading,
+  //   nid,
+  //   latestNounletTokenId,
+  //   hasAuctionEnded,
+  //   auctionInfo,
+  //   mutateAuctionInfo: mutateDisplayedNounletAuctionInfo
+  // } = useDisplayedNounlet()
+  // const { currentBackground } = useCurrentBackground()
 
-  const isButtonPreviousDisabled = useMemo(() => {
-    if (nid == null) return true
-    if (+nid <= 1) return true
+  const nounletId = nounletID //  isLoadingNounlet ? null : nounletID
+  const nounletNumberString = (() => {
+    return nounletId || '???'
+  })()
+
+  // const nounletNumberString = useMemo(() => {
+  //   return nid ?? '???'
+  // }, [nid])
+
+  const isButtonPreviousDisabled = (() => {
+    if (nounletId == null) return true
+    if (+nounletId <= 1) return true
     return false
-  }, [nid])
+  })()
 
-  const isButtonNextDisabled = useMemo(() => {
-    if (nid == null) return true
-    if (+nid >= +latestNounletTokenId) return true
-    if (+nid === NEXT_PUBLIC_MAX_NOUNLETS) return true
+  const isButtonNextDisabled = (() => {
+    if (nounletId == null) return true
+    if (+nounletId >= +latestNounletTokenId) return true
+    if (+nounletId === NEXT_PUBLIC_MAX_NOUNLETS) return true
     return false
-  }, [nid, latestNounletTokenId])
+  })()
 
   const moveToNounletDirection = (direction: number) => {
-    if (nid == null) return
+    if (nounletId == null) return
 
-    router.push(`/nounlet/${+nid + direction}`, undefined, { shallow: true })
+    router.push(`/noun/${nounTokenId}/nounlets/${+nounletId + direction}`, undefined, {
+      shallow: true
+    })
   }
 
+  // TODO change color
   return (
-    <div className="home-hero" style={{ background: currentBackground }}>
+    <div className="home-hero" style={{ background: 'transparent' }}>
+      <pre>
+        {isLoadingNounlet + ''}
+        {nounletID + ''}
+      </pre>
       <div className="lg:container mx-auto px-4">
         <div className="lg:grid lg:grid-cols-2">
           <div className="flex flex-col justify-end lg:pr-4 lg:min-h-[544px]">
             <div className="w-full aspect-square max-w-[512px] mx-auto">
-              <NounletImage id={nid} />
+              <NounletImage id={nounletId} />
             </div>
           </div>
 

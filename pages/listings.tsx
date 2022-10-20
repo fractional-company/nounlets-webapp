@@ -58,10 +58,10 @@ const Listings: NextPage<ListingsProps> = (props, context) => {
   //   data2 && 'AuctionInfo',
   //   async () => {
   //     const vault = data2!.vault!
-  //     const vaultID = vault.id
-  //     const nounletID = vault.noun?.nounlets.at(0)?.id!
+  //     const vaultId = vault.id
+  //     const nounletId = vault.noun?.nounlets.at(0)?.id!
   //
-  //     const result = await getVaultNounletAuctionGQL(vaultID, nounletID)
+  //     const result = await getVaultNounletAuctionGQL(vaultId, nounletId)
   //     console.log({ result })
   //   },
   //   {}
@@ -72,7 +72,7 @@ const Listings: NextPage<ListingsProps> = (props, context) => {
   //
   //   const list = data.vaults.map((vault) => {
   //     if (vault.noun == null) return null
-  //     return <VaultListTile vaultID={vault.id} nounID={vault.noun!.id} key={vault.id} />
+  //     return <VaultListTile vaultId={vault.id} nounId={vault.noun!.id} key={vault.id} />
   //   })
   //
   //   return <div className="grid grid-cols-4 gap-4">{list}</div>
@@ -96,10 +96,10 @@ const Listings: NextPage<ListingsProps> = (props, context) => {
 }
 export default Listings
 
-function VaultListTile(props: { vaultID: string; nounID: string }) {
+function VaultListTile(props: { vaultId: string; nounId: string }) {
   return (
     <div className="vault-list-tile">
-      <NounImage id={props.nounID} />
+      <NounImage id={props.nounId} />
     </div>
   )
 }

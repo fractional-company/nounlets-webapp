@@ -44,7 +44,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     >
       <DAppProvider config={useDappConfig}>
         <WalletConfig>
-          <ChainUpdater />
+          {/*<ChainUpdater />*/}
           <Toaster />
           <div className="bg-gray-1">
             <AppHeader />

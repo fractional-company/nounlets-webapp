@@ -1,88 +1,9 @@
+import { getVaultList } from 'graphql/src/queries'
 import type { NextPage } from 'next'
-
-import HomeCollectiveOwnership from 'src/components/home/HomeCollectiveOwnership'
-import HomeHero from 'src/components/home/HomeHero'
-import HomeLeaderboard from 'src/components/home/HomeLeaderboard'
-import HomeVotesFromNounlet from 'src/components/home/HomeVotesFromNounlet'
-import HomeWtf from 'src/components/home/HomeWtf'
-import useDisplayedNounlet from 'src/hooks/useDisplayedNounlet'
-import { useVaultStore } from 'src/store/vaultStore'
-import ModalBidHistory from '../src/components/modals/ModalBidHistory'
-import SimpleModalWrapper from '../src/components/common/simple/SimpleModalWrapper'
-import { useAppStore } from '../src/store/application'
-import useCurrentBackground from 'src/hooks/useCurrentBackground'
-import SEO from '../src/components/SEO'
-import BuyoutHero from 'src/components/buyout/BuyoutHero'
-import { useBuyoutOfferModalStore } from 'src/store/buyout/buyout-offer-modal.store'
-import { useBuyoutHowDoesItWorkModalStore } from 'src/store/buyout/buyout-how-does-it-work-modal.store'
-import BuyoutOfferModal from 'src/components/buyout/BuyoutOfferModal'
-import BuyoutHowDoesItWorkModal from 'src/components/buyout/BuyoutHowDoesItWorkModal'
-import { useBuyoutStore } from 'src/store/buyout/buyout.store'
-
-const Home: NextPage<{ url: string }> = ({ url }) => {
-  const { setBidModalOpen, isBidModalOpen } = useAppStore()
-  const { isLive, wereAllNounletsAuctioned, isGovernanceEnabled } = useVaultStore()
-  const { isLoading } = useBuyoutStore()
-
-  const { isLatestNounlet, hasAuctionSettled } = useDisplayedNounlet()
-
-  const { initialFullPriceOffer, isBuyoutOfferModalShown, closeBuyoutOfferModal } =
-    useBuyoutOfferModalStore()
-  const { isBuyoutHowDoesItWorkModalShown, closeBuyoutHowDoesItWorkModal } =
-    useBuyoutHowDoesItWorkModalStore()
-
-  return (
-    <div className="page-home w-screen">
-      <SEO
-        url={`${url}`}
-        openGraphType="website"
-        title="Nounlets"
-        description="Own a noun together with Nounlets"
-        image={`${url}/img/noun.jpg`}
-      />
-
-      <div className="space-y-16">
-        {wereAllNounletsAuctioned ? (
-          <>
-            <BuyoutHero />
-            <SimpleModalWrapper
-              className="md:!max-w-[512px]"
-              isShown={isBuyoutOfferModalShown}
-              onClose={() => closeBuyoutOfferModal()}
-              preventCloseOnBackdrop
-            >
-              <BuyoutOfferModal initialFullPriceOffer={initialFullPriceOffer} />
-            </SimpleModalWrapper>
-
-            <SimpleModalWrapper
-              className="!max-w-[680px]"
-              isShown={isBuyoutHowDoesItWorkModalShown}
-              onClose={() => closeBuyoutHowDoesItWorkModal()}
-            >
-              <BuyoutHowDoesItWorkModal />
-            </SimpleModalWrapper>
-          </>
-        ) : (
-          <>
-            <HomeHero />
-            {isLive && hasAuctionSettled && <HomeVotesFromNounlet />}
-            <SimpleModalWrapper
-              className="md:!w-[600px] !max-w-[600px]"
-              onClose={() => setBidModalOpen(false)}
-              isShown={isBidModalOpen}
-            >
-              <ModalBidHistory />
-            </SimpleModalWrapper>
-          </>
-        )}
-
-        {isLive && isGovernanceEnabled && <HomeLeaderboard />}
-        {isLive && <HomeCollectiveOwnership />}
-        <HomeWtf />
-      </div>
-    </div>
-  )
-}
+import Link from 'next/link'
+import { useMemo } from 'react'
+import { NounImage } from 'src/components/common/NounletImage'
+import useSWR from 'swr'
 
 export const getServerSideProps = (context: any) => {
   return {
@@ -92,4 +13,44 @@ export const getServerSideProps = (context: any) => {
   }
 }
 
+const Home: NextPage<{ url: string }> = ({ url }) => {
+  const { data } = useSWR(
+    'ExistingVaults',
+    async () => {
+      const result = await getVaultList()
+      console.log({ result })
+      return result
+    },
+    {}
+  )
+
+  const vaultList = useMemo(() => {
+    if (data == null) return null
+
+    const list = data.vaults.slice(0, 6).map((vault) => {
+      if (vault.noun == null) return null
+      return <VaultListTile vaultId={vault.id} nounId={vault.noun!.id} key={vault.id} />
+    })
+
+    return <div className="grid grid-cols-4 gap-4">{list}</div>
+  }, [data])
+
+  return (
+    <div className="page-home w-screen">
+      <div className="p-4">{vaultList}</div>
+    </div>
+  )
+}
+
 export default Home
+
+function VaultListTile(props: { vaultId: string; nounId: string }) {
+  return (
+    <Link href={`/noun/${props.nounId}`}>
+      <div className="vault-list-tile flex flex-col gap-3 p-2 bg-gray-1 rounded-xl cursor-pointer">
+        <NounImage id={props.nounId} />
+        <p className={'font-londrina font-700 text-px28 text-center'}>{props.nounId}</p>
+      </div>
+    </Link>
+  )
+}

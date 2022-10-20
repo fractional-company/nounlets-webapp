@@ -26,13 +26,13 @@ export const getVaultList = async () => {
 }
 
 // Get the vault nounlets that BE knows about
-export const getVaultData = async (vaultAddressOrNounID: string) => {
+export const getVaultData = async (vaultAddressOrNounId: string) => {
   let vault: Awaited<ReturnType<typeof getVaultGQL>>['data']['vault']
 
-  if (vaultAddressOrNounID.startsWith('0x')) {
-    vault = (await getVaultGQL(vaultAddressOrNounID)).data.vault
+  if (vaultAddressOrNounId.startsWith('0x')) {
+    vault = (await getVaultGQL(vaultAddressOrNounId)).data.vault
   } else {
-    vault = (await getVaultByNounGQL(vaultAddressOrNounID)).data.vaults.at(0)
+    vault = (await getVaultByNounGQL(vaultAddressOrNounId)).data.vaults.at(0)
   }
 
   if (vault?.noun == null) {

@@ -118,7 +118,6 @@ export const useNounStore = createTrackedSelector(
       },
       setIsLoading: (flag) => {
         set((state) => {
-          console.log('Setting is loading', flag)
           state.isLoading = flag
         })
       },

@@ -32,12 +32,12 @@ export const getVaultListGQL = async () => {
   })
 }
 
-export const getVaultGQL = async (vaultID: string) => {
-  console.log('getVaultGQL', vaultID)
+export const getVaultGQL = async (vaultId: string) => {
+  console.log('getVaultGQL', vaultId)
   return client.query({
     query: graphql(`
-      query Vault($vaultID: ID!) {
-        vault(id: $vaultID) {
+      query Vault($vaultId: ID!) {
+        vault(id: $vaultId) {
           id
           token {
             id
@@ -68,17 +68,17 @@ export const getVaultGQL = async (vaultID: string) => {
       }
     `),
     variables: {
-      vaultID: vaultID.toLowerCase()
+      vaultId: vaultId.toLowerCase()
     }
   })
 }
 
-export const getVaultByNounGQL = async (nounID: string) => {
-  console.log('getVaultByNounGQL', nounID)
+export const getVaultByNounGQL = async (nounId: string) => {
+  console.log('getVaultByNounGQL', nounId)
   return client.query({
     query: graphql(`
-      query VaultByNoun($nounID: String!) {
-        vaults(where: { noun: $nounID }) {
+      query VaultByNoun($nounId: String!) {
+        vaults(where: { noun: $nounId }) {
           id
           token {
             id
@@ -109,18 +109,18 @@ export const getVaultByNounGQL = async (nounID: string) => {
       }
     `),
     variables: {
-      nounID: nounID.toLowerCase()
+      nounId: nounId.toLowerCase()
     }
   })
 }
 
-export const getVaultNounletAuctionGQL = async (vaultID: string, nounletID: string) => {
+export const getVaultNounletAuctionGQL = async (vaultId: string, nounletId: string) => {
   return client.query({
     query: graphql(`
-      query VaultNounletAuction($vaultID: ID!, $nounletID: ID!) {
-        vault(id: $vaultID) {
+      query VaultNounletAuction($vaultId: ID!, $nounletId: ID!) {
+        vault(id: $vaultId) {
           noun {
-            nounlets(where: { id: $nounletID }) {
+            nounlets(where: { id: $nounletId }) {
               id
               auction {
                 id
@@ -154,17 +154,17 @@ export const getVaultNounletAuctionGQL = async (vaultID: string, nounletID: stri
       }
     `),
     variables: {
-      vaultID: vaultID.toLowerCase(),
-      nounletID: nounletID.toLowerCase()
+      vaultId: vaultId.toLowerCase(),
+      nounletId: nounletId.toLowerCase()
     }
   })
 }
 
-export const getVaultNounletVotesGQL = async (nounletID: string) => {
+export const getVaultNounletVotesGQL = async (nounletId: string) => {
   return client.query({
     query: graphql(`
-      query VaultNounletVotes($nounletID: ID!) {
-        nounlet(id: $nounletID) {
+      query VaultNounletVotes($nounletId: ID!) {
+        nounlet(id: $nounletId) {
           id
           delegateVotes(orderBy: timestamp, orderDirection: desc) {
             id
@@ -183,7 +183,7 @@ export const getVaultNounletVotesGQL = async (nounletID: string) => {
       }
     `),
     variables: {
-      nounletID: nounletID.toLowerCase()
+      nounletId: nounletId.toLowerCase()
     }
   })
 }
