@@ -13,13 +13,21 @@ import { useMemo } from 'react'
 import { useAppStore } from 'src/store/application'
 import { useNounStore } from 'src/store/noun.store'
 import { useNounletStore } from 'src/store/nounlet.store'
-// import HomeHeroAuctionCompleted from './HomeHeroAuctionCompleted'
-// import HomeHeroAuctionProgress from './HomeHeroAuctionProgress'
+import NounHeroAuctionCompleted from './NounHeroAuctionCompleted'
+import NounHeroAuctionProgress from './NounHeroAuctionProgress'
 
 export default function NounHero(): JSX.Element {
   const router = useRouter()
   const { isLoading, nounTokenId, latestNounletTokenId } = useNounStore()
-  const { isLoading: isLoadingNounlet, nounletID } = useNounletStore()
+  const { isLoading: isLoadingNounlet, nounletId, auctionData } = useNounletStore()
+  const { currentBackground } = useCurrentBackground()
+
+  const hasAuctionEnded = useMemo(() => {
+    if (auctionData?.auction == null) return false
+
+    const now = Date.now()
+    return auctionData.auction.endTime * 1000 <= now
+  }, [auctionData])
 
   // const {
   //   isLoading,
@@ -31,43 +39,35 @@ export default function NounHero(): JSX.Element {
   // } = useDisplayedNounlet()
   // const { currentBackground } = useCurrentBackground()
 
-  const nounletId = nounletID //  isLoadingNounlet ? null : nounletID
-  const nounletNumberString = (() => {
-    return nounletId || '???'
-  })()
+  // const nounletId = nounletId //  isLoadingNounlet ? null : nounletId
 
-  // const nounletNumberString = useMemo(() => {
-  //   return nid ?? '???'
-  // }, [nid])
-
-  const isButtonPreviousDisabled = (() => {
+  const nounletNumberString = nounletId || '???'
+  const isButtonPreviousDisabled = useMemo(() => {
     if (nounletId == null) return true
     if (+nounletId <= 1) return true
     return false
-  })()
+  }, [nounletId])
 
-  const isButtonNextDisabled = (() => {
+  const isButtonNextDisabled = useMemo(() => {
     if (nounletId == null) return true
     if (+nounletId >= +latestNounletTokenId) return true
     if (+nounletId === NEXT_PUBLIC_MAX_NOUNLETS) return true
     return false
-  })()
+  }, [nounletId, latestNounletTokenId])
 
   const moveToNounletDirection = (direction: number) => {
     if (nounletId == null) return
 
-    router.push(`/noun/${nounTokenId}/nounlets/${+nounletId + direction}`, undefined, {
-      shallow: true
-    })
+    router
+      .push(`/noun/${nounTokenId}/nounlets/${+nounletId + direction}`, undefined, {
+        shallow: true
+      })
+      .then()
   }
 
   // TODO change color
   return (
-    <div className="home-hero" style={{ background: 'transparent' }}>
-      <pre>
-        {isLoadingNounlet + ''}
-        {nounletID + ''}
-      </pre>
+    <div className="home-hero" style={{ background: currentBackground }}>
       <div className="lg:container mx-auto px-4">
         <div className="lg:grid lg:grid-cols-2">
           <div className="flex flex-col justify-end lg:pr-4 lg:min-h-[544px]">
@@ -77,7 +77,7 @@ export default function NounHero(): JSX.Element {
           </div>
 
           <div className="px-4 py-12 lg:pb-0 lg:pt-4 md:p-12 lg:pl-6 lg:pr-10 -mx-4 lg:-mx-0 bg-white lg:bg-transparent space-y-3">
-            {/* <pre>{JSON.stringify(auctionInfo, null, 4)}</pre> */}
+            {/*<pre>{JSON.stringify(auctionData, null, 4)}</pre>*/}
             <div className="navigation flex items-center space-x-1">
               <Button
                 disabled={isButtonPreviousDisabled}
@@ -105,11 +105,17 @@ export default function NounHero(): JSX.Element {
               Nounlet {nounletNumberString}
             </h1>
 
-            {/*{auctionInfo == null || isLoading ? (*/}
-            {/*  <></>*/}
-            {/*) : (*/}
-            {/*  <>{hasAuctionEnded ? <HomeHeroAuctionCompleted /> : <HomeHeroAuctionProgress />}</>*/}
-            {/*)}*/}
+            {auctionData == null || isLoading ? (
+              <></>
+            ) : (
+              <>
+                {hasAuctionEnded ? (
+                  <NounHeroAuctionCompleted key={'completed-' + nounletId} />
+                ) : (
+                  <NounHeroAuctionProgress key={'progress-' + nounletId} />
+                )}
+              </>
+            )}
           </div>
         </div>
       </div>

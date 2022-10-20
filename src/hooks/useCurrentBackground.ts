@@ -1,30 +1,29 @@
 import { useRouter } from 'next/router'
 import { useEffect, useMemo, useRef } from 'react'
+import { useNounStore } from 'src/store/noun.store'
 import { useVaultStore } from 'src/store/vaultStore'
 import useDisplayedNounlet from './useDisplayedNounlet'
 import useNounBuyout from './useNounBuyout'
 
 export default function useCurrentBackground() {
-  const { wereAllNounletsAuctioned } = useVaultStore()
+  const { wereAllNounletsAuctioned } = useNounStore()
   const router = useRouter()
-  const previousBackground = useRef('#f4f5f6')
   const { nounletBackground } = useDisplayedNounlet()
   const { nounBackground } = useNounBuyout()
 
-  useEffect(() => {
-    if (nounletBackground != null) {
-      previousBackground.current = nounletBackground
-    }
-  }, [nounletBackground])
-
   const currentBackground = useMemo(() => {
+    if (!router.route.includes('/noun/')) {
+      return 'rebeccapurple'
+    }
+
     if (wereAllNounletsAuctioned) {
-      if (router.route === '/' || router.route === '/governance') {
+      if (router.route.includes('/noun/')) {
         return nounBackground
       }
     }
-    return nounletBackground || previousBackground.current
+
+    return nounletBackground || 'transparent'
   }, [router, nounBackground, nounletBackground, wereAllNounletsAuctioned])
 
-  return { previousBackground, currentBackground }
+  return { currentBackground }
 }

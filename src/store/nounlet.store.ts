@@ -7,18 +7,18 @@ type AuctionData = Awaited<ReturnType<typeof nounletDataFetcher>> | null
 
 interface StoreState {
   isLoading: boolean
-  nounletID: string | null
+  nounletId: string | null
   auctionData: AuctionData
 }
 interface StoreActions {
   setIsLoading: (flag: boolean) => void
-  setNounletID: (nounletID: string | null) => void
+  setNounletID: (nounletId: string | null) => void
   setAuctionData: (data: AuctionData) => void
 }
 
 const initialState: StoreState = {
   isLoading: true,
-  nounletID: null,
+  nounletId: null,
   auctionData: null
 }
 
@@ -32,9 +32,9 @@ export const useNounletStore = createTrackedSelector(
           state.isLoading = flag
         }),
 
-      setNounletID: (nounletID) =>
+      setNounletID: (nounletId) =>
         set((state) => {
-          state.nounletID = nounletID
+          state.nounletId = nounletId
         }),
 
       setAuctionData: (data) =>

@@ -5,7 +5,7 @@ export function shortenAddress(address: string, chars = 4) {
   return `${address.substring(0, chars + 2)}...${address.substring(address.length - chars)}`
 }
 
-export const getCurentChainExplorerTransactionLink = (txHash: string): string => {
+export const getCurrentChainExplorerTransactionLink = (txHash: string): string => {
   if (CHAIN_ID === ChainId.Mainnet) return Mainnet.getExplorerTransactionLink(txHash)
   return Goerli.getExplorerTransactionLink(txHash)
 }

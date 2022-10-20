@@ -27,10 +27,18 @@ const Home: NextPage<{ url: string }> = ({ url }) => {
   const vaultList = useMemo(() => {
     if (data == null) return null
 
-    const list = data.vaults.slice(0, 6).map((vault) => {
-      if (vault.noun == null) return null
-      return <VaultListTile vaultId={vault.id} nounId={vault.noun!.id} key={vault.id} />
-    })
+    const list = data.vaults
+      .sort((a, b) => {
+        const aId = +(a.noun?.id || 0)
+        const bId = +(b.noun?.id || 0)
+
+        return bId - aId
+      })
+      .slice(0, 6)
+      .map((vault) => {
+        if (vault.noun == null) return null
+        return <VaultListTile vaultId={vault.id} nounId={vault.noun!.id} key={vault.id} />
+      })
 
     return <div className="grid grid-cols-4 gap-4">{list}</div>
   }, [data])

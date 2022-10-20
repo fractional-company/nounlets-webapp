@@ -71,7 +71,7 @@ type BuyoutStoreState = {
 
 type BuyoutStoreMethods = {
   setIsLoading: (flag?: boolean) => void
-  setBuyoutInfo: (buyoutInfo: BuyoutInfo) => void
+  setBuyoutInfo: (buyoutInfo: BuyoutInfo | null) => void
 }
 
 const initialBuyoutInfo: BuyoutInfo = {
@@ -101,29 +101,7 @@ export const initialBuyoutStateData: BuyoutStoreState = {
     fixedNumber: buyoutInfoFixedNumber,
     formatted: BuyoutInfoFormatted
   },
-  offers: [
-    {
-      id: 'BigNumber.from(0)',
-      sender: '0x497F34f8A6EaB10652f846fD82201938e58d72E0',
-      value: parseEther('10.23'),
-      txHash: '0xe0bf8f9e5c849e8481c48eef312dfe34b94796dff44b2705a6a8fe5f717a1c3d',
-      state: 0
-    },
-    {
-      id: 'BigNumber.from(1)',
-      sender: '0x497F34f8A6EaB10652f846fD82201938e58d72E0',
-      value: parseEther('11.00'),
-      txHash: '0xe0bf8f9e5c849e8481c48eef312dfe34b94796dff44b2705a6a8fe5f717a1c3d',
-      state: 0
-    },
-    {
-      id: 'BigNumber.from(2)',
-      sender: '0x497F34f8A6EaB10652f846fD82201938e58d72E0',
-      value: parseEther('12.34'),
-      txHash: '0xe0bf8f9e5c849e8481c48eef312dfe34b94796dff44b2705a6a8fe5f717a1c3d',
-      state: 0
-    }
-  ]
+  offers: []
 }
 
 export const useBuyoutStore = createTrackedSelector(
@@ -137,6 +115,10 @@ export const useBuyoutStore = createTrackedSelector(
       },
       setBuyoutInfo(buyoutInfo) {
         set((state) => {
+          if (buyoutInfo == null) {
+            buyoutInfo = initialBuyoutInfo
+          }
+
           const buyoutInfoFixedNumber = toBuyoutInfoFixedNumber(buyoutInfo)
           const BuyoutInfoFormatted = toBuyoutInfoFormatted(buyoutInfoFixedNumber)
 

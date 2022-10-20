@@ -7,7 +7,7 @@ import { FixedNumber } from 'ethers'
 import { formatEther } from 'ethers/lib/utils'
 import useCurrentBackground from 'src/hooks/useCurrentBackground'
 import useDisplayedNounlet from 'src/hooks/useDisplayedNounlet'
-import { getCurentChainExplorerTransactionLink } from 'src/lib/utils/common'
+import { getCurrentChainExplorerTransactionLink } from 'src/lib/utils/common'
 import { useMemo } from 'react'
 import IconEth from '../common/icons/IconEth'
 import IconLinkOffsite from '../common/icons/IconLinkOffsite'
@@ -52,7 +52,7 @@ const ModalBidHistory = (): JSX.Element => {
               <IconEth className="flex-shrink-0 h-[12px]" />
               <p className="ml-1 text-px18 leading-px28 font-700">{ethValue}</p>
               <a
-                href={getCurentChainExplorerTransactionLink(bid.id)}
+                href={getCurrentChainExplorerTransactionLink(bid.id)}
                 target="_blank"
                 rel="noreferrer"
               >

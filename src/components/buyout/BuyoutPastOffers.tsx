@@ -8,7 +8,7 @@ import { CHAIN_ID, NEXT_PUBLIC_BID_DECIMALS } from 'config'
 import { FixedNumber } from 'ethers'
 import { formatEther } from 'ethers/lib/utils'
 import useNounBuyout from 'src/hooks/useNounBuyout'
-import { getCurentChainExplorerTransactionLink } from 'src/lib/utils/common'
+import { getCurrentChainExplorerTransactionLink } from 'src/lib/utils/common'
 import { useMemo, useState } from 'react'
 import { BuyoutState } from 'src/store/buyout/buyout.store'
 
@@ -49,7 +49,7 @@ export default function BuyoutPastOffers(): JSX.Element {
             <IconEth className="flex-shrink-0 h-[12px] ml-auto" />
             <p className="ml-1 text-px18 leading-px28 font-700">{ethValue}</p>
             <a
-              href={getCurentChainExplorerTransactionLink(bid.id)}
+              href={getCurrentChainExplorerTransactionLink(bid.id)}
               target="_blank"
               rel="noreferrer"
             >

@@ -5,6 +5,7 @@ import { parseEther } from 'ethers/lib/utils'
 import txWithErrorHandling from 'src/lib/utils/tx-with-error-handling'
 import { useMemo } from 'react'
 import { useBuyoutStore } from 'src/store/buyout/buyout.store'
+import { useNounStore } from 'src/store/noun.store'
 import { useVaultStore } from 'src/store/vaultStore'
 import { useSWRConfig } from 'swr'
 import useLeaderboard from './useLeaderboard'
@@ -25,8 +26,9 @@ export default function useNounBuyout() {
     vaultCuratorAddress,
     backendLatestNounletTokenId,
     latestNounletTokenId
-  } = useVaultStore()
+  } = useNounStore()
   const { isLoading, buyoutInfo, offers } = useBuyoutStore()
+
   const { data, myNounlets } = useLeaderboard()
   const { data: nounImageData } = useNounImageData(nounTokenId)
   const mutate = useMemo(

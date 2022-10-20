@@ -3,17 +3,31 @@ import { BigNumber, ethers, FixedNumber } from 'ethers'
 import txWithErrorHandling from 'src/lib/utils/tx-with-error-handling'
 import { useRouter } from 'next/router'
 import { useCallback, useMemo } from 'react'
-import { useNounStore } from 'src/store/noun.store'
-import { useNounletStore } from 'src/store/nounlet.store'
 import { useVaultStore } from 'src/store/vaultStore'
 import useSWR, { unstable_serialize, useSWRConfig } from 'swr'
 import useNounletAuctionInfo from './useNounletAuctionInfo'
 import useNounletImageData from './useNounletImageData'
 import useSdk from './useSdk'
 
-export default function useDisplayedNounlet(ignoreUpdate = false) {
-  const { cache, mutate: globalMutate } = useSWRConfig()
-  const sdk = useSdk()
+export function generateNounletAuctionInfoKey({
+  vaultAddress,
+  vaultTokenId,
+  nounletId
+}: {
+  vaultAddress?: string
+  vaultTokenId?: string
+  nounletId?: string
+}) {
+  return {
+    name: 'NounletAuctionInfo',
+    vaultAddress,
+    vaultTokenId: vaultTokenId,
+    nounletId: nounletId
+  }
+}
+
+export default function useDisplayedNounlet2(ignoreUpdate = false) {
+  const router = useRouter()
   const { backgrounds } = useVaultStore()
   const { account, library } = useEthers()
   const {
@@ -22,34 +36,51 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
     nounletTokenAddress,
     vaultCuratorAddress,
     backendLatestNounletTokenId,
-    latestNounletTokenId,
-    nounTokenId
-  } = useNounStore()
-  const { nounletId, auctionData } = useNounletStore()
+    latestNounletTokenId
+  } = useVaultStore()
+  const sdk = useSdk()
 
-  const { data: nounletImageData } = useNounletImageData(nounletId)
+  const nid = useMemo(() => {
+    if (isLoading) return null
+    if (!router.isReady) return null
+    if (router.query?.nid == null) return latestNounletTokenId
+    if (typeof router.query.nid !== 'string') {
+      router.replace('/')
+      return null
+    }
 
-  const mutateAuctionInfo = useCallback(async () => {
-    return globalMutate(`${nounletTokenAddress}/nounlet/${nounletId}`)
-  }, [])
+    const id = parseInt(router.query.nid as string)
+    if (isNaN(id)) {
+      router.replace('/')
+      return null
+    }
 
+    if (id <= 0 || id > +latestNounletTokenId) {
+      router.replace('/')
+      return null
+    }
+    return router.query.nid as string
+  }, [isLoading, router, latestNounletTokenId])
+
+  const { data: nounletImageData } = useNounletImageData(nid)
   const nounletBackground = useMemo(() => {
     if (nounletImageData == null) return null
     return backgrounds[nounletImageData.seed.background] || null
   }, [nounletImageData, backgrounds])
 
+  const { data: auctionInfo, swrKey, mutate: mutateAuctionInfo } = useNounletAuctionInfo(nid)
+
   const shouldCheckForHolder = useMemo(() => {
     if (sdk == null) return false
-    if (auctionData == null) return false
-    if (auctionData.auction?.settled !== true) return false
+    if (auctionInfo == null) return false
+    if (auctionInfo.auction?.settled !== true) return false
     return true
-  }, [sdk, auctionData])
-
+  }, [sdk, auctionInfo])
   const { data: nounletHolderAddress } = useSWR(
-    shouldCheckForHolder && { nounTokenId, nounletId, name: 'NounletHolder' },
+    shouldCheckForHolder && { ...swrKey, name: 'NounletHolder' },
     async () => {
       const ownerAddress = await sdk!.NounletToken.attach(nounletTokenAddress).ownerOf(
-        nounletId as string
+        nid as string
       )
       return ownerAddress || ethers.constants.AddressZero
     },
@@ -60,33 +91,33 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
   )
 
   const historicBids = useMemo(() => {
-    return auctionData?.auction!.bids ?? []
-    // return [...(auctionData?.auction!.bids ?? [])].sort((a, b) => {
+    return auctionInfo?.auction!.bids ?? []
+    // return [...(auctionInfo?.auction!.bids ?? [])].sort((a, b) => {
     //   return BigNumber.from(b.amount).sub(BigNumber.from(a.amount)).toNumber()
     // })
-  }, [auctionData])
+  }, [auctionInfo])
 
   const auctionEndTime = useMemo(() => {
-    if (auctionData == null) return 0
+    if (auctionInfo == null) return 0
 
-    const seconds = BigNumber.from(auctionData.auction!.endTime).toNumber()
+    const seconds = BigNumber.from(auctionInfo.auction!.endTime).toNumber()
     return seconds
-  }, [auctionData])
+  }, [auctionInfo])
 
   const hasAuctionEnded = useMemo(() => {
     const now = Date.now() + 2000 // add 2 second buffer
-    return auctionData != null && auctionEndTime * 1000 <= now
-  }, [auctionData, auctionEndTime])
+    return auctionInfo != null && auctionEndTime * 1000 <= now
+  }, [auctionInfo, auctionEndTime])
 
   const hasAuctionSettled = useMemo(() => {
-    return !!auctionData?.auction!.settled
-  }, [auctionData])
+    return !!auctionInfo?.auction!.settled
+  }, [auctionInfo])
 
   const endedAuctionInfo = useMemo(() => {
-    if (auctionData == null || nounletId == null || auctionData.auction == null) return null
+    if (auctionInfo == null || nid == null || auctionInfo.auction == null) return null
 
     let heldByAddress = nounletHolderAddress || null
-    let wonByAddress = auctionData.auction!.highestBidder?.id || ethers.constants.AddressZero
+    let wonByAddress = auctionInfo.auction!.highestBidder?.id || ethers.constants.AddressZero
 
     if (heldByAddress == null && !hasAuctionSettled) {
       heldByAddress = vaultCuratorAddress
@@ -97,9 +128,9 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
     }
 
     return {
-      isSettled: auctionData.auction.settled, // +nid < +latestNounletTokenId,
-      settledTransactionHash: auctionData.auction.settledTransactionHash,
-      winningBid: auctionData.auction!.highestBidAmount.toString(),
+      isSettled: auctionInfo.auction.settled, // +nid < +latestNounletTokenId,
+      settledTransactionHash: auctionInfo.auction.settledTransactionHash,
+      winningBid: auctionInfo.auction!.highestBidAmount.toString(),
       heldByAddress,
       endedOn: auctionEndTime,
       wonByAddress
@@ -107,8 +138,8 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
   }, [
     hasAuctionSettled,
     auctionEndTime,
-    auctionData,
-    nounletId,
+    auctionInfo,
+    nid,
     vaultCuratorAddress,
     nounletHolderAddress
   ])
@@ -148,11 +179,9 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
   }
 
   return {
-    nid: nounletId,
-    nounTokenId,
-    nounletId,
-    isLatestNounlet: nounletId === latestNounletTokenId,
-    isLoading: auctionData == null || isLoading,
+    nid,
+    isLatestNounlet: nid === latestNounletTokenId,
+    isLoading: auctionInfo == null || isLoading,
     vaultAddress,
     nounletTokenAddress,
     nounletImageData,
@@ -160,7 +189,7 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
     latestNounletTokenId,
     hasAuctionEnded,
     hasAuctionSettled,
-    auctionData,
+    auctionInfo,
     auctionEndTime,
     endedAuctionInfo,
     historicBids,

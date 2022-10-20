@@ -20,13 +20,14 @@ import IconHeart from '../common/icons/IconHeart'
 import IconLock from '../common/icons/IconLock'
 import IconVerified from '../common/icons/IconVerified'
 
-export default function HomeHeroAuctionCompleted(): JSX.Element {
+export default function NounHeroAuctionCompleted(): JSX.Element {
   const { account } = useEthers()
   const { mutate: globalMutate } = useSWRConfig()
   const { setBidModalOpen, setCongratulationsModalForNounletId, setConnectModalOpen } =
     useAppStore()
   const { toastSuccess, toastError } = useToasts()
-  const { nid, vaultAddress, endedAuctionInfo, settleAuction, historicBids } = useDisplayedNounlet()
+  const { nid, vaultAddress, endedAuctionInfo, settleAuction, historicBids, nounTokenId } =
+    useDisplayedNounlet()
 
   const formattedData = useMemo(() => {
     const isLoading = endedAuctionInfo == null
@@ -60,6 +61,7 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
     setIsSettlingAuction(true)
 
     try {
+      const nounTokenIdTmp = nounTokenId
       const nounletId = '' + nid
       const response = await settleAuction()
 
@@ -71,11 +73,13 @@ export default function HomeHeroAuctionCompleted(): JSX.Element {
           setCongratulationsModalForNounletId(true, nounletId)
           // setIsCongratulationsModalShown(true)
         }
+        console.log('settle mutate')
         await globalMutate(
-          unstable_serialize({
-            name: 'VaultMetadata',
-            vaultAddress: vaultAddress
-          })
+          // unstable_serialize({
+          //   name: 'VaultMetadata',
+          //   vaultAddress: vaultAddress
+          // })
+          `noun/${nounTokenIdTmp}`
         )
         const message = nounletId === '100' ? "Aaaaaand we're done!" : 'On to the next one!'
         toastSuccess('Auction settled 🎊', message)

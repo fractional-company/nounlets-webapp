@@ -22,7 +22,7 @@ import useToasts from 'src/hooks/useToasts'
 import { WrappedTransactionReceiptState } from 'src/lib/utils/tx-with-error-handling'
 import { getCurrentChainExplorerTransactionLink } from 'src/lib/utils/common'
 
-export default function HomeHeroAuctionProgress(): JSX.Element {
+export default function NounHeroAuctionProgress(): JSX.Element {
   const { account } = useEthers()
   const sdk = useSdk()
   const { toastSuccess, toastError } = useToasts()

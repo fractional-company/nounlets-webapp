@@ -16,11 +16,14 @@ export default function BuyoutHero() {
 
   return (
     <div className="buyout-hero" style={{ background: nounBackground }}>
+      {/*<pre>*/}
+      {/*  {JSON.stringify(buyoutInfo || {}, null, 4)} -- {'' + isLoading}*/}
+      {/*</pre>*/}
       <div className="lg:container mx-auto px-4">
         <div className="lg:grid lg:grid-cols-2">
           <div className="flex flex-col justify-end lg:pr-4 lg:min-h-[544px]">
             <div className="w-full aspect-square max-w-[512px] mx-auto">
-              <NounImage />
+              <NounImage id={nounTokenId} />
             </div>
           </div>
 

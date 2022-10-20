@@ -4,6 +4,8 @@ import { getAllNounlets } from 'graphql/src/queries'
 import txWithErrorHandling from 'src/lib/utils/tx-with-error-handling'
 import { useEffect, useMemo } from 'react'
 import { useBlockNumberCheckpointStore } from 'src/store/blockNumberCheckpointStore'
+import { useLeaderboardStore } from 'src/store/leaderboard.store'
+import { useNounStore } from 'src/store/noun.store'
 import { useVaultStore } from 'src/store/vaultStore'
 import useSWR from 'swr'
 import useSdk from './useSdk'
@@ -23,11 +25,12 @@ export default function useLeaderboard() {
     setIsCurrentDelegateOutOfSyncOnNounContract,
     setCurrentDelegate,
     setCurrentNounDelegate
-  } = useVaultStore()
+  } = useNounStore()
+  const { leaderboardData: data } = useLeaderboardStore()
 
-  const canFetchLeaderboard = useMemo(() => {
-    return isLive && sdk != null && nounTokenId !== ''
-  }, [isLive, sdk, nounTokenId])
+  // const canFetchLeaderboard = useMemo(() => {
+  //   return isLive && sdk != null && nounTokenId !== ''
+  // }, [isLive, sdk, nounTokenId])
 
   const { mutate: delegateMutate } = useSWR(
     library && sdk && 'currentNounDelegate',
@@ -52,68 +55,68 @@ export default function useLeaderboard() {
     )
   }, [currentDelegate, currentNounDelegate, setIsCurrentDelegateOutOfSyncOnNounContract])
 
-  const { data, mutate } = useSWR(
-    canFetchLeaderboard && { name: 'Leaderboard' },
-    async (key) => {
-      // console.log('🌽🌽🌽🌽🌽 Fetching new leaderboard data')
-      const leaderboardData = await getAllNounlets(vaultAddress, sdk!.NounletAuction.address)
-      // console.groupCollapsed('🌽🌽🌽🌽🌽 Fetched new leaderboard data')
-      // console.log({ leaderboardData })
-      // console.groupEnd()
-
-      return leaderboardData
-    },
-    {
-      revalidateIfStale: false,
-      refreshInterval: (latestData) => {
-        if (latestData == null) return 15000
-        if (latestData._meta!.block.number < leaderboardBlockNumber) {
-          // console.log(
-          //   '🐌 Leaderboard is outdated',
-          //   latestData._meta.block.number,
-          //   leaderboardBlockNumber
-          // )
-          return 15000
-        }
-
-        return 0
-      },
-      onSuccess: (data) => {
-        if (data == null) {
-          setTimeout(() => {
-            mutate()
-          }, 15000)
-          return
-        }
-
-        setCurrentDelegate(data.currentDelegate)
-        setIsCurrentDelegateOutOfSyncOnVaultContract(data.mostVotesAddress !== data.currentDelegate)
-
-        if (data._meta!.block.number > leaderboardBlockNumber) {
-          setLeaderboardBlockNumber(data._meta!.block.number)
-          return
-        }
-
-        if (leaderboardBlockNumber === 0) {
-          setTimeout(() => {
-            mutate()
-          }, 15000)
-          return
-        }
-      },
-      onError(err, key, config) {
-        console.log('Leaderboard error', err)
-        //debugger
-      }
-    }
-  )
+  // const { data, mutate } = useSWR(
+  //   canFetchLeaderboard && { name: 'Leaderboard' },
+  //   async (key) => {
+  //     // console.log('🌽🌽🌽🌽🌽 Fetching new leaderboard data')
+  //     const leaderboardData = await getAllNounlets(vaultAddress, sdk!.NounletAuction.address)
+  //     // console.groupCollapsed('🌽🌽🌽🌽🌽 Fetched new leaderboard data')
+  //     // console.log({ leaderboardData })
+  //     // console.groupEnd()
+  //
+  //     return leaderboardData
+  //   },
+  //   {
+  //     revalidateIfStale: false,
+  //     refreshInterval: (latestData) => {
+  //       if (latestData == null) return 15000
+  //       if (latestData._meta!.block.number < leaderboardBlockNumber) {
+  //         // console.log(
+  //         //   '🐌 Leaderboard is outdated',
+  //         //   latestData._meta.block.number,
+  //         //   leaderboardBlockNumber
+  //         // )
+  //         return 15000
+  //       }
+  //
+  //       return 0
+  //     },
+  //     onSuccess: (data) => {
+  //       if (data == null) {
+  //         setTimeout(() => {
+  //           mutate()
+  //         }, 15000)
+  //         return
+  //       }
+  //
+  //       setCurrentDelegate(data.currentDelegate)
+  //       setIsCurrentDelegateOutOfSyncOnVaultContract(data.mostVotesAddress !== data.currentDelegate)
+  //
+  //       if (data._meta!.block.number > leaderboardBlockNumber) {
+  //         setLeaderboardBlockNumber(data._meta!.block.number)
+  //         return
+  //       }
+  //
+  //       if (leaderboardBlockNumber === 0) {
+  //         setTimeout(() => {
+  //           mutate()
+  //         }, 15000)
+  //         return
+  //       }
+  //     },
+  //     onError(err, key, config) {
+  //       console.log('Leaderboard error', err)
+  //       //debugger
+  //     }
+  //   }
+  // )
 
   const isOutOfSync = useMemo(() => {
     return (data?._meta!.block.number || 0) < leaderboardBlockNumber
   }, [data, leaderboardBlockNumber])
 
   const leaderboardData = useMemo(() => {
-    const formattedData = constructLeaderboardData(data, account)
+    const formattedData = constructLeaderboardData(data!, account)
     return formattedData
   }, [data, account])
 
@@ -183,7 +186,7 @@ export default function useLeaderboard() {
     myNounletsVotes,
     mostVotesAcc,
     leaderboardData,
-    mutate,
+    // mutate,
     delegateMutate,
     delegateVotes,
     claimVaultDelegate,

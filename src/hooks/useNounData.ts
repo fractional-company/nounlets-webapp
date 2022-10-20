@@ -30,21 +30,16 @@ export function useNounData(callback?: (data: any) => void) {
     setIsGovernanceEnabled
   } = useNounStore()
 
-  const [currentNounTokenId, setCurrentNounTokenId] = useState<string | null>(null)
-
   useEffect(() => {
-    if (nounTokenId !== currentNounTokenId) {
-      setIsLive(false)
-      setIsLoading(true)
-      setCurrentNounTokenId(nounTokenId)
-    }
-  }, [nounTokenId, currentNounTokenId])
+    setIsLive(false)
+    setIsLoading(true)
+  }, [nounTokenId])
 
   const { data, mutate } = useSWR(
-    sdk && currentNounTokenId != null && `noun/${currentNounTokenId}`,
+    sdk && nounTokenId != null && `noun/${nounTokenId}`,
     async (key) => {
       console.log('useNounData fetcher ran', key)
-      const vaultData = await getVaultData(currentNounTokenId!)
+      const vaultData = await getVaultData(nounTokenId!)
 
       if (vaultData == null) throw new Error('vault not found')
 
@@ -61,7 +56,7 @@ export function useNounData(callback?: (data: any) => void) {
         tmp.blockchainCurrentID = tmp.currentId
       }
 
-      // If BE has lower nounletID than BC, just set it to the BE value
+      // If BE has lower nounletId than BC, just set it to the BE value
       if (+tmp.currentId.toString() > vaultData.nounletCount) {
         console.log(
           'BE is behind, wait up',
