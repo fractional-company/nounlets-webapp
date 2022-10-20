@@ -1,5 +1,6 @@
 import { useEthers } from '@usedapp/core'
 import { getAllNounlets, getNounletAuctionData, getNounletAuctionDataBC } from 'graphql/src/queries'
+import debounce from 'lodash/debounce'
 import { useEffect } from 'react'
 import useSdk, { NounletsSDK } from 'src/hooks/useSdk'
 import { useBlockNumberCheckpointStore } from 'src/store/blockNumberCheckpointStore'
@@ -79,6 +80,42 @@ export default function useLeaderboardData(callback?: (data: any) => void) {
       }
     }
   )
+
+  useEffect(() => {
+    if (!isLive || sdk == null) return
+
+    // TODO Maybe be more specific with the events?
+    console.log('🍉 listen to any event on NounletToken', vaultAddress, nounletTokenAddress)
+    const nounletToken = sdk.NounletToken.attach(nounletTokenAddress)
+    const nounletAuction = sdk.NounletAuction
+    const nounletGovernance = sdk.NounletGovernance
+
+    const debouncedMutate = debounce(() => {
+      globalMutate(`noun/${nounTokenId}/leaderboard`).then()
+      globalMutate(`noun/${nounTokenId}/leaderboard/delegate`).then()
+    }, 1000)
+
+    const listener = (...eventData: any) => {
+      const event = eventData.at(-1)
+      // console.groupCollapsed('🍉🍉🍉 any event', event?.blockNumber, eventData)
+      // console.log('event data', event)
+      // console.groupEnd()
+
+      setLeaderboardBlockNumber(event?.blockNumber || 0)
+      debouncedMutate()
+    }
+
+    nounletToken.on(nounletToken, listener)
+    nounletAuction.on(nounletAuction, listener)
+    nounletGovernance.on(nounletGovernance, listener)
+
+    return () => {
+      console.log('🍉 stop listening to any event on NounletToken')
+      nounletToken.off(nounletToken, listener)
+      nounletAuction.off(nounletAuction, listener)
+      nounletGovernance.off(nounletGovernance, listener)
+    }
+  }, [isLive, sdk, vaultAddress, nounletTokenAddress, setLeaderboardBlockNumber])
 
   const { data, mutate } = useSWR(
     cachedData == null && keySWR,

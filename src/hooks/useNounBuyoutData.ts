@@ -1,9 +1,10 @@
 import { getNounletAuctionData, getNounletAuctionDataBC } from 'graphql/src/queries'
+import debounce from 'lodash/debounce'
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import useSdk, { NounletsSDK } from 'src/hooks/useSdk'
 import { getBuyoutBidInfo } from 'src/lib/utils/buyoutInfoUtils'
-import { useBuyoutStore } from 'src/store/buyout/buyout.store'
+import { BuyoutState, useBuyoutStore } from 'src/store/buyout/buyout.store'
 import { useNounStore } from 'src/store/noun.store'
 import { useNounletStore } from 'src/store/nounlet.store'
 import useSWR, { useSWRConfig } from 'swr'
@@ -33,7 +34,8 @@ export function useNounBuyoutData(callback?: (data: any) => void) {
     vaultAddress,
     nounletTokenAddress,
     latestNounletTokenId,
-    wereAllNounletsAuctioned
+    wereAllNounletsAuctioned,
+    setIsGovernanceEnabled
   } = useNounStore()
   const { isLoading, setIsLoading, setBuyoutInfo } = useBuyoutStore()
 
@@ -64,6 +66,28 @@ export function useNounBuyoutData(callback?: (data: any) => void) {
     }
   }, [cachedData])
 
+  useEffect(() => {
+    if (sdk == null) return
+    if (!isLive) return
+
+    const optimisticBid = sdk.OptimisticBid
+    const debouncedMutate = debounce(mutate, 1000)
+
+    const listener = (...eventData: any) => {
+      const event = eventData.at(-1)
+      console.log('☄️☄️☄️ Optimistic event', event, eventData)
+      debouncedMutate()
+    }
+
+    console.log('☄️ optimsiticbid on')
+    optimisticBid.on(optimisticBid, listener)
+
+    return () => {
+      console.log('☄️ optimsiticbid off')
+      optimisticBid.off(optimisticBid, listener)
+    }
+  }, [isLive, sdk])
+
   const { data, mutate } = useSWR(
     cachedData == null && keySWR,
     async () => nounBuyoutDataFetcher(vaultAddress, nounletTokenAddress, nounTokenId!, sdk!),
@@ -72,6 +96,7 @@ export function useNounBuyoutData(callback?: (data: any) => void) {
       refreshInterval: refreshInterval,
       revalidateIfStale: shouldRevalidate,
       onSuccess(data, key) {
+        setIsGovernanceEnabled(data.buyout.state !== BuyoutState.SUCCESS)
         setBuyoutInfo(data.buyout)
         setIsLoading(false)
 

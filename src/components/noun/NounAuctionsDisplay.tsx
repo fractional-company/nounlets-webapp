@@ -5,6 +5,7 @@ import NounHero from 'src/components/noun/NounHero'
 import NounLeaderboard from 'src/components/noun/NounLeaderboard'
 import NounVotesFromNounlet from 'src/components/noun/NounVotesFromNounlet'
 import NounWtf from 'src/components/noun/NounWtf'
+import OnMounted from 'src/components/OnMounted'
 import useDisplayedNounlet from 'src/hooks/useDisplayedNounlet'
 import { useAppStore } from 'src/store/application'
 import { useNounStore } from 'src/store/noun.store'
@@ -15,20 +16,24 @@ export function NounAuctionsDisplay() {
   const { hasAuctionSettled } = useDisplayedNounlet()
 
   return (
-    <>
-      <SimpleModalWrapper
-        className="md:!w-[600px] !max-w-[600px]"
-        onClose={() => setBidModalOpen(false)}
-        isShown={isBidModalOpen}
-      >
-        <ModalBidHistory />
-      </SimpleModalWrapper>
+    <OnMounted>
+      <>
+        <SimpleModalWrapper
+          className="md:!w-[600px] !max-w-[600px]"
+          onClose={() => setBidModalOpen(false)}
+          isShown={isBidModalOpen}
+        >
+          <ModalBidHistory />
+        </SimpleModalWrapper>
 
-      <NounHero />
-      {isLive && hasAuctionSettled && <NounVotesFromNounlet />}
-      {isLive && isGovernanceEnabled && <NounLeaderboard />}
-      {isLive && <NounCollectiveOwnership />}
-      <NounWtf />
-    </>
+        <div className="space-y-16">
+          <NounHero />
+          {isLive && hasAuctionSettled && <NounVotesFromNounlet />}
+          {isLive && isGovernanceEnabled && <NounLeaderboard />}
+          {isLive && <NounCollectiveOwnership />}
+          <NounWtf />
+        </div>
+      </>
+    </OnMounted>
   )
 }

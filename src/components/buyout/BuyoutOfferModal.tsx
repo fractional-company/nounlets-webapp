@@ -196,7 +196,7 @@ export default function BuyoutOfferModal(props: ComponentProps): JSX.Element {
       <div className="text-px24 font-500">
         <div className="flex items-start space-x-4">
           <div className="w-[84px] flex-shrink-0 rounded-[15px] overflow-hidden">
-            <NounImage />
+            <NounImage id={nounTokenId} />
           </div>
           <div className="flex flex-col font-londrina">
             <h4 className="text-px24 text-gray-4">Offer to buy</h4>

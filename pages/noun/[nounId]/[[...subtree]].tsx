@@ -1,31 +1,16 @@
-import debounce from 'lodash/debounce'
 import { GetServerSideProps, NextPage } from 'next'
-import Link from 'next/link'
 import { NextRouter, useRouter } from 'next/router'
-import { useEffect, useMemo, useState } from 'react'
-import BuyoutHero from 'src/components/buyout/BuyoutHero'
-import BuyoutHowDoesItWorkModal from 'src/components/buyout/BuyoutHowDoesItWorkModal'
-import BuyoutOfferModal from 'src/components/buyout/BuyoutOfferModal'
-import SimpleModalWrapper from 'src/components/common/simple/SimpleModalWrapper'
-import HomeHero from 'src/components/home/HomeHero'
-import HomeLeaderboard from 'src/components/home/HomeLeaderboard'
-import HomeVotesFromNounlet from 'src/components/home/HomeVotesFromNounlet'
-import ModalBidHistory from 'src/components/modals/ModalBidHistory'
+import { useEffect } from 'react'
 import { NounAuctionsDisplay } from 'src/components/noun/NounAuctionsDisplay'
-import NounHero from 'src/components/noun/NounHero'
-import NounLeaderboard from 'src/components/noun/NounLeaderboard'
+import { NounBuyoutDisplay } from 'src/components/noun/NounBuyoutDisplay'
 import OnMounted from 'src/components/OnMounted'
 import useLeaderboardData from 'src/hooks/useLeaderboardData'
 import { useNounBuyoutData } from 'src/hooks/useNounBuyoutData'
 import { useNounData } from 'src/hooks/useNounData'
 import { useNounletData } from 'src/hooks/useNounletData'
-import useSdk from 'src/hooks/useSdk'
 import { ONLY_NUMBERS_REGEX } from 'src/lib/utils/nextBidCalculator'
-import { useBlockNumberCheckpointStore } from 'src/store/blockNumberCheckpointStore'
-import { useLeaderboardStore } from 'src/store/leaderboard.store'
 import { useNounStore } from 'src/store/noun.store'
 import { useNounletStore } from 'src/store/nounlet.store'
-import { useSWRConfig } from 'swr'
 import { getVaultData } from '../../../graphql/src/queries'
 
 type NounHomeProps = {
@@ -120,22 +105,9 @@ function parseRouteParams(router: NextRouter) {
 const NounHome: NextPage<NounHomeProps> = (props) => {
   const router = useRouter()
   const routerParams = parseRouteParams(router)
-  const sdk = useSdk()
-  const { cache, mutate: globalMutate } = useSWRConfig()
-
-  const {
-    setNounTokenId,
-    isLive,
-    isLoading,
-    latestNounletTokenId,
-    wereAllNounletsAuctioned,
-    nounletTokenAddress,
-    vaultAddress,
-    nounTokenId
-  } = useNounStore()
+  const { setNounTokenId, isLive, isLoading, latestNounletTokenId, wereAllNounletsAuctioned } =
+    useNounStore()
   const { setNounletID } = useNounletStore()
-  const { leaderboardBlockNumber, setLeaderboardBlockNumber } = useBlockNumberCheckpointStore()
-  const { leaderboardData } = useLeaderboardStore()
 
   useEffect(() => {
     // console.log('effect ran', routerParams)
@@ -174,111 +146,15 @@ const NounHome: NextPage<NounHomeProps> = (props) => {
     console.log('Nounlet data', data)
   })
 
-  useNounBuyoutData((data) => {
-    console.log('Buyout data', data)
-  })
-
   useLeaderboardData((data) => {
     console.log('Leaderboard data', data)
   })
 
-  useEffect(() => {
-    if (!isLive || sdk == null) return
+  useNounBuyoutData((data) => {
+    console.log('Buyout data', data)
+  })
 
-    // TODO Maybe be more specific with the events?
-    console.log('🍉 listen to any event on NounletToken', vaultAddress, nounletTokenAddress)
-    const nounletToken = sdk.NounletToken.attach(nounletTokenAddress)
-    const nounletAuction = sdk.NounletAuction
-    const nounletGovernance = sdk.NounletGovernance
-
-    const debouncedMutate = debounce(() => {
-      globalMutate(`noun/${nounTokenId}/leaderboard`).then()
-      globalMutate(`noun/${nounTokenId}/leaderboard/delegate`).then()
-    }, 1000)
-
-    const listener = (...eventData: any) => {
-      const event = eventData.at(-1)
-      // console.groupCollapsed('🍉🍉🍉 any event', event?.blockNumber, eventData)
-      // console.log('event data', event)
-      // console.groupEnd()
-
-      setLeaderboardBlockNumber(event?.blockNumber || 0)
-      debouncedMutate()
-    }
-
-    nounletToken.on(nounletToken, listener)
-    nounletAuction.on(nounletAuction, listener)
-    nounletGovernance.on(nounletGovernance, listener)
-
-    return () => {
-      console.log('🍉 stop listening to any event on NounletToken')
-      nounletToken.off(nounletToken, listener)
-      nounletAuction.off(nounletAuction, listener)
-      nounletGovernance.off(nounletGovernance, listener)
-    }
-  }, [isLive, sdk, vaultAddress, nounletTokenAddress, setLeaderboardBlockNumber])
-
-  return (
-    <>
-      {/*<NounChainUpdater nounId={nounId} />*/}
-      <div className="space-y-16">
-        <OnMounted>
-          {wereAllNounletsAuctioned ? (
-            <>
-              <BuyoutHero />
-              {/*<SimpleModalWrapper*/}
-              {/*  className="md:!max-w-[512px]"*/}
-              {/*  isShown={isBuyoutOfferModalShown}*/}
-              {/*  onClose={() => closeBuyoutOfferModal()}*/}
-              {/*  preventCloseOnBackdrop*/}
-              {/*>*/}
-              {/*  <BuyoutOfferModal initialFullPriceOffer={initialFullPriceOffer} />*/}
-              {/*</SimpleModalWrapper>*/}
-
-              {/*<SimpleModalWrapper*/}
-              {/*  className="!max-w-[680px]"*/}
-              {/*  isShown={isBuyoutHowDoesItWorkModalShown}*/}
-              {/*  onClose={() => closeBuyoutHowDoesItWorkModal()}*/}
-              {/*>*/}
-              {/*  <BuyoutHowDoesItWorkModal />*/}
-              {/*</SimpleModalWrapper>*/}
-            </>
-          ) : (
-            <NounAuctionsDisplay />
-          )}
-
-          {/*<NounHero />*/}
-          {/*<HomeHero />*/}
-          {/*{isLive && hasAuctionSettled && <HomeVotesFromNounlet />}*/}
-          {/*{isLive && isGovernanceEnabled && <HomeLeaderboard />}*/}
-          {/*{isLive && <HomeCollectiveOwnership />}*/}
-          {/*<HomeWtf />*/}
-          <div className="flex flex-col gap-3 p-4">
-            <Link href={'/noun/5'}>GOTO 5</Link>
-            <Link href={'/noun/3'}>GOTO 3</Link>
-            <Link href={'/noun/3/nounlets/1'}>GOTO 3/1</Link>
-            <Link href={'/noun/3/nounlets/2'}>GOTO 3/2</Link>
-          </div>
-
-          {/*<pre className="p-4">{JSON.stringify(nounInfo, null, 4)}</pre>*/}
-          {/*<pre className="p-4">{JSON.stringify(nounletInfo, null, 4)}</pre>*/}
-        </OnMounted>
-      </div>
-    </>
-  )
+  return wereAllNounletsAuctioned ? <NounBuyoutDisplay /> : <NounAuctionsDisplay />
 }
 
 export default NounHome
-
-// function NounChainUpdater(props: { nounId: string }) {
-//   return (
-//     <>
-//       <div>Chain Update</div>
-//       <pre>{JSON.stringify(data || {}, null, 4)}</pre>
-//       <Link href={'/noun/5'}>GOTO 5</Link>
-//       <Link href={'/noun/3'}>GOTO 3</Link>
-//       <Link href={'/noun/3/nounlets/1'}>GOTO 3/1</Link>
-//       <Link href={'/noun/3/nounlets/2'}>GOTO 3/2</Link>
-//     </>
-//   )
-// }
