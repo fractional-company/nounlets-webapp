@@ -123,7 +123,6 @@ export default function useLeaderboardData(callback?: (data: any) => void) {
     {
       dedupingInterval: 0,
       refreshInterval: (latestData) => {
-        console.log('latest', leaderboardBlockNumber, latestData?.leaderboard?._meta?.block?.number)
         if (latestData?.leaderboard == null) return 15000
         if (latestData.leaderboard._meta!.block.number < leaderboardBlockNumber) {
           console.log(

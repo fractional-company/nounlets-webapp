@@ -1,17 +1,36 @@
+import classNames from 'classnames'
 import { GetServerSideProps, NextPage } from 'next'
 import { NextRouter, useRouter } from 'next/router'
-import { useEffect } from 'react'
+import { Fragment, useEffect, useState } from 'react'
+import BuyoutHero from 'src/components/buyout/BuyoutHero'
+import BuyoutHowDoesItWorkModal from 'src/components/buyout/BuyoutHowDoesItWorkModal'
+import BuyoutOfferModal from 'src/components/buyout/BuyoutOfferModal'
+import SimpleModalWrapper from 'src/components/common/simple/SimpleModalWrapper'
+import ModalBidHistory from 'src/components/modals/ModalBidHistory'
 import { NounAuctionsDisplay } from 'src/components/noun/NounAuctionsDisplay'
 import { NounBuyoutDisplay } from 'src/components/noun/NounBuyoutDisplay'
+import NounCollectiveOwnership from 'src/components/noun/NounCollectiveOwnership'
+import NounHero from 'src/components/noun/NounHero'
+import NounLeaderboard from 'src/components/noun/NounLeaderboard'
+import NounTabGeneral from 'src/components/noun/NounTab/NounTabGeneral'
+import NounTabNounlets from 'src/components/noun/NounTab/NounTabNounlets'
+import NounTabVote from 'src/components/noun/NounTab/NounTabVote'
+import NounVotesFromNounlet from 'src/components/noun/NounVotesFromNounlet'
+import NounWtf from 'src/components/noun/NounWtf'
 import OnMounted from 'src/components/OnMounted'
+import useDisplayedNounlet from 'src/hooks/useDisplayedNounlet'
 import useLeaderboardData from 'src/hooks/useLeaderboardData'
 import { useNounBuyoutData } from 'src/hooks/useNounBuyoutData'
 import { useNounData } from 'src/hooks/useNounData'
 import { useNounletData } from 'src/hooks/useNounletData'
 import { ONLY_NUMBERS_REGEX } from 'src/lib/utils/nextBidCalculator'
+import { useAppStore } from 'src/store/application'
+import { useBuyoutHowDoesItWorkModalStore } from 'src/store/buyout/buyout-how-does-it-work-modal.store'
+import { useBuyoutOfferModalStore } from 'src/store/buyout/buyout-offer-modal.store'
 import { useNounStore } from 'src/store/noun.store'
 import { useNounletStore } from 'src/store/nounlet.store'
 import { getVaultData } from '../../../graphql/src/queries'
+import { Tab } from '@headlessui/react'
 
 type NounHomeProps = {
   url: string
@@ -154,7 +173,96 @@ const NounHome: NextPage<NounHomeProps> = (props) => {
     console.log('Buyout data', data)
   })
 
-  return wereAllNounletsAuctioned ? <NounBuyoutDisplay /> : <NounAuctionsDisplay />
+  const { setBidModalOpen, isBidModalOpen } = useAppStore()
+  const { initialFullPriceOffer, isBuyoutOfferModalShown, closeBuyoutOfferModal } =
+    useBuyoutOfferModalStore()
+  const { isBuyoutHowDoesItWorkModalShown, closeBuyoutHowDoesItWorkModal } =
+    useBuyoutHowDoesItWorkModalStore()
+
+  const [selectedTabIndex, setSelectedTabIndex] = useState(0)
+
+  const handleChangeTabIndex = (index: number) => {
+    console.log('handleChangeTabIndex', index)
+    if (index === 2) {
+      if (routerParams.nounletId == null) {
+        router.replace(`/noun/${routerParams.nounId}/nounlets/1`, undefined, { shallow: true })
+        setSelectedTabIndex(index)
+      }
+    }
+    setSelectedTabIndex(index)
+  }
+
+  return (
+    <OnMounted>
+      <>
+        <SimpleModalWrapper
+          className="md:!max-w-[512px]"
+          isShown={isBuyoutOfferModalShown}
+          onClose={() => closeBuyoutOfferModal()}
+          preventCloseOnBackdrop
+        >
+          <BuyoutOfferModal initialFullPriceOffer={initialFullPriceOffer} />
+        </SimpleModalWrapper>
+
+        <SimpleModalWrapper
+          className="!max-w-[680px]"
+          isShown={isBuyoutHowDoesItWorkModalShown}
+          onClose={() => closeBuyoutHowDoesItWorkModal()}
+        >
+          <BuyoutHowDoesItWorkModal />
+        </SimpleModalWrapper>
+
+        <SimpleModalWrapper
+          className="md:!w-[600px] !max-w-[600px]"
+          onClose={() => setBidModalOpen(false)}
+          isShown={isBidModalOpen}
+        >
+          <ModalBidHistory />
+        </SimpleModalWrapper>
+      </>
+
+      <div className="space-y-16">
+        {wereAllNounletsAuctioned ? <BuyoutHero /> : <NounHero />}
+        <div className="flex flex-col">
+          <div className="flex items-center gap-5">
+            <div
+              className={classNames(
+                'font-londrina text-[56px]',
+                selectedTabIndex === 0 ? 'text-black' : 'text-gray-3'
+              )}
+              onClick={() => handleChangeTabIndex(0)}
+            >
+              General
+            </div>
+            <div
+              className={classNames(
+                'font-londrina text-[56px]',
+                selectedTabIndex === 1 ? 'text-black' : 'text-gray-3'
+              )}
+              onClick={() => handleChangeTabIndex(1)}
+            >
+              Vote
+            </div>
+            <div
+              className={classNames(
+                'font-londrina text-[56px]',
+                selectedTabIndex === 2 ? 'text-black' : 'text-gray-3'
+              )}
+              onClick={() => handleChangeTabIndex(2)}
+            >
+              Nounlets
+            </div>
+          </div>
+
+          <div>
+            {selectedTabIndex === 0 && <NounTabGeneral />}
+            {selectedTabIndex === 1 && <NounTabVote />}
+            {selectedTabIndex === 2 && <NounTabNounlets />}
+          </div>
+        </div>
+      </div>
+    </OnMounted>
+  )
 }
 
 export default NounHome

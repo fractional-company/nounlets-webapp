@@ -2,6 +2,7 @@ import { useEthers } from '@usedapp/core'
 import classNames from 'classnames'
 import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import ModalVoteForDelegate from 'src/components/modals/ModalVoteForDelegate'
 import useCurrentBackground from 'src/hooks/useCurrentBackground'
 import { useVaultStore } from 'src/store/vaultStore'
 import { useAppStore } from '../../store/application'
@@ -80,7 +81,7 @@ export default function AppHeader(): JSX.Element {
     <div className="app-header" style={{ background: currentBackground }}>
       <div className="lg:container mx-auto px-4">
         <ModalWallet />
-        {/*<ModalVoteForDelegate />*/}
+        <ModalVoteForDelegate />
         <div className="flex items-center h-full space-x-4 min-h-[88px]">
           <Link href="/">
             <a className="relative overflow-visible pt-2 mb-4">

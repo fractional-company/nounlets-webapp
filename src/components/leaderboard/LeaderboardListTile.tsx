@@ -60,6 +60,7 @@ export default function LeaderboardListTile(props: {
   }, [isDelegateCandidate])
 
   const handleCastVote = (address: string) => {
+    console.log('castying', address)
     if (account == null) {
       setConnectModalOpen(true)
       return

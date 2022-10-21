@@ -18,12 +18,16 @@ export async function nounletDataFetcher(
   let response: Awaited<ReturnType<typeof getNounletAuctionData>> = null
   // Ongoing auction, get from BC
   if (nounletId === latestNounletTokenID) {
-    response = await getNounletAuctionDataBC(
-      vaultAddress,
-      nounletTokenAddress,
-      nounletId,
-      sdk.NounletAuction
-    )
+    response = await getNounletAuctionData(vaultAddress, nounletTokenAddress, nounletId)
+
+    if (!response?.settled) {
+      response = await getNounletAuctionDataBC(
+        vaultAddress,
+        nounletTokenAddress,
+        nounletId,
+        sdk.NounletAuction
+      )
+    }
   } else {
     response = await getNounletAuctionData(vaultAddress, nounletTokenAddress, nounletId)
   }
