@@ -124,8 +124,14 @@ function parseRouteParams(router: NextRouter) {
 const NounHome: NextPage<NounHomeProps> = (props) => {
   const router = useRouter()
   const routerParams = parseRouteParams(router)
-  const { setNounTokenId, isLive, isLoading, latestNounletTokenId, wereAllNounletsAuctioned } =
-    useNounStore()
+  const {
+    setNounTokenId,
+    isLive,
+    isLoading,
+    latestNounletTokenId,
+    wereAllNounletsAuctioned,
+    isGovernanceEnabled
+  } = useNounStore()
   const { setNounletID } = useNounletStore()
 
   useEffect(() => {
@@ -182,7 +188,7 @@ const NounHome: NextPage<NounHomeProps> = (props) => {
   const [selectedTabIndex, setSelectedTabIndex] = useState(0)
 
   const handleChangeTabIndex = (index: number) => {
-    console.log('handleChangeTabIndex', index)
+    // console.log('handleChangeTabIndex', index)
     if (index === 2) {
       if (routerParams.nounletId == null) {
         router.replace(`/noun/${routerParams.nounId}/nounlets/1`, undefined, { shallow: true })
@@ -223,41 +229,47 @@ const NounHome: NextPage<NounHomeProps> = (props) => {
 
       <div className="space-y-16">
         {wereAllNounletsAuctioned ? <BuyoutHero /> : <NounHero />}
+
         <div className="flex flex-col">
-          <div className="flex items-center gap-5">
-            <div
-              className={classNames(
-                'font-londrina text-[56px]',
-                selectedTabIndex === 0 ? 'text-black' : 'text-gray-3'
+          <div className="lg:container lg:mx-auto px-4">
+            <div className="flex flex-col lg:flex-row lg:items-center gap-2 lg:gap-12">
+              <div
+                className={classNames(
+                  'font-londrina text-[56px] cursor-pointer',
+                  selectedTabIndex === 0 ? 'text-black' : 'text-gray-3'
+                )}
+                onClick={() => handleChangeTabIndex(0)}
+              >
+                General
+              </div>
+              {isGovernanceEnabled && (
+                <div
+                  className={classNames(
+                    'font-londrina text-[56px] cursor-pointer',
+                    selectedTabIndex === 1 ? 'text-black' : 'text-gray-3'
+                  )}
+                  onClick={() => handleChangeTabIndex(1)}
+                >
+                  Vote
+                </div>
               )}
-              onClick={() => handleChangeTabIndex(0)}
-            >
-              General
-            </div>
-            <div
-              className={classNames(
-                'font-londrina text-[56px]',
-                selectedTabIndex === 1 ? 'text-black' : 'text-gray-3'
+              {wereAllNounletsAuctioned && (
+                <div
+                  className={classNames(
+                    'font-londrina text-[56px] cursor-pointer',
+                    selectedTabIndex === 2 ? 'text-black' : 'text-gray-3'
+                  )}
+                  onClick={() => handleChangeTabIndex(2)}
+                >
+                  Nounlets
+                </div>
               )}
-              onClick={() => handleChangeTabIndex(1)}
-            >
-              Vote
-            </div>
-            <div
-              className={classNames(
-                'font-londrina text-[56px]',
-                selectedTabIndex === 2 ? 'text-black' : 'text-gray-3'
-              )}
-              onClick={() => handleChangeTabIndex(2)}
-            >
-              Nounlets
             </div>
           </div>
-
-          <div>
+          <div className={'mt-12'}>
             {selectedTabIndex === 0 && <NounTabGeneral />}
-            {selectedTabIndex === 1 && <NounTabVote />}
-            {selectedTabIndex === 2 && <NounTabNounlets />}
+            {selectedTabIndex === 1 && isGovernanceEnabled && <NounTabVote />}
+            {selectedTabIndex === 2 && wereAllNounletsAuctioned && <NounTabNounlets />}
           </div>
         </div>
       </div>

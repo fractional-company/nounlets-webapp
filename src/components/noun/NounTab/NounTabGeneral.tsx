@@ -10,14 +10,6 @@ export default function NounTabGeneral() {
   const { isLive, isGovernanceEnabled, wereAllNounletsAuctioned } = useNounStore()
   const { hasAuctionSettled } = useDisplayedNounlet()
 
-  useEffect(() => {
-    console.log('mounted')
-
-    return () => {
-      console.log('unmounted')
-    }
-  }, [])
-
   return (
     <div className="space-y-16">
       {isLive && hasAuctionSettled && !wereAllNounletsAuctioned && <NounVotesFromNounlet />}

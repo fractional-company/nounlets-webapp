@@ -15,20 +15,7 @@ import { useNounletStore } from 'src/store/nounlet.store'
 export default function NounTabNounlets() {
   const router = useRouter()
   const { isLoading, nounTokenId, latestNounletTokenId } = useNounStore()
-  const { isLoading: isLoadingNounlet, nounletId, auctionData } = useNounletStore()
-  const { nounletBackground } = useDisplayedNounlet()
-
-  // const {
-  //   isLoading,
-  //   nid,
-  //   latestNounletTokenId,
-  //   hasAuctionEnded,
-  //   auctionInfo,
-  //   mutateAuctionInfo: mutateDisplayedNounletAuctionInfo
-  // } = useDisplayedNounlet()
-  // const { currentBackground } = useCurrentBackground()
-
-  // const nounletId = nounletId //  isLoadingNounlet ? null : nounletId
+  const { nounletId, auctionData } = useNounletStore()
 
   const nounletNumberString = nounletId || '???'
   const isButtonPreviousDisabled = useMemo(() => {
@@ -57,7 +44,7 @@ export default function NounTabNounlets() {
   // TODO change color
   return (
     <div className={'space-y-16'}>
-      <div className="home-hero" style={{ background: 'transparent' }}>
+      <div className="nounlet-hero">
         <div className="lg:container mx-auto px-4">
           <div className="lg:grid lg:grid-cols-2">
             <div className="flex flex-col justify-end lg:pr-4 lg:min-h-[544px] lg:order-2">

@@ -75,7 +75,7 @@ export default function GovernanceLeaderboard() {
     <div className="leaderboard mt-14">
       <div className="flex flex-col md:flex-row items-center gap-2">
         <div className="flex items-center flex-1 gap-3">
-          <h2 className="font-londrina text-[40px] leading-[47px]">Leaderboard</h2>
+          <h2 className="text-px32 font-londrina">Leaderboard</h2>
           {isOutOfSync && (
             <SimplePopover>
               <IconSpinner className="animate-spin h-6" />

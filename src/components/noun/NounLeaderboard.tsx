@@ -18,8 +18,8 @@ export default function NounLeaderboard(): JSX.Element {
 
   const hasFirstAuctionSettled = latestNounletTokenId !== '0' && latestNounletTokenId !== '1'
   return (
-    <div className="home-leaderboard lg:container mx-auto">
-      <div className="px-4 md:px-12 lg:px-4 mt-12 lg:mt-16">
+    <div className="noun-leaderboard lg:container mx-auto">
+      <div className="px-4 md:px-12 lg:px-4">
         <div
           className="lg:grid leading-[38px]"
           style={{ gridTemplateColumns: 'auto 100px 140px 160px' }}

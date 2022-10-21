@@ -23,7 +23,7 @@ export default function NounCollectiveOwnership(): JSX.Element {
               COLLECTIVE OWNERSHIP OF NOUN {nounTokenId || '???'}
             </h1>
 
-            <div className="w-full aspect-square max-w-[512px] mx-auto">
+            <div className="w-full aspect-square max-w-[512px] mx-auto md:ml-auto md:mr-0">
               <NounImage id={nounTokenId} />
             </div>
           </div>
