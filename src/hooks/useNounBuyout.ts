@@ -9,7 +9,7 @@ import { useNounStore } from 'src/store/noun.store'
 import { useVaultStore } from 'src/store/vaultStore'
 import { useSWRConfig } from 'swr'
 import useLeaderboard from './useLeaderboard'
-import useNounImageData from './useNounImageData'
+import useNounImageData from './images/useNounImageData'
 import useSdk from './useSdk'
 
 export default function useNounBuyout() {

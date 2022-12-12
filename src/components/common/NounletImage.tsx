@@ -1,11 +1,19 @@
-import useNounImageData from 'src/hooks/useNounImageData'
-import useNounletImageData from 'src/hooks/useNounletImageData'
+import useNounImageData, { NounletsImageData } from 'src/hooks/images/useNounImageData'
+import useNounletImageData from 'src/hooks/images/useNounletImageData'
 import Image from 'next/image'
 import nounLoadingImage from 'public/img/loading-skull.gif'
 import { useVaultStore } from 'src/store/vaultStore'
 
-export function NounletImage(props: { id: string | null }) {
-  const { data: nouneltData } = useNounletImageData(props.id)
+export function NounletImage(props: {
+  noundId?: string | null
+  nounletTokenAddress?: string | null
+  id: string | null
+}) {
+  const { data: nouneltData } = useNounletImageData(
+    props.noundId,
+    props.nounletTokenAddress,
+    props.id
+  )
 
   return nouneltData == null ? (
     <Image
@@ -13,26 +21,25 @@ export function NounletImage(props: { id: string | null }) {
       layout="responsive"
       width={320}
       height={320}
-      alt="nounlet loading"
       className="image-pixelated"
+      alt="nounlet loading"
     />
   ) : (
     <Image
+      className="image-pixelated"
       src={nouneltData.image}
-      alt="nounlet"
+      alt={`nounlet ${props.id}`}
       layout="responsive"
       width={320}
       height={320}
-      className="image-pixelated"
     />
   )
 }
 
 export function NounImage(props: { id?: string }) {
-  const { nounTokenId } = useVaultStore()
-  const { data: nounData } = useNounImageData(props.id || nounTokenId)
+  const { data } = useNounImageData(props.id)
 
-  return nounData == null ? (
+  return data == null ? (
     <Image
       src={nounLoadingImage}
       layout="responsive"
@@ -44,8 +51,8 @@ export function NounImage(props: { id?: string }) {
   ) : (
     <Image
       className="image-pixelated"
-      src={nounData.image}
-      alt="noun"
+      src={data.image}
+      alt={`noun ${props.id}`}
       layout="responsive"
       width={320}
       height={320}

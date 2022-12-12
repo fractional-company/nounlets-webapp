@@ -4,7 +4,7 @@ import { debounce } from 'lodash'
 import { useCallback } from 'react'
 import { mutate as globalMutate } from 'swr'
 const cacheVersion = NEXT_PUBLIC_CACHE_VERSION
-const cacheKey = `nounlets-cache/v${cacheVersion}/${NEXT_PUBLIC_NOUN_VAULT_ADDRESS}`
+const cacheKey = `nounlets-cache-v2/v${cacheVersion}/`
 
 let localStorageData: { images: { [key: string]: object }; auctions: { [key: string]: object } } = {
   images: {},
@@ -42,6 +42,8 @@ if (cacheVersion !== -1) {
       console.error('localstorage error', error)
     }
   }
+} else {
+  console.log('skipping cache')
 }
 
 const debouncedLocalStorageWrite = debounce(() => {
@@ -59,7 +61,7 @@ const debouncedLocalStorageWrite = debounce(() => {
 }, 1000)
 
 export default function useLocalStorage() {
-  const setNounletImageCache = useCallback((key: string, data: object) => {
+  const setImageCache = useCallback((key: string, data: object) => {
     if (cacheVersion !== -1) {
       if (typeof window !== 'undefined' && window.localStorage != null) {
         // console.log('📸📸📸 setting image data', key, data)
@@ -69,8 +71,8 @@ export default function useLocalStorage() {
     }
   }, [])
 
-  const setNounletAuctionsCache = useCallback((key: string, data: object) => {
-    if (cacheVersion > 3) {
+  const setAuctionsCache = useCallback((key: string, data: object) => {
+    if (cacheVersion !== -1) {
       if (typeof window !== 'undefined' && window.localStorage != null) {
         // console.log('🔫🔫🔫 setting auctions data', key, data)
         localStorageData['auctions'][key] = data
@@ -80,7 +82,7 @@ export default function useLocalStorage() {
   }, [])
 
   return {
-    setNounletImageCache,
-    setNounletAuctionsCache
+    setImageCache,
+    setAuctionsCache
   }
 }

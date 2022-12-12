@@ -7,7 +7,7 @@ import useLocalStorage from './useLocalStorage'
 import useSdk from './useSdk'
 
 export default function useNounletAuctionInfo(nounletId: string | null) {
-  const { setNounletAuctionsCache } = useLocalStorage()
+  const { setAuctionsCache: setNounletAuctionsCache } = useLocalStorage()
   const sdk = useSdk()
   const { cache, mutate: globalMutate } = useSWRConfig()
   const { isLive, vaultAddress, nounletTokenAddress, latestNounletTokenId } = useVaultStore()

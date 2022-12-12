@@ -18,7 +18,7 @@ import NounHeroAuctionProgress from './NounHeroAuctionProgress'
 
 export default function NounHero(): JSX.Element {
   const router = useRouter()
-  const { isLoading, nounTokenId, latestNounletTokenId } = useNounStore()
+  const { isLoading, nounTokenId, latestNounletTokenId, nounletTokenAddress } = useNounStore()
   const { isLoading: isLoadingNounlet, nounletId, auctionData } = useNounletStore()
   const { currentBackground } = useCurrentBackground()
 
@@ -72,7 +72,11 @@ export default function NounHero(): JSX.Element {
         <div className="lg:grid lg:grid-cols-2">
           <div className="flex flex-col justify-end lg:pr-4 lg:min-h-[544px]">
             <div className="w-full aspect-square max-w-[512px] mx-auto">
-              <NounletImage id={nounletId} />
+              <NounletImage
+                noundId={nounTokenId}
+                nounletTokenAddress={nounletTokenAddress}
+                id={nounletId}
+              />
             </div>
           </div>
 

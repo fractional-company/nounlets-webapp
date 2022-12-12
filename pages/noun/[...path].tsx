@@ -74,7 +74,7 @@ export const getServerSideProps: GetServerSideProps<NounHomeProps> = async (cont
 function parseRouteParams(router: NextRouter) {
   const queryPath = router.query.path as string[]
   const [nounId, subdirectory, nounletId] = queryPath
-  console.log([nounId, subdirectory, nounletId])
+  // console.log([nounId, subdirectory, nounletId])
 
   if (!nounId || !ONLY_NUMBERS_REGEX.test(nounId as string)) {
     return {
@@ -232,7 +232,7 @@ const NounHome: NextPage<NounHomeProps> = (props) => {
         </SimpleModalWrapper>
       </>
 
-      <div className="space-y-16">
+      <div className="space-y-16 min-h-screen">
         {wereAllNounletsAuctioned ? <BuyoutHero /> : <NounHero />}
 
         <div className="flex flex-col">

@@ -23,7 +23,7 @@ export default function HomeCollectiveOwnership(): JSX.Element {
             </h1>
 
             <div className="w-full aspect-square max-w-[512px] mx-auto">
-              <NounImage />
+              <NounImage id={nounTokenId} />
             </div>
           </div>
         </div>

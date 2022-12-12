@@ -14,7 +14,7 @@ import { useNounletStore } from 'src/store/nounlet.store'
 
 export default function NounTabNounlets() {
   const router = useRouter()
-  const { isLoading, nounTokenId, latestNounletTokenId } = useNounStore()
+  const { isLoading, nounTokenId, latestNounletTokenId, nounletTokenAddress } = useNounStore()
   const { nounletId, auctionData } = useNounletStore()
 
   const nounletNumberString = nounletId || '???'
@@ -49,7 +49,11 @@ export default function NounTabNounlets() {
           <div className="lg:grid lg:grid-cols-2">
             <div className="flex flex-col justify-end lg:pr-4 lg:min-h-[544px] lg:order-2">
               <div className="w-full aspect-square max-w-[512px] mx-auto">
-                <NounletImage id={nounletId} />
+                <NounletImage
+                  noundId={nounTokenId}
+                  nounletTokenAddress={nounletTokenAddress}
+                  id={nounletId}
+                />
               </div>
             </div>
 

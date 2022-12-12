@@ -8,7 +8,7 @@ import { useNounletStore } from 'src/store/nounlet.store'
 import { useVaultStore } from 'src/store/vaultStore'
 import useSWR, { unstable_serialize, useSWRConfig } from 'swr'
 import useNounletAuctionInfo from './useNounletAuctionInfo'
-import useNounletImageData from './useNounletImageData'
+import useNounletImageData from './images/useNounletImageData'
 import useSdk from './useSdk'
 
 export default function useDisplayedNounlet(ignoreUpdate = false) {
@@ -27,7 +27,11 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
   } = useNounStore()
   const { nounletId, auctionData } = useNounletStore()
 
-  const { data: nounletImageData } = useNounletImageData(nounletId)
+  const { data: nounletImageData } = useNounletImageData(
+    nounTokenId,
+    nounletTokenAddress,
+    nounletId
+  )
 
   const mutateAuctionInfo = useCallback(async () => {
     return globalMutate(`${nounletTokenAddress}/nounlet/${nounletId}`)

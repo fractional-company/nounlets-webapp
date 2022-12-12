@@ -54,7 +54,6 @@
     "superjson": "^1.9.1",
     "swr": "^1.3.0",
     "urql": "^2.0.6",
-    "wagmi": "^0.5.9",
     "zustand": "^4.0.0-rc.1"
   },
   "devDependencies": {

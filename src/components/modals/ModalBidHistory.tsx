@@ -14,7 +14,7 @@ import IconLinkOffsite from '../common/icons/IconLinkOffsite'
 import SimpleAddress from '../common/simple/SimpleAddress'
 
 const ModalBidHistory = (): JSX.Element => {
-  const { nid, historicBids } = useDisplayedNounlet(true)
+  const { nounletId, historicBids, nounTokenId, nounletTokenAddress } = useDisplayedNounlet(true)
 
   const bidHistory = useMemo(
     () =>
@@ -70,12 +70,16 @@ const ModalBidHistory = (): JSX.Element => {
       <Dialog.Title className="text-px24 font-500">
         <div className="flex items-start space-x-4">
           <div className="w-[84px] flex-shrink-0 rounded-[15px] overflow-hidden">
-            <NounletImage id={nid} />
+            <NounletImage
+              noundId={nounTokenId}
+              nounletTokenAddress={nounletTokenAddress}
+              id={nounletId}
+            />
           </div>
           <div className="flex flex-col font-londrina">
             <h4 className="text-px24 text-gray-4">Bids for</h4>
             <h2 className="text-px42 font-900 leading-px42">
-              Nounlet {nid}/{NEXT_PUBLIC_MAX_NOUNLETS}
+              Nounlet {nounletId}/{NEXT_PUBLIC_MAX_NOUNLETS}
             </h2>
           </div>
         </div>
