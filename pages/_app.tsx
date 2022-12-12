@@ -18,9 +18,19 @@ import { useAppStore } from 'src/store/application'
 import ModalCongratulations from 'src/components/modals/ModalCongratulations'
 import useLocalStorage from 'src/hooks/useLocalStorage'
 
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  QueryClient,
+  QueryClientProvider
+} from '@tanstack/react-query'
+
 dayjs.extend(duration)
 dayjs.extend(utc)
 dayjs.extend(relativeTime)
+
+const queryClient = new QueryClient()
 
 const useDappConfig: Config = {
   readOnlyChainId: CHAIN_ID,
@@ -34,34 +44,36 @@ function MyApp({ Component, pageProps }: AppProps) {
   const {} = useLocalStorage()
   const { congratulationsModal, setCongratulationsModalForNounletId } = useAppStore()
   return (
-    <SWRConfig
-      value={{
-        refreshInterval: 0,
-        dedupingInterval: 2000,
-        revalidateOnFocus: false,
-        revalidateOnReconnect: false
-      }}
-    >
-      <DAppProvider config={useDappConfig}>
-        <WalletConfig>
-          {/*<ChainUpdater />*/}
-          <Toaster />
-          <div className="bg-gray-1">
-            <AppHeader />
-          </div>
-          <div id="backdrop-root"></div>
-          <div id="overlay-root"></div>
-          <Component {...pageProps} />
-          <AppFooter />
-          <ModalCongratulations
-            isShown={congratulationsModal.show}
-            onClose={() => {
-              setCongratulationsModalForNounletId(false)
-            }}
-          />
-        </WalletConfig>
-      </DAppProvider>
-    </SWRConfig>
+    <QueryClientProvider client={queryClient}>
+      <SWRConfig
+        value={{
+          refreshInterval: 0,
+          dedupingInterval: 2000,
+          revalidateOnFocus: false,
+          revalidateOnReconnect: false
+        }}
+      >
+        <DAppProvider config={useDappConfig}>
+          <WalletConfig>
+            {/*<ChainUpdater />*/}
+            <Toaster />
+            <div className="bg-gray-1">
+              <AppHeader />
+            </div>
+            <div id="backdrop-root"></div>
+            <div id="overlay-root"></div>
+            <Component {...pageProps} />
+            <AppFooter />
+            <ModalCongratulations
+              isShown={congratulationsModal.show}
+              onClose={() => {
+                setCongratulationsModalForNounletId(false)
+              }}
+            />
+          </WalletConfig>
+        </DAppProvider>
+      </SWRConfig>
+    </QueryClientProvider>
   )
 }
 

@@ -1,19 +1,37 @@
+import { useQuery } from '@tanstack/react-query'
 import { getVaultList } from 'graphql/src/queries'
 import type { NextPage } from 'next'
 import Link from 'next/link'
 import { useMemo } from 'react'
 import { NounImage } from 'src/components/common/NounletImage'
 import useSWR from 'swr'
+import { sleep } from 'radash'
 
-export const getServerSideProps = (context: any) => {
-  return {
-    props: {
-      url: 'https://' + context?.req?.headers?.host
-    }
-  }
-}
+const Home: NextPage<{ url: string }> = () => {
+  // const neki = useQuery(
+  //   ['neki', 2],
+  //   async ({ queryKey }) => {
+  //     console.log('hi', queryKey)
+  //     await sleep(1000)
+  //     return 42
+  //   },
+  //   {
+  //     enabled: true,
+  //     cacheTime: 0,
+  //     onSuccess(data) {
+  //       console.log('1', data)
+  //     }
+  //   }
+  // )
 
-const Home: NextPage<{ url: string }> = ({ url }) => {
+  // const neki2 = useQuery(['neki', 2], {
+  //   onSuccess(data) {
+  //     console.log('2', data)
+  //   }
+  // })
+
+  // console.log({ neki, neki2 })
+
   const { data } = useSWR(
     'ExistingVaults',
     async () => {

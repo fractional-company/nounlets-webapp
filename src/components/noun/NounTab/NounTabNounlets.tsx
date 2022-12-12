@@ -35,7 +35,7 @@ export default function NounTabNounlets() {
     if (nounletId == null) return
 
     router
-      .push(`/noun/${nounTokenId}/nounlets/${+nounletId + direction}`, undefined, {
+      .push(`/noun/${nounTokenId}/nounlet/${+nounletId + direction}`, undefined, {
         shallow: true
       })
       .then()

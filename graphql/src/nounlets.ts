@@ -13,7 +13,7 @@ export const getVaultListGQL = async () => {
           noun {
             id
             currentDelegate
-            nounlets(first: 1) {
+            nounlets(first: 1, orderBy: id, orderDirection: desc) {
               id
               auction {
                 startTime

@@ -29,7 +29,7 @@ import { useBuyoutHowDoesItWorkModalStore } from 'src/store/buyout/buyout-how-do
 import { useBuyoutOfferModalStore } from 'src/store/buyout/buyout-offer-modal.store'
 import { useNounStore } from 'src/store/noun.store'
 import { useNounletStore } from 'src/store/nounlet.store'
-import { getVaultData } from '../../../graphql/src/queries'
+import { getVaultData } from '../../graphql/src/queries'
 import { Tab } from '@headlessui/react'
 
 type NounHomeProps = {
@@ -39,7 +39,10 @@ type NounHomeProps = {
 }
 
 export const getServerSideProps: GetServerSideProps<NounHomeProps> = async (context) => {
-  const nounId = context.query['nounId'] as string
+  const queryPath = context.query.path as string[]
+  const [nounId, subdirectory, nounletId] = queryPath
+  console.log([nounId, subdirectory, nounletId])
+
   if (nounId == null || !ONLY_NUMBERS_REGEX.test(nounId)) {
     return {
       redirect: {
@@ -69,10 +72,9 @@ export const getServerSideProps: GetServerSideProps<NounHomeProps> = async (cont
 }
 
 function parseRouteParams(router: NextRouter) {
-  const query = router.query
-
-  const nounId = query['nounId']
-  const subtree = query['subtree']
+  const queryPath = router.query.path as string[]
+  const [nounId, subdirectory, nounletId] = queryPath
+  console.log([nounId, subdirectory, nounletId])
 
   if (!nounId || !ONLY_NUMBERS_REGEX.test(nounId as string)) {
     return {
@@ -82,41 +84,35 @@ function parseRouteParams(router: NextRouter) {
     }
   }
 
-  if (subtree == null) {
-    return {
-      nounId: nounId as string,
-      nounletId: null,
-      redirect: null
+  if (subdirectory != null) {
+    if (subdirectory !== 'nounlet') {
+      return {
+        nounId: nounId,
+        nounletId: null,
+        redirect: `/noun/${nounId}`
+      }
     }
-  }
 
-  if (subtree.length != 2) {
-    return {
-      nounId: nounId as string,
-      nounletId: null,
-      redirect: `/noun/${nounId}`
+    if (nounletId == null || !ONLY_NUMBERS_REGEX.test(nounletId)) {
+      return {
+        nounId: nounId,
+        nounletId: null,
+        redirect: `/noun/${nounId}`
+      }
     }
-  }
 
-  if (subtree[0] !== 'nounlets' || !ONLY_NUMBERS_REGEX.test(subtree[1] as string)) {
-    return {
-      nounId: nounId as string,
-      nounletId: null,
-      redirect: `/noun/${nounId}`
-    }
-  }
-
-  if (+subtree[1] < 1 || +subtree[1] > 100) {
-    return {
-      nounId: nounId as string,
-      nounletId: null,
-      redirect: `/noun/${nounId}`
+    if (+nounletId < 1 || +nounletId > 100) {
+      return {
+        nounId: nounId,
+        nounletId: null,
+        redirect: `/noun/${nounId}`
+      }
     }
   }
 
   return {
-    nounId: nounId as string,
-    nounletId: subtree[1] as string,
+    nounId: nounId,
+    nounletId: nounletId,
     redirect: null
   }
 }
@@ -135,9 +131,9 @@ const NounHome: NextPage<NounHomeProps> = (props) => {
   const { setNounletID } = useNounletStore()
 
   useEffect(() => {
-    // console.log('effect ran', routerParams)
     if (routerParams.redirect != null) {
-      router.replace(routerParams.redirect).then()
+      const shallowRedirect = routerParams.redirect !== '/'
+      router.replace(routerParams.redirect, undefined, { shallow: shallowRedirect }).then()
       return
     }
 
@@ -187,11 +183,20 @@ const NounHome: NextPage<NounHomeProps> = (props) => {
 
   const [selectedTabIndex, setSelectedTabIndex] = useState(0)
 
+  useEffect(() => {
+    if (wereAllNounletsAuctioned) {
+      if (routerParams.nounletId != null) {
+        console.log('open nounlets tab!')
+        setSelectedTabIndex(2)
+      }
+    }
+  }, [wereAllNounletsAuctioned, routerParams.nounletId])
+
   const handleChangeTabIndex = (index: number) => {
     // console.log('handleChangeTabIndex', index)
     if (index === 2) {
       if (routerParams.nounletId == null) {
-        router.replace(`/noun/${routerParams.nounId}/nounlets/1`, undefined, { shallow: true })
+        router.replace(`/noun/${routerParams.nounId}/nounlet/1`, undefined, { shallow: true })
         setSelectedTabIndex(index)
       }
     }
