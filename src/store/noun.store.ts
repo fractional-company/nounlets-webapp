@@ -13,6 +13,7 @@ interface StoreState {
   minBidIncrease: string
   backgrounds: Record<string, string>
   // State
+  isReady: boolean // Wait until you have all the info, then display
   isLive: boolean // Has BE picked up the vault yet?
   isLoading: boolean
   isLeaderboardOutOfSync: boolean
@@ -28,6 +29,7 @@ interface StoreState {
 }
 
 interface StoreActions {
+  reset: () => void
   // Constants
   setVaultAddress: (address: string) => void
   setNounTokenId: (id: string) => void
@@ -36,6 +38,7 @@ interface StoreActions {
   setMinBidIncrease: (percentage: string) => void
   setBackgrounds?: (backgrounds: any) => void
   // State
+  setIsReady: (flag: boolean) => void
   setIsLive: (flag: boolean) => void
   setIsLoading: (flag: boolean) => void
   setIsLeaderboardOutOfSync: (flag: boolean) => void
@@ -64,6 +67,7 @@ const initialState: StoreState = {
     '3': '#e1d7d5'
   },
   // State
+  isReady: false,
   isLive: false,
   isLoading: true,
   isLeaderboardOutOfSync: false,
@@ -81,6 +85,12 @@ export const useNounStore = createTrackedSelector(
   create(
     immer<StoreState & StoreActions>((set) => ({
       ...initialState,
+      reset: () => {
+        console.log('reseting noun store')
+        set((state) => {
+          Object.assign(state, initialState)
+        })
+      },
       // Constants
       setVaultAddress: (address) => {
         set((state) => {
@@ -111,6 +121,11 @@ export const useNounStore = createTrackedSelector(
         console.log('Not implemented')
       },
       // State
+      setIsReady: (flag) => {
+        set((state) => {
+          state.isReady = flag
+        })
+      },
       setIsLive: (flag) => {
         set((state) => {
           state.isLive = flag

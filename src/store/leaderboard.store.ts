@@ -10,6 +10,7 @@ interface StoreState {
   leaderboardData: LeaderboardData
 }
 interface StoreActions {
+  reset: () => void
   setIsLoading: (flag: boolean) => void
   setLeaderboardData: (data: LeaderboardData) => void
 }
@@ -23,7 +24,12 @@ export const useLeaderboardStore = createTrackedSelector(
   create(
     immer<StoreState & StoreActions>((set) => ({
       ...initialState,
-
+      reset: () => {
+        console.log('reseting leaderboard store')
+        set((state) => {
+          Object.assign(state, initialState)
+        })
+      },
       setIsLoading: (flag) =>
         set((state) => {
           state.isLoading = flag

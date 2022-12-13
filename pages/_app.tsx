@@ -7,7 +7,6 @@ import WalletConfig from '../src/components/common/WalletConfig'
 import '../styles/globals.css'
 
 import { SWRConfig } from 'swr'
-import ChainUpdater from '../src/components/ChainUpdater'
 
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
@@ -18,6 +17,9 @@ import { useAppStore } from 'src/store/application.store'
 import ModalCongratulations from 'src/components/modals/ModalCongratulations'
 import useLocalStorage from 'src/hooks/utils/useLocalStorage'
 
+// Used to make hydration happy. Will be false until the first useEffect is ran.
+export let IS_SAFE_TO_RENDER = false
+
 import {
   useQuery,
   useMutation,
@@ -25,6 +27,7 @@ import {
   QueryClient,
   QueryClientProvider
 } from '@tanstack/react-query'
+import { useEffect } from 'react'
 
 dayjs.extend(duration)
 dayjs.extend(utc)
@@ -43,6 +46,11 @@ const useDappConfig: Config = {
 function MyApp({ Component, pageProps }: AppProps) {
   const {} = useLocalStorage()
   const { congratulationsModal, setCongratulationsModalForNounletId } = useAppStore()
+
+  useEffect(() => {
+    IS_SAFE_TO_RENDER = true
+  }, [])
+
   return (
     <QueryClientProvider client={queryClient}>
       <SWRConfig

@@ -67,11 +67,7 @@ export default function BuyoutOfferCard(): JSX.Element {
           ) : (
             <div className="flex flex-col gap-2 flex-1 text-center xs:text-start">
               <p className="font-londrina text-px18 leading-px18">
-                You own{' '}
-                <Link href="/governance">
-                  <span className="text-secondary-blue cursor-pointer">{myNounlets.length}</span>
-                </Link>{' '}
-                nounlet
+                You own <span className="text-secondary-blue">{myNounlets.length}</span> nounlet
                 {myNounlets.length === 1 ? '' : 's'}! 🎉
               </p>
               <p className="font-londrina text-px16 leading-px16">

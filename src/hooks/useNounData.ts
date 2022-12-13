@@ -7,7 +7,7 @@ import { useNounStore } from 'src/store/noun.store'
 import { useNounletStore } from 'src/store/nounlet.store'
 import useSWR from 'swr'
 
-export function useNounData(callback?: (data: any) => void) {
+export function useNounData(enabled: boolean, callback?: (data: any) => void) {
   const sdk = useSdk()
   const {
     isLive,
@@ -17,6 +17,7 @@ export function useNounData(callback?: (data: any) => void) {
     nounTokenId,
     latestNounletTokenId,
     isGovernanceEnabled,
+    setIsReady,
     setIsLive,
     setIsLoading,
     setVaultAddress,
@@ -30,13 +31,14 @@ export function useNounData(callback?: (data: any) => void) {
     setIsGovernanceEnabled
   } = useNounStore()
 
-  useEffect(() => {
-    setIsLive(false)
-    setIsLoading(true)
-  }, [nounTokenId])
+  // useEffect(() => {
+  //   console.log('ran', nounTokenId)
+  //   setIsLive(false)
+  //   setIsLoading(true)
+  // }, [nounTokenId])
 
   const { data, mutate } = useSWR(
-    sdk && nounTokenId != null && `noun/${nounTokenId}`,
+    enabled && sdk && nounTokenId != null && `noun/${nounTokenId}`,
     async (key) => {
       console.log('useNounData fetcher ran', key)
       const vaultData = await getVaultData(nounTokenId!)

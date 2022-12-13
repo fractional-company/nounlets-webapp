@@ -31,6 +31,8 @@ import { useNounStore } from 'src/store/noun.store'
 import { useNounletStore } from 'src/store/nounlet.store'
 import { getVaultData } from '../../graphql/src/queries'
 import { Tab } from '@headlessui/react'
+import { useLeaderboardStore } from 'src/store/leaderboard.store'
+import { useBuyoutStore } from 'src/store/buyout/buyout.store'
 
 type NounHomeProps = {
   url: string
@@ -119,48 +121,104 @@ function parseRouteParams(router: NextRouter) {
 
 const NounHome: NextPage<NounHomeProps> = (props) => {
   const router = useRouter()
-  const routerParams = parseRouteParams(router)
   const {
-    setNounTokenId,
-    isLive,
-    isLoading,
-    latestNounletTokenId,
-    wereAllNounletsAuctioned,
-    isGovernanceEnabled
-  } = useNounStore()
-  const { setNounletID } = useNounletStore()
+    nounId: paramNounId,
+    nounletId: paramNounletId,
+    redirect: paramRedirect
+  } = parseRouteParams(router)
+  const { reset: resetNounStore, setNounTokenId, nounTokenId } = useNounStore()
+  const { reset: resetNounletStore } = useNounletStore()
+  const { reset: resetLeaderboardStore } = useLeaderboardStore()
+  const { reset: resetBuyoutStore } = useBuyoutStore()
+  const [isPageReady, setIsPageReady] = useState(false)
 
   useEffect(() => {
-    if (routerParams.redirect != null) {
-      const shallowRedirect = routerParams.redirect !== '/'
-      router.replace(routerParams.redirect, undefined, { shallow: shallowRedirect }).then()
+    if (paramRedirect != null) {
+      const shallowRedirect = paramRedirect !== '/'
+      router.replace(paramRedirect, undefined, { shallow: shallowRedirect }).then()
       return
     }
 
-    setNounTokenId(routerParams.nounId)
+    if (nounTokenId !== paramNounId) {
+      resetNounStore()
+      resetNounletStore()
+      resetLeaderboardStore()
+      resetBuyoutStore()
+    }
 
-    if (isLive && !isLoading) {
-      if (routerParams.nounletId != null) {
-        if (+routerParams.nounletId > +latestNounletTokenId) {
-          console.log('Nounlet id too big, goto root')
-          router.replace(`/noun/${routerParams.nounId}`, undefined, { shallow: true }).then()
-          return
-        }
-      }
+    setNounTokenId(paramNounId)
+    setIsPageReady(true)
+  }, [
+    router,
+    resetNounStore,
+    resetNounletStore,
+    resetLeaderboardStore,
+    resetBuyoutStore,
+    setNounTokenId,
+    nounTokenId,
+    paramNounId,
+    paramRedirect
+  ])
 
-      if (!wereAllNounletsAuctioned && routerParams.nounletId == null) {
-        setNounletID(latestNounletTokenId)
+  return <PageContent isPageReady={isPageReady} />
+}
+
+export default NounHome
+
+function PageContent(props: { isPageReady: boolean }) {
+  const { isPageReady } = props
+  const router = useRouter()
+  const { nounId: paramNounId, nounletId: paramNounletId } = parseRouteParams(router)
+
+  const {
+    setNounTokenId,
+    nounTokenId,
+    isLive,
+    isReady,
+    isLoading,
+    latestNounletTokenId,
+    wereAllNounletsAuctioned,
+    isGovernanceEnabled,
+    setIsReady
+  } = useNounStore()
+  const { setNounletID, reset: resetNounletStore } = useNounletStore()
+
+  useEffect(() => {
+    if (!isPageReady) return
+    if (!isLive) return
+
+    console.log({ isLive })
+    if (paramNounletId != null) {
+      if (+paramNounletId > +latestNounletTokenId) {
+        console.log('Nounlet id too big, goto root')
+        router.replace(`/noun/${paramNounId}`, undefined, { shallow: true }).then()
         return
       }
-
-      setNounletID(routerParams.nounletId)
-    } else {
-      setNounletID(null)
     }
-  }, [routerParams, isLive, isLoading, latestNounletTokenId, wereAllNounletsAuctioned])
 
-  useNounData((data) => {
+    if (!wereAllNounletsAuctioned && paramNounletId == null) {
+      setNounletID(latestNounletTokenId)
+      return
+    }
+
+    setNounletID(paramNounletId)
+  }, [
+    isPageReady,
+    router,
+    isLive,
+    latestNounletTokenId,
+    wereAllNounletsAuctioned,
+    paramNounId,
+    paramNounletId,
+    setNounletID,
+    resetNounletStore
+  ])
+
+  useNounData(isPageReady && paramNounId === nounTokenId, (data) => {
     console.log('Noun data', data)
+    if (!(data as { wereAllNounletsAuctioned: boolean }).wereAllNounletsAuctioned) {
+      setIsReady(true)
+    }
   })
 
   useNounletData((data) => {
@@ -173,6 +231,9 @@ const NounHome: NextPage<NounHomeProps> = (props) => {
 
   useNounBuyoutData((data) => {
     console.log('Buyout data', data)
+    if (data != null) {
+      setIsReady(true)
+    }
   })
 
   const { setBidModalOpen, isBidModalOpen } = useAppStore()
@@ -185,18 +246,18 @@ const NounHome: NextPage<NounHomeProps> = (props) => {
 
   useEffect(() => {
     if (wereAllNounletsAuctioned) {
-      if (routerParams.nounletId != null) {
+      if (paramNounletId != null) {
         console.log('open nounlets tab!')
         setSelectedTabIndex(2)
       }
     }
-  }, [wereAllNounletsAuctioned, routerParams.nounletId])
+  }, [wereAllNounletsAuctioned, paramNounletId])
 
   const handleChangeTabIndex = (index: number) => {
     // console.log('handleChangeTabIndex', index)
     if (index === 2) {
-      if (routerParams.nounletId == null) {
-        router.replace(`/noun/${routerParams.nounId}/nounlet/1`, undefined, { shallow: true })
+      if (paramNounletId == null) {
+        router.replace(`/noun/${paramNounId}/nounlet/1`, undefined, { shallow: true })
         setSelectedTabIndex(index)
       }
     }
@@ -204,82 +265,85 @@ const NounHome: NextPage<NounHomeProps> = (props) => {
   }
 
   return (
-    <OnMounted>
-      <>
-        <SimpleModalWrapper
-          className="md:!max-w-[512px]"
-          isShown={isBuyoutOfferModalShown}
-          onClose={() => closeBuyoutOfferModal()}
-          preventCloseOnBackdrop
-        >
-          <BuyoutOfferModal initialFullPriceOffer={initialFullPriceOffer} />
-        </SimpleModalWrapper>
+    <>
+      <OnMounted>
+        <>
+          <SimpleModalWrapper
+            className="md:!max-w-[512px]"
+            isShown={isBuyoutOfferModalShown}
+            onClose={() => closeBuyoutOfferModal()}
+            preventCloseOnBackdrop
+          >
+            <BuyoutOfferModal initialFullPriceOffer={initialFullPriceOffer} />
+          </SimpleModalWrapper>
 
-        <SimpleModalWrapper
-          className="!max-w-[680px]"
-          isShown={isBuyoutHowDoesItWorkModalShown}
-          onClose={() => closeBuyoutHowDoesItWorkModal()}
-        >
-          <BuyoutHowDoesItWorkModal />
-        </SimpleModalWrapper>
+          <SimpleModalWrapper
+            className="!max-w-[680px]"
+            isShown={isBuyoutHowDoesItWorkModalShown}
+            onClose={() => closeBuyoutHowDoesItWorkModal()}
+          >
+            <BuyoutHowDoesItWorkModal />
+          </SimpleModalWrapper>
 
-        <SimpleModalWrapper
-          className="md:!w-[600px] !max-w-[600px]"
-          onClose={() => setBidModalOpen(false)}
-          isShown={isBidModalOpen}
-        >
-          <ModalBidHistory />
-        </SimpleModalWrapper>
-      </>
+          <SimpleModalWrapper
+            className="md:!w-[600px] !max-w-[600px]"
+            onClose={() => setBidModalOpen(false)}
+            isShown={isBidModalOpen}
+          >
+            <ModalBidHistory />
+          </SimpleModalWrapper>
+        </>
+      </OnMounted>
 
       <div className="space-y-16 min-h-screen">
-        {wereAllNounletsAuctioned ? <BuyoutHero /> : <NounHero />}
+        {isReady && wereAllNounletsAuctioned ? <BuyoutHero /> : <NounHero />}
 
-        <div className="flex flex-col">
-          <div className="lg:container lg:mx-auto px-4">
-            <div className="flex flex-col lg:flex-row lg:items-center gap-2 lg:gap-12">
-              <div
-                className={classNames(
-                  'font-londrina text-[56px] cursor-pointer',
-                  selectedTabIndex === 0 ? 'text-black' : 'text-gray-3'
+        {isReady && (
+          <div className="flex flex-col">
+            <div className="lg:container lg:mx-auto px-4">
+              <div className="flex flex-col lg:flex-row lg:items-center gap-2 lg:gap-12">
+                <div
+                  className={classNames(
+                    'font-londrina text-[56px] cursor-pointer',
+                    selectedTabIndex === 0 ? 'text-black' : 'text-gray-3'
+                  )}
+                  onClick={() => handleChangeTabIndex(0)}
+                >
+                  General
+                </div>
+                {isGovernanceEnabled && (
+                  <div
+                    className={classNames(
+                      'font-londrina text-[56px] cursor-pointer',
+                      selectedTabIndex === 1 ? 'text-black' : 'text-gray-3'
+                    )}
+                    onClick={() => handleChangeTabIndex(1)}
+                  >
+                    Vote
+                  </div>
                 )}
-                onClick={() => handleChangeTabIndex(0)}
-              >
-                General
+                {wereAllNounletsAuctioned && (
+                  <div
+                    className={classNames(
+                      'font-londrina text-[56px] cursor-pointer',
+                      selectedTabIndex === 2 ? 'text-black' : 'text-gray-3'
+                    )}
+                    onClick={() => handleChangeTabIndex(2)}
+                  >
+                    Nounlets
+                  </div>
+                )}
               </div>
-              {isGovernanceEnabled && (
-                <div
-                  className={classNames(
-                    'font-londrina text-[56px] cursor-pointer',
-                    selectedTabIndex === 1 ? 'text-black' : 'text-gray-3'
-                  )}
-                  onClick={() => handleChangeTabIndex(1)}
-                >
-                  Vote
-                </div>
-              )}
-              {wereAllNounletsAuctioned && (
-                <div
-                  className={classNames(
-                    'font-londrina text-[56px] cursor-pointer',
-                    selectedTabIndex === 2 ? 'text-black' : 'text-gray-3'
-                  )}
-                  onClick={() => handleChangeTabIndex(2)}
-                >
-                  Nounlets
-                </div>
-              )}
+            </div>
+
+            <div className={'mt-12'}>
+              {selectedTabIndex === 0 && <NounTabGeneral />}
+              {selectedTabIndex === 1 && isGovernanceEnabled && <NounTabVote />}
+              {selectedTabIndex === 2 && wereAllNounletsAuctioned && <NounTabNounlets />}
             </div>
           </div>
-          <div className={'mt-12'}>
-            {selectedTabIndex === 0 && <NounTabGeneral />}
-            {selectedTabIndex === 1 && isGovernanceEnabled && <NounTabVote />}
-            {selectedTabIndex === 2 && wereAllNounletsAuctioned && <NounTabNounlets />}
-          </div>
-        </div>
+        )}
       </div>
-    </OnMounted>
+    </>
   )
 }
-
-export default NounHome

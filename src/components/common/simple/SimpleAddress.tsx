@@ -6,6 +6,7 @@ import { getCurrentChainExplorerAddressLink, shortenAddress } from 'src/lib/util
 import { useReverseENSLookUp } from 'src/lib/utils/ensLookup'
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon'
 import OnMounted from '../../OnMounted'
+import { useEffect, useState } from 'react'
 
 type ComponentProps = {
   className?: string
@@ -31,31 +32,35 @@ export default function SimpleAddress(props: ComponentProps): JSX.Element {
       className={classNames('simple-address flex items-center overflow-hidden', props.className)}
     >
       <OnMounted>
-        {!!avatarSize && (
-          <a
-            href={getCurrentChainExplorerAddressLink(address)}
-            target="_blank"
-            rel="noreferrer"
-            className="overflow-hidden flex-shrink-0"
-          >
-            <div
-              className={classNames(
-                'overflow-hidden rounded-full flex-shrink-0',
-                props.avatarClassName
-              )}
-              style={{ width: avatarSize, height: avatarSize }}
+        <>
+          {!!avatarSize && (
+            <a
+              href={getCurrentChainExplorerAddressLink(address)}
+              target="_blank"
+              rel="noreferrer"
+              className="overflow-hidden flex-shrink-0"
             >
-              <Jazzicon diameter={avatarSize} seed={jsNumberForAddress('' + address)} />
-              {/* <Davatar size={avatarSize} address={address} provider={provider} /> */}
-            </div>
-          </a>
-        )}
-        <div className="flex flex-col overflow-hidden">
-          <a href={getCurrentChainExplorerAddressLink(address)} target="_blank" rel="noreferrer">
-            <p className={classNames('truncate ', props.textClassName)}>{ens || shortenedAddres}</p>
-          </a>
-          {props.subtitle}
-        </div>
+              <div
+                className={classNames(
+                  'overflow-hidden rounded-full flex-shrink-0',
+                  props.avatarClassName
+                )}
+                style={{ width: avatarSize, height: avatarSize }}
+              >
+                <Jazzicon diameter={avatarSize} seed={jsNumberForAddress('' + address)} />
+                {/* <Davatar size={avatarSize} address={address} provider={provider} /> */}
+              </div>
+            </a>
+          )}
+          <div className="flex flex-col overflow-hidden">
+            <a href={getCurrentChainExplorerAddressLink(address)} target="_blank" rel="noreferrer">
+              <p className={classNames('truncate ', props.textClassName)}>
+                {ens || shortenedAddres}
+              </p>
+            </a>
+            {props.subtitle}
+          </div>
+        </>
       </OnMounted>
     </div>
   )

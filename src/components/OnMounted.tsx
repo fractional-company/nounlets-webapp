@@ -1,12 +1,15 @@
-import { ReactNode, useEffect, useState } from 'react';
+import { IS_SAFE_TO_RENDER } from 'pages/_app'
+import { ReactNode, useEffect, useState } from 'react'
 
-export default function OnMounted(props: { children?: ReactNode; placeholder?: ReactNode }) {
-  const [isMounted, setIsMounted] = useState(false);
+export default function OnMounted(props: { children: JSX.Element; placeholder?: JSX.Element }) {
+  const [isMounted, setIsMounted] = useState(IS_SAFE_TO_RENDER)
 
   useEffect(() => {
-    setIsMounted(true);
-  }, []);
+    if (IS_SAFE_TO_RENDER) {
+      setIsMounted(true)
+    }
+  }, [])
 
-  if (!isMounted) return <>{props.placeholder}</>;
-  return <>{props.children}</>;
+  if (!isMounted) return props.placeholder || null
+  return props.children
 }

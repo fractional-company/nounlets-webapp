@@ -11,6 +11,7 @@ interface StoreState {
   auctionData: AuctionData
 }
 interface StoreActions {
+  reset: () => void
   setIsLoading: (flag: boolean) => void
   setNounletID: (nounletId: string | null) => void
   setAuctionData: (data: AuctionData) => void
@@ -26,7 +27,12 @@ export const useNounletStore = createTrackedSelector(
   create(
     immer<StoreState & StoreActions>((set) => ({
       ...initialState,
-
+      reset: () => {
+        console.log('reseting nounlet store')
+        set((state) => {
+          Object.assign(state, initialState)
+        })
+      },
       setIsLoading: (flag) =>
         set((state) => {
           state.isLoading = flag

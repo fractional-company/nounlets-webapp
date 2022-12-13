@@ -70,6 +70,7 @@ type BuyoutStoreState = {
 }
 
 type BuyoutStoreMethods = {
+  reset: () => void
   setIsLoading: (flag?: boolean) => void
   setBuyoutInfo: (buyoutInfo: BuyoutInfo | null) => void
 }
@@ -108,6 +109,12 @@ export const useBuyoutStore = createTrackedSelector(
   create(
     immer<BuyoutStoreState & BuyoutStoreMethods>((set) => ({
       ...initialBuyoutStateData,
+      reset: () => {
+        console.log('reseting buyout store')
+        set((state) => {
+          Object.assign(state, initialBuyoutStateData)
+        })
+      },
       setIsLoading(flag = true) {
         set((state) => {
           state.isLoading = flag
