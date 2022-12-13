@@ -17,9 +17,6 @@ import { useAppStore } from 'src/store/application.store'
 import ModalCongratulations from 'src/components/modals/ModalCongratulations'
 import useLocalStorage from 'src/hooks/utils/useLocalStorage'
 
-// Used to make hydration happy. Will be false until the first useEffect is ran.
-export let IS_SAFE_TO_RENDER = false
-
 import {
   useQuery,
   useMutation,
@@ -46,10 +43,6 @@ const useDappConfig: Config = {
 function MyApp({ Component, pageProps }: AppProps) {
   const {} = useLocalStorage()
   const { congratulationsModal, setCongratulationsModalForNounletId } = useAppStore()
-
-  useEffect(() => {
-    IS_SAFE_TO_RENDER = true
-  }, [])
 
   return (
     <QueryClientProvider client={queryClient}>

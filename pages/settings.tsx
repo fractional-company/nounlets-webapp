@@ -21,8 +21,9 @@ const Settings: NextPage<{ url: string }> = ({ url }) => {
   }, [router])
 
   if (CHAIN_ID === 1) return <></>
+
   return (
-    <OnMounted>
+    <OnMounted placeholder={<p>loden</p>}>
       <_Settings />
     </OnMounted>
   )
