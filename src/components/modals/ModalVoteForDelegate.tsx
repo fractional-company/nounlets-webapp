@@ -6,10 +6,10 @@ import { ErrorToast, SuccessToast } from 'src/components/toasts/CustomToasts'
 import { useDebounced } from 'src/hooks/utils/useDebounced'
 import useLeaderboard from 'src/hooks/useLeaderboard'
 import useToasts from 'src/hooks/utils/useToasts'
-import { WrappedTransactionReceiptState } from 'src/lib/utils/tx-with-error-handling'
+import { WrappedTransactionReceiptState } from 'src/lib/utils/txWithErrorHandling'
 import { useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
-import { useAppStore } from 'src/store/application'
+import { useAppStore } from 'src/store/application.store'
 
 export default function ModalVoteForDelegate(): JSX.Element {
   const { voteForDelegateModal, setVoteForDelegateModalForAddress } = useAppStore()

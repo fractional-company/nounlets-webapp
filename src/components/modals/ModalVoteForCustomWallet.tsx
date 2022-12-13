@@ -6,7 +6,7 @@ import useLeaderboard from 'src/hooks/useLeaderboard'
 import { useResolveNameFixed } from 'src/hooks/utils/useResolveNameFixed'
 import useToasts from 'src/hooks/utils/useToasts'
 import { shortenAddress } from 'src/lib/utils/common'
-import { WrappedTransactionReceiptState } from 'src/lib/utils/tx-with-error-handling'
+import { WrappedTransactionReceiptState } from 'src/lib/utils/txWithErrorHandling'
 import { useMemo, useState } from 'react'
 
 type ComponentProps = {

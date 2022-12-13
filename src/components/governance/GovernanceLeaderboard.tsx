@@ -11,7 +11,7 @@ import ModalVoteForCustomWallet from 'src/components/modals/ModalVoteForCustomWa
 import { useDebounced } from 'src/hooks/utils/useDebounced'
 import useLeaderboard from 'src/hooks/useLeaderboard'
 import { useReverseRecords } from 'src/lib/utils/useReverseRecords'
-import { useAppStore } from 'src/store/application'
+import { useAppStore } from 'src/store/application.store'
 
 export default function GovernanceLeaderboard() {
   const { isOutOfSync, leaderboardData } = useLeaderboard()

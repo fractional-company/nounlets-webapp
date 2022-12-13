@@ -1,6 +1,6 @@
 import { createContext, ReactNode, useEffect, useState } from 'react'
 import { useEthers } from '@usedapp/core'
-import { useAppStore } from '../../../store/application'
+import { useAppStore } from '../../../store/application.store'
 import { CHAIN_ID } from '../../../../config'
 import classes from './WalletConfig.module.css'
 import NetworkAlert from '../NetworkAlert'

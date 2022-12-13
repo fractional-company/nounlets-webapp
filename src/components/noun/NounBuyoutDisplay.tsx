@@ -11,9 +11,9 @@ import NounVotesFromNounlet from 'src/components/noun/NounVotesFromNounlet'
 import NounWtf from 'src/components/noun/NounWtf'
 import OnMounted from 'src/components/OnMounted'
 import useDisplayedNounlet from 'src/hooks/useDisplayedNounlet'
-import { useAppStore } from 'src/store/application'
-import { useBuyoutHowDoesItWorkModalStore } from 'src/store/buyout/buyout-how-does-it-work-modal.store'
-import { useBuyoutOfferModalStore } from 'src/store/buyout/buyout-offer-modal.store'
+import { useAppStore } from 'src/store/application.store'
+import { useBuyoutHowDoesItWorkModalStore } from 'src/store/buyout/buyoutHowDoesItWorkModal.store'
+import { useBuyoutOfferModalStore } from 'src/store/buyout/buyoutOfferModal.store'
 import { useNounStore } from 'src/store/noun.store'
 
 export function NounBuyoutDisplay() {

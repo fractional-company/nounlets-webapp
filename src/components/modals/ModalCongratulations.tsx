@@ -3,7 +3,7 @@ import SimpleModalWrapper from 'src/components/common/simple/SimpleModalWrapper'
 import { NEXT_PUBLIC_MAX_NOUNLETS } from 'config'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { useAppStore } from 'src/store/application'
+import { useAppStore } from 'src/store/application.store'
 
 type ComponentProps = {
   isShown: boolean

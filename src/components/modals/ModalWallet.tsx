@@ -1,6 +1,6 @@
 import Button from '../common/buttons/Button'
 import { useEffect, useRef, useState } from 'react'
-import { useAppStore } from '../../store/application'
+import { useAppStore } from '../../store/application.store'
 import { useEthers } from '@usedapp/core'
 import config, { CHAIN_ID } from '../../../config'
 import { InjectedConnector } from '@web3-react/injected-connector'

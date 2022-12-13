@@ -8,12 +8,12 @@ import SimpleXImage from 'src/components/common/simple/SimpleXImage'
 import { BigNumber, FixedNumber } from 'ethers'
 import useNounBuyout from 'src/hooks/useNounBuyout'
 import useToasts from 'src/hooks/utils/useToasts'
-import { WrappedTransactionReceiptState } from 'src/lib/utils/tx-with-error-handling'
+import { WrappedTransactionReceiptState } from 'src/lib/utils/txWithErrorHandling'
 import Image from 'next/image'
 import nounImage from 'public/img/noun.png'
 import { useMemo, useState } from 'react'
-import { useAppStore } from 'src/store/application'
-import { useBuyoutHowDoesItWorkModalStore } from 'src/store/buyout/buyout-how-does-it-work-modal.store'
+import { useAppStore } from 'src/store/application.store'
+import { useBuyoutHowDoesItWorkModalStore } from 'src/store/buyout/buyoutHowDoesItWorkModal.store'
 
 type ComponentProps = {
   isRejecting: boolean

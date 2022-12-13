@@ -7,10 +7,10 @@ import { ethers } from 'ethers'
 import useLeaderboard from 'src/hooks/useLeaderboard'
 import useSdk from 'src/hooks/utils/useSdk'
 import useToasts from 'src/hooks/utils/useToasts'
-import { WrappedTransactionReceiptState } from 'src/lib/utils/tx-with-error-handling'
+import { WrappedTransactionReceiptState } from 'src/lib/utils/txWithErrorHandling'
 import { useMemo, useState } from 'react'
-import { useAppStore } from 'src/store/application'
-import { useBlockNumberCheckpointStore } from 'src/store/blockNumberCheckpointStore'
+import { useAppStore } from 'src/store/application.store'
+import { useBlockNumberCheckpointStore } from 'src/store/blockNumberCheckpointStore.store'
 import LeaderboardVotesDots from './LeaderboardVotesDots'
 
 export type LeaderboardListTileProps = {

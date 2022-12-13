@@ -8,9 +8,9 @@ import SimpleAddress from 'src/components/common/simple/SimpleAddress'
 import SimplePopover from 'src/components/common/simple/SimplePopover'
 import useLeaderboard from 'src/hooks/useLeaderboard'
 import useToasts from 'src/hooks/utils/useToasts'
-import { WrappedTransactionReceiptState } from 'src/lib/utils/tx-with-error-handling'
-import { useAppStore } from 'src/store/application'
-import { useBlockNumberCheckpointStore } from 'src/store/blockNumberCheckpointStore'
+import { WrappedTransactionReceiptState } from 'src/lib/utils/txWithErrorHandling'
+import { useAppStore } from 'src/store/application.store'
+import { useBlockNumberCheckpointStore } from 'src/store/blockNumberCheckpointStore.store'
 import { useNounStore } from 'src/store/noun.store'
 
 export default function GovernanceCurrentDelegate() {

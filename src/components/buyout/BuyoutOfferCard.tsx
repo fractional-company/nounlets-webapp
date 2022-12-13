@@ -10,8 +10,8 @@ import useNounBuyout from 'src/hooks/useNounBuyout'
 import { ONLY_NUMBERS_REGEX } from 'src/lib/utils/nextBidCalculator'
 import Link from 'next/link'
 import { ChangeEvent, useContext, useMemo, useRef, useState } from 'react'
-import { useBuyoutHowDoesItWorkModalStore } from 'src/store/buyout/buyout-how-does-it-work-modal.store'
-import { useBuyoutOfferModalStore } from 'src/store/buyout/buyout-offer-modal.store'
+import { useBuyoutHowDoesItWorkModalStore } from 'src/store/buyout/buyoutHowDoesItWorkModal.store'
+import { useBuyoutOfferModalStore } from 'src/store/buyout/buyoutOfferModal.store'
 
 export default function BuyoutOfferCard(): JSX.Element {
   const { account } = useEthers()

@@ -1,6 +1,6 @@
 import { useEthers } from '@usedapp/core'
 import { BigNumber, ethers, FixedNumber } from 'ethers'
-import txWithErrorHandling from 'src/lib/utils/tx-with-error-handling'
+import txWithErrorHandling from 'src/lib/utils/txWithErrorHandling'
 import { useRouter } from 'next/router'
 import { useCallback, useMemo } from 'react'
 import { useNounStore } from 'src/store/noun.store'

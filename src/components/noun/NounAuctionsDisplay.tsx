@@ -7,7 +7,7 @@ import NounVotesFromNounlet from 'src/components/noun/NounVotesFromNounlet'
 import NounWtf from 'src/components/noun/NounWtf'
 import OnMounted from 'src/components/OnMounted'
 import useDisplayedNounlet from 'src/hooks/useDisplayedNounlet'
-import { useAppStore } from 'src/store/application'
+import { useAppStore } from 'src/store/application.store'
 import { useNounStore } from 'src/store/noun.store'
 
 export function NounAuctionsDisplay() {

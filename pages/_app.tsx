@@ -14,7 +14,7 @@ import duration from 'dayjs/plugin/duration'
 import utc from 'dayjs/plugin/utc'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { CHAIN_ID, NEXT_PUBLIC_CACHE_VERSION, NEXT_PUBLIC_NOUN_VAULT_ADDRESS } from 'config'
-import { useAppStore } from 'src/store/application'
+import { useAppStore } from 'src/store/application.store'
 import ModalCongratulations from 'src/components/modals/ModalCongratulations'
 import useLocalStorage from 'src/hooks/utils/useLocalStorage'
 
