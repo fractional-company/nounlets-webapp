@@ -12,7 +12,7 @@ import SimpleAddress from '../common/simple/SimpleAddress'
 
 export default function HomeVotesFromNounlet(): JSX.Element {
   const sdk = useSdk()
-  const { nid, nounletTokenAddress, auctionInfo, endedAuctionInfo } = useDisplayedNounlet()
+  const { nid, nounletTokenAddress, auctionData, endedAuctionInfo } = useDisplayedNounlet()
   const [showAll, setShowAll] = useState(false)
 
   const voteShowLimit = 5

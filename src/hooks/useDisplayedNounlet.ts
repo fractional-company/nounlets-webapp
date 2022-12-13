@@ -34,7 +34,7 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
 
   const mutateAuctionInfo = useCallback(async () => {
     return globalMutate(`${nounletTokenAddress}/nounlet/${nounletId}`)
-  }, [])
+  }, [globalMutate, nounletTokenAddress, nounletId])
 
   const nounletBackground = useMemo(() => {
     if (nounletImageData == null) return null

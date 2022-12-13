@@ -30,7 +30,7 @@ export default function NounHeroAuctionProgress(): JSX.Element {
   const { vaultAddress, nounletTokenAddress, minBidIncrease } = useNounStore()
   const {
     nid: nounletId,
-    auctionInfo,
+    auctionData,
     auctionEndTime,
     historicBids,
     mutateAuctionInfo,
@@ -43,8 +43,8 @@ export default function NounHeroAuctionProgress(): JSX.Element {
   const [showWrongBidModal, setShowWrongBidModal] = useState(false)
 
   const currentBid = useMemo(() => {
-    return BigNumber.from(auctionInfo?.auction!.highestBidAmount ?? 0)
-  }, [auctionInfo])
+    return BigNumber.from(auctionData?.auction!.highestBidAmount ?? 0)
+  }, [auctionData])
 
   const currentBidFX = useMemo(() => FixedNumber.from(formatEther(currentBid)), [currentBid])
 
