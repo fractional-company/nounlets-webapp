@@ -1,7 +1,6 @@
 import { useRouter } from 'next/router'
 import { useEffect, useMemo, useRef } from 'react'
 import { useNounStore } from 'src/store/noun.store'
-import { useVaultStore } from 'src/store/vaultStore'
 import useDisplayedNounlet from '../useDisplayedNounlet'
 import useNounBuyout from '../useNounBuyout'
 

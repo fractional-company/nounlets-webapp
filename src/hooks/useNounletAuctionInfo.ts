@@ -1,7 +1,7 @@
 import { ethers } from 'ethers'
 import { getNounletAuctionData, getNounletAuctionDataBC } from 'graphql/src/queries'
 import { useMemo } from 'react'
-import { useVaultStore } from 'src/store/vaultStore'
+import { useNounStore } from 'src/store/noun.store'
 import useSWR, { unstable_serialize, useSWRConfig } from 'swr'
 import useLocalStorage from './utils/useLocalStorage'
 import useSdk from './utils/useSdk'
@@ -10,7 +10,7 @@ export default function useNounletAuctionInfo(nounletId: string | null) {
   const { setAuctionsCache: setNounletAuctionsCache } = useLocalStorage()
   const sdk = useSdk()
   const { cache, mutate: globalMutate } = useSWRConfig()
-  const { isLive, vaultAddress, nounletTokenAddress, latestNounletTokenId } = useVaultStore()
+  const { isLive, vaultAddress, nounletTokenAddress, latestNounletTokenId } = useNounStore()
 
   const nid = useMemo(() => {
     if (!isLive) return null

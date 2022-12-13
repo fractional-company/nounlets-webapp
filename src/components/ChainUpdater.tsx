@@ -12,10 +12,10 @@ import { useRouter } from 'next/router'
 import { useEffect, useMemo, useState } from 'react'
 import { useBlockNumberCheckpointStore } from 'src/store/blockNumberCheckpointStore'
 import { BuyoutInfo, BuyoutState, useBuyoutStore } from 'src/store/buyout/buyout.store'
-import { useVaultStore } from 'src/store/vaultStore'
 import useSWR, { useSWRConfig } from 'swr'
 import IconBug from './common/icons/IconBug'
 import OnMounted from './OnMounted'
+import { useNounStore } from 'src/store/noun.store'
 
 export default function ChainUpdater() {
   return (
@@ -40,7 +40,7 @@ function LittleBug() {
     backendLatestNounletTokenId,
     latestNounletTokenId,
     isGovernanceEnabled
-  } = useVaultStore()
+  } = useNounStore()
 
   const { nid, auctionInfo } = useDisplayedNounlet()
   const { isOutOfSync, leaderboardData } = useLeaderboard()
@@ -121,7 +121,7 @@ function VaultUpdater() {
     setBackendLatestNounletTokenId,
     setLatestNounletTokenId,
     setIsGovernanceEnabled
-  } = useVaultStore()
+  } = useNounStore()
 
   const { mutate } = useSWR(
     router.isReady &&
@@ -239,7 +239,7 @@ function VaultUpdater() {
 
 function LeaderboardUpdater() {
   const sdk = useSdk()
-  const { isLive, vaultAddress, nounletTokenAddress } = useVaultStore()
+  const { isLive, vaultAddress, nounletTokenAddress } = useNounStore()
   const { setLeaderboardBlockNumber } = useBlockNumberCheckpointStore()
   const { mutate, delegateMutate } = useLeaderboard()
 
@@ -305,7 +305,7 @@ function BuyoutUpdater() {
     nounletTokenAddress,
     nounTokenId,
     setIsGovernanceEnabled
-  } = useVaultStore()
+  } = useNounStore()
   const { setIsLoading, setBuyoutInfo } = useBuyoutStore()
   const { library } = useEthers()
 

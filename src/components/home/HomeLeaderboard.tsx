@@ -5,10 +5,10 @@ import SimplePopover from 'src/components/common/simple/SimplePopover'
 import useLeaderboard from 'src/hooks/useLeaderboard'
 import Link from 'next/link'
 import { useMemo } from 'react'
-import { useVaultStore } from 'src/store/vaultStore'
+import { useNounStore } from 'src/store/noun.store'
 
 export default function HomeLeaderboard(): JSX.Element {
-  const { latestNounletTokenId } = useVaultStore()
+  const { latestNounletTokenId } = useNounStore()
   const { isOutOfSync, leaderboardData } = useLeaderboard()
 
   const leaderboardListData = useMemo(() => {

@@ -6,7 +6,6 @@ import { useEffect, useMemo } from 'react'
 import { useBlockNumberCheckpointStore } from 'src/store/blockNumberCheckpointStore'
 import { useLeaderboardStore } from 'src/store/leaderboard.store'
 import { useNounStore } from 'src/store/noun.store'
-import { useVaultStore } from 'src/store/vaultStore'
 import useSWR from 'swr'
 import useSdk from './utils/useSdk'
 

@@ -2,10 +2,10 @@ import classNames from 'classnames'
 import { NounImage } from 'src/components/common/NounletImage'
 import Image from 'next/image'
 import nounImage from 'public/img/noun.png'
-import { useVaultStore } from 'src/store/vaultStore'
+import { useNounStore } from 'src/store/noun.store'
 
 export default function HomeCollectiveOwnership(): JSX.Element {
-  const { nounTokenId } = useVaultStore()
+  const { nounTokenId } = useNounStore()
 
   return (
     <div className="home-collective-ownership">

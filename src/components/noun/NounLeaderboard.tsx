@@ -6,7 +6,6 @@ import useLeaderboard from 'src/hooks/useLeaderboard'
 import Link from 'next/link'
 import { useMemo } from 'react'
 import { useNounStore } from 'src/store/noun.store'
-import { useVaultStore } from 'src/store/vaultStore'
 
 export default function NounLeaderboard(): JSX.Element {
   const { latestNounletTokenId } = useNounStore()

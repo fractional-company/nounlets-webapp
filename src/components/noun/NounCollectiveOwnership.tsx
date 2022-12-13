@@ -3,7 +3,6 @@ import { NounImage } from 'src/components/common/NounletImage'
 import Image from 'next/image'
 import nounImage from 'public/img/noun.png'
 import { useNounStore } from 'src/store/noun.store'
-import { useVaultStore } from 'src/store/vaultStore'
 
 export default function NounCollectiveOwnership(): JSX.Element {
   const { nounTokenId } = useNounStore()

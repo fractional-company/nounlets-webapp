@@ -9,7 +9,7 @@ import useSdk from 'src/hooks/utils/useSdk'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import { useVaultStore } from 'src/store/vaultStore'
+import { useNounStore } from 'src/store/noun.store'
 
 const Settings: NextPage<{ url: string }> = ({ url }) => {
   const router = useRouter()
@@ -33,7 +33,7 @@ const _Settings = () => {
   const { account, library } = useEthers()
   const sdk = useSdk()
   const { isLive, isLoading, vaultAddress, nounletTokenAddress, latestNounletTokenId } =
-    useVaultStore()
+    useNounStore()
   const environment = {
     NEXT_PUBLIC_NOUN_VAULT_ADDRESS: process.env.NEXT_PUBLIC_NOUN_VAULT_ADDRESS,
     NEXT_PUBLIC_NOUN_VAULT_ADDRESS_OVERRIDE: NEXT_PUBLIC_NOUN_VAULT_ADDRESS,

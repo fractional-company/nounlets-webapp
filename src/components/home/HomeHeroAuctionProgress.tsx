@@ -14,20 +14,20 @@ import { BigNumber, ethers, FixedNumber } from 'ethers'
 import useSdk from 'src/hooks/utils/useSdk'
 import { calculateNextBid } from 'src/lib/utils/nextBidCalculator'
 import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useVaultStore } from 'src/store/vaultStore'
 import { useAppStore } from '../../store/application'
 import SimpleModalWrapper from '../common/simple/SimpleModalWrapper'
 import { debounce } from 'lodash'
 import useToasts from 'src/hooks/utils/useToasts'
 import { WrappedTransactionReceiptState } from 'src/lib/utils/tx-with-error-handling'
 import { getCurrentChainExplorerTransactionLink } from 'src/lib/utils/common'
+import { useNounStore } from 'src/store/noun.store'
 
 export default function HomeHeroAuctionProgress(): JSX.Element {
   const { account } = useEthers()
   const sdk = useSdk()
   const { toastSuccess, toastError } = useToasts()
 
-  const { vaultAddress, nounletTokenAddress, minBidIncrease } = useVaultStore()
+  const { vaultAddress, nounletTokenAddress, minBidIncrease } = useNounStore()
   const {
     nid: nounletId,
     auctionInfo,

@@ -2,7 +2,6 @@ import useNounImageData, { NounletsImageData } from 'src/hooks/images/useNounIma
 import useNounletImageData from 'src/hooks/images/useNounletImageData'
 import Image from 'next/image'
 import nounLoadingImage from 'public/img/loading-skull.gif'
-import { useVaultStore } from 'src/store/vaultStore'
 
 export function NounletImage(props: {
   noundId?: string | null

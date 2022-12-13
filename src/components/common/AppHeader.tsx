@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import ModalVoteForDelegate from 'src/components/modals/ModalVoteForDelegate'
 import useCurrentBackground from 'src/hooks/utils/useCurrentBackground'
-import { useVaultStore } from 'src/store/vaultStore'
+import { useNounStore } from 'src/store/noun.store'
 import { useAppStore } from '../../store/application'
 import ModalWallet from '../modals/ModalWallet'
 import Button from './buttons/Button'
@@ -26,7 +26,7 @@ export default function AppHeader(): JSX.Element {
   const mobileMenuRef = useRef<HTMLDivElement>(null)
   const { setConnectModalOpen } = useAppStore()
   const { account, deactivate } = useEthers()
-  const { isGovernanceEnabled } = useVaultStore()
+  const { isGovernanceEnabled } = useNounStore()
   const { currentBackground } = useCurrentBackground()
 
   useEffect(() => {

@@ -12,7 +12,6 @@ import { WrappedTransactionReceiptState } from 'src/lib/utils/tx-with-error-hand
 import { useAppStore } from 'src/store/application'
 import { useBlockNumberCheckpointStore } from 'src/store/blockNumberCheckpointStore'
 import { useNounStore } from 'src/store/noun.store'
-import { useVaultStore } from 'src/store/vaultStore'
 
 export default function GovernanceCurrentDelegate() {
   const { account } = useEthers()

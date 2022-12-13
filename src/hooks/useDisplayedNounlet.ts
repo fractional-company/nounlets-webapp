@@ -5,7 +5,6 @@ import { useRouter } from 'next/router'
 import { useCallback, useMemo } from 'react'
 import { useNounStore } from 'src/store/noun.store'
 import { useNounletStore } from 'src/store/nounlet.store'
-import { useVaultStore } from 'src/store/vaultStore'
 import useSWR, { unstable_serialize, useSWRConfig } from 'swr'
 import useNounletAuctionInfo from './useNounletAuctionInfo'
 import useNounletImageData from './images/useNounletImageData'
@@ -14,7 +13,7 @@ import useSdk from './utils/useSdk'
 export default function useDisplayedNounlet(ignoreUpdate = false) {
   const { cache, mutate: globalMutate } = useSWRConfig()
   const sdk = useSdk()
-  const { backgrounds } = useVaultStore()
+  const { backgrounds } = useNounStore()
   const { account, library } = useEthers()
   const {
     isLoading,
