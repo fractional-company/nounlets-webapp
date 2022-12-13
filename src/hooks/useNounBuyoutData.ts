@@ -2,7 +2,7 @@ import { getNounletAuctionData, getNounletAuctionDataBC } from 'graphql/src/quer
 import debounce from 'lodash/debounce'
 import { useRouter } from 'next/router'
 import { useEffect, useMemo, useState } from 'react'
-import useSdk, { NounletsSDK } from 'src/hooks/useSdk'
+import useSdk, { NounletsSDK } from 'src/hooks/utils/useSdk'
 import { getBuyoutBidInfo } from 'src/lib/utils/buyoutInfoUtils'
 import { BuyoutState, useBuyoutStore } from 'src/store/buyout/buyout.store'
 import { useNounStore } from 'src/store/noun.store'

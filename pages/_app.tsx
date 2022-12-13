@@ -16,7 +16,7 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import { CHAIN_ID, NEXT_PUBLIC_CACHE_VERSION, NEXT_PUBLIC_NOUN_VAULT_ADDRESS } from 'config'
 import { useAppStore } from 'src/store/application'
 import ModalCongratulations from 'src/components/modals/ModalCongratulations'
-import useLocalStorage from 'src/hooks/useLocalStorage'
+import useLocalStorage from 'src/hooks/utils/useLocalStorage'
 
 import {
   useQuery,

@@ -7,7 +7,7 @@ import SimpleProgressIndicator from 'src/components/common/simple/SimpleProgress
 import SimpleXImage from 'src/components/common/simple/SimpleXImage'
 import { BigNumber, FixedNumber } from 'ethers'
 import useNounBuyout from 'src/hooks/useNounBuyout'
-import useToasts from 'src/hooks/useToasts'
+import useToasts from 'src/hooks/utils/useToasts'
 import { WrappedTransactionReceiptState } from 'src/lib/utils/tx-with-error-handling'
 import Image from 'next/image'
 import nounImage from 'public/img/noun.png'

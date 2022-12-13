@@ -10,7 +10,7 @@ import { useVaultStore } from 'src/store/vaultStore'
 import { useSWRConfig } from 'swr'
 import useLeaderboard from './useLeaderboard'
 import useNounImageData from './images/useNounImageData'
-import useSdk from './useSdk'
+import useSdk from './utils/useSdk'
 
 export default function useNounBuyout() {
   const { mutate: globalMutate } = useSWRConfig()

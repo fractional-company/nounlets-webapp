@@ -1,9 +1,6 @@
-import { useMemo } from 'react'
-import { useNounStore } from 'src/store/noun.store'
-import { useVaultStore } from 'src/store/vaultStore'
-import useSWR, { useSWRConfig, mutate as globalMutate } from 'swr'
-import useLocalStorage from '../useLocalStorage'
-import useSdk from '../useSdk'
+import useSWR from 'swr'
+import useLocalStorage from '../utils/useLocalStorage'
+import useSdk from '../utils/useSdk'
 import { NounletsImageData } from './useNounImageData'
 
 export default function useNounletImageData(

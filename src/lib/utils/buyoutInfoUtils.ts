@@ -1,6 +1,11 @@
 import { BigNumber } from 'ethers'
-import { NounletsSDK } from 'src/hooks/useSdk'
-import { BuyoutInfo, BuyoutInfoPartial, BuyoutOffer, BuyoutState } from 'src/store/buyout/buyout.store'
+import { NounletsSDK } from 'src/hooks/utils/useSdk'
+import {
+  BuyoutInfo,
+  BuyoutInfoPartial,
+  BuyoutOffer,
+  BuyoutState
+} from 'src/store/buyout/buyout.store'
 
 let REJECTION_PERIOD: number | null = null
 

@@ -3,8 +3,8 @@ import { getNounletAuctionData, getNounletAuctionDataBC } from 'graphql/src/quer
 import { useMemo } from 'react'
 import { useVaultStore } from 'src/store/vaultStore'
 import useSWR, { unstable_serialize, useSWRConfig } from 'swr'
-import useLocalStorage from './useLocalStorage'
-import useSdk from './useSdk'
+import useLocalStorage from './utils/useLocalStorage'
+import useSdk from './utils/useSdk'
 
 export default function useNounletAuctionInfo(nounletId: string | null) {
   const { setAuctionsCache: setNounletAuctionsCache } = useLocalStorage()

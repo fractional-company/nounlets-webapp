@@ -1,13 +1,13 @@
-import {createContext, ReactNode, useEffect, useState} from 'react'
-import {useEthers} from '@usedapp/core'
-import {useAppStore} from '../../../store/application'
-import {CHAIN_ID} from '../../../../config'
+import { createContext, ReactNode, useEffect, useState } from 'react'
+import { useEthers } from '@usedapp/core'
+import { useAppStore } from '../../../store/application'
+import { CHAIN_ID } from '../../../../config'
 import classes from './WalletConfig.module.css'
 import NetworkAlert from '../NetworkAlert'
 import AlertModal from '../../modals/Modal'
-import {AvatarProvider} from '@davatar/react'
-import {NounletsSDK} from 'src/hooks/useSdk'
-import {getGoerliSdk, getMainnetSdk} from '@dethcrypto/eth-sdk-client'
+import { AvatarProvider } from '@davatar/react'
+import { NounletsSDK } from 'src/hooks/utils/useSdk'
+import { getGoerliSdk, getMainnetSdk } from '@dethcrypto/eth-sdk-client'
 
 export const SDKContext = createContext<NounletsSDK | null>(null)
 export default function WalletConfig(props: { children: ReactNode }) {

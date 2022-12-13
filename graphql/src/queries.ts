@@ -1,6 +1,6 @@
 import { NEXT_PUBLIC_BLOCKS_PER_DAY } from 'config'
 import { BigNumber, ethers } from 'ethers'
-import { NounletsSDK } from 'src/hooks/useSdk'
+import { NounletsSDK } from 'src/hooks/utils/useSdk'
 import {
   getVaultByNounGQL,
   getVaultGQL,

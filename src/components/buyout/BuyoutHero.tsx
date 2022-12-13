@@ -1,5 +1,5 @@
 import { NounImage } from 'src/components/common/NounletImage'
-import useCurrentBackground from 'src/hooks/useCurrentBackground'
+import useCurrentBackground from 'src/hooks/utils/useCurrentBackground'
 import useNounBuyout from 'src/hooks/useNounBuyout'
 import { useMemo } from 'react'
 import { BuyoutState, useBuyoutStore } from 'src/store/buyout/buyout.store'

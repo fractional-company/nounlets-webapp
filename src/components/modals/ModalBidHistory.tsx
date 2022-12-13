@@ -5,7 +5,7 @@ import { CHAIN_ID, NEXT_PUBLIC_BID_DECIMALS, NEXT_PUBLIC_MAX_NOUNLETS } from 'co
 import dayjs from 'dayjs'
 import { FixedNumber } from 'ethers'
 import { formatEther } from 'ethers/lib/utils'
-import useCurrentBackground from 'src/hooks/useCurrentBackground'
+import useCurrentBackground from 'src/hooks/utils/useCurrentBackground'
 import useDisplayedNounlet from 'src/hooks/useDisplayedNounlet'
 import { getCurrentChainExplorerTransactionLink } from 'src/lib/utils/common'
 import { useMemo } from 'react'

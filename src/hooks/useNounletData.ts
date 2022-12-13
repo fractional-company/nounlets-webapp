@@ -1,7 +1,7 @@
 import { getNounletAuctionData, getNounletAuctionDataBC } from 'graphql/src/queries'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import useSdk, { NounletsSDK } from 'src/hooks/useSdk'
+import useSdk, { NounletsSDK } from 'src/hooks/utils/useSdk'
 import { useNounStore } from 'src/store/noun.store'
 import { useNounletStore } from 'src/store/nounlet.store'
 import useSWR, { useSWRConfig } from 'swr'
