@@ -60,8 +60,8 @@ const _Settings = () => {
       setNounId('Minting...')
       if (library == null || sdk == null || account == null)
         throw new Error('sdk or account missing')
-      const mintHelper = getGoerliSdk(library).nounlets.MintHelper.connect(library.getSigner())
-      const nounsToken = getGoerliSdk(library).nounlets.NounsToken
+      const mintHelper = getGoerliSdk(library).v2.nounlets.MintHelper.connect(library.getSigner())
+      const nounsToken = getGoerliSdk(library).v2.nounlets.NounsToken
 
       const tx = await mintHelper.mint()
       const result = await tx.wait()
