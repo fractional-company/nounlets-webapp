@@ -7,16 +7,19 @@ export const getVaultListGQL = async () => {
       query VaultList {
         vaults {
           id
+          nounInVault
           token {
             id
           }
           noun {
             id
             currentDelegate
-            nounlets(first: 1, orderBy: id, orderDirection: desc) {
+            nounlets(orderBy: id, orderDirection: asc) {
               id
               auction {
                 startTime
+                endTime
+                settled
               }
             }
           }

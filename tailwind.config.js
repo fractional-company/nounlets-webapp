@@ -16,7 +16,6 @@ module.exports = {
       xl: '1140px'
     },
     colors: {
-      bgWhite: '#F4F5F6',
       divider: '#DEE2E6',
       transparent: 'transparent',
       current: 'currentColor',
@@ -34,6 +33,7 @@ module.exports = {
       gray: {
         DEFAULT: '#E4E6E9',
         0: '#FCFCFD',
+        0.5: '#FAFBFB',
         1: '#F4F5F6',
         2: '#E4E6E9',
         3: '#8F97A3',

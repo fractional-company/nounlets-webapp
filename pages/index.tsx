@@ -36,13 +36,23 @@ const Home: NextPage<{ url: string }> = () => {
     async () => {
       const result = await getVaultList()
       console.log({ result })
+
+      const splitData = {
+        onAuction: [],
+        liveBuyout: [],
+        finished: [],
+        withdrawn: []
+      }
+
+      result.vaults.forEach((v) => {})
+
       return result
     },
     {}
   )
 
-  const vaultList = useMemo(() => {
-    if (data == null) return null
+  const tmpData = useMemo(() => {
+    if (data == null) return []
 
     const list = data.vaults
       .sort((a, b) => {
@@ -52,13 +62,18 @@ const Home: NextPage<{ url: string }> = () => {
         return bId - aId
       })
       .slice(0, 6)
-      .map((vault) => {
-        if (vault.noun == null) return null
-        return <VaultListTile vaultId={vault.id} nounId={vault.noun!.id} key={vault.id} />
-      })
+      .filter((vault) => vault.noun != null)
+
+    return list
+  }, [data])
+
+  const vaultList = useMemo(() => {
+    const list = tmpData.map((vault) => {
+      return <VaultListTile vaultId={vault.id} nounId={vault.noun!.id} key={vault.id} />
+    })
 
     return <div className="grid grid-cols-4 gap-4">{list}</div>
-  }, [data])
+  }, [tmpData])
 
   return (
     <div className="page-home w-screen">
@@ -75,7 +90,12 @@ const Home: NextPage<{ url: string }> = () => {
         </p>
       </div>
 
-      <div className="bg-black"></div>
+      <div className="bg-black px-6 py-12">
+        <h2 className="text-center font-londrina text-[48px] font-900 leading-[52px] text-gray-0.5">
+          Nounlets ON AUCTION now!
+        </h2>
+        <div>{/* <TmpNounCard /> */}</div>
+      </div>
 
       <div className="p-4">{vaultList}</div>
     </div>
@@ -85,6 +105,17 @@ const Home: NextPage<{ url: string }> = () => {
 export default Home
 
 function VaultListTile(props: { vaultId: string; nounId: string }) {
+  return (
+    <Link href={`/noun/${props.nounId}`}>
+      <div className="vault-list-tile flex cursor-pointer flex-col gap-3 rounded-xl bg-gray-1 p-2">
+        <NounImage id={props.nounId} />
+        <p className={'text-center font-londrina text-px28 font-700'}>{props.nounId}</p>
+      </div>
+    </Link>
+  )
+}
+
+function TmpNounCard(props: { vaultId: string; nounId: string }) {
   return (
     <Link href={`/noun/${props.nounId}`}>
       <div className="vault-list-tile flex cursor-pointer flex-col gap-3 rounded-xl bg-gray-1 p-2">
