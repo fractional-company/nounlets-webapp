@@ -16,6 +16,7 @@ module.exports = {
       xl: '1140px'
     },
     colors: {
+      bgWhite: '#F4F5F6',
       divider: '#DEE2E6',
       transparent: 'transparent',
       current: 'currentColor',

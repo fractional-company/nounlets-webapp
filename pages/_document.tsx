@@ -25,7 +25,7 @@ class MyDocument extends Document {
             </Script>
           )}
         </Head>
-        <body className="font-ptRootUI">
+        <body className="font-ptRootUI bg-bgWhite">
           <Main />
           <NextScript />
         </body>

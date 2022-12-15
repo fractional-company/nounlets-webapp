@@ -12,7 +12,7 @@ export default function useCurrentBackground() {
 
   const currentBackground = useMemo(() => {
     if (!router.route.includes('/noun/')) {
-      return 'rebeccapurple'
+      return 'transparent'
     }
 
     if (wereAllNounletsAuctioned) {

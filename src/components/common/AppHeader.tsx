@@ -15,6 +15,7 @@ import IconEtherscan from './icons/IconEtherscan'
 import IconFractionalLogo from './icons/IconFractionalLogo'
 import IconHeartHollow from './icons/iconHeartHollow'
 import IconHome from './icons/IconHome'
+import IconLink from './icons/IconLink'
 import IconMedium from './icons/IconMedium'
 import IconNounletsLogo from './icons/IconNounletsLogo'
 import IconTwitter from './icons/IconTwitter'
@@ -52,7 +53,7 @@ export default function AppHeader(): JSX.Element {
       <Button
         className={classNames(
           account ? 'basic hover:!bg-secondary-red' : 'primary',
-          'relative group'
+          'group relative'
         )}
         onClick={() => handleConnectButtonClick()}
       >
@@ -62,9 +63,9 @@ export default function AppHeader(): JSX.Element {
               <SimpleAddress
                 avatarSize={16}
                 address={account}
-                className="space-x-2 pointer-events-none group-hover:invisible"
+                className="pointer-events-none space-x-2 group-hover:invisible"
               />
-              <p className="absolute inset-0 pointer-events-none invisible group-hover:visible text-white leading-px48">
+              <p className="pointer-events-none invisible absolute inset-0 leading-px48 text-white group-hover:visible">
                 Disconnect
               </p>
             </div>
@@ -79,40 +80,62 @@ export default function AppHeader(): JSX.Element {
 
   return (
     <div className="app-header" style={{ background: currentBackground }}>
-      <div className="lg:container mx-auto px-4">
+      <div className="mx-auto px-4 lg:container">
         <ModalWallet />
-        <ModalVoteForDelegate />
-        <div className="flex items-center h-full space-x-4 min-h-[88px]">
+        {/* <ModalVoteForDelegate /> */}
+        <div className="flex h-full min-h-[88px] items-center space-x-4">
           <Link href="/">
-            <a className="relative overflow-visible pt-2 mb-4">
-              <IconNounletsLogo className="flex-shrink-0 w-20 h-20 md:w-[108px] md:h-[108px]" />
+            <a className="relative mb-4 overflow-visible pt-2">
+              <IconNounletsLogo className="h-20 w-20 flex-shrink-0 md:h-[108px] md:w-[108px]" />
             </a>
           </Link>
-          <div className="flex flex-1 -mt-4 md:-mt-8 min-w-0">
-            <div className="hidden lg:flex items-center space-x-2 xl:space-x-4">
+
+          <div className="-mt-4 flex min-w-0 flex-1 justify-end space-x-4 md:-mt-8">
+            <div className="hidden flex-1 justify-between lg:flex">
               <Link href="/">
-                <Button className="basic space-x-2 flex-shrink-0">
-                  <IconHome className="h-[12px] w-auto" />
-                  <span>Home</span>
+                <Button className="basic flex-shrink-0 space-x-2">
+                  <span>Tribute your Noun</span>
                 </Button>
               </Link>
-              <ButtonLinksDropdown />
-              {connectButton}
+
+              <div className="flex items-center space-x-4">
+                <Link href="/">
+                  <Button className="basic flex-shrink-0 space-x-2">
+                    <IconHome className="h-[12px] w-auto" />
+                    <span>Home</span>
+                  </Button>
+                </Link>
+
+                <Link href="/">
+                  <Button className="basic flex-shrink-0 space-x-2">
+                    <IconHome className="h-[12px] w-auto" />
+                    <span>WTF are Nounlets?</span>
+                  </Button>
+                </Link>
+              </div>
             </div>
-            <div className="flex lg:hidden space-x-2">
+
+            <div className="flex items-center space-x-4">
+              <div className="hidden lg:block">
+                <ButtonLinksDropdown />
+              </div>
+
+              <div className="lg:hidden">
+                <Button
+                  className="basic space-x-2"
+                  onClick={() => setIsModalMenuOpen(!isMobileMenuOpen)}
+                >
+                  <IconLink className="h-[15px] w-auto" />
+                  <IconCaretDropdown className="h-[7px] w-auto" />
+                </Button>
+              </div>
               {connectButton}
-              <Button
-                className="basic space-x-2"
-                onClick={() => setIsModalMenuOpen(!isMobileMenuOpen)}
-              >
-                <IconCaretDropdown className="h-[7px] w-auto" />
-              </Button>
             </div>
           </div>
         </div>
 
         <div
-          className="lg:hidden mobile-menu overflow-hidden transition-all ease-in-out"
+          className="mobile-menu overflow-hidden transition-all ease-in-out lg:hidden"
           style={{ maxHeight: mobileMenuMaxHeight }}
         >
           <div ref={mobileMenuRef}>
@@ -126,10 +149,41 @@ export default function AppHeader(): JSX.Element {
                   <span>Home</span>
                 </Button>
               </Link>
+              <Link href="/">
+                <Button
+                  className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40"
+                  onClick={() => setIsModalMenuOpen(false)}
+                >
+                  <IconHome className="h-[12px] w-auto" />
+                  <span>Trbute your Noun</span>
+                </Button>
+              </Link>
+              <a
+                href="https://medium.com/tessera-nft/nounlets-explained-faq-57e9bc537d93"
+                target="_blank"
+                rel="noreferrer"
+                className="flex w-full justify-center space-x-2"
+              >
+                <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
+                  <IconMedium className="h-[16px] w-auto" />
+                  <span>WTF are Nounlets?</span>
+                </Button>
+              </a>
+              <a
+                href="https://medium.com/tessera-nft/nounlets-explained-faq-57e9bc537d93"
+                target="_blank"
+                rel="noreferrer"
+                className="flex w-full justify-center space-x-2"
+              >
+                <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
+                  <IconMedium className="h-[16px] w-auto" />
+                  <span>Tributed Nouns</span>
+                </Button>
+              </a>
               <a
                 href="https://discord.com/invite/8a34wmRjWB"
                 target="_blank"
-                className="space-x-2 w-full flex justify-center"
+                className="flex w-full justify-center space-x-2"
                 rel="noreferrer"
               >
                 <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
@@ -138,21 +192,10 @@ export default function AppHeader(): JSX.Element {
                 </Button>
               </a>
               <a
-                href="https://medium.com/tessera-nft/nounlets-explained-faq-57e9bc537d93"
-                target="_blank"
-                rel="noreferrer"
-                className="space-x-2 w-full flex justify-center"
-              >
-                <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
-                  <IconMedium className="h-[16px] w-auto" />
-                  <span>Nounlets Explained (FAQ)</span>
-                </Button>
-              </a>
-              <a
                 href="https://nouns.wtf"
                 target="_blank"
                 rel="noreferrer"
-                className="space-x-2 w-full flex justify-center"
+                className="flex w-full justify-center space-x-2"
               >
                 <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
                   <IconHeartHollow className="h-[16px] w-auto" />
@@ -163,7 +206,7 @@ export default function AppHeader(): JSX.Element {
                 href="https://twitter.com/tessera"
                 target="_blank"
                 rel="noreferrer"
-                className="space-x-2 w-full flex justify-center"
+                className="flex w-full justify-center space-x-2"
               >
                 <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
                   <IconTwitter className="h-[16px] w-auto" />
@@ -178,7 +221,7 @@ export default function AppHeader(): JSX.Element {
                 href="src/components/common/AppHeader.tsx"
                 target="_blank"
                 rel="noreferrer"
-                className="space-x-2 w-full flex justify-center"
+                className="flex w-full justify-center space-x-2"
               >
                 <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
                   <IconFractionalLogo className="h-[16px] w-auto text-black" />

@@ -41,9 +41,6 @@ const Modal: React.FC<{
         <ModalOverlay title={title} content={content} onDismiss={onDismiss} />,
         document.getElementById('overlay-root')!
       )}
-
-      {/* <StyledApp>{emojiMarkup}</StyledApp>
-        {emojiBubbleMarkup} */}
     </>
   )
 }
