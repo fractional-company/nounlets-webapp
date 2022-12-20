@@ -1,4 +1,5 @@
 import { BigNumber } from 'ethers'
+import { Contract as MulticallContract, Provider as MulticallProvider } from 'ethers-multicall'
 import { NounletsSDK } from 'src/hooks/utils/useSdk'
 import {
   BuyoutInfo,
@@ -6,6 +7,7 @@ import {
   BuyoutOffer,
   BuyoutState
 } from 'src/store/buyout/buyout.store'
+import OptimisticBidABI from 'eth-sdk/abis/goerli/v2/nounlets/OptimisticBid.json'
 
 let REJECTION_PERIOD: number | null = null
 
@@ -174,4 +176,22 @@ async function getOptimisticBidBalances(
   })
 
   return fractionsRemaining
+}
+
+export async function getBatchNounBidInfo(
+  sdk: NounletsSDK,
+  multicallProvider: MulticallProvider,
+  addresses: string[]
+) {
+  await multicallProvider.init()
+  const mc = new MulticallContract(sdk.OptimisticBid.address, OptimisticBidABI.slice(0, -1))
+  const calls = addresses.map((address) => {
+    return mc.bidInfo(address)
+  })
+
+  const nounBidInfoArray = (await multicallProvider.all(calls)) as Awaited<
+    ReturnType<typeof sdk.OptimisticBid.bidInfo>
+  >[]
+
+  return nounBidInfoArray
 }

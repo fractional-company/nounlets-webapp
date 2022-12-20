@@ -1,11 +1,11 @@
 import client from '../../apollo-client'
 import { graphql } from '../dist'
 
-export const getVaultListGQL = async () => {
+export const getVaultListGQL = async (first = 10) => {
   return client.query({
     query: graphql(`
-      query VaultList {
-        vaults {
+      query VaultList($first: Int!) {
+        vaults(first: $first) {
           id
           nounInVault
           token {
@@ -31,7 +31,10 @@ export const getVaultListGQL = async () => {
           }
         }
       }
-    `)
+    `),
+    variables: {
+      first
+    }
   })
 }
 
