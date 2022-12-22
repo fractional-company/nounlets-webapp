@@ -20,7 +20,7 @@ export const NEXT_PUBLIC_CACHE_VERSION = +(process.env.NEXT_PUBLIC_CACHE_VERSION
 export const NEXT_PUBLIC_SHOW_DEBUG =
   (process.env.NEXT_PUBLIC_SHOW_DEBUG || '0') === '1' ||
   !!(typeof window !== 'undefined' && localStorage?.getItem('ohgeezohman'))
-export const NEXT_PUBLIC_AUCTION_LENGTH = 60 * 25 // 25 minutes
+export const NEXT_PUBLIC_OPENSEA_KEY = process.env.NEXT_PUBLIC_OPENSEA_KEY
 
 const app: Record<number, AppConfig> = {
   [CHAIN_ID]: {

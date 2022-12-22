@@ -11,6 +11,9 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { useNounStore } from 'src/store/noun.store'
 
+// 0x48cB5b5071326730903966E9454f714B1254169D
+const VERSION = 2
+
 const Settings: NextPage<{ url: string }> = ({ url }) => {
   const router = useRouter()
 
@@ -33,9 +36,17 @@ export default Settings
 const _Settings = () => {
   const { account, library } = useEthers()
   const sdk = useSdk()
+
+  // TODO this needs to be global somehow
+  const proofOrder =
+    VERSION === 2
+      ? [sdk.NounletAuction.address, sdk.OptimisticBid.address, sdk.NounletGovernance.address]
+      : [sdk.NounletAuction.address, sdk.NounletGovernance.address, sdk.OptimisticBid.address]
+
   const { isLive, isLoading, vaultAddress, nounletTokenAddress, latestNounletTokenId } =
     useNounStore()
   const environment = {
+    VERSION: VERSION,
     NEXT_PUBLIC_NOUN_VAULT_ADDRESS: process.env.NEXT_PUBLIC_NOUN_VAULT_ADDRESS,
     NEXT_PUBLIC_NOUN_VAULT_ADDRESS_OVERRIDE: NEXT_PUBLIC_NOUN_VAULT_ADDRESS,
     NEXT_PUBLIC_ENVIRONMENT: process.env.NEXT_PUBLIC_ENVIRONMENT,
@@ -107,11 +118,7 @@ const _Settings = () => {
     // console.log('new noun ID', newNounID)
     // const leafs = await nounletAuction.getLeafNodes()
     // console.log('leafs!', leafs)
-    const merkleTree = await sdk.NounletProtoform.generateMerkleTree([
-      sdk.NounletAuction.address,
-      sdk.NounletGovernance.address,
-      sdk.OptimisticBid.address
-    ])
+    const merkleTree = await sdk.NounletProtoform.generateMerkleTree(proofOrder)
     console.log('merklee!', merkleTree)
     /*
     // nounletAuction
@@ -130,12 +137,13 @@ const _Settings = () => {
     console.log({ mintProof })
     // const gasPrice = await library.getGasPrice()
     const tx = await sdk.NounletProtoform.connect(library.getSigner()).deployVault(
-      [sdk.NounletAuction.address, sdk.NounletGovernance.address, sdk.OptimisticBid.address],
+      proofOrder,
       [],
       [],
       mintProof,
       sdk.NounsDescriptorV2.address,
-      nounIdToVault
+      nounIdToVault,
+      account
     )
 
     return tx
@@ -525,7 +533,7 @@ const _Settings = () => {
   }
 
   return (
-    <div className="p-4 flex flex-col gap-3 text-px16">
+    <div className="flex flex-col gap-3 p-4 text-px16">
       <h1 className="font-600">Settings</h1>
       <div className="px-4">
         <h1 className="font-600">ENV</h1>
@@ -535,17 +543,17 @@ const _Settings = () => {
         <h1 className="font-600">Vault METADATA</h1>
         <pre>{JSON.stringify(vaultMetadata, null, 4)}</pre>
       </div>
-      <div className="p-4 space-y-4">
+      <div className="space-y-4 p-4">
         <p className="text-px32 font-500">MINTING</p>
         <Button className="primary" onClick={() => mintANoun()}>
           mintANoun
         </Button>
         <p className="text-px16">
-          Minted ID: <span className="p-2 bg-gray-1 rounded-xl text-px24">{nounId}</span>
+          Minted ID: <span className="rounded-xl bg-gray-1 p-2 text-px24">{nounId}</span>
         </p>
       </div>
 
-      <div className="p-4 space-y-4">
+      <div className="space-y-4 p-4">
         <p className="text-px32 font-500">VAULTING</p>
         <div>
           <input
@@ -553,7 +561,7 @@ const _Settings = () => {
             value={nounIdToVault}
             onChange={(e) => setNounIdToVault(e.target.value)}
             placeholder="Noun token ID from above"
-            className="p-2 border-2 border-gray-3 rounded-md"
+            className="rounded-md border-2 border-gray-3 p-2"
           />
         </div>
         <Button className="primary" onClick={() => createVault()}>
@@ -561,11 +569,11 @@ const _Settings = () => {
         </Button>
         <p className="text-px16">
           New Vault address:{' '}
-          <span className="p-2 bg-gray-1 rounded-xl text-px24">{newVaultAddress}</span>
+          <span className="rounded-xl bg-gray-1 p-2 text-px24">{newVaultAddress}</span>
         </p>
       </div>
 
-      <div className="p-4 space-y-4">
+      <div className="space-y-4 p-4">
         <p className="text-px32 font-500">OVERRIDE VAULT ADDRESS</p>
         <div>
           <input
@@ -573,7 +581,7 @@ const _Settings = () => {
             value={overrideAddress}
             onChange={(e) => setOverrideAddress(e.target.value)}
             placeholder="Override ENV address"
-            className="p-2 border-2 border-gray-3 rounded-md w-[500px]"
+            className="w-[500px] rounded-md border-2 border-gray-3 p-2"
           />
         </div>
         <Button className="primary" onClick={() => handleOverride(overrideAddress)}>
@@ -581,7 +589,7 @@ const _Settings = () => {
         </Button>
         <p className="text-px16">
           Current override:{' '}
-          <span className="p-2 bg-gray-1 rounded-xl text-px24">{currentOverride}</span>
+          <span className="rounded-xl bg-gray-1 p-2 text-px24">{currentOverride}</span>
         </p>
       </div>
     </div>

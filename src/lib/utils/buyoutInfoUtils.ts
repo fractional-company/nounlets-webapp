@@ -8,6 +8,7 @@ import {
   BuyoutState
 } from 'src/store/buyout/buyout.store'
 import OptimisticBidABI from 'eth-sdk/abis/goerli/v2/nounlets/OptimisticBid.json'
+import NounsTokenABI from 'eth-sdk/abis/goerli/v2/nounlets/NounsToken.json'
 
 let REJECTION_PERIOD: number | null = null
 
@@ -194,4 +195,21 @@ export async function getBatchNounBidInfo(
   >[]
 
   return nounBidInfoArray
+}
+
+export async function getBatchTributeInfo(sdk: NounletsSDK, library: any, tokenIds: string[]) {
+  const multicallProvider = new MulticallProvider(library!)
+  await multicallProvider.init()
+  const mc = new MulticallContract(sdk.NounsToken.address, NounsTokenABI)
+  const calls = tokenIds.map((tokenId) => {
+    return mc.getApproved(tokenId)
+  })
+
+  const approveArray = (await multicallProvider.all(calls)) as Awaited<
+    ReturnType<typeof sdk.NounsToken.getApproved>
+  >[]
+
+  return approveArray.map(
+    (approveAddress) => approveAddress.toLowerCase() === sdk.NounletProtoform.address.toLowerCase()
+  )
 }

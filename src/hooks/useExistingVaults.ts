@@ -90,18 +90,18 @@ export default function useExistingVaults() {
           }
         })
 
-      console.log('Multicall start')
-      const vaultsInProgress = transformed.filter((vault) => vault.state === 'BUYOUT_IN_PROGRESS')
-      const bidInfoResult = await getBatchNounBidInfo(
-        sdk!,
-        new MulticallProvider(library!),
-        vaultsInProgress.map((vault) => vault.id)
-      )
-      console.log('Multicall end')
+      // console.log('Multicall start')
+      // const vaultsInProgress = transformed.filter((vault) => vault.state === 'BUYOUT_IN_PROGRESS')
+      // const bidInfoResult = await getBatchNounBidInfo(
+      //   sdk!,
+      //   new MulticallProvider(library!),
+      //   vaultsInProgress.map((vault) => vault.id)
+      // )
+      // console.log('Multicall end')
 
-      vaultsInProgress.forEach((vault, index) => {
-        vault.buyoutInfo = bidInfoResult[index]
-      })
+      // vaultsInProgress.forEach((vault, index) => {
+      //   vault.buyoutInfo = bidInfoResult[index]
+      // })
 
       console.log({ transformed })
 

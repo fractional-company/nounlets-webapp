@@ -36,9 +36,10 @@ export default function WalletConfig(props: { children: ReactNode }) {
     if (library) {
       if (chainId === CHAIN_ID) {
         if (chainId === 1) {
-          setSdk(getMainnetSdk(library).v1.nounlets)
+          // setSdk(getMainnetSdk(library).v2.nounlets)
+          setSdk(getGoerliSdk(library).v2.nounlets)
         } else if (chainId === 5) {
-          setSdk(getGoerliSdk(library).v1.nounlets)
+          setSdk(getGoerliSdk(library).v2.nounlets)
         } else {
           setSdk(null)
         }

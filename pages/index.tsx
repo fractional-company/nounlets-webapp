@@ -8,7 +8,6 @@ import useSdk from 'src/hooks/utils/useSdk'
 
 import NounletsOnAuctionCard from 'src/components/home/Cards/NounletsOnAuctionCard'
 import useExistingVaults, { VaultData } from 'src/hooks/useExistingVaults'
-import { getBatchNounBidInfo } from 'src/lib/utils/buyoutInfoUtils'
 import NounletsPastAuctionCard from 'src/components/home/Cards/NounletsPastAuctionCard'
 
 const tmpObj = {
@@ -241,19 +240,6 @@ const Home: NextPage<{ url: string }> = () => {
 }
 
 export default Home
-
-function VaultListTile(props: { vaultId: string; nounId: string }) {
-  return (
-    <Link href={`/noun/${props.nounId}`}>
-      <div className="vault-list-tile flex cursor-pointer flex-col gap-3 rounded-xl bg-gray-1 p-2">
-        <div>
-          <NounImage id={props.nounId} />
-        </div>
-        <p className={'text-center font-londrina text-px28 font-700'}>{props.nounId}</p>
-      </div>
-    </Link>
-  )
-}
 
 function NounletsOnAuction(props: { vaults: VaultData[] }) {
   if (props.vaults.length === 0) return null

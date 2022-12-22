@@ -14,9 +14,14 @@ export default function NounletsOnAuctionCard(props: { vault: VaultData }) {
   const { id, noun } = props.vault
   if (id == null || noun == null) return null
 
-  const startTime = ~~(Date.now() / 1000 - 600) + ''
-  const endTime = ~~(Date.now() / 1000 + 600) + ''
+  const nounletsCount = noun.nounlets.length
+  const latestAuction = noun.nounlets.at(-1)!.auction
+
+  // const startTime = ~~(Date.now() / 1000 - 600) + ''
+  // const endTime = ~~(Date.now() / 1000 + 600) + ''
   const isOver = false // Todo calculate
+
+  console.log({ latestAuction })
 
   const ethValue = FixedNumber.from(
     formatEther(noun.nounlets.at(-1)?.auction.highestBidAmount.toString())
@@ -25,7 +30,7 @@ export default function NounletsOnAuctionCard(props: { vault: VaultData }) {
     .toString()
 
   return (
-    <Link href={`/noun/${id}`}>
+    <Link href={`/noun/${noun.id}`}>
       <div className="vault-list-tile flex w-full max-w-[300px] cursor-pointer flex-col gap-6">
         <div className="max-w-[300px] overflow-hidden rounded-2xl">
           <NounImage id={noun.id} />
@@ -36,17 +41,20 @@ export default function NounletsOnAuctionCard(props: { vault: VaultData }) {
           </p>
           <div className="space-y-4 rounded-2xl bg-divider p-4">
             <div className="space-y-2 text-px14 font-500 leading-[20px]">
-              <p className="text-px18 font-700 leading-px24">Nounlet 32/100</p>
+              <p className="text-px18 font-700 leading-px24">Nounlet {nounletsCount}/100</p>
 
               {/* <CountdownTimer auctionEnd={endTime} /> */}
-              <CountdownWithBar startTime={startTime} endTime={endTime} />
+              <CountdownWithBar
+                startTime={latestAuction.startTime}
+                endTime={latestAuction.endTime}
+              />
               <p>
                 Current bid: <span className="font-700">Ξ {ethValue}</span>
               </p>
             </div>
           </div>
           <Button className="primary w-full">
-            {isOver ? 'Settle auction' : 'Bid for Nounlet ' + noun.id}
+            {isOver ? 'Settle auction' : 'Bid for Nounlet ' + nounletsCount}
           </Button>
         </div>
       </div>

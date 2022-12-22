@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
+  swcMinify: true
 }
 
 module.exports = nextConfig
@@ -10,13 +10,25 @@ module.exports = nextConfig
 // https://nextjs.org/docs/api-reference/next.config.js/introduction
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
-const { withSentryConfig } = require('@sentry/nextjs');
+const { withSentryConfig } = require('@sentry/nextjs')
+const { hostname } = require('os')
 
 const moduleExports = {
   sentry: {
     hideSourceMaps: true
   },
-};
+  images: {
+    domains: ['openseauserdata.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'openseauserdata.com',
+        port: '',
+        pathname: '/**'
+      }
+    ]
+  }
+}
 
 const sentryWebpackPluginOptions = {
   // Additional config options for the Sentry Webpack plugin. Keep in mind that
@@ -25,11 +37,11 @@ const sentryWebpackPluginOptions = {
   //   release, url, org, project, authToken, configFile, stripPrefix,
   //   urlPrefix, include, ignore
 
-  silent: true, // Suppresses all logs
+  silent: true // Suppresses all logs
   // For all available options, see:
   // https://github.com/getsentry/sentry-webpack-plugin#options.
-};
+}
 
 // Make sure adding Sentry options is the last code to run before exporting, to
 // ensure that your source maps include changes from all other Webpack plugins
-module.exports = withSentryConfig(moduleExports, sentryWebpackPluginOptions);
+module.exports = withSentryConfig(moduleExports, sentryWebpackPluginOptions)
