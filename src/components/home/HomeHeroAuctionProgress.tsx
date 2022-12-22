@@ -72,16 +72,16 @@ export default function HomeHeroAuctionProgress(): JSX.Element {
         .toString()
 
       return (
-        <div key={bid.id.toString()} className="flex items-center flex-1 py-3 overflow-hidden">
+        <div key={bid.id.toString()} className="flex flex-1 items-center overflow-hidden py-3">
           <SimpleAddress
             avatarSize={24}
             address={bid.bidder?.id || ethers.constants.AddressZero}
-            className="text-px18 leading-px28 font-700 gap-2 flex-1"
+            className="flex-1 gap-2 text-px18 font-700 leading-px28"
           />
-          <IconEth className="flex-shrink-0 h-[12px]" />
-          <p className="ml-1 text-px18 leading-px28 font-700">{ethValue}</p>
+          <IconEth className="h-[12px] flex-shrink-0" />
+          <p className="ml-1 text-px18 font-700 leading-px28">{ethValue}</p>
           <a href={getCurrentChainExplorerTransactionLink(bid.id)} target="_blank" rel="noreferrer">
-            <IconLinkOffsite className="ml-3 flex-shrink-0 h-[12px]" />
+            <IconLinkOffsite className="ml-3 h-[12px] flex-shrink-0" />
           </a>
         </div>
       )
@@ -134,7 +134,7 @@ export default function HomeHeroAuctionProgress(): JSX.Element {
 
   // Currently unused
   const handleTimerTick = useCallback(() => {
-    debouncedMutateAuctionInfo()
+    // debouncedMutateAuctionInfo()
   }, [debouncedMutateAuctionInfo])
 
   const handleBidInputValue = (event: ChangeEvent<HTMLInputElement>) => {
@@ -184,20 +184,20 @@ export default function HomeHeroAuctionProgress(): JSX.Element {
 
   return (
     <div className="home-hero-auction space-y-3">
-      <div className="flex flex-col sm:flex-row space-y-2 sm:space-x-14 lg:space-x-10 xl:space-x-14 sm:space-y-0">
+      <div className="flex flex-col space-y-2 sm:flex-row sm:space-x-14 sm:space-y-0 lg:space-x-10 xl:space-x-14">
         <div className="flex flex-col space-y-3">
-          <p className="text-px18 leading-px22 font-500 text-gray-4">Current bid</p>
+          <p className="text-px18 font-500 leading-px22 text-gray-4">Current bid</p>
           <div className="flex items-center space-x-3">
             <IconEth className="flex-shrink-0" />
-            <p className="text-px32 leading-[38px] font-700">{formattedValues.currentBid}</p>
+            <p className="text-px32 font-700 leading-[38px]">{formattedValues.currentBid}</p>
           </div>
         </div>
-        <div className="sm:border-r-2 border-black/20"></div>
+        <div className="border-black/20 sm:border-r-2"></div>
         <div
-          className="flex flex-col space-y-3 cursor-pointer"
+          className="flex cursor-pointer flex-col space-y-3"
           onClick={() => setShowEndTime(!showEndTime)}
         >
-          <p className="text-px18 leading-px22 font-500 text-gray-4">
+          <p className="text-px18 font-500 leading-px22 text-gray-4">
             {showEndTime ? 'Auction ends at' : 'Auction ends in'}
           </p>
           <div className="flex items-center">
@@ -211,7 +211,7 @@ export default function HomeHeroAuctionProgress(): JSX.Element {
         </div>
       </div>
 
-      <div className="flex items-center space-x-2 text-gray-4 text-px14 leading-px24 font-500">
+      <div className="flex items-center space-x-2 text-px14 font-500 leading-px24 text-gray-4">
         <IconQuestionCircle className="flex-shrink-0" />
         <p>
           You are bidding for 1% ownership of the Noun.{' '}
@@ -226,14 +226,14 @@ export default function HomeHeroAuctionProgress(): JSX.Element {
         </p>
       </div>
 
-      <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
-        <div className="bid-input flex items-center space-x-1 bg-gray-1 lg:bg-white rounded-px10 px-4 leading-[52px] focus-within:outline-dashed focus-within:outline-[3px] flex-1">
-          <IconEth className="flex-shrink-0 h-[12px] text-gray-3" />
+      <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-2">
+        <div className="bid-input flex flex-1 items-center space-x-1 rounded-px10 bg-gray-1 px-4 leading-[52px] focus-within:outline-dashed focus-within:outline-[3px] lg:bg-white">
+          <IconEth className="h-[12px] flex-shrink-0 text-gray-3" />
           <input
             value={bidInputValue}
             onChange={handleBidInputValue}
             ref={bidInputRef}
-            className="text-[25px] font-700 placeholder:text-gray-3 bg-transparent outline-none w-full"
+            className="w-full bg-transparent text-[25px] font-700 outline-none placeholder:text-gray-3"
             type="text"
             placeholder={`${formattedValues.minNextBid} or more`}
           />
@@ -254,12 +254,12 @@ export default function HomeHeroAuctionProgress(): JSX.Element {
       <div className="latest-bids space-y-2 pt-5 lg:pt-0">
         <div className="flex flex-col divide-y divide-black/10">{latestBidsList}</div>
         {latestBidsList.length === 0 ? (
-          <p className="text-center text-gray-4 text-px16 leading-px24 font-500">
+          <p className="text-center text-px16 font-500 leading-px24 text-gray-4">
             No bids yet. Be the first!
           </p>
         ) : (
           <p
-            className="text-center text-gray-4 text-px16 leading-px24 font-500 cursor-pointer"
+            className="cursor-pointer text-center text-px16 font-500 leading-px24 text-gray-4"
             onClick={() => setBidModalOpen(true)}
           >
             View all bids
@@ -272,14 +272,14 @@ export default function HomeHeroAuctionProgress(): JSX.Element {
         isShown={showWrongBidModal}
         onClose={() => setShowWrongBidModal(false)}
       >
-        <h2 className="font-londrina text-px42 -mt-3 -mb-4">
+        <h2 className="-mt-3 -mb-4 font-londrina text-px42">
           Insufficient bid <span className="hidden sm:inline">amount</span>{' '}
           <span className="hidden xs:inline">🤏</span>
         </h2>
         <div className="mt-8 flex flex-col gap-3">
-          <p className="font-500 text-px20 leading-px30 text-gray-4 text-center">
+          <p className="text-center text-px20 font-500 leading-px30 text-gray-4">
             Please place a bid higher than or equal to the minimum bid amount of{' '}
-            <span className="font-900 text-black text-px22">{formattedValues.minNextBid} ETH</span>
+            <span className="text-px22 font-900 text-black">{formattedValues.minNextBid} ETH</span>
           </p>
         </div>
       </SimpleModalWrapper>

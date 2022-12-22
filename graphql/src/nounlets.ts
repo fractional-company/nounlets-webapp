@@ -19,6 +19,7 @@ export const getVaultListGQL = async (first = 10) => {
               auction {
                 startTime
                 endTime
+                highestBidAmount
                 settled
               }
             }

@@ -22,6 +22,23 @@ function splitKey(key: string) {
 
 export const getVaultList = async () => {
   const { data } = await getVaultListGQL()
+
+  // Clean the data
+  data.vaults = data.vaults.map((vault) => {
+    const nounTokenId = vault.token.id
+
+    if (vault.noun == null) return vault
+
+    const nounlets =
+      vault.noun.nounlets.filter((nounlet) => {
+        const nounletTokenId = nounlet.id.split('-')[0]
+        return nounTokenId.toLowerCase() === nounletTokenId.toLowerCase()
+      }) || []
+
+    vault.noun.nounlets = nounlets
+    return vault
+  })
+
   return data
 }
 

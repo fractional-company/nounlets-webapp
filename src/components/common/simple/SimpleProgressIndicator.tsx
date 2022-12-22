@@ -1,8 +1,10 @@
+import classNames from 'classnames'
 import { FixedNumber } from 'ethers'
 import { useMemo } from 'react'
 
 type ComponentProps = {
   percentage: number
+  className?: string
 }
 
 export default function SimpleProgressIndicator(props: ComponentProps): JSX.Element {
@@ -21,10 +23,10 @@ export default function SimpleProgressIndicator(props: ComponentProps): JSX.Elem
   }, [props.percentage])
 
   return (
-    <div className="simple-progress-indicator">
-      <div className="h-3 relative overflow-hidden rounded-full bg-secondary-red/20">
+    <div className={classNames('simple-progress-indicator h-3', props.className)}>
+      <div className="relative h-full overflow-hidden rounded-full bg-secondary-red/20">
         <div
-          className="absolute top-0 left-0 h-3 bg-secondary-red rounded-full transition-all"
+          className="absolute top-0 left-0 h-full rounded-full bg-secondary-red transition-all"
           style={style}
         ></div>
       </div>

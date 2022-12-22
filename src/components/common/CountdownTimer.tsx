@@ -27,6 +27,7 @@ export default function CountdownTimer(props: ComponentProps): JSX.Element {
     } else {
       const timer = setTimeout(() => {
         setAuctionTimer((v) => v - 1)
+        onTimerTick?.()
       }, 1000)
 
       return () => {
@@ -75,7 +76,7 @@ export default function CountdownTimer(props: ComponentProps): JSX.Element {
     <div className="countdown-timer">
       <div
         className={classNames(
-          'flex items-center text-px32 leading-[38px] font-700 space-x-2',
+          'flex items-center space-x-2 text-px32 font-700 leading-[38px]',
           props.className
         )}
       >
