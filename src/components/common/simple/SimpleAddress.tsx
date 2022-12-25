@@ -38,16 +38,20 @@ export default function SimpleAddress(props: ComponentProps): JSX.Element {
               href={getCurrentChainExplorerAddressLink(address)}
               target="_blank"
               rel="noreferrer"
-              className="overflow-hidden flex-shrink-0"
+              className="flex-shrink-0 overflow-hidden"
             >
               <div
                 className={classNames(
-                  'overflow-hidden rounded-full flex-shrink-0',
+                  'flex-shrink-0 overflow-hidden rounded-full',
                   props.avatarClassName
                 )}
                 style={{ width: avatarSize, height: avatarSize }}
               >
-                <Jazzicon diameter={avatarSize} seed={jsNumberForAddress('' + address)} />
+                <Jazzicon
+                  diameter={avatarSize}
+                  seed={jsNumberForAddress('' + address)}
+                  paperStyles={{ display: 'block' }}
+                />
                 {/* <Davatar size={avatarSize} address={address} provider={provider} /> */}
               </div>
             </a>

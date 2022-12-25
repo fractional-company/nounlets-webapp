@@ -1,4 +1,9 @@
-import { NEXT_PUBLIC_BLOCKS_PER_DAY } from 'config'
+import {
+  CHAIN_ID,
+  NEXT_PUBLIC_BLOCKS_PER_DAY,
+  NEXT_PUBLIC_OPENSEA_KEY,
+  OPENSEA_API_URL
+} from 'config'
 import { BigNumber, ethers } from 'ethers'
 import { NounletsSDK } from 'src/hooks/utils/useSdk'
 import {
@@ -8,6 +13,7 @@ import {
   getVaultNounletAuctionGQL,
   getVaultNounletVotesGQL
 } from './nounlets'
+import axios from 'axios'
 
 function splitKey(key: string) {
   try {
@@ -267,4 +273,61 @@ export const getNounletVotes = async (
   })
   data.nounlet!.delegateVotes = filteredVotes
   return data
+}
+
+export type OpenseaCardData = {
+  token_id: string
+  permalink: string
+  image_url: string
+  isTributed: boolean
+}
+
+const axiosConfig: any = {
+  headers: {
+    'X-Requested-With': 'XMLHttpRequest',
+    'Content-Type': 'application/json',
+    Accept: 'application/json'
+  },
+  timeout: 5000
+}
+
+// TODO add leaky bucket
+export const getNFTBalance = async (sdk: NounletsSDK, walletAddress: string) => {
+  const apiUrl = OPENSEA_API_URL[CHAIN_ID]
+  const axiosConf = axiosConfig
+  axiosConf.headers['X-API-KEY'] = NEXT_PUBLIC_OPENSEA_KEY
+  axiosConf.baseURL = apiUrl
+
+  if (CHAIN_ID !== 1) {
+    delete axiosConfig.headers['X-API-KEY']
+  }
+
+  const contractAddress = sdk.NounsToken.address
+  const contracts = `&asset_contract_addresses=${contractAddress}`
+
+  const limit = 50
+  let offset = 0
+  const queryParams = `owner=${walletAddress}${contracts}`
+  const client = axios.create(axiosConfig)
+
+  let assets = []
+  let hasMoreItems = true
+
+  const url = `/assets?${queryParams}&offset=${offset}&limit=${limit}`
+  const { data } = await client.get<{
+    assets: Omit<OpenseaCardData, 'isTributed'>[]
+  }>(url)
+
+  console.log('got OS data', data)
+  return data.assets.map((asset) => {
+    return {
+      token_id: asset.token_id,
+      permalink: asset.permalink,
+      image_url: asset.image_url
+    }
+  })
+
+  // if (parseInt(CHAIN_ID) !== CHAINS.MAINNET) {
+  //   delete axiosConfig.headers["X-API-KEY"];
+  // }
 }
