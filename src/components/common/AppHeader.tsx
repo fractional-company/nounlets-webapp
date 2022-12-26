@@ -92,7 +92,7 @@ export default function AppHeader(): JSX.Element {
 
           <div className="-mt-4 flex min-w-0 flex-1 justify-end space-x-4 md:-mt-8">
             <div className="hidden flex-1 justify-between lg:flex">
-              <Link href="/">
+              <Link href="/tribute">
                 <Button className="basic flex-shrink-0 space-x-2">
                   <span>Tribute your Noun</span>
                 </Button>

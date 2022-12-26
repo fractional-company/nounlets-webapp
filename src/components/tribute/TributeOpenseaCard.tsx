@@ -6,6 +6,7 @@ import { OpenseaCardData } from 'graphql/src/queries'
 import Image from 'next/image'
 import { sleep } from 'radash'
 import { useCallback } from 'react'
+import useProofs from 'src/hooks/useProofs'
 import useSdk from 'src/hooks/utils/useSdk'
 import useToasts from 'src/hooks/utils/useToasts'
 import Button from '../common/buttons/Button'
@@ -20,19 +21,22 @@ export default function TributeOpenseaCard(props: {
   const sdk = useSdk()
   const { account, library } = useEthers()
   const { toastSuccess, toastError } = useToasts()
+  const { getMerkleRoot } = useProofs()
 
   const onTribute = useCallback(async () => {
     console.log('tributing')
-    const nounsToken = sdk.NounsToken.connect(library!.getSigner())
-    const nounletProtoform = sdk.NounletProtoform
+    const result = await getMerkleRoot()
+    console.log('got', { result })
+    // const nounsToken = sdk.NounsToken.connect(library!.getSigner())
+    // const nounletProtoform = sdk.NounletProtoform
 
-    const tx = await nounsToken.approve(nounletProtoform.address, token_id)
-    const result = await tx.wait()
+    // const tx = await nounsToken.approve(nounletProtoform.address, token_id)
+    // const result = await tx.wait()
 
-    console.log('result', result)
-    await sleep(10000)
-    toastSuccess('Tributed!', "Bam, it's tributed!")
-    onTributeSuccess(token_id, true)
+    // console.log('result', result)
+    // await sleep(10000)
+    // toastSuccess('Tributed!', "Bam, it's tributed!")
+    // onTributeSuccess(token_id, true)
   }, [sdk, library, token_id, toastSuccess, onTributeSuccess])
 
   const onRemoveTribute = useCallback(async () => {

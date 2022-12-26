@@ -9,10 +9,12 @@ import useSWR, { unstable_serialize, useSWRConfig } from 'swr'
 import useNounletAuctionInfo from './useNounletAuctionInfo'
 import useNounletImageData from './images/useNounletImageData'
 import useSdk from './utils/useSdk'
+import useProofs from './useProofs'
 
 export default function useDisplayedNounlet(ignoreUpdate = false) {
   const { cache, mutate: globalMutate } = useSWRConfig()
   const sdk = useSdk()
+  const { getMintProof } = useProofs()
   const { backgrounds } = useNounStore()
   const { account, library } = useEthers()
   const {
@@ -142,7 +144,8 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
       sdk.OptimisticBid.address
     ])
 
-    const mintProof = await sdk.NounletProtoform.getProof(merkleTree, 0)
+    // const mintProof = await sdk.NounletProtoform.getProof(merkleTree, 0)
+    const mintProof = await getMintProof()
     const tx = await sdk.NounletAuction.connect(library.getSigner()).settleAuction(
       vaultAddress,
       mintProof

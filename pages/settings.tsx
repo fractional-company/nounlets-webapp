@@ -113,26 +113,9 @@ const _Settings = () => {
     }
     console.log('approved!')
 
-    // const newNounID = await mintANoun()
-
-    // console.log('new noun ID', newNounID)
-    // const leafs = await nounletAuction.getLeafNodes()
-    // console.log('leafs!', leafs)
     const merkleTree = await sdk.NounletProtoform.generateMerkleTree(proofOrder)
     console.log('merklee!', merkleTree)
-    /*
-    // nounletAuction
-    mintProof = protoform.getProof(merkleTree, 0);
-    // nounletGovernance
-    castVoteProof = protoform.getProof(merkleTree, 1);
-    castVoteWithReasonProof = protoform.getProof(merkleTree, 2);
-    cancelProof = protoform.getProof(merkleTree, 3);
-    proposeProof = protoform.getProof(merkleTree, 4);
-    delegateProof = protoform.getProof(merkleTree, 5);
-    // optimisticBid
-    batchBurnProof = protoform.getProof(merkleTree, 6);
-    withdrawERC721Proof = protoform.getProof(merkleTree, 7);
-    */
+
     const mintProof = await sdk.NounletProtoform.getProof(merkleTree, 0)
     console.log({ mintProof })
     // const gasPrice = await library.getGasPrice()

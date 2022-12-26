@@ -10,12 +10,14 @@ import { useSWRConfig } from 'swr'
 import useLeaderboard from './useLeaderboard'
 import useNounImageData from './images/useNounImageData'
 import useSdk from './utils/useSdk'
+import useProofs from './useProofs'
 
 export default function useNounBuyout() {
   const { mutate: globalMutate } = useSWRConfig()
   const { account, library } = useEthers()
   const userBalance = useEtherBalance(account)
   const sdk = useSdk()
+  const { getBatchBurnProof, getWithdrawERC721Proof } = useProofs()
   const {
     backgrounds,
     isLoading: isLoadingVault,
@@ -183,7 +185,8 @@ export default function useNounBuyout() {
       sdk.NounletGovernance.address,
       sdk.OptimisticBid.address
     ])
-    const burnProof = await sdk.NounletProtoform.getProof(merkleTree, 6)
+    // const burnProof = await sdk.NounletProtoform.getProof(merkleTree, 6)
+    const burnProof = await getBatchBurnProof()
     const optimisticBid = sdk.OptimisticBid.connect(library.getSigner())
 
     const tx = await optimisticBid.end(
@@ -208,7 +211,8 @@ export default function useNounBuyout() {
       sdk.NounletGovernance.address,
       sdk.OptimisticBid.address
     ])
-    const burnProof = await sdk.NounletProtoform.getProof(merkleTree, 6)
+    // const burnProof = await sdk.NounletProtoform.getProof(merkleTree, 6)
+    const burnProof = await getBatchBurnProof()
     const optimisticBid = sdk.OptimisticBid.connect(library.getSigner())
 
     const tx = await optimisticBid.cash(
@@ -238,7 +242,8 @@ export default function useNounBuyout() {
       sdk.OptimisticBid.address
     ])
 
-    const withdrawProof = await sdk.NounletProtoform.getProof(merkleTree, 7)
+    // const withdrawProof = await sdk.NounletProtoform.getProof(merkleTree, 7)
+    const withdrawProof = await getWithdrawERC721Proof()
     const optimisticBid = sdk.OptimisticBid.connect(library.getSigner())
 
     const tx = await optimisticBid.withdrawERC721(

@@ -8,11 +8,13 @@ import { useLeaderboardStore } from 'src/store/leaderboard.store'
 import { useNounStore } from 'src/store/noun.store'
 import useSWR from 'swr'
 import useSdk from './utils/useSdk'
+import useProofs from './useProofs'
 
 export default function useLeaderboard() {
   const sdk = useSdk()
   const { account, library } = useEthers()
   const { leaderboardBlockNumber, setLeaderboardBlockNumber } = useBlockNumberCheckpointStore()
+  const { getDelegateProof } = useProofs()
   const {
     isLive,
     vaultAddress,
@@ -157,7 +159,8 @@ export default function useLeaderboard() {
       sdk.NounletGovernance.address,
       sdk.OptimisticBid.address
     ])
-    const delegateProof = await sdk.NounletProtoform.getProof(merkleTree, 5)
+    // const delegateProof = await sdk.NounletProtoform.getProof(merkleTree, 5)
+    const delegateProof = await getDelegateProof()
     const gasLimitDelegate = await nounletGovernance.estimateGas.delegate(
       vaultAddress,
       toAddress,
