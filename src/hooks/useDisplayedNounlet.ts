@@ -138,6 +138,7 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
     if (library == null) throw new Error('no library')
     if (vaultAddress == null) throw new Error('no vault')
 
+    // TODO remove this everywhere
     const merkleTree = await sdk.NounletProtoform.generateMerkleTree([
       sdk.NounletAuction.address,
       sdk.NounletGovernance.address,

@@ -12,11 +12,26 @@ import useSWR from 'swr'
 import SimpleAddress from '../common/simple/SimpleAddress'
 import TributeOpenseaCard from './TributeOpenseaCard'
 
+/*
+
+TODOS:
+- Add skeletons when loading
+- Add "vault noun" functionality
+- Wire all the tx to txWithErrorHandling
+- Add spinners to buttons
+- Add pagination to opensea data
+- Add fake pagination to tributed Nouns
+
+*/
+
 function TributeYourWallet() {
   const sdk = useSdk()
-  const { account, library } = useEthers()
+  const { account: account, library } = useEthers()
   const { toastSuccess, toastError } = useToasts()
   const { setConnectModalOpen } = useAppStore()
+
+  // nounders.eth
+  // const account = '0x2573C60a6D127755aA2DC85e342F7da2378a0Cc5'
 
   const { data, mutate } = useSWR<OpenseaCardData[]>(
     account && `wallet/${account!.toLowerCase()}`,
@@ -79,12 +94,20 @@ function TributeYourWallet() {
       )}
 
       {data && (
-        <div className="flex flex-wrap justify-center gap-8">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
           {data.map((nounData: any) => (
             <div key={nounData.token_id} className="w-[300px]">
               <TributeOpenseaCard data={nounData} onTributeSuccess={() => mutate()} />
             </div>
           ))}
+
+          <div className="w-[300px]">
+            <TributeOpenseaCard.Skeleton />
+          </div>
+
+          <div className="w-[300px]">
+            <TributeOpenseaCard.Skeleton />
+          </div>
         </div>
       )}
     </div>

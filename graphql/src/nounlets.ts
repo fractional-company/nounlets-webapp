@@ -194,3 +194,47 @@ export const getVaultNounletVotesGQL = async (nounletId: string) => {
     }
   })
 }
+
+export type TributedNoun = {
+  id: string
+  tributed: boolean
+  currentDelegate: string
+}
+
+export const getTributedNounsGQL = async (first = 10) => {
+  return {
+    data: {
+      nouns: [
+        {
+          id: '1',
+          tributed: false,
+          currentDelegate: '0x497F34f8A6EaB10652f846fD82201938e58d72E0'
+        }
+      ],
+      _meta: {
+        block: {
+          number: 8227570,
+          timestamp: 1672414632
+        }
+      }
+    }
+  }
+
+  return client.query({
+    query: graphql(`
+      query Nouns {
+        nouns {
+          id
+          tributed
+          currentDelegate
+        }
+        _meta {
+          block {
+            number
+            timestamp
+          }
+        }
+      }
+    `)
+  })
+}

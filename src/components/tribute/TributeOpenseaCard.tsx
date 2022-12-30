@@ -5,12 +5,14 @@ import { ethers } from 'ethers'
 import { OpenseaCardData } from 'graphql/src/queries'
 import Image from 'next/image'
 import { sleep } from 'radash'
-import { useCallback } from 'react'
+import { useCallback, useContext } from 'react'
+import useNounTribute from 'src/hooks/useNounTribute'
 import useProofs from 'src/hooks/useProofs'
 import useSdk from 'src/hooks/utils/useSdk'
 import useToasts from 'src/hooks/utils/useToasts'
 import Button from '../common/buttons/Button'
 import IconCheckmark from '../common/icons/IconCheckmark'
+import { NounImage } from '../common/NounletImage'
 
 export default function TributeOpenseaCard(props: {
   data: OpenseaCardData
@@ -21,49 +23,36 @@ export default function TributeOpenseaCard(props: {
   const sdk = useSdk()
   const { account, library } = useEthers()
   const { toastSuccess, toastError } = useToasts()
-  const { getMerkleRoot } = useProofs()
+  const { tributeNoun, removeTributedNoun } = useNounTribute()
 
   const onTribute = useCallback(async () => {
-    console.log('tributing')
-    const result = await getMerkleRoot()
-    console.log('got', { result })
-    // const nounsToken = sdk.NounsToken.connect(library!.getSigner())
-    // const nounletProtoform = sdk.NounletProtoform
-
-    // const tx = await nounsToken.approve(nounletProtoform.address, token_id)
-    // const result = await tx.wait()
-
-    // console.log('result', result)
-    // await sleep(10000)
-    // toastSuccess('Tributed!', "Bam, it's tributed!")
-    // onTributeSuccess(token_id, true)
-  }, [sdk, library, token_id, toastSuccess, onTributeSuccess])
+    const result = await tributeNoun(token_id)
+    console.log('result', result)
+    await sleep(10000)
+    toastSuccess('Tributed!', "Bam, it's tributed!")
+    onTributeSuccess(token_id, true)
+  }, [token_id, tributeNoun, toastSuccess, onTributeSuccess])
 
   const onRemoveTribute = useCallback(async () => {
     console.log('un-tributing')
-    const nounsToken = sdk.NounsToken.connect(library!.getSigner())
-    const tx = await nounsToken.approve(ethers.constants.AddressZero, token_id)
-    const result = await tx.wait()
-
+    const result = await removeTributedNoun(token_id)
     console.log('result', result)
     await sleep(10000)
     toastSuccess('UN-Tributed!', "Bam, it's UN-tributed!")
     onTributeSuccess(token_id, false)
-  }, [sdk, library, token_id, toastSuccess, onTributeSuccess])
+  }, [token_id, removeTributedNoun, toastSuccess, onTributeSuccess])
 
   const className = isTributed ? 'bg-gray-4 text-white' : 'bg-white'
 
   return (
     <div className={classNames(className, 'overflow-hidden rounded-[24px] p-4')}>
       <div className="flex flex-col space-y-4">
-        <div className="overflow-hidden rounded-[16px]">
+        <div className="relative aspect-square overflow-hidden rounded-[16px]">
           <Image
             className="image-pixelated"
             src={image_url}
             alt={`noun ${token_id}`}
-            layout="responsive"
-            width={320}
-            height={320}
+            layout="fill"
           />
         </div>
         <div className="flex items-center justify-between">
@@ -91,6 +80,22 @@ export default function TributeOpenseaCard(props: {
             Tribute
           </Button>
         )}
+      </div>
+    </div>
+  )
+}
+
+TributeOpenseaCard.Skeleton = function TributeOpenseaCardSkeleton() {
+  return (
+    <div className={classNames('overflow-hidden rounded-[24px] p-4', 'bg-white')}>
+      <div className="flex flex-col space-y-4">
+        <div className="aspect-square overflow-hidden rounded-[16px] bg-gray-1">
+          <NounImage />
+        </div>
+        <div className="flex items-center justify-between">
+          <h1 className="font-londrina text-px24 leading-px26">NOUN ???</h1>
+        </div>
+        <div className="h-[48px]"></div>
       </div>
     </div>
   )

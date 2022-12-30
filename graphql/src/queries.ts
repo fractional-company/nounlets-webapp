@@ -7,6 +7,7 @@ import {
 import { BigNumber, ethers } from 'ethers'
 import { NounletsSDK } from 'src/hooks/utils/useSdk'
 import {
+  getTributedNounsGQL,
   getVaultByNounGQL,
   getVaultGQL,
   getVaultListGQL,
@@ -272,6 +273,11 @@ export const getNounletVotes = async (
     )
   })
   data.nounlet!.delegateVotes = filteredVotes
+  return data
+}
+
+export const getTributedNounsList = async () => {
+  const { data } = await getTributedNounsGQL()
   return data
 }
 
