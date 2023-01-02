@@ -285,7 +285,6 @@ export type OpenseaCardData = {
   token_id: string
   permalink: string
   image_url: string
-  isTributed: boolean
 }
 
 const axiosConfig: any = {
@@ -298,7 +297,12 @@ const axiosConfig: any = {
 }
 
 // TODO add leaky bucket
-export const getNFTBalance = async (sdk: NounletsSDK, walletAddress: string) => {
+export const getNFTBalance = async (
+  sdk: NounletsSDK,
+  walletAddress: string,
+  page = 0,
+  pageSize = 20
+) => {
   const apiUrl = OPENSEA_API_URL[CHAIN_ID]
   const axiosConf = axiosConfig
   axiosConf.headers['X-API-KEY'] = NEXT_PUBLIC_OPENSEA_KEY
@@ -309,15 +313,12 @@ export const getNFTBalance = async (sdk: NounletsSDK, walletAddress: string) => 
   }
 
   const contractAddress = sdk.NounsToken.address
-  const contracts = `&asset_contract_addresses=${contractAddress}`
+  const contracts = `&asset_contract_address=${contractAddress}`
 
-  const limit = 50
-  let offset = 0
+  const limit = pageSize
+  let offset = limit * page
   const queryParams = `owner=${walletAddress}${contracts}`
   const client = axios.create(axiosConfig)
-
-  let assets = []
-  let hasMoreItems = true
 
   const url = `/assets?${queryParams}&offset=${offset}&limit=${limit}`
   const { data } = await client.get<{
@@ -325,7 +326,8 @@ export const getNFTBalance = async (sdk: NounletsSDK, walletAddress: string) => 
   }>(url)
 
   console.log('got OS data', data)
-  return data.assets.map((asset) => {
+
+  const assets = data.assets.map((asset) => {
     return {
       token_id: asset.token_id,
       permalink: asset.permalink,
@@ -333,7 +335,8 @@ export const getNFTBalance = async (sdk: NounletsSDK, walletAddress: string) => 
     }
   })
 
-  // if (parseInt(CHAIN_ID) !== CHAINS.MAINNET) {
-  //   delete axiosConfig.headers["X-API-KEY"];
-  // }
+  return {
+    assets,
+    hasMoreItems: assets.length === limit
+  }
 }

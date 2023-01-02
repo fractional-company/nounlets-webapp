@@ -3,9 +3,13 @@ import { useEthers } from '@usedapp/core'
 import { IS_DEVELOP } from 'config'
 import { getNFTBalance, OpenseaCardData } from 'graphql/src/queries'
 import { sleep } from 'radash'
+import { useMemo, useState } from 'react'
 import Button from 'src/components/common/buttons/Button'
+import useNounTribute from 'src/hooks/tribute/useNounTribute'
+import useTributedNounsList from 'src/hooks/tribute/useTributedNounsList'
+import useWalletNounsList from 'src/hooks/tribute/useWalletNounsList'
 import useSdk from 'src/hooks/utils/useSdk'
-import useToasts from 'src/hooks/utils/useToasts'
+import useToasts, { toastError, toastSuccess } from 'src/hooks/utils/useToasts'
 import { getBatchTributeInfo } from 'src/lib/utils/buyoutInfoUtils'
 import { useAppStore } from 'src/store/application.store'
 import useSWR from 'swr'
@@ -13,6 +17,7 @@ import SimpleAddress from '../common/simple/SimpleAddress'
 import TributeOpenseaCard from './TributeOpenseaCard'
 
 /*
+
 
 TODOS:
 - Add skeletons when loading
@@ -25,45 +30,38 @@ TODOS:
 */
 
 function TributeYourWallet() {
-  const sdk = useSdk()
-  const { account: account, library } = useEthers()
-  const { toastSuccess, toastError } = useToasts()
+  const { account } = useEthers()
   const { setConnectModalOpen } = useAppStore()
+  const { mintANoun } = useNounTribute()
+  const { data: tributedNounsList } = useTributedNounsList()
+  const [isMinting, setIsMinting] = useState(false)
+  const {
+    concatenatedData: walletNounsList,
+    hasMore,
+    size,
+    isLoadingMore,
+    setSize,
+    mutate
+  } = useWalletNounsList(tributedNounsList != null)
 
-  // nounders.eth
-  // const account = '0x2573C60a6D127755aA2DC85e342F7da2378a0Cc5'
-
-  const { data, mutate } = useSWR<OpenseaCardData[]>(
-    account && `wallet/${account!.toLowerCase()}`,
-    async () => {
-      const openseaData = await getNFTBalance(sdk, account!)
-      console.log({ openseaData })
-
-      const batchTokenIds = openseaData.map((data) => data.token_id)
-      const result = await getBatchTributeInfo(sdk, library!, batchTokenIds)
-
-      const mapped = openseaData.map((noun, index) => {
-        return {
-          ...noun,
-          isTributed: result[index]
-        }
-      })
-      return mapped
+  const handleMintANoun = async () => {
+    setIsMinting(true)
+    try {
+      const result = await mintANoun()
+      await sleep(15000)
+      await mutate()
+      toastSuccess('Minted', 'Refresh the page until you see it')
+    } catch {
+      toastError('Error', 'Ask the dev what happened')
+    } finally {
+      setIsMinting(false)
     }
-  )
+  }
 
-  const mintANoun = async () => {
-    if (!IS_DEVELOP) throw new Error('sorry, only in dev')
-    if (library == null || sdk == null || account == null) throw new Error('sdk or account missing')
-
-    const mintHelper = getGoerliSdk(library).v2.nounlets.MintHelper.connect(library.getSigner())
-    const nounsToken = getGoerliSdk(library).v2.nounlets.NounsToken
-
-    const tx = await mintHelper.mint()
-    const result = await tx.wait()
-    await sleep(10000)
-    await mutate()
-    toastSuccess('Minted', "Bam, it's yours!")
+  const handleLoadMore = async () => {
+    if (hasMore) {
+      setSize(size + 1)
+    }
   }
 
   if (account == null) {
@@ -84,31 +82,43 @@ function TributeYourWallet() {
         <SimpleAddress address={account} avatarSize={24} className="space-x-2 font-700" />
       </div>
       {IS_DEVELOP && (
-        <Button className="primary" onClick={mintANoun}>
+        <Button className="primary" onClick={handleMintANoun} loading={isMinting}>
           DEV mint
         </Button>
       )}
 
-      {data && data.length === 0 && (
-        <h1 className="text-center font-londrina text-px22 font-900">You don`t own any Nouns :(</h1>
-      )}
-
-      {data && (
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-          {data.map((nounData: any) => (
-            <div key={nounData.token_id} className="w-[300px]">
-              <TributeOpenseaCard data={nounData} onTributeSuccess={() => mutate()} />
-            </div>
-          ))}
-
-          <div className="w-[300px]">
-            <TributeOpenseaCard.Skeleton />
-          </div>
-
+      {walletNounsList == null && (
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
           <div className="w-[300px]">
             <TributeOpenseaCard.Skeleton />
           </div>
         </div>
+      )}
+
+      {walletNounsList && walletNounsList.length === 0 && (
+        <h1 className="text-center font-londrina text-px22 font-900">You don`t own any Nouns :(</h1>
+      )}
+
+      {walletNounsList && (
+        <>
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
+            {walletNounsList.map((nounData: any) => (
+              <div key={nounData.token_id} className="w-[300px]">
+                <TributeOpenseaCard data={nounData} onTributeSuccess={() => mutate()} />
+              </div>
+            ))}
+            {isLoadingMore && (
+              <div className="w-[300px]">
+                <TributeOpenseaCard.Skeleton />
+              </div>
+            )}
+          </div>
+          {hasMore && !isLoadingMore && (
+            <Button className="default-outline text-black" onClick={handleLoadMore}>
+              Show more
+            </Button>
+          )}
+        </>
       )}
     </div>
   )

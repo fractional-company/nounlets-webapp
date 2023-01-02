@@ -15,10 +15,11 @@ export type WrappedTransactionReceipt = {
 }
 
 export default function txWithErrorHandling(
-  tx: ethers.providers.TransactionResponse
+  tx: ethers.providers.TransactionResponse,
+  confirmations = 1
 ): Promise<WrappedTransactionReceipt> {
   return tx
-    .wait()
+    .wait(confirmations)
     .then((response) => ({
       status: WrappedTransactionReceiptState.SUCCESS,
       receipt: response,

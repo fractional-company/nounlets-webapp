@@ -1,8 +1,10 @@
+import { useEthers } from '@usedapp/core'
 import classNames from 'classnames'
 import { sleep } from 'radash'
-import { useCallback, useMemo } from 'react'
-import useNounTribute from 'src/hooks/useNounTribute'
-import { toastSuccess } from 'src/hooks/utils/useToasts'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import useNounTribute from 'src/hooks/tribute/useNounTribute'
+import { toastError, toastSuccess } from 'src/hooks/utils/useToasts'
+import { WrappedTransactionReceiptState } from 'src/lib/utils/txWithErrorHandling'
 import Button from '../common/buttons/Button'
 import { NounImage } from '../common/NounletImage'
 import SimpleAddress from '../common/simple/SimpleAddress'
@@ -22,19 +24,52 @@ export default function TributedNounCard(props: {
     tributed: boolean
     currentDelegate: string
   }
-  isTributedByMe: boolean
 }) {
-  const { removeTributedNoun } = useNounTribute()
-  const { noun, isTributedByMe } = props
+  const { account } = useEthers()
+  const { removeTributedNoun, mutateTributedList } = useNounTribute()
+  const { noun } = props
+  const [isLoading, setIsLoading] = useState(false)
+  const isTributedByMe = noun.currentDelegate.toLowerCase() === (account || '').toLowerCase()
   const className = isTributedByMe ? 'bg-gray-4 text-white' : 'bg-gray-1'
+
+  // const onRemoveTribute = useCallback(async () => {
+  //   console.log('un-tributing')
+  //   const result = await removeTributedNoun(noun.id)
+  //   console.log('result', result)
+  //   await sleep(10000)
+  //   toastSuccess('UN-Tributed!', "Bam, it's UN-tributed!")
+  // }, [noun.id, removeTributedNoun])
+
+  // TODO test if this work
+  // This should update the loading indicator when the tributed list updates
+  // so that we dont have a race condition between the BC and Subgraph
+  useEffect(() => {
+    setIsLoading(false)
+  }, [isTributedByMe])
 
   const onRemoveTribute = useCallback(async () => {
     console.log('un-tributing')
-    const result = await removeTributedNoun(noun.id)
-    console.log('result', result)
-    await sleep(10000)
-    toastSuccess('UN-Tributed!', "Bam, it's UN-tributed!")
-  }, [noun.id, removeTributedNoun])
+    try {
+      setIsLoading(true)
+      const response = await removeTributedNoun(noun.id)
+
+      if (
+        response.status === WrappedTransactionReceiptState.SUCCESS ||
+        response.status === WrappedTransactionReceiptState.SPEDUP
+      ) {
+        console.log('result', response)
+        // await sleep(10000)
+        mutateTributedList()
+        toastSuccess('Un-tributed! ❌', 'Awww, I liked that one :(')
+      } else {
+        throw response
+      }
+    } catch (e) {
+      toastError('Un-tributing failed', 'Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
+  }, [noun.id, removeTributedNoun, mutateTributedList])
 
   const randomTributeText = useMemo(() => {
     const randomIndex = Math.floor(Math.random() * trubitedMemes.length)
@@ -52,7 +87,11 @@ export default function TributedNounCard(props: {
         </div>
         {isTributedByMe ? (
           <div className="flex items-center gap-2">
-            <Button className="primary-danger flex-1 !text-white" onClick={onRemoveTribute}>
+            <Button
+              className="primary-danger flex-1 !text-white"
+              onClick={onRemoveTribute}
+              loading={isLoading}
+            >
               Un-tribute
             </Button>
           </div>

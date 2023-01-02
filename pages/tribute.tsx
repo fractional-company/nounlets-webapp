@@ -15,7 +15,8 @@ import SimpleAddress from 'src/components/common/simple/SimpleAddress'
 import TributedNounCard from 'src/components/tribute/TributedNounCard'
 import TributeFAQ from 'src/components/tribute/TributeFAQ'
 import TributeYourWallet from 'src/components/tribute/TributeYourWallet'
-import useNounTribute from 'src/hooks/useNounTribute'
+import useTributedNounsList from 'src/hooks/tribute/useTributedNounsList'
+import useNounTribute from 'src/hooks/tribute/useNounTribute'
 import useSdk, { NounletsSDK } from 'src/hooks/utils/useSdk'
 import { toastSuccess } from 'src/hooks/utils/useToasts'
 import useSWR from 'swr'
@@ -102,54 +103,60 @@ const Tribute: NextPage = () => {
 export default Tribute
 
 function TributedNounsList() {
-  const { account } = useEthers()
+  const { data: tributedNounsListFull } = useTributedNounsList()
+  const [isLoading, setIsLoading] = useState(false)
+  const [page, setPage] = useState(1)
+  const PAGE_SIZE = 3
 
-  const { data } = useSWR(
-    'nouns/tributes',
-    async () => {
-      console.log('fetching', 'nouns/tributes')
-      const result = await getTributedNounsList()
-      console.log({ result })
-      return result.nouns
-    },
-    {}
-  )
+  const tributedNounsListPaginated = useMemo(() => {
+    return tributedNounsListFull?.slice(0, PAGE_SIZE * page) || null
+  }, [tributedNounsListFull, page])
+
+  const hasMore =
+    tributedNounsListFull != null &&
+    tributedNounsListPaginated != null &&
+    tributedNounsListPaginated.length < tributedNounsListFull.length
+
+  const handleShowMore = useCallback(async () => {
+    setIsLoading(true)
+    await sleep(1000)
+    setPage((value) => value + 1)
+    setIsLoading(false)
+  }, [])
 
   return (
     <div className="flex flex-col items-center space-y-8 overflow-hidden rounded-[20px] bg-white p-6">
-      {!data && <h1>Loading</h1>}
-
-      {data && data.length === 0 && (
-        <h1 className="text-center font-londrina text-px22 font-900">You don`t own any Nouns :(</h1>
-      )}
-
-      {data && (
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-          {data.map((nounData) => (
-            <div key={nounData.id} className="w-[300px]">
-              <TributedNounCard
-                noun={nounData}
-                isTributedByMe={account?.toLowerCase() === nounData.currentDelegate.toLowerCase()}
-              />
-            </div>
-          ))}
-
-          {data.map((nounData) => (
-            <div key={nounData.id} className="w-[300px]">
-              <TributedNounCard
-                noun={nounData}
-                isTributedByMe={account?.toLowerCase() !== nounData.currentDelegate.toLowerCase()}
-              />
-            </div>
-          ))}
-
-          <div className="w-[300px]">
-            <TributedNounCard.Skeleton />
-          </div>
+      {!tributedNounsListPaginated && (
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
           <div className="w-[300px]">
             <TributedNounCard.Skeleton />
           </div>
         </div>
+      )}
+
+      {tributedNounsListPaginated && tributedNounsListPaginated.length === 0 && (
+        <h1 className="text-center font-londrina text-px22 font-900">You don`t own any Nouns :(</h1>
+      )}
+
+      {tributedNounsListPaginated && (
+        <>
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
+            {tributedNounsListPaginated.map((nounData) => (
+              <div key={nounData.id} className="w-[300px]">
+                <TributedNounCard noun={nounData} />
+              </div>
+            ))}
+          </div>
+          {hasMore && (
+            <Button
+              className="default-outline text-black"
+              loading={isLoading}
+              onClick={handleShowMore}
+            >
+              Show more
+            </Button>
+          )}
+        </>
       )}
     </div>
   )

@@ -207,7 +207,22 @@ export const getTributedNounsGQL = async (first = 10) => {
       nouns: [
         {
           id: '1',
-          tributed: false,
+          tributed: true,
+          currentDelegate: '0x497F34f8A6EaB10652f846fD82201938e58d72E0'
+        },
+        {
+          id: '2',
+          tributed: true,
+          currentDelegate: '0x497F34f8A6EaB10652f846fD82201938e58d72E0'
+        },
+        {
+          id: '3',
+          tributed: true,
+          currentDelegate: '0x497F34f8A6EaB10652f846fD82201938e58d72E0'
+        },
+        {
+          id: '4',
+          tributed: true,
           currentDelegate: '0x497F34f8A6EaB10652f846fD82201938e58d72E0'
         }
       ],
