@@ -3,6 +3,7 @@ import NounCollectiveOwnership from 'src/components/noun/NounCollectiveOwnership
 import NounLeaderboard from 'src/components/noun/NounLeaderboard'
 import NounVotesFromNounlet from 'src/components/noun/NounVotesFromNounlet'
 import NounWtf from 'src/components/noun/NounWtf'
+import WTFAreNounlets from 'src/components/WTFAreNounlets'
 import useDisplayedNounlet from 'src/hooks/useDisplayedNounlet'
 import { useNounStore } from 'src/store/noun.store'
 
@@ -14,8 +15,13 @@ export default function NounTabGeneral() {
     <div className="space-y-16">
       {isLive && hasAuctionSettled && !wereAllNounletsAuctioned && <NounVotesFromNounlet />}
       {isLive && isGovernanceEnabled && <NounLeaderboard />}
-      {isLive && <NounCollectiveOwnership />}
-      <NounWtf />
+      {/* {isLive && <NounCollectiveOwnership />}
+      <NounWtf /> */}
+
+      {/* TODO uncomment {isLive && wereAllNounletsAuctioned && } */}
+      <div className="space-y-12 px-4 lg:container lg:mx-auto">
+        <WTFAreNounlets showCurrentAuction={true} />
+      </div>
     </div>
   )
 }

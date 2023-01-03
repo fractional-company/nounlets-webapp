@@ -38,6 +38,7 @@ export default function useExistingVaults() {
   const swrHook = useSWR(
     library && 'ExistingVaults',
     async () => {
+      console.log('ExistingVaultsExistingVaultsExistingVaultsExistingVaults')
       const result = await getVaultList()
       console.log({ result })
 

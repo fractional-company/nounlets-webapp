@@ -9,6 +9,10 @@ import useSdk from 'src/hooks/utils/useSdk'
 import NounletsOnAuctionCard from 'src/components/home/Cards/NounletsOnAuctionCard'
 import useExistingVaults, { VaultData } from 'src/hooks/useExistingVaults'
 import NounletsPastAuctionCard from 'src/components/home/Cards/NounletsPastAuctionCard'
+import Button from 'src/components/common/buttons/Button'
+import WTFAreNounlets from 'src/components/WTFAreNounlets'
+import HomeNounletsOnAuction from 'src/components/home/HomeNounletsOnAuction'
+import HomePastNounletAuctions from 'src/components/home/HomePastNounletAuctions'
 
 const tmpObj = {
   state: 'AUCTION_IN_PROGRESS',
@@ -179,42 +183,6 @@ const Home: NextPage<{ url: string }> = () => {
   const { library } = useEthers()
   const { data } = useExistingVaults()
 
-  useEffect(() => {
-    console.log({ buckets: data?.buckets })
-  }, [data])
-
-  const [onAuctionList, onBuyoutList] = useMemo(() => {
-    if (data == null) return [[], []]
-
-    // const list = data.vaults
-    //   // .sort((a, b) => {
-    //   //   const aId = +(a.noun?.id || 0)
-    //   //   const bId = +(b.noun?.id || 0)
-
-    //   //   return bId - aId
-    //   // })
-    //   .filter((vault) => vault.noun != null) // This cant happen
-
-    const auctions = [...data.buckets.auctionInProgress]
-    const buyouts = [
-      ...data.buckets.buyoutInProgress,
-      ...data.buckets.finished,
-      ...data.buckets.buyoutIdle
-    ]
-
-    return [auctions, buyouts]
-  }, [data])
-
-  // Nounlets on auction now
-
-  // const vaultList = useMemo(() => {
-  //   const list = tmpData.map((vault) => {
-  //     return <VaultListTile vaultId={vault.id} nounId={vault.noun!.id} key={vault.id} />
-  //   })
-
-  //   return <div className="grid grid-cols-4 gap-4">{list}</div>
-  // }, [tmpData])
-
   return (
     <div className="page-home w-screen">
       <div className="space-y-4 px-6 pt-4 pb-12 text-center">
@@ -230,43 +198,30 @@ const Home: NextPage<{ url: string }> = () => {
         </p>
       </div>
 
-      <NounletsOnAuction vaults={onAuctionList} />
+      <HomeNounletsOnAuction />
 
-      <PastNounletAuctions vaults={onBuyoutList} />
+      <div className="bg-white pb-[64px] lg:pb-[120px]">
+        <div className="space-y-12 px-4 lg:container lg:mx-auto">
+          <HomePastNounletAuctions />
 
-      {/* <div className="p-4">{vaultList}</div> */}
+          <NextOnNounlets />
+
+          <WTFAreNounlets showCurrentAuction={true} />
+        </div>
+      </div>
     </div>
   )
 }
 
 export default Home
 
-function NounletsOnAuction(props: { vaults: VaultData[] }) {
-  if (props.vaults.length === 0) return null
-
-  return (
-    <div className="space-y-12 bg-black px-6 py-12">
-      <h2 className="text-center font-londrina text-[48px] font-900 leading-[52px] text-gray-0.5">
-        Nounlets ON AUCTION now!
-      </h2>
-      <div className="grid grid-cols-1 items-center justify-center justify-items-center gap-12">
-        {props.vaults.map((vault, index) => (
-          <NounletsOnAuctionCard key={vault.id || index} vault={vault} />
-        ))}
-      </div>
-    </div>
-  )
-}
-
-function PastNounletAuctions(props: { vaults: VaultData[] }) {
+function NextOnNounlets() {
   return (
     <div className="px-6 py-12">
-      <h2 className="text-center font-londrina text-[48px] font-900 leading-[52px]">PAST</h2>
-      <div className="grid grid-cols-2 items-center justify-center justify-items-center gap-6">
-        {props.vaults.map((vault, index) => (
-          <NounletsPastAuctionCard key={vault.id || index} vault={vault} />
-        ))}
-      </div>
+      <h2 className="text-center font-londrina text-[48px] font-900 leading-[52px]">
+        Next on Nounlets
+      </h2>
+      <div className="grid grid-cols-2 items-center justify-center justify-items-center gap-6"></div>
     </div>
   )
 }

@@ -59,7 +59,7 @@ export default function SimpleAccordion(props: {
     <div className="simple-accordion">
       <Button
         onClick={handleOnClick}
-        className="min-h-12 lg:text-px40 lg:leading-px40 flex w-full items-center justify-between space-x-2 text-left font-londrina text-px32 leading-px32 text-black focus:text-primary"
+        className="min-h-12 flex w-full items-center justify-between space-x-2 text-left font-londrina text-px32 leading-px32 text-black focus:text-primary lg:text-px42 lg:leading-px42"
       >
         <span>{props.title}</span>
         <IconCaret className={classNames({ 'rotate-180': !isOpen })} />
@@ -72,7 +72,7 @@ export default function SimpleAccordion(props: {
         style={{ maxHeight: contentMaxHeight, opacity: isOpen ? 1.0 : 0.0 }}
       >
         <div ref={contentRef}>
-          <div className="pt-6">{props.children}</div>
+          <div className="pt-6 text-px16 font-500 text-gray-4 lg:text-px22">{props.children}</div>
         </div>
       </div>
     </div>

@@ -286,7 +286,7 @@ function PageContent(props: { isPageReady: boolean }) {
           </SimpleModalWrapper>
 
           <SimpleModalWrapper
-            className="md:!w-[600px] !max-w-[600px]"
+            className="!max-w-[600px] md:!w-[600px]"
             onClose={() => setBidModalOpen(false)}
             isShown={isBidModalOpen}
           >
@@ -295,16 +295,16 @@ function PageContent(props: { isPageReady: boolean }) {
         </>
       </OnMounted>
 
-      <div className="space-y-16 min-h-screen">
+      <div className="min-h-screen space-y-16 bg-white">
         {isReady && wereAllNounletsAuctioned ? <BuyoutHero /> : <NounHero />}
 
         {isReady && (
           <div className="flex flex-col">
-            <div className="lg:container lg:mx-auto px-4">
-              <div className="flex flex-col lg:flex-row lg:items-center gap-2 lg:gap-12">
+            <div className="px-4 lg:container lg:mx-auto">
+              <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:gap-12">
                 <div
                   className={classNames(
-                    'font-londrina text-[56px] cursor-pointer',
+                    'cursor-pointer font-londrina text-[56px]',
                     selectedTabIndex === 0 ? 'text-black' : 'text-gray-3'
                   )}
                   onClick={() => handleChangeTabIndex(0)}
@@ -314,7 +314,7 @@ function PageContent(props: { isPageReady: boolean }) {
                 {isGovernanceEnabled && (
                   <div
                     className={classNames(
-                      'font-londrina text-[56px] cursor-pointer',
+                      'cursor-pointer font-londrina text-[56px]',
                       selectedTabIndex === 1 ? 'text-black' : 'text-gray-3'
                     )}
                     onClick={() => handleChangeTabIndex(1)}
@@ -325,7 +325,7 @@ function PageContent(props: { isPageReady: boolean }) {
                 {wereAllNounletsAuctioned && (
                   <div
                     className={classNames(
-                      'font-londrina text-[56px] cursor-pointer',
+                      'cursor-pointer font-londrina text-[56px]',
                       selectedTabIndex === 2 ? 'text-black' : 'text-gray-3'
                     )}
                     onClick={() => handleChangeTabIndex(2)}
