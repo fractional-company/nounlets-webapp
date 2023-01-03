@@ -21,15 +21,14 @@ const trubitedMemes = [
 export default function TributedNounCard(props: {
   noun: {
     id: string
-    tributed: boolean
-    currentDelegate: string
+    tributedBy: string
   }
 }) {
   const { account } = useEthers()
   const { removeTributedNoun, mutateTributedList } = useNounTribute()
   const { noun } = props
   const [isLoading, setIsLoading] = useState(false)
-  const isTributedByMe = noun.currentDelegate.toLowerCase() === (account || '').toLowerCase()
+  const isTributedByMe = noun.tributedBy.toLowerCase() === (account || '').toLowerCase()
   const className = isTributedByMe ? 'bg-gray-4 text-white' : 'bg-gray-1'
 
   // const onRemoveTribute = useCallback(async () => {
@@ -40,7 +39,7 @@ export default function TributedNounCard(props: {
   //   toastSuccess('UN-Tributed!', "Bam, it's UN-tributed!")
   // }, [noun.id, removeTributedNoun])
 
-  // TODO test if this work
+  // TODO test if this works
   // This should update the loading indicator when the tributed list updates
   // so that we dont have a race condition between the BC and Subgraph
   useEffect(() => {
@@ -60,7 +59,7 @@ export default function TributedNounCard(props: {
         console.log('result', response)
         // await sleep(10000)
         mutateTributedList()
-        toastSuccess('Un-tributed! ❌', 'Awww, I liked that one :(')
+        toastSuccess('Un-tributed! 😭', 'Awww, I liked that one :(')
       } else {
         throw response
       }
@@ -108,7 +107,7 @@ export default function TributedNounCard(props: {
 
             <SimpleAddress
               avatarSize={16}
-              address={noun.currentDelegate}
+              address={noun.tributedBy}
               className="space-x-2 text-px16 font-700 text-black"
             />
           </div>

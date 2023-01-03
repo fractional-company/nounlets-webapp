@@ -104,7 +104,7 @@ function TributeYourWallet() {
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
             {walletNounsList.map((nounData: any) => (
               <div key={nounData.token_id} className="w-[300px]">
-                <TributeOpenseaCard data={nounData} onTributeSuccess={() => mutate()} />
+                <TributeOpenseaCard data={nounData} />
               </div>
             ))}
             {isLoadingMore && (

@@ -197,51 +197,45 @@ export const getVaultNounletVotesGQL = async (nounletId: string) => {
 
 export type TributedNoun = {
   id: string
-  tributed: boolean
-  currentDelegate: string
+  tributedBy: string
 }
 
 export const getTributedNounsGQL = async (first = 10) => {
-  return {
-    data: {
-      nouns: [
-        {
-          id: '1',
-          tributed: true,
-          currentDelegate: '0x497F34f8A6EaB10652f846fD82201938e58d72E0'
-        },
-        {
-          id: '2',
-          tributed: true,
-          currentDelegate: '0x497F34f8A6EaB10652f846fD82201938e58d72E0'
-        },
-        {
-          id: '3',
-          tributed: true,
-          currentDelegate: '0x497F34f8A6EaB10652f846fD82201938e58d72E0'
-        },
-        {
-          id: '4',
-          tributed: true,
-          currentDelegate: '0x497F34f8A6EaB10652f846fD82201938e58d72E0'
-        }
-      ],
-      _meta: {
-        block: {
-          number: 8227570,
-          timestamp: 1672414632
-        }
-      }
-    }
-  }
+  // return {
+  //   data: {
+  //     nouns: [
+  //       {
+  //         id: '1',
+  //         tributedBy: 0x497f34f8a6eab10652f846fd82201938e58d72e0
+  //       },
+  //       {
+  //         id: '2',
+  //         tributedBy: 0x497f34f8a6eab10652f846fd82201938e58d72e0
+  //       },
+  //       {
+  //         id: '3',
+  //         tributedBy: 0x497f34f8a6eab10652f846fd82201938e58d72e3
+  //       },
+  //       {
+  //         id: '4',
+  //         tributedBy: 0x497f34f8a6eab10652f846fd82201938e58d72e3
+  //       }
+  //     ],
+  //     _meta: {
+  //       block: {
+  //         number: 8227570,
+  //         timestamp: 1672414632
+  //       }
+  //     }
+  //   }
+  // }
 
   return client.query({
     query: graphql(`
       query Nouns {
         nouns {
           id
-          tributed
-          currentDelegate
+          tributedBy
         }
         _meta {
           block {

@@ -278,7 +278,11 @@ export const getNounletVotes = async (
 
 export const getTributedNounsList = async () => {
   const { data } = await getTributedNounsGQL()
-  return data
+  const transformed = { ...data }
+  transformed.nouns = transformed.nouns.filter(
+    (noun) => noun.tributedBy !== ethers.constants.AddressZero
+  )
+  return transformed
 }
 
 export type OpenseaCardData = {

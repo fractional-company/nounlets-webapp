@@ -135,7 +135,9 @@ function TributedNounsList() {
       )}
 
       {tributedNounsListPaginated && tributedNounsListPaginated.length === 0 && (
-        <h1 className="text-center font-londrina text-px22 font-900">You don`t own any Nouns :(</h1>
+        <h1 className="text-center font-londrina text-px22 font-900">
+          No one has tributed a Noun yet :(
+        </h1>
       )}
 
       {tributedNounsListPaginated && (

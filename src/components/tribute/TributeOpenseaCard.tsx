@@ -16,16 +16,12 @@ import IconCheckmark from '../common/icons/IconCheckmark'
 import { NounImage } from '../common/NounletImage'
 import { WrappedTransactionReceiptState } from 'src/lib/utils/txWithErrorHandling'
 
-export default function TributeOpenseaCard(props: {
-  data: OpenseaCardData
-  onTributeSuccess: (tokenId: string, flag: boolean) => void
-}) {
+export default function TributeOpenseaCard(props: { data: OpenseaCardData }) {
   const { token_id, image_url, permalink } = props.data
-  const onTributeSuccess = props.onTributeSuccess
   const sdk = useSdk()
   const { data: tributedNounsList } = useTributedNounsList()
   const { account, library } = useEthers()
-  const { tributeNoun, removeTributedNoun, mutateTributedList } = useNounTribute()
+  const { tributeNoun, removeTributedNoun, vaultNoun, mutateTributedList } = useNounTribute()
   const [isLoading, setIsLoading] = useState(false)
 
   const onTribute = useCallback(async () => {
@@ -65,7 +61,7 @@ export default function TributeOpenseaCard(props: {
         console.log('result', response)
         // await sleep(10000)
         mutateTributedList()
-        toastSuccess('Un-tributed! ❌', 'Awww, I liked that one :(')
+        toastSuccess('Un-tributed! 😭', 'Awww, I liked that one :(')
       } else {
         throw response
       }
@@ -80,6 +76,30 @@ export default function TributeOpenseaCard(props: {
     return tributedNounsList?.some((noun) => noun.id === token_id)
   }, [token_id, tributedNounsList])
   const className = isTributed ? 'bg-gray-4 text-white' : 'bg-white'
+
+  const onVault = useCallback(async () => {
+    console.log('vaulting')
+    try {
+      setIsLoading(true)
+      const response = await vaultNoun(token_id)
+
+      if (
+        response.status === WrappedTransactionReceiptState.SUCCESS ||
+        response.status === WrappedTransactionReceiptState.SPEDUP
+      ) {
+        console.log('result', response)
+        // await sleep(10000)
+        mutateTributedList()
+        toastSuccess('Vaulteeeeeed! 🥳', 'Yasssss')
+      } else {
+        throw response
+      }
+    } catch (e) {
+      toastError('Vaulting failed', 'Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
+  }, [token_id, vaultNoun, mutateTributedList])
 
   return (
     <div className={classNames(className, 'overflow-hidden rounded-[24px] p-4')}>
@@ -111,7 +131,7 @@ export default function TributeOpenseaCard(props: {
               Un-tribute
             </Button>
             {CHAIN_ID !== 1 && (
-              <Button className="basic text-black" onClick={onRemoveTribute} loading={isLoading}>
+              <Button className="basic text-black" onClick={onVault} loading={isLoading}>
                 Vault
               </Button>
             )}

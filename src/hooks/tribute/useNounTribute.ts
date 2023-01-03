@@ -5,12 +5,14 @@ import { ethers } from 'ethers'
 import { useCallback } from 'react'
 import txWithErrorHandling from 'src/lib/utils/txWithErrorHandling'
 import { useSWRConfig } from 'swr'
+import useProofs from '../useProofs'
 import useSdk from '../utils/useSdk'
 
 export default function useNounTribute() {
   const { account, library } = useEthers()
   const sdk = useSdk()
   const { mutate: mutateGlobal } = useSWRConfig()
+  const { getMintProof, getProofOrder } = useProofs()
 
   const mutateNounsInWalletList = useCallback(
     (address?: string) => {
@@ -59,11 +61,29 @@ export default function useNounTribute() {
     [sdk, library]
   )
 
+  const vaultNoun = useCallback(
+    async (nounId: string) => {
+      console.log('vaulting', nounId)
+      const tx = await sdk.NounletProtoform.connect(library!.getSigner()).deployVault(
+        getProofOrder(),
+        [],
+        [],
+        await getMintProof(),
+        sdk.NounsDescriptorV2.address,
+        nounId,
+        account!
+      )
+      return txWithErrorHandling(tx, 2)
+    },
+    [sdk, library, account, getMintProof, getProofOrder]
+  )
+
   return {
     mintANoun,
     tributeNoun,
     removeTributedNoun,
     mutateNounsInWalletList,
-    mutateTributedList
+    mutateTributedList,
+    vaultNoun
   }
 }
