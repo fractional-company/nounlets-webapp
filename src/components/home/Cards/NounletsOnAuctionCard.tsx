@@ -12,6 +12,11 @@ import { VaultData } from 'src/hooks/useExistingVaults'
 export default function NounletsOnAuctionCard(props: { vault: VaultData }) {
   console.log('🚀 VaultData', props.vault)
   const { id, noun } = props.vault
+  const [hasAuctionEnded, setHasAuctionEnded] = useState(false)
+  const handleTimerFinished = useCallback(() => {
+    setHasAuctionEnded(true)
+  }, [])
+
   if (id == null || noun == null) return null
 
   const nounletsCount = noun.nounlets.length
@@ -31,11 +36,11 @@ export default function NounletsOnAuctionCard(props: { vault: VaultData }) {
 
   return (
     <Link href={`/noun/${noun.id}`}>
-      <div className="vault-list-tile flex w-full max-w-[300px] cursor-pointer flex-col gap-6">
-        <div className="max-w-[300px] overflow-hidden rounded-2xl">
+      <div className="vault-list-tile flex cursor-pointer flex-col gap-6 md:flex-row">
+        <div className="w-full overflow-hidden rounded-2xl md:w-[300px]">
           <NounImage id={noun.id} />
         </div>
-        <div className="flex flex-col gap-4">
+        <div className="flex w-[300px] flex-col gap-4 md:self-center">
           <p className="font-londrina text-px32 font-900 leading-px36 text-gray-0.5">
             NOUN {noun.id}
           </p>
@@ -47,14 +52,16 @@ export default function NounletsOnAuctionCard(props: { vault: VaultData }) {
               <CountdownWithBar
                 startTime={latestAuction.startTime}
                 endTime={latestAuction.endTime}
+                onTimerFinished={handleTimerFinished}
               />
               <p>
-                Current bid: <span className="font-700">Ξ {ethValue}</span>
+                {hasAuctionEnded ? 'Winning bid:' : 'Current bid:'}{' '}
+                <span className="font-700">Ξ {ethValue}</span>
               </p>
             </div>
           </div>
           <Button className="primary w-full">
-            {isOver ? 'Settle auction' : 'Bid for Nounlet ' + nounletsCount}
+            {hasAuctionEnded ? 'Settle auction' : 'Bid for Nounlet ' + nounletsCount}
           </Button>
         </div>
       </div>
@@ -62,10 +69,14 @@ export default function NounletsOnAuctionCard(props: { vault: VaultData }) {
   )
 }
 
-function CountdownWithBar(props: { startTime: string; endTime: string }) {
-  const { startTime, endTime } = props
+function CountdownWithBar(props: {
+  startTime: string
+  endTime: string
+  onTimerFinished?: () => void
+}) {
+  const { startTime, endTime, onTimerFinished } = props
   const length = +endTime - +startTime
-  const [percentage, setPercentage] = useState(0.5)
+  const [percentage, setPercentage] = useState(0)
 
   const calculatePercentage = useCallback(() => {
     const timeLeft = ~~((+endTime * 1000 - Date.now()) / 1000)
@@ -73,10 +84,6 @@ function CountdownWithBar(props: { startTime: string; endTime: string }) {
     setPercentage(percentage)
     return percentage
   }, [endTime, length])
-
-  const onTimerFinished = useCallback(() => {
-    console.log('done?')
-  }, [])
 
   return (
     <div className="space-y-2">

@@ -245,11 +245,11 @@ function NounletsOnAuction(props: { vaults: VaultData[] }) {
   if (props.vaults.length === 0) return null
 
   return (
-    <div className="bg-black px-6 py-12">
+    <div className="space-y-12 bg-black px-6 py-12">
       <h2 className="text-center font-londrina text-[48px] font-900 leading-[52px] text-gray-0.5">
         Nounlets ON AUCTION now!
       </h2>
-      <div className="grid grid-cols-2 items-center justify-center justify-items-center gap-6">
+      <div className="grid grid-cols-1 items-center justify-center justify-items-center gap-12">
         {props.vaults.map((vault, index) => (
           <NounletsOnAuctionCard key={vault.id || index} vault={vault} />
         ))}
