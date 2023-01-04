@@ -56,21 +56,38 @@ export default defineConfig({
       },
       v2: {
         nounlets: {
-          MintHelper: '0xD4C896356a5dd4c1cfc63c6757601F8f3e3bCC0c',
+          MintHelper: '0x3a4Fd0c912DB0872fc31556d1a8022E198E528a7',
           Multicall3: '0xcA11bde05977b3631167028862bE2a173976CA11',
-          NounsDescriptorV2: '0x04a999554eBd4Ada190Bb237aAA44501173B1104',
-          NounsToken: '0xb36d635D887e38763eaDe353A34f4D7A0182c61F',
-          NounletRegistry: '0x4618Cd1Cb89459CB7F88d5bA158B11909603c7f4',
+          NounsDescriptorV2: '0xf1fe89387983b303dC5aC6B818D6Af57755eA454',
+          NounsToken: '0x474f62300D7bDc41676700C1e2262ede286B6ed7',
+          NounletRegistry: '0x4Ba365d3b39445426189D94339BC245a21894D62',
 
-          NounletAuction: '0xf23CA2cc6A05d2c3c0B7aF855fAE6f681DffDE5E',
-          NounletProtoform: '0x4D2079Bba84c96951aBc08Dc5E64364873c34d95',
-          OptimisticBid: '0xfa07e177a8A46E37b18D904F62A1eF57878AaE07',
+          NounletAuction: '0x1D0DFe51A4e368A27E26d60De74ed5DEbb20580e',
+          NounletProtoform: '0x2e3820cb432Eb4c0e054d6c134386fC2Be8AF8bd',
+          OptimisticBid: '0x7D15bAb476bd80E80C55E566b95bd1FAddc8b6E4',
 
-          NounletGovernance: '0x00a7aaf812EDAC013d3bbe8c7A2984E65328E97F',
-          NounletToken: '0xFf6344A3E052E1f5cfa67e0F86310ffb6E0146e9',
+          NounletGovernance: '0xBf686F8aA97fA018DBDCecf21E7B9F931B91b9d3',
+          NounletToken: '0x1df08E37067CC00E4ffA70bf6FbDc91d7e7cAf4e',
           ReverseRecords: '0x333Fc8f550043f239a2CF79aEd5e9cF4A20Eb41e'
         }
       }
+      // v2: {
+      //   nounlets: {
+      //     MintHelper: '0xD4C896356a5dd4c1cfc63c6757601F8f3e3bCC0c',
+      //     Multicall3: '0xcA11bde05977b3631167028862bE2a173976CA11',
+      //     NounsDescriptorV2: '0x04a999554eBd4Ada190Bb237aAA44501173B1104',
+      //     NounsToken: '0xb36d635D887e38763eaDe353A34f4D7A0182c61F',
+      //     NounletRegistry: '0x4618Cd1Cb89459CB7F88d5bA158B11909603c7f4',
+
+      //     NounletAuction: '0xf23CA2cc6A05d2c3c0B7aF855fAE6f681DffDE5E',
+      //     NounletProtoform: '0x4D2079Bba84c96951aBc08Dc5E64364873c34d95',
+      //     OptimisticBid: '0xfa07e177a8A46E37b18D904F62A1eF57878AaE07',
+
+      //     NounletGovernance: '0x00a7aaf812EDAC013d3bbe8c7A2984E65328E97F',
+      //     NounletToken: '0xFf6344A3E052E1f5cfa67e0F86310ffb6E0146e9',
+      //     ReverseRecords: '0x333Fc8f550043f239a2CF79aEd5e9cF4A20Eb41e'
+      //   }
+      // }
     }
   }
 })

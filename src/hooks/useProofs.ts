@@ -32,11 +32,13 @@ proposeProof = protoform.getProof(merkleTree, 6);
 delegateProof = protoform.getProof(merkleTree, 7);
 */
 
+// Update 04.01.2023 - Order should now be like it is in v1
+
 export default function useProofs() {
   const sdk = useSdk()
 
   const getProofOrder = useCallback(
-    (version: 'v1' | 'v2' = 'v2') => {
+    (version: 'v1' | 'v2' = 'v1') => {
       if (version === 'v1')
         return [
           sdk?.NounletAuction.address,
@@ -54,7 +56,7 @@ export default function useProofs() {
   )
 
   const getMerkleRoot = useCallback(
-    async (version: 'v1' | 'v2' = 'v2') => {
+    async (version: 'v1' | 'v2' = 'v1') => {
       if (version === 'v1') {
         if (merkleRootV1 == null) {
           merkleRootV1 = new Promise(async (resolve, reject) => {
@@ -77,7 +79,7 @@ export default function useProofs() {
   )
 
   const getMintProof = useCallback(
-    async (version: 'v1' | 'v2' = 'v2') => {
+    async (version: 'v1' | 'v2' = 'v1') => {
       const merkleRoot = await getMerkleRoot(version)
       return sdk.NounletProtoform.getProof(merkleRoot, 0)
     },
@@ -85,7 +87,7 @@ export default function useProofs() {
   )
 
   const getDelegateProof = useCallback(
-    async (version: 'v1' | 'v2' = 'v2') => {
+    async (version: 'v1' | 'v2' = 'v1') => {
       const merkleRoot = await getMerkleRoot(version)
       return sdk.NounletProtoform.getProof(merkleRoot, version === 'v1' ? 5 : 7)
     },
@@ -93,7 +95,7 @@ export default function useProofs() {
   )
 
   const getBatchBurnProof = useCallback(
-    async (version: 'v1' | 'v2' = 'v2') => {
+    async (version: 'v1' | 'v2' = 'v1') => {
       const merkleRoot = await getMerkleRoot(version)
       return sdk.NounletProtoform.getProof(merkleRoot, version === 'v1' ? 6 : 1)
     },
@@ -101,7 +103,7 @@ export default function useProofs() {
   )
 
   const getWithdrawERC721Proof = useCallback(
-    async (version: 'v1' | 'v2' = 'v2') => {
+    async (version: 'v1' | 'v2' = 'v1') => {
       const merkleRoot = await getMerkleRoot(version)
       return sdk.NounletProtoform.getProof(merkleRoot, version === 'v1' ? 7 : 2)
     },
