@@ -31,16 +31,18 @@ export default function NextNounlets() {
   const gridStyles = 'grid grid-cols-2 gap-3 md:gap-8 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'
 
   return (
-    <div className="space-y-8 py-12">
+    <div className="space-y-8">
       <h2 className="text-center font-londrina text-[48px] font-900 leading-[52px]">
-        Next on Nounlets
+        Upcomming (maybe?) Nounlets
       </h2>
 
       {!tributedNounsListPaginated && (
-        <div className={gridStyles}>
-          <div className="w-auto">
-            <SmallTributedCard.Skeleton />
-          </div>
+        <div className={gridStyles + ' size-aware-skeleton-loaders-next-nounlets'}>
+          <SmallTributedCard.Skeleton />
+          <SmallTributedCard.Skeleton />
+          <SmallTributedCard.Skeleton />
+          <SmallTributedCard.Skeleton />
+          <SmallTributedCard.Skeleton />
         </div>
       )}
 

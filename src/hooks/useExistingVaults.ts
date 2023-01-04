@@ -7,6 +7,7 @@ import useSWR from 'swr'
 
 import { BigNumber, ethers } from 'ethers'
 import { getBatchNounBidInfo } from 'src/lib/utils/buyoutInfoUtils'
+import { sleep } from 'radash'
 
 const tmpObj = {
   state: 'AUCTION_IN_PROGRESS',
@@ -304,6 +305,7 @@ export default function useExistingVaults() {
   const swrHook = useSWR(
     sdk && library && 'ExistingVaults',
     async () => {
+      await sleep(1000)
       const result = await getVaultList()
       console.log({ result })
 

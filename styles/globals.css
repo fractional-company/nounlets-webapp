@@ -176,3 +176,43 @@ code {
 .overscroll-behavior-none {
   overscroll-behavior: unset;
 }
+
+.size-aware-skeleton-loaders {
+  @media not screen(md) {
+    & > :nth-child(n + 2) {
+      @apply hidden;
+    }
+  }
+
+  @media not screen(lg) {
+    & > :nth-child(n + 3) {
+      @apply hidden;
+    }
+  }
+
+  @media not screen(xl) {
+    & > :nth-child(n + 4) {
+      @apply hidden;
+    }
+  }
+}
+
+.size-aware-skeleton-loaders-next-nounlets {
+  @media not screen(md) {
+    & > :nth-child(n + 3) {
+      @apply hidden;
+    }
+  }
+
+  @media not screen(lg) {
+    & > :nth-child(n + 4) {
+      @apply hidden;
+    }
+  }
+
+  @media not screen(xl) {
+    & > :nth-child(n + 5) {
+      @apply hidden;
+    }
+  }
+}

@@ -28,6 +28,22 @@ export default function NounletsPastAuctionCard(props: { vault: VaultData }) {
   return <BuyoutInProgress nounId={noun.id} buyoutInfo={buyoutInfo} />
 }
 
+NounletsPastAuctionCard.Skeleton = function NounletsPastAuctionCardSkeleton() {
+  return (
+    <div className="vault-list-tile flex w-full max-w-[300px] cursor-pointer flex-col gap-4">
+      <div className="max-w-[300px] overflow-hidden rounded-2xl bg-gray-1">
+        <NounImage />
+      </div>
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center justify-between">
+          <p className="font-londrina text-px32 font-900 leading-px36 text-black">NOUN ???</p>
+        </div>
+        <div className="h-[48px] w-full rounded-px10 bg-gray-1"></div>
+      </div>
+    </div>
+  )
+}
+
 function BuyoutIdle(props: { nounId: string; auctionEnded: string }) {
   const { nounId, auctionEnded } = props
 
@@ -106,7 +122,7 @@ function BuyoutFinished(props: { nounId: string }) {
 function NounCardWrapper(props: { nounId: string; children: ReactNode }) {
   return (
     <Link href={`/noun/${props.nounId}`}>
-      <div className="vault-list-tile flex w-full max-w-[300px] cursor-pointer flex-col gap-6">
+      <div className="vault-list-tile flex w-full max-w-[300px] cursor-pointer flex-col gap-4">
         <div className="max-w-[300px] overflow-hidden rounded-2xl">
           <NounImage id={props.nounId} />
         </div>

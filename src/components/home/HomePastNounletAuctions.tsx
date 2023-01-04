@@ -4,7 +4,20 @@ import NounletsPastAuctionCard from './Cards/NounletsPastAuctionCard'
 export default function HomePastNounletAuctions() {
   const { data } = useExistingVaults()
 
-  if (data == null) return null
+  if (data == null)
+    return (
+      <div className="space-y-8">
+        <h2 className="text-center font-londrina text-[48px] font-900 leading-[52px]">
+          Past Nounlet auctions
+        </h2>
+        <div className="size-aware-skeleton-loaders grid grid-cols-1 items-start justify-center justify-items-center gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <NounletsPastAuctionCard.Skeleton />
+          <NounletsPastAuctionCard.Skeleton />
+          <NounletsPastAuctionCard.Skeleton />
+          <NounletsPastAuctionCard.Skeleton />
+        </div>
+      </div>
+    )
 
   const buyouts = [
     ...data.buckets.buyoutInProgress,
@@ -17,11 +30,11 @@ export default function HomePastNounletAuctions() {
   const isBuyoutHappening = data.buckets.buyoutInProgress.length > 0
 
   return (
-    <div className="space-y-8 py-12">
+    <div className="space-y-8">
       <h2 className="text-center font-londrina text-[48px] font-900 leading-[52px]">
         Past Nounlet auctions
       </h2>
-      <div className="grid items-start justify-center justify-items-center gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid items-start justify-center justify-items-center gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {isBuyoutHappening && (
           <div className="flex max-w-[300px] flex-col gap-6">
             <h1 className="font-londrina text-px42 leading-px48">
