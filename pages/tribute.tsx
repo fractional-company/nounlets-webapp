@@ -22,11 +22,8 @@ import { toastSuccess } from 'src/hooks/utils/useToasts'
 import useSWR from 'swr'
 
 const Tribute: NextPage = () => {
-  const { account, library } = useEthers()
-  const sdk = useSdk()
-
   return (
-    <div className="page-tribute w-screen space-y-8 bg-white lg:space-y-16">
+    <div className="page-tribute space-y-8 bg-white lg:space-y-16">
       <div className="bg-gray-1 px-4 pt-4 pb-12">
         <h1 className="text-center font-londrina text-[56px] font-700 uppercase leading-[62px]">
           Want to Tribute your Noun?

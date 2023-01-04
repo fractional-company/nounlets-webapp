@@ -8,7 +8,7 @@ export default function NounTabVote() {
   const { isLive, latestNounletTokenId } = useNounStore()
 
   return (
-    <div className="page-governance mx-auto w-screen lg:container">
+    <div className="page-governance mx-auto lg:container">
       <div className="px-4 md:px-12 lg:px-4">
         <h1 className="font-londrina text-px32 leading-[38px]">Vote for a delegate</h1>
 

@@ -1,26 +1,20 @@
 import { useEthers } from '@usedapp/core'
-import { Provider as MulticallProvider } from 'ethers-multicall'
 import type { NextPage } from 'next'
-import Link from 'next/link'
-import { useEffect, useMemo } from 'react'
-import { NounImage } from 'src/components/common/NounletImage'
 import useSdk from 'src/hooks/utils/useSdk'
 
-import NounletsOnAuctionCard from 'src/components/home/Cards/NounletsOnAuctionCard'
-import useExistingVaults, { VaultData } from 'src/hooks/useExistingVaults'
-import NounletsPastAuctionCard from 'src/components/home/Cards/NounletsPastAuctionCard'
-import Button from 'src/components/common/buttons/Button'
-import WTFAreNounlets from 'src/components/WTFAreNounlets'
+import NextNounlets from 'src/components/home/HomeNextNounlets'
 import HomeNounletsOnAuction from 'src/components/home/HomeNounletsOnAuction'
 import HomePastNounletAuctions from 'src/components/home/HomePastNounletAuctions'
+import WTFAreNounlets from 'src/components/WTFAreNounlets'
+import useExistingVaults from 'src/hooks/useExistingVaults'
 
 const Home: NextPage<{ url: string }> = () => {
-  const sdk = useSdk()
-  const { library } = useEthers()
-  const { data } = useExistingVaults()
+  // const sdk = useSdk()
+  // const { library } = useEthers()
+  // const { data } = useExistingVaults()
 
   return (
-    <div className="page-home w-screen">
+    <div className="page-home">
       <div className="space-y-4 px-6 pt-4 pb-12 text-center">
         <h1 className="font-londrina text-[64px] font-900 leading-[70px]">OWN A PIECE OF A NOUN</h1>
         <p className="font-londrina text-[34px] font-900 leading-[40px] text-[#202A46]">
@@ -40,7 +34,7 @@ const Home: NextPage<{ url: string }> = () => {
         <div className="space-y-12 px-4 lg:container lg:mx-auto">
           <HomePastNounletAuctions />
 
-          <NextOnNounlets />
+          <NextNounlets />
 
           <WTFAreNounlets showCurrentAuction={false} />
         </div>
@@ -50,14 +44,3 @@ const Home: NextPage<{ url: string }> = () => {
 }
 
 export default Home
-
-function NextOnNounlets() {
-  return (
-    <div className="px-6 py-12">
-      <h2 className="text-center font-londrina text-[48px] font-900 leading-[52px]">
-        Next on Nounlets
-      </h2>
-      <div className="grid grid-cols-2 items-center justify-center justify-items-center gap-6"></div>
-    </div>
-  )
-}
