@@ -10,6 +10,9 @@ type SupportedChains = ChainId.Goerli | ChainId.Mainnet
 export const CHAIN_ID: SupportedChains = parseInt(process.env.NEXT_PUBLIC_CHAIN_ID ?? '1')
 export const IS_DEVELOP = CHAIN_ID !== 1
 export const NEXT_PUBLIC_MAX_NOUNLETS = parseInt(process.env.NEXT_PUBLIC_MAX_NOUNLETS ?? '100')
+export const NEXT_PUBLIC_REJECTION_PERIOD = parseInt(
+  process.env.NEXT_PUBLIC_REJECTION_PERIOD ?? '604800'
+) // 7 days
 export const NEXT_PUBLIC_NOUN_VAULT_ADDRESS =
   (typeof window !== 'undefined' &&
     localStorage?.getItem('NEXT_PUBLIC_NOUN_VAULT_ADDRESS_OVERRIDE')) ||

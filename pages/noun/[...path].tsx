@@ -1,38 +1,30 @@
 import classNames from 'classnames'
 import { GetServerSideProps, NextPage } from 'next'
 import { NextRouter, useRouter } from 'next/router'
-import { Fragment, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import BuyoutHero from 'src/components/buyout/BuyoutHero'
 import BuyoutHowDoesItWorkModal from 'src/components/buyout/BuyoutHowDoesItWorkModal'
 import BuyoutOfferModal from 'src/components/buyout/BuyoutOfferModal'
 import SimpleModalWrapper from 'src/components/common/simple/SimpleModalWrapper'
 import ModalBidHistory from 'src/components/modals/ModalBidHistory'
-import { NounAuctionsDisplay } from 'src/components/noun/NounAuctionsDisplay'
-import { NounBuyoutDisplay } from 'src/components/noun/NounBuyoutDisplay'
-import NounCollectiveOwnership from 'src/components/noun/NounCollectiveOwnership'
 import NounHero from 'src/components/noun/NounHero'
-import NounLeaderboard from 'src/components/noun/NounLeaderboard'
 import NounTabGeneral from 'src/components/noun/NounTab/NounTabGeneral'
 import NounTabNounlets from 'src/components/noun/NounTab/NounTabNounlets'
 import NounTabVote from 'src/components/noun/NounTab/NounTabVote'
-import NounVotesFromNounlet from 'src/components/noun/NounVotesFromNounlet'
-import NounWtf from 'src/components/noun/NounWtf'
 import OnMounted from 'src/components/OnMounted'
-import useDisplayedNounlet from 'src/hooks/useDisplayedNounlet'
 import useLeaderboardData from 'src/hooks/useLeaderboardData'
 import { useNounBuyoutData } from 'src/hooks/useNounBuyoutData'
 import { useNounData } from 'src/hooks/useNounData'
 import { useNounletData } from 'src/hooks/useNounletData'
 import { ONLY_NUMBERS_REGEX } from 'src/lib/utils/nextBidCalculator'
 import { useAppStore } from 'src/store/application.store'
+import { useBuyoutStore } from 'src/store/buyout/buyout.store'
 import { useBuyoutHowDoesItWorkModalStore } from 'src/store/buyout/buyoutHowDoesItWorkModal.store'
 import { useBuyoutOfferModalStore } from 'src/store/buyout/buyoutOfferModal.store'
+import { useLeaderboardStore } from 'src/store/leaderboard.store'
 import { useNounStore } from 'src/store/noun.store'
 import { useNounletStore } from 'src/store/nounlet.store'
 import { getVaultData } from '../../graphql/src/queries'
-import { Tab } from '@headlessui/react'
-import { useLeaderboardStore } from 'src/store/leaderboard.store'
-import { useBuyoutStore } from 'src/store/buyout/buyout.store'
 
 type NounHomeProps = {
   url: string
@@ -179,7 +171,9 @@ function PageContent(props: { isPageReady: boolean }) {
     latestNounletTokenId,
     wereAllNounletsAuctioned,
     isGovernanceEnabled,
-    setIsReady
+    setIsReady,
+    tabIndex: selectedTabIndex,
+    setTabIndex
   } = useNounStore()
   const { setNounletID, reset: resetNounletStore } = useNounletStore()
 
@@ -242,26 +236,24 @@ function PageContent(props: { isPageReady: boolean }) {
   const { isBuyoutHowDoesItWorkModalShown, closeBuyoutHowDoesItWorkModal } =
     useBuyoutHowDoesItWorkModalStore()
 
-  const [selectedTabIndex, setSelectedTabIndex] = useState(0)
-
   useEffect(() => {
     if (wereAllNounletsAuctioned) {
       if (paramNounletId != null) {
         console.log('open nounlets tab!')
-        setSelectedTabIndex(2)
+        setTabIndex(2)
       }
     }
-  }, [wereAllNounletsAuctioned, paramNounletId])
+  }, [wereAllNounletsAuctioned, paramNounletId, setTabIndex])
 
   const handleChangeTabIndex = (index: number) => {
     // console.log('handleChangeTabIndex', index)
     if (index === 2) {
       if (paramNounletId == null) {
         router.replace(`/noun/${paramNounId}/nounlet/1`, undefined, { shallow: true })
-        setSelectedTabIndex(index)
+        setTabIndex(index)
       }
     }
-    setSelectedTabIndex(index)
+    setTabIndex(index)
   }
 
   return (
@@ -336,7 +328,7 @@ function PageContent(props: { isPageReady: boolean }) {
               </div>
             </div>
 
-            <div className={'mt-12'}>
+            <div className="mt-12 pb-16">
               {selectedTabIndex === 0 && <NounTabGeneral />}
               {selectedTabIndex === 1 && isGovernanceEnabled && <NounTabVote />}
               {selectedTabIndex === 2 && wereAllNounletsAuctioned && <NounTabNounlets />}

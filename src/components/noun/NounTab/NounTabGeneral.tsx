@@ -15,13 +15,11 @@ export default function NounTabGeneral() {
     <div className="space-y-16">
       {isLive && hasAuctionSettled && !wereAllNounletsAuctioned && <NounVotesFromNounlet />}
       {isLive && isGovernanceEnabled && <NounLeaderboard />}
-      {/* {isLive && <NounCollectiveOwnership />}
-      <NounWtf /> */}
-
-      {/* TODO uncomment {isLive && wereAllNounletsAuctioned && } */}
-      <div className="space-y-12 px-4 lg:container lg:mx-auto">
-        <WTFAreNounlets showCurrentAuction={true} />
-      </div>
+      {isLive && (
+        <div className="space-y-12 px-4 lg:container lg:mx-auto">
+          <WTFAreNounlets showCurrentAuction={wereAllNounletsAuctioned} />
+        </div>
+      )}
     </div>
   )
 }

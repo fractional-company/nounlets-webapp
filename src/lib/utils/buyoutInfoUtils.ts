@@ -9,8 +9,7 @@ import {
 } from 'src/store/buyout/buyout.store'
 import OptimisticBidABI from 'eth-sdk/abis/goerli/v2/nounlets/OptimisticBid.json'
 import NounsTokenABI from 'eth-sdk/abis/goerli/v2/nounlets/NounsToken.json'
-
-let REJECTION_PERIOD: number | null = null
+import { NEXT_PUBLIC_REJECTION_PERIOD } from 'config'
 
 export async function getBuyoutBidInfo(
   sdk: NounletsSDK,
@@ -87,12 +86,7 @@ export async function getBuyoutBidInfo(
 
 async function getBidInfo(sdk: NounletsSDK, vaultAddress: string): Promise<BuyoutInfoPartial> {
   const bidInfo = await sdk.OptimisticBid.bidInfo(vaultAddress)
-
-  if (REJECTION_PERIOD == null) {
-    REJECTION_PERIOD = (await sdk.OptimisticBid.REJECTION_PERIOD()).toNumber()
-  }
-
-  const endTime = bidInfo.startTime.add(REJECTION_PERIOD)
+  const endTime = bidInfo.startTime.add(NEXT_PUBLIC_REJECTION_PERIOD)
   return {
     startTime: bidInfo.startTime,
     endTime: endTime,
@@ -184,17 +178,20 @@ export async function getBatchNounBidInfo(
   multicallProvider: MulticallProvider,
   addresses: string[]
 ) {
-  await multicallProvider.init()
-  const mc = new MulticallContract(sdk.OptimisticBid.address, OptimisticBidABI.slice(0, -1))
-  const calls = addresses.map((address) => {
-    return mc.bidInfo(address)
-  })
-
-  const nounBidInfoArray = (await multicallProvider.all(calls)) as Awaited<
-    ReturnType<typeof sdk.OptimisticBid.bidInfo>
-  >[]
-
-  return nounBidInfoArray
+  try {
+    await multicallProvider.init()
+    const mc = new MulticallContract(sdk.OptimisticBid.address, OptimisticBidABI.slice(0, -1))
+    const calls = addresses.map((address) => {
+      return mc.bidInfo(address)
+    })
+    const nounBidInfoArray = (await multicallProvider.all(calls)) as Awaited<
+      ReturnType<typeof sdk.OptimisticBid.bidInfo>
+    >[]
+    return nounBidInfoArray
+  } catch (error) {
+    console.log('multicallProvider error', error)
+    throw error
+  }
 }
 
 export async function getBatchTributeInfo(sdk: NounletsSDK, library: any, tokenIds: string[]) {

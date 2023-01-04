@@ -134,7 +134,7 @@ export default function useNounBuyout() {
     const tx = await vault.start(vaultAddress, fractionsOffered, amountsOffered, {
       value: initialEthBalance
     })
-    return txWithErrorHandling(tx)
+    return txWithErrorHandling(tx, 2)
 
     // console.log({ gasLimit })
 

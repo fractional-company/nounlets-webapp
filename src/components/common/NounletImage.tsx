@@ -8,13 +8,13 @@ export function NounletImage(props: {
   nounletTokenAddress?: string | null
   id: string | null
 }) {
-  const { data: nouneltData } = useNounletImageData(
+  const { data: nounletData } = useNounletImageData(
     props.noundId,
     props.nounletTokenAddress,
     props.id
   )
 
-  return nouneltData == null ? (
+  return nounletData == null ? (
     <Image
       src={nounLoadingImage}
       layout="responsive"
@@ -26,7 +26,7 @@ export function NounletImage(props: {
   ) : (
     <Image
       className="image-pixelated"
-      src={nouneltData.image}
+      src={nounletData.image}
       alt={`nounlet ${props.id}`}
       layout="responsive"
       width={320}

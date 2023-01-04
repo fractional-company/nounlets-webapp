@@ -14,6 +14,7 @@ import nounImage from 'public/img/noun.png'
 import { useMemo, useState } from 'react'
 import { useAppStore } from 'src/store/application.store'
 import { useBuyoutHowDoesItWorkModalStore } from 'src/store/buyout/buyoutHowDoesItWorkModal.store'
+import useDisplayedNounlet from 'src/hooks/useDisplayedNounlet'
 
 type ComponentProps = {
   isRejecting: boolean
@@ -35,6 +36,7 @@ export default function BuyoutAcceptRejectOfferModal(props: ComponentProps): JSX
   const { toastSuccess, toastError } = useToasts()
   const [isBuyingNounlet, setIsBuyingNounlet] = useState(false)
   const { setConnectModalOpen } = useAppStore()
+  const { nounTokenId, nounletTokenAddress } = useDisplayedNounlet()
 
   const [showEndTime, setShowEndTime] = useState(false)
   const endTime = useMemo(() => buyoutInfo.endTime, [buyoutInfo])
@@ -99,26 +101,26 @@ export default function BuyoutAcceptRejectOfferModal(props: ComponentProps): JSX
     <div className="buyout-accept-reject-offer-modal">
       <div className="flex flex-col gap-4">
         {props.isRejecting ? (
-          <p className="text-px24 font-londrina text-gray-4">👎 Rejecting the offer</p>
+          <p className="font-londrina text-px24 text-gray-4">👎 Rejecting the offer</p>
         ) : (
-          <p className="text-px24 font-londrina text-gray-4">👍 Accepting the offer</p>
+          <p className="font-londrina text-px24 text-gray-4">👍 Accepting the offer</p>
         )}
 
-        <div className="bg-gray-2 rounded-px16 p-4">
+        <div className="rounded-px16 bg-gray-2 p-4">
           {!props.isRejecting && (
-            <div className="mb-4 -mt-4 -mx-4 rounded-t-px16 px-4 py-3 bg-black text-white text-center">
-              <p className="font-500 text-px14">No action is required to accept the offer 😊</p>
+            <div className="-mx-4 mb-4 -mt-4 rounded-t-px16 bg-black px-4 py-3 text-center text-white">
+              <p className="text-px14 font-500">No action is required to accept the offer 😊</p>
             </div>
           )}
-          <div className="text-center space-y-4">
-            <p className="font-londrina text-px24 text-gray-4 leading-px36">
+          <div className="space-y-4 text-center">
+            <p className="font-londrina text-px24 leading-px36 text-gray-4">
               Offer accepted {showEndTime ? 'at' : 'in'}
             </p>
             <div onClick={() => setShowEndTime(!showEndTime)}>
               <CountdownTimer
                 auctionEnd={endTime}
                 showEndTime={showEndTime}
-                className="cursor-pointer font-londrina !text-px36 !space-x-3 !font-400 justify-center"
+                className="cursor-pointer justify-center !space-x-3 font-londrina !text-px36 !font-400"
               />
             </div>
             <p className="text-px16 font-500 text-gray-4">
@@ -134,9 +136,9 @@ export default function BuyoutAcceptRejectOfferModal(props: ComponentProps): JSX
           </div>
         </div>
 
-        <div className="bg-gray-2 rounded-px16 p-4">
-          <div className="text-center space-y-3">
-            <p className="font-londrina text-px24 text-gray-4 leading-px36">Nounlets remaining</p>
+        <div className="rounded-px16 bg-gray-2 p-4">
+          <div className="space-y-3 text-center">
+            <p className="font-londrina text-px24 leading-px36 text-gray-4">Nounlets remaining</p>
             <p className="font-londrina text-px42">
               {nounletsRemainingCount}
               <span className="text-px20">/{nounletsOfferedCount}</span>
@@ -147,7 +149,11 @@ export default function BuyoutAcceptRejectOfferModal(props: ComponentProps): JSX
                 {nounletsOffered.map((nounlet) => {
                   return (
                     <SimpleXImage key={nounlet.id} isXed={!nounlet.isAvailable}>
-                      <NounletImage id={nounlet.id + ''} />
+                      <NounletImage
+                        noundId={nounTokenId}
+                        nounletTokenAddress={nounletTokenAddress}
+                        id={nounlet.id + ''}
+                      />
                     </SimpleXImage>
                   )
                 })}
@@ -157,12 +163,12 @@ export default function BuyoutAcceptRejectOfferModal(props: ComponentProps): JSX
         </div>
 
         {props.isRejecting && (
-          <div className="bg-gray-2 rounded-px16 p-4">
-            <div className="text-center space-y-3">
-              <p className="font-londrina text-px24 text-secondary-red leading-px36">
+          <div className="rounded-px16 bg-gray-2 p-4">
+            <div className="space-y-3 text-center">
+              <p className="font-londrina text-px24 leading-px36 text-secondary-red">
                 Buy a Nounlet to reject the offer
               </p>
-              <div className="bg-white rounded-px10 p-2">
+              <div className="rounded-px10 bg-white p-2">
                 <Button
                   className="default-outline --sm w-full"
                   onClick={handleBuyAllRemainingNounlets}
@@ -177,18 +183,22 @@ export default function BuyoutAcceptRejectOfferModal(props: ComponentProps): JSX
                     <div
                       key={nounlet.id}
                       className={classNames(
-                        'bg-white rounded-px10 p-2 flex items-center gap-3',
+                        'flex items-center gap-3 rounded-px10 bg-white p-2',
                         nounlet.isAvailable ? '' : 'opacity-50'
                       )}
                     >
                       <div className="flex-shrink-0">
                         <SimpleXImage isXed={!nounlet.isAvailable}>
-                          <NounletImage id={'' + nounlet.id} />
+                          <NounletImage
+                            noundId={nounTokenId}
+                            nounletTokenAddress={nounletTokenAddress}
+                            id={'' + nounlet.id}
+                          />
                         </SimpleXImage>
                       </div>
-                      <div className="flex flex-col flex-1 text-start">
-                        <p className="text-px16 leading-px24 font-700">Nounlet {nounlet.id}</p>
-                        <p className="text-[13px] leading-px20 text-gray-4 font-500">
+                      <div className="flex flex-1 flex-col text-start">
+                        <p className="text-px16 font-700 leading-px24">Nounlet {nounlet.id}</p>
+                        <p className="text-[13px] font-500 leading-px20 text-gray-4">
                           {buyoutInfo.formatted.fractionPrice} ETH
                         </p>
                       </div>
@@ -201,7 +211,7 @@ export default function BuyoutAcceptRejectOfferModal(props: ComponentProps): JSX
                           Buy
                         </Button>
                       ) : (
-                        <div className="inline-flex items-center justify-center h-10 px-4 rounded-px10 text-white bg-gray-4 font-700 text-px16 leading-px16">
+                        <div className="inline-flex h-10 items-center justify-center rounded-px10 bg-gray-4 px-4 text-px16 font-700 leading-px16 text-white">
                           Sold
                         </div>
                       )}

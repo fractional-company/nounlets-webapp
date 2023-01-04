@@ -5,6 +5,7 @@ import useNounBuyout from 'src/hooks/useNounBuyout'
 import Image from 'next/image'
 import nounImage from 'public/img/noun.png'
 import { BuyoutState } from 'src/store/buyout/buyout.store'
+import useDisplayedNounlet from 'src/hooks/useDisplayedNounlet'
 
 export default function BuyoutLiveRejectionsCard(): JSX.Element {
   const {
@@ -14,22 +15,23 @@ export default function BuyoutLiveRejectionsCard(): JSX.Element {
     nounletsRemainingCount,
     nounletPercentage
   } = useNounBuyout()
+  const { nounTokenId, nounletTokenAddress } = useDisplayedNounlet()
 
   return (
     <div className="buyout-live-rejections-card">
-      <div className="bg-gray-2 rounded-px16 p-4 space-y-3">
-        <div className="flex flex-col sm:flex-row items-center justify-between">
+      <div className="space-y-3 rounded-px16 bg-gray-2 p-4">
+        <div className="flex flex-col items-center justify-between sm:flex-row">
           <p className="font-londrina text-px24 text-secondary-red">Rejections</p>
 
           <div className="flex items-center space-x-3">
-            <p className="text-px14 font-700 pt-1">Nounlets remaining</p>
+            <p className="pt-1 text-px14 font-700">Nounlets remaining</p>
             <p className="text-px24 font-700">
               {nounletsRemainingCount}
               <span className="text-px14">/{nounletsOfferedCount}</span>
             </p>
           </div>
         </div>
-        <p className="text-gray-4 text-px16 font-500 leading-px20">
+        <p className="text-px16 font-500 leading-px20 text-gray-4">
           If at least 1 Nounlet is remaining in the pool by the end of the time period, the offer
           will succeed.
         </p>
@@ -40,7 +42,11 @@ export default function BuyoutLiveRejectionsCard(): JSX.Element {
             {nounletsOffered.map((nounlet) => {
               return (
                 <SimpleXImage key={nounlet.id} isXed={!nounlet.isAvailable}>
-                  <NounletImage id={nounlet.id + ''} />
+                  <NounletImage
+                    noundId={nounTokenId}
+                    nounletTokenAddress={nounletTokenAddress}
+                    id={nounlet.id + ''}
+                  />
                 </SimpleXImage>
               )
             })}

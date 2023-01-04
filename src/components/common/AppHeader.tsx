@@ -82,7 +82,7 @@ export default function AppHeader(): JSX.Element {
     <div className="app-header" style={{ background: currentBackground }}>
       <div className="mx-auto px-4 lg:container">
         <ModalWallet />
-        {/* <ModalVoteForDelegate /> */}
+        <ModalVoteForDelegate />
         <div className="flex h-full min-h-[88px] items-center space-x-4">
           <Link href="/">
             <a className="relative mb-4 overflow-visible pt-2">

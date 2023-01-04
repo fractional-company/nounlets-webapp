@@ -9,10 +9,12 @@ import useNounBuyout from 'src/hooks/useNounBuyout'
 import Image from 'next/image'
 import nounletIcon from 'public/img/nounlet.png'
 import { useMemo } from 'react'
+import useDisplayedNounlet from 'src/hooks/useDisplayedNounlet'
 
 export default function BuyoutYourWallet(): JSX.Element {
   const { account, myNounlets, userBalance } = useNounBuyout()
   const { usdInEth, ethInUsd } = useCurrentEthPrice()
+  const { nounTokenId, nounletTokenAddress } = useDisplayedNounlet()
 
   const accountBalance = useMemo(() => {
     const usdPrice = FixedNumber.from(formatEther(userBalance || 0)).mulUnsafe(usdInEth)
@@ -31,36 +33,48 @@ export default function BuyoutYourWallet(): JSX.Element {
 
     if (myNounlets.length === 1)
       return (
-        <div className="overflow-hidden border-white rounded-px8 border-2 flex-shrink-0 w-10 h-10">
-          <NounletImage id={myNounlets[0].id} />
+        <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-px8 border-2 border-white">
+          <NounletImage
+            noundId={nounTokenId}
+            id={myNounlets[0].id}
+            nounletTokenAddress={nounletTokenAddress}
+          />
         </div>
       )
 
     return (
       <>
-        <div className="overflow-hidden border-white rounded-px8 border-2 flex-shrink-0 w-10 h-10 mr-4">
-          <NounletImage id={myNounlets[0].id} />
+        <div className="mr-4 h-10 w-10 flex-shrink-0 overflow-hidden rounded-px8 border-2 border-white">
+          <NounletImage
+            noundId={nounTokenId}
+            id={myNounlets[0].id}
+            nounletTokenAddress={nounletTokenAddress}
+          />
         </div>
-        <div className="absolute top-0 right-0 border-white border-2 overflow-hidden rounded-px8 flex-shrink-0 w-10 h-10">
-          <NounletImage id={myNounlets[1].id} />
+        <div className="absolute top-0 right-0 h-10 w-10 flex-shrink-0 overflow-hidden rounded-px8 border-2 border-white">
+          <NounletImage
+            noundId={nounTokenId}
+            id={myNounlets[1].id}
+            nounletTokenAddress={nounletTokenAddress}
+          />
         </div>
       </>
     )
-  }, [account, myNounlets])
+  }, [account, myNounlets, nounTokenId, nounletTokenAddress])
 
   if (!account) return <></>
 
   return (
     <div className="buyout-your-wallet">
-      <div className="rounded-px10 bg-white p-3 flex items-center gap-3">
+      <div className="flex items-center gap-3 rounded-px10 bg-white p-3">
         <div className="relative">{nounletImages}</div>
         <div className="flex flex-col overflow-hidden">
-          <p className="font-700 leading-px16 truncate">
+          <p className="truncate font-700 leading-px16">
             {myNounlets.length} nounlet{myNounlets.length > 1 ? 's' : ''}
           </p>
           <SimpleAddress address={account} className="text-px12 font-500 text-gray-4" />
         </div>
-        <div className="flex flex-col items-end ml-auto">
+        <div className="ml-auto flex flex-col items-end">
           <div className="flex items-center">
             <IconEth className="h-2.5" />
             <p className="font-700 leading-px16">{accountBalance.formattedETH}</p>

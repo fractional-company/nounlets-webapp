@@ -6,6 +6,7 @@ import Button from 'src/components/common/buttons/Button'
 import { NounletImage } from 'src/components/common/NounletImage'
 import SimpleAddress from 'src/components/common/simple/SimpleAddress'
 import SimplePopover from 'src/components/common/simple/SimplePopover'
+import useDisplayedNounlet from 'src/hooks/useDisplayedNounlet'
 import useLeaderboard from 'src/hooks/useLeaderboard'
 import useToasts from 'src/hooks/utils/useToasts'
 import { WrappedTransactionReceiptState } from 'src/lib/utils/txWithErrorHandling'
@@ -27,6 +28,7 @@ export default function GovernanceCurrentDelegate() {
   const { toastSuccess, toastError, toastInfo } = useToasts()
   const [isClaiming, setIsClaiming] = useState(false)
   const { setLeaderboardBlockNumber } = useBlockNumberCheckpointStore()
+  const { nounTokenId, nounletTokenAddress } = useDisplayedNounlet()
 
   const areMyVotesSplit = useMemo(() => {
     return Object.keys(myNounletsVotes).length > 1
@@ -34,11 +36,11 @@ export default function GovernanceCurrentDelegate() {
 
   const currentDelegateRC = useMemo(() => {
     return currentDelegate === ethers.constants.AddressZero ? (
-      <p className="text-px36 font-londrina leading-px42">no one :(</p>
+      <p className="font-londrina text-px36 leading-px42">no one :(</p>
     ) : (
       <SimpleAddress
         avatarSize={40}
-        className="text-px36 font-londrina leading-px42 space-x-3"
+        className="space-x-3 font-londrina text-px36 leading-px42"
         address={currentDelegate}
       />
     )
@@ -124,18 +126,18 @@ export default function GovernanceCurrentDelegate() {
   const isMostVotesAddressZero = mostVotesAcc.address === ethers.constants.AddressZero
 
   return (
-    <div className="mt-10 border-2 rounded-px16 p-4 lg:p-8 border-gray-2">
-      <div className="flex flex-col lg:flex-row gap-8">
-        <div className="flex flex-col flex-1">
-          <div className="flex flex-col xs:flex-row items-center xs:gap-3">
-            <p className="font-londrina text-px24 text-gray-4 leading-[40px]">Current delegate</p>
+    <div className="mt-10 rounded-px16 border-2 border-gray-2 p-4 lg:p-8">
+      <div className="flex flex-col gap-8 lg:flex-row">
+        <div className="flex flex-1 flex-col">
+          <div className="flex flex-col items-center xs:flex-row xs:gap-3">
+            <p className="font-londrina text-px24 leading-[40px] text-gray-4">Current delegate</p>
 
             {!isMostVotesAddressZero && (
               <>
                 {isCurrentDelegateOutOfSyncOnVaultContract && (
                   <div className="flex items-center">
                     <SimplePopover>
-                      <h1 className="font-700 text-px18 text-gray-4">
+                      <h1 className="text-px18 font-700 text-gray-4">
                         <span className="text-secondary-orange">⚠</span> Out of sync
                       </h1>
                       <div>
@@ -151,7 +153,7 @@ export default function GovernanceCurrentDelegate() {
                     <Button
                       loading={isClaiming}
                       onClick={() => handleUpdateDelegate()}
-                      className="flex ml-4 items-center justify-center text-secondary-blue hover:text-secondary-green text-px18 font-700 border-2 border-transparent h-10 rounded-px10"
+                      className="ml-4 flex h-10 items-center justify-center rounded-px10 border-2 border-transparent text-px18 font-700 text-secondary-blue hover:text-secondary-green"
                     >
                       <span>Update</span>
                     </Button>
@@ -161,7 +163,7 @@ export default function GovernanceCurrentDelegate() {
                   isCurrentDelegateOutOfSyncOnNounContract && (
                     <div className="flex items-center">
                       <SimplePopover>
-                        <h1 className="font-700 text-px18 text-gray-4">
+                        <h1 className="text-px18 font-700 text-gray-4">
                           <span className="text-secondary-orange">⚠</span> Claim Noun delegate
                         </h1>
                         <div>
@@ -174,7 +176,7 @@ export default function GovernanceCurrentDelegate() {
                           disabled={currentDelegate !== account?.toLowerCase()}
                           loading={isClaiming}
                           onClick={() => handleUpdateDelegate()}
-                          className="flex ml-4 items-center justify-center text-secondary-blue hover:text-secondary-green text-px18 font-700 border-2 border-transparent h-10 rounded-px10"
+                          className="ml-4 flex h-10 items-center justify-center rounded-px10 border-2 border-transparent text-px18 font-700 text-secondary-blue hover:text-secondary-green"
                         >
                           <span>Update</span>
                         </Button>
@@ -186,23 +188,23 @@ export default function GovernanceCurrentDelegate() {
             )}
           </div>
 
-          <div className="flex items-center mt-4 justify-center xs:justify-start">
+          <div className="mt-4 flex items-center justify-center xs:justify-start">
             {currentDelegateRC}
           </div>
         </div>
 
         {account && (
           <>
-            <div className="hidden lg:block lg:-my-8 border-r-2 border-gray-2"></div>
+            <div className="hidden border-r-2 border-gray-2 lg:-my-8 lg:block"></div>
 
             <div className="flex flex-col lg:max-w-[300px]">
-              <div className="flex flex-col xs:flex-row items-center xs:gap-3">
-                <p className="font-londrina text-px24 text-gray-4 leading-px36">My Nounlets</p>
+              <div className="flex flex-col items-center xs:flex-row xs:gap-3">
+                <p className="font-londrina text-px24 leading-px36 text-gray-4">My Nounlets</p>
 
                 {areMyVotesSplit && (
                   <div className="flex items-center">
                     <SimplePopover>
-                      <h1 className="font-700 text-px18 text-gray-4">
+                      <h1 className="text-px18 font-700 text-gray-4">
                         <span className="text-secondary-orange">⚠</span> Multiple votes
                       </h1>
                       <div>
@@ -214,16 +216,20 @@ export default function GovernanceCurrentDelegate() {
                 )}
               </div>
 
-              <div className="flex items-center mt-4 justify-center xs:justify-start">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <p className="text-px36 font-londrina leading-px42 w-10 h-10 flex-shrink-0 overflow-visible text-center">
+              <div className="mt-4 flex items-center justify-center xs:justify-start">
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="h-10 w-10 flex-shrink-0 overflow-visible text-center font-londrina text-px36 leading-px42">
                     {myNounlets.length}
                   </p>
                   {myNounlets.map((nounlet) => {
                     return (
                       <Link href={`/nounlet/${nounlet.id}`} key={nounlet.id}>
-                        <div className="overflow-hidden flex-shrink-0 w-10 h-10 rounded-px8 cursor-pointer hover:scale-110 transition-transform">
-                          <NounletImage id={nounlet.id} />
+                        <div className="h-10 w-10 flex-shrink-0 cursor-pointer overflow-hidden rounded-px8 transition-transform hover:scale-110">
+                          <NounletImage
+                            noundId={nounTokenId}
+                            id={nounlet.id}
+                            nounletTokenAddress={nounletTokenAddress}
+                          />
                         </div>
                       </Link>
                     )

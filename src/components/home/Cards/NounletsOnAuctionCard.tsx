@@ -1,8 +1,9 @@
 import { NEXT_PUBLIC_BID_DECIMALS } from 'config'
-import { FixedNumber } from 'ethers'
+import dayjs from 'dayjs'
+import { BigNumber, FixedNumber } from 'ethers'
 import { formatEther } from 'ethers/lib/utils'
 import Link from 'next/link'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import Button from 'src/components/common/buttons/Button'
 import CountdownTimer from 'src/components/common/CountdownTimer'
 import { NounImage } from 'src/components/common/NounletImage'
@@ -11,20 +12,27 @@ import { VaultData } from 'src/hooks/useExistingVaults'
 
 export default function NounletsOnAuctionCard(props: { vault: VaultData }) {
   console.log('🚀 VaultData', props.vault)
-  const { id, noun } = props.vault
+  const noun = props.vault.noun!
+  const nounletsCount = noun.nounlets.length
+  const latestAuction = noun.nounlets.at(-1)!.auction
+
   const [hasAuctionEnded, setHasAuctionEnded] = useState(false)
+
+  // useEffect(() => {
+  //   setHasAuctionEnded(false)
+  // }, [nounletsCount])
   const handleTimerFinished = useCallback(() => {
     setHasAuctionEnded(true)
   }, [])
 
-  if (id == null || noun == null) return null
-
-  const nounletsCount = noun.nounlets.length
-  const latestAuction = noun.nounlets.at(-1)!.auction
-
   // const startTime = ~~(Date.now() / 1000 - 600) + ''
   // const endTime = ~~(Date.now() / 1000 + 600) + ''
-  const isOver = false // Todo calculate
+
+  // const timeLeft = Math.max(
+  //   0,
+  //   Math.floor(BigNumber.from(latestAuction.endTime).toNumber()) - dayjs().unix()
+  // )
+  // const isOver = timeLeft === 0
 
   console.log({ latestAuction })
 
@@ -44,7 +52,7 @@ export default function NounletsOnAuctionCard(props: { vault: VaultData }) {
           <p className="font-londrina text-px32 font-900 leading-px36 text-gray-0.5">
             NOUN {noun.id}
           </p>
-          <div className="space-y-4 rounded-2xl bg-divider p-4">
+          <div className="space-y-4 rounded-2xl bg-divider p-4" key={nounletsCount}>
             <div className="space-y-2 text-px14 font-500 leading-[20px]">
               <p className="text-px18 font-700 leading-px24">Nounlet {nounletsCount}/100</p>
 
@@ -77,6 +85,7 @@ function CountdownWithBar(props: {
   const { startTime, endTime, onTimerFinished } = props
   const length = +endTime - +startTime
   const [percentage, setPercentage] = useState(0)
+  const [isOver, setIsOver] = useState(false)
 
   const calculatePercentage = useCallback(() => {
     const timeLeft = ~~((+endTime * 1000 - Date.now()) / 1000)
@@ -85,18 +94,24 @@ function CountdownWithBar(props: {
     return percentage
   }, [endTime, length])
 
+  const handleTimerFinished = useCallback(() => {
+    onTimerFinished?.()
+    setIsOver(true)
+  }, [onTimerFinished])
+
   return (
     <div className="space-y-2">
       {/* <p>{percentage}</p> */}
       <SimpleProgressIndicator percentage={percentage} className="!h-2" />
 
       <div className="flex items-center space-x-1">
-        <p>Auction ends in:</p>
+        {isOver ? <p>Auction ended on:</p> : <p>Auction ends in:</p>}
         <CountdownTimer
           className="!text-px14 !font-700 !leading-[20px]"
           auctionEnd={endTime}
+          showEndTime={isOver}
           onTimerTick={calculatePercentage}
-          onTimerFinished={onTimerFinished}
+          onTimerFinished={handleTimerFinished}
         />
       </div>
     </div>

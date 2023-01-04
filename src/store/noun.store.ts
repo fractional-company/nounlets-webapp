@@ -26,6 +26,7 @@ interface StoreState {
   backendLatestNounletTokenId: string
   // Governance
   isGovernanceEnabled: boolean
+  tabIndex: number
 }
 
 interface StoreActions {
@@ -51,6 +52,7 @@ interface StoreActions {
   setBackendLatestNounletTokenId: (id: string) => void
   // Governance
   setIsGovernanceEnabled: (flag: boolean) => void
+  setTabIndex: (index: number) => void
 }
 
 const initialState: StoreState = {
@@ -78,7 +80,8 @@ const initialState: StoreState = {
   currentNounDelegate: ethers.constants.AddressZero,
   latestNounletTokenId: '',
   backendLatestNounletTokenId: '',
-  isGovernanceEnabled: false
+  isGovernanceEnabled: false,
+  tabIndex: 0
 }
 
 export const useNounStore = createTrackedSelector(
@@ -180,6 +183,11 @@ export const useNounStore = createTrackedSelector(
       setIsGovernanceEnabled: (flag) => {
         set((state) => {
           state.isGovernanceEnabled = flag
+        })
+      },
+      setTabIndex: (index) => {
+        set((state) => {
+          state.tabIndex = index
         })
       }
     }))

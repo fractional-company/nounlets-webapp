@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 import { BigNumber } from 'ethers'
 import Link from 'next/link'
-import { useCallback, useMemo, useState } from 'react'
+import { ReactNode, useCallback, useMemo, useState } from 'react'
 import Button from 'src/components/common/buttons/Button'
 import CountdownTimer from 'src/components/common/CountdownTimer'
 import { NounImage } from 'src/components/common/NounletImage'
@@ -25,7 +25,7 @@ export default function NounletsPastAuctionCard(props: { vault: VaultData }) {
     return <BuyoutFinished nounId={noun.id} />
   }
 
-  return <BuyoutInProgress nounId={noun.id} lastAuction={lastAuction} />
+  return <BuyoutInProgress nounId={noun.id} buyoutInfo={buyoutInfo} />
 }
 
 function BuyoutIdle(props: { nounId: string; auctionEnded: string }) {
@@ -37,65 +37,53 @@ function BuyoutIdle(props: { nounId: string; auctionEnded: string }) {
   }, [auctionEnded])
 
   return (
-    <Link href={`/noun/${nounId}`}>
-      <div className="vault-list-tile flex w-full max-w-[300px] cursor-pointer flex-col gap-6">
-        <div className="max-w-[300px] overflow-hidden rounded-2xl">
-          <NounImage id={nounId} />
-        </div>
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between">
-            <p className="font-londrina text-px32 font-900 leading-px36 text-black">
-              NOUN {nounId}
-            </p>
-            <p className="text-px14 font-500 text-gray-4">Finished on {formattedTime}</p>
-          </div>
-          <Button className="primary w-full">Offer to buy Noun</Button>
-        </div>
+    <NounCardWrapper nounId={nounId}>
+      <div className="flex items-center justify-between">
+        <p className="font-londrina text-px32 font-900 leading-px36 text-black">NOUN {nounId}</p>
+        <p className="text-px14 font-500 text-gray-4">Finished on {formattedTime}</p>
       </div>
-    </Link>
+      <Button className="primary w-full">Offer to buy Noun</Button>
+    </NounCardWrapper>
   )
 }
 
 function BuyoutInProgress(props: {
   nounId: string
-  lastAuction: NonNullable<VaultData['noun']>['nounlets'][0]['auction']
+  buyoutInfo: NonNullable<VaultData['buyoutInfo']>
 }) {
-  const { nounId, lastAuction } = props
-
-  const startTime = ~~(Date.now() / 1000 - 600) + ''
-  const endTime = ~~(Date.now() / 1000 + 600) + ''
-  const isOver = false // Todo calculate
+  const { nounId, buyoutInfo } = props
+  console.log('sadsdfsf', { buyoutInfo })
+  const timeLeft = Math.max(
+    0,
+    Math.floor(BigNumber.from(buyoutInfo.endTime).toNumber()) - dayjs().unix()
+  )
+  const isOver = timeLeft === 0
 
   return (
-    <Link href={`/noun/${nounId}`}>
-      <div className="vault-list-tile flex w-full max-w-[300px] cursor-pointer flex-col gap-6">
-        <div className="max-w-[300px] overflow-hidden rounded-2xl">
-          <NounImage id={nounId} />
-        </div>
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between">
-            <p className="font-londrina text-px32 font-900 leading-px36 text-black">
-              NOUN {nounId}
-            </p>
-            <p className="text-px14 font-500 leading-px20">🔥 Buyout</p>
-          </div>
-          <div className="space-y-4 rounded-2xl bg-black p-4 text-white">
-            <div className="space-y-2 text-px14 font-500 leading-[20px]">
-              {/* <p className="text-px18 font-700 leading-px24 text-secondary-red">Buyout</p> */}
-              {/* <CountdownWithBar startTime={startTime} endTime={endTime} /> */}
-              <div className="flex items-center space-x-1">
-                <p>Offer accepted in:</p>
-                <CountdownTimer
-                  className="!text-px14 !font-700 !leading-[20px]"
-                  auctionEnd={endTime}
-                />
-              </div>
-            </div>
-            <Button className="primary-danger w-full !text-white">Review offer</Button>
-          </div>
-        </div>
+    <NounCardWrapper nounId={nounId}>
+      <div className="flex items-center justify-between">
+        <p className="font-londrina text-px32 font-900 leading-px36 text-black">NOUN {nounId}</p>
+        <p className="text-px14 font-500 leading-px20">🔥 Buyout</p>
       </div>
-    </Link>
+      <div className="space-y-4 rounded-2xl bg-black p-4 text-white">
+        <div className="space-y-2 text-px14 font-500 leading-[20px]">
+          {isOver ? (
+            <div className="flex items-center space-x-1">
+              <p>Offer accepted! 🎉🎉🎉</p>
+            </div>
+          ) : (
+            <div className="flex items-center space-x-1">
+              <p>Offer accepted in:</p>
+              <CountdownTimer
+                className="!text-px14 !font-700 !leading-[20px]"
+                auctionEnd={buyoutInfo.endTime}
+              />
+            </div>
+          )}
+        </div>
+        <Button className="primary-danger w-full !text-white">Review offer</Button>
+      </div>
+    </NounCardWrapper>
   )
 }
 
@@ -103,51 +91,27 @@ function BuyoutFinished(props: { nounId: string }) {
   const { nounId } = props
 
   return (
-    <Link href={`/noun/${nounId}`}>
-      <div className="vault-list-tile flex w-full max-w-[300px] cursor-pointer flex-col gap-6">
-        <div className="max-w-[300px] overflow-hidden rounded-2xl">
-          <NounImage id={nounId} />
-        </div>
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between">
-            <p className="font-londrina text-px32 font-900 leading-px36 text-black">
-              NOUN {nounId}
-            </p>
-            <p className="text-px14 font-500 leading-px20">🎉 Offer accepted</p>
-          </div>
-          <div className="space-y-4 rounded-2xl bg-black p-4">
-            <Button className="primary w-full">View & Claim</Button>
-          </div>
-        </div>
+    <NounCardWrapper nounId={nounId}>
+      <div className="flex items-center justify-between">
+        <p className="font-londrina text-px32 font-900 leading-px36 text-black">NOUN {nounId}</p>
+        <p className="text-px14 font-500 leading-px20">🎉 Offer accepted</p>
       </div>
-    </Link>
+      <div className="space-y-4 rounded-2xl bg-black p-4">
+        <Button className="primary w-full">View & Claim</Button>
+      </div>
+    </NounCardWrapper>
   )
 }
 
-function CountdownWithBar(props: { startTime: string; endTime: string }) {
-  const { startTime, endTime } = props
-  const length = +endTime - +startTime
-  const [percentage, setPercentage] = useState(0.5)
-
-  const calculatePercentage = useCallback(() => {
-    const timeLeft = ~~((+endTime * 1000 - Date.now()) / 1000)
-    const percentage = +((timeLeft * 100) / length / 100).toFixed(2)
-    setPercentage(percentage)
-    return percentage
-  }, [endTime, length])
-
+function NounCardWrapper(props: { nounId: string; children: ReactNode }) {
   return (
-    <div className="space-y-2">
-      <SimpleProgressIndicator percentage={percentage} className="!h-2" />
-
-      <div className="flex items-center space-x-1">
-        <p>Offer accepted in:</p>
-        <CountdownTimer
-          className="!text-px14 !font-700 !leading-[20px]"
-          auctionEnd={endTime}
-          onTimerTick={calculatePercentage}
-        />
+    <Link href={`/noun/${props.nounId}`}>
+      <div className="vault-list-tile flex w-full max-w-[300px] cursor-pointer flex-col gap-6">
+        <div className="max-w-[300px] overflow-hidden rounded-2xl">
+          <NounImage id={props.nounId} />
+        </div>
+        <div className="flex flex-col gap-4">{props.children}</div>
       </div>
-    </div>
+    </Link>
   )
 }

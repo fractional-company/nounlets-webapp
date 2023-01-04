@@ -6,7 +6,7 @@ import { formatEther } from 'ethers/lib/utils'
 
 import { useEthers } from '@usedapp/core'
 import IconSpinner from 'src/components/common/icons/IconSpinner'
-import { NEXT_PUBLIC_BID_DECIMALS } from 'config'
+import { NEXT_PUBLIC_BID_DECIMALS, NEXT_PUBLIC_MAX_NOUNLETS } from 'config'
 import dayjs from 'dayjs'
 import useDisplayedNounlet from 'src/hooks/useDisplayedNounlet'
 import useToasts from 'src/hooks/utils/useToasts'
@@ -81,7 +81,10 @@ export default function NounHeroAuctionCompleted(): JSX.Element {
           // })
           `noun/${nounTokenIdTmp}`
         )
-        const message = nounletId === '100' ? "Aaaaaand we're done!" : 'On to the next one!'
+        const message =
+          nounletId === '' + NEXT_PUBLIC_MAX_NOUNLETS
+            ? "Aaaaaand we're done!"
+            : 'On to the next one!'
         toastSuccess('Auction settled 🎊', message)
         // await mutateDisplayedNounletAuctionInfo() // not needed since there is no new events
       } else {
@@ -117,28 +120,28 @@ export default function NounHeroAuctionCompleted(): JSX.Element {
         {JSON.stringify(endedAuctionInfo, null, 2)}
       </pre> */}
 
-      <div className="flex flex-col sm:flex-row space-y-2 sm:space-x-14 lg:space-x-10 xl:space-x-14 sm:space-y-0">
+      <div className="flex flex-col space-y-2 sm:flex-row sm:space-x-14 sm:space-y-0 lg:space-x-10 xl:space-x-14">
         <div className="flex flex-col space-y-3">
-          <p className="text-px18 leading-px22 font-500 text-gray-4">Winning bid</p>
+          <p className="text-px18 font-500 leading-px22 text-gray-4">Winning bid</p>
           <div className="flex items-center space-x-3">
             <IconEth className="flex-shrink-0" />
-            <p className="text-px32 leading-[38px] font-700">
+            <p className="text-px32 font-700 leading-[38px]">
               {formattedData.hasBids ? formattedData.winningBid : 'n/a'}
             </p>
           </div>
         </div>
-        <div className="sm:border-r-2 border-black/20"></div>
-        <div className="flex flex-col space-y-3 cursor-pointer">
+        <div className="border-black/20 sm:border-r-2"></div>
+        <div className="flex cursor-pointer flex-col space-y-3">
           {formattedData.heldByAddress === ethers.constants.AddressZero ? (
             <>
-              <p className="text-px18 leading-px22 font-500 text-gray-4">Nounlet held by</p>
+              <p className="text-px18 font-500 leading-px22 text-gray-4">Nounlet held by</p>
               <div className="flex items-center">
-                <p className="text-px32 leading-[38px] font-700 text-secondary-red">🔥🔥🔥</p>
+                <p className="text-px32 font-700 leading-[38px] text-secondary-red">🔥🔥🔥</p>
               </div>
             </>
           ) : (
             <>
-              <p className="text-px18 leading-px22 font-500 text-gray-4">Nounlet held by</p>
+              <p className="text-px18 font-500 leading-px22 text-gray-4">Nounlet held by</p>
               <div className="flex items-center">
                 {isLoadingHeldByAddress ? (
                   <IconSpinner className="animate-spin text-gray-3" />
@@ -146,7 +149,7 @@ export default function NounHeroAuctionCompleted(): JSX.Element {
                   <SimpleAddress
                     avatarSize={32}
                     address={formattedData.heldByAddress!}
-                    className="text-px32 leading-[38px] font-700 gap-2 flex-1"
+                    className="flex-1 gap-2 text-px32 font-700 leading-[38px]"
                   />
                 )}
               </div>
@@ -154,29 +157,29 @@ export default function NounHeroAuctionCompleted(): JSX.Element {
           )}
         </div>
       </div>
-      <div className="flex items-center !mt-6">
+      <div className="!mt-6 flex items-center">
         <IconLock className="mb-1" />
-        <p className="text-px18 font-500 ml-2">
+        <p className="ml-2 text-px18 font-500">
           Ended on <span className="font-700 text-black/60">{formattedData.endedOn}</span>
         </p>
       </div>
-      <div className="flex items-center mt-3">
+      <div className="mt-3 flex items-center">
         <IconHeart />
-        <div className="text-px18 font-500 ml-2">
+        <div className="ml-2 text-px18 font-500">
           {formattedData.hasBids ? 'Won by ' : 'No bids: Nounlet transferred to curator '}
           <SimpleAddress
             address={formattedData.wonByAddress}
-            className="font-700 gap-2 flex-1 text-secondary-blue inline-flex"
+            className="inline-flex flex-1 gap-2 font-700 text-secondary-blue"
           />
         </div>
       </div>
 
-      <div className="flex space-x-4 !mt-8">
+      <div className="!mt-8 flex space-x-4">
         {formattedData.isSettled ? (
           <>
             <Button
               key={0}
-              className="text-px18 leading-px26 basic default !h-11"
+              className="basic default !h-11 text-px18 leading-px26"
               onClick={() => setBidModalOpen(true)}
               disabled={historicBids.length === 0}
             >
@@ -189,7 +192,7 @@ export default function NounHeroAuctionCompleted(): JSX.Element {
               className={isSettledTransactionIndexing ? 'pointer-events-none' : ''}
             >
               <Button
-                className="text-px18 leading-px26 basic default !h-11"
+                className="basic default !h-11 text-px18 leading-px26"
                 disabled={isSettledTransactionIndexing}
               >
                 {isSettledTransactionIndexing ? (
