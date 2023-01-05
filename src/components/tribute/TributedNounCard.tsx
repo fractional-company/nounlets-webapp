@@ -6,6 +6,7 @@ import useNounTribute from 'src/hooks/tribute/useNounTribute'
 import { toastError, toastSuccess } from 'src/hooks/utils/useToasts'
 import { WrappedTransactionReceiptState } from 'src/lib/utils/txWithErrorHandling'
 import Button from '../common/buttons/Button'
+import IconCheckmark from '../common/icons/IconCheckmark'
 import { NounImage } from '../common/NounletImage'
 import SimpleAddress from '../common/simple/SimpleAddress'
 
@@ -47,7 +48,6 @@ export default function TributedNounCard(props: {
   }, [isTributedByMe])
 
   const onRemoveTribute = useCallback(async () => {
-    console.log('un-tributing')
     try {
       setIsLoading(true)
       const response = await removeTributedNoun(noun.id)
@@ -56,7 +56,6 @@ export default function TributedNounCard(props: {
         response.status === WrappedTransactionReceiptState.SUCCESS ||
         response.status === WrappedTransactionReceiptState.SPEDUP
       ) {
-        console.log('result', response)
         // await sleep(10000)
         mutateTributedList()
         toastSuccess('Un-tributed! 😭', 'Awww, I liked that one :(')
@@ -83,6 +82,12 @@ export default function TributedNounCard(props: {
         </div>
         <div className="flex items-center justify-between">
           <h1 className="font-londrina text-px24 leading-px26">NOUN {noun.id}</h1>
+          {isTributedByMe && (
+            <div className="flex items-center space-x-2 text-primary">
+              <IconCheckmark />
+              <p className="text-px1 font-londrina">MY TRIBUTE</p>
+            </div>
+          )}
         </div>
         {isTributedByMe ? (
           <div className="flex items-center gap-2">

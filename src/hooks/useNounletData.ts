@@ -32,7 +32,7 @@ export async function nounletDataFetcher(
     response = await getNounletAuctionData(vaultAddress, nounletTokenAddress, nounletId)
   }
 
-  console.log('auction response', { response })
+  // console.log('auction response', { response })
 
   return { auction: response, fetchedAt: Date.now() }
 }
@@ -74,7 +74,7 @@ export function useNounletData(callback?: (data: any) => void) {
       setIsLoading(true)
       setAuctionData(null)
     } else {
-      console.log('Auction data cached', cachedData)
+      // console.log('Auction data cached', cachedData)
       setAuctionData(cachedData)
       setIsLoading(false)
     }

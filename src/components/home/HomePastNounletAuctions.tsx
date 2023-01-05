@@ -1,8 +1,21 @@
+import { sleep } from 'radash'
+import { useCallback, useMemo, useState } from 'react'
 import useExistingVaults from 'src/hooks/useExistingVaults'
+import Button from '../common/buttons/Button'
 import NounletsPastAuctionCard from './Cards/NounletsPastAuctionCard'
 
 export default function HomePastNounletAuctions() {
   const { data } = useExistingVaults()
+  const [isLoading, setIsLoading] = useState(false)
+  const [page, setPage] = useState(1)
+  const PAGE_SIZE = 8
+
+  const handleShowMore = useCallback(async () => {
+    setIsLoading(true)
+    await sleep(1000)
+    setPage((value) => value + 1)
+    setIsLoading(false)
+  }, [])
 
   if (data == null)
     return (
@@ -27,6 +40,10 @@ export default function HomePastNounletAuctions() {
 
   if (buyouts.length === 0) return null
 
+  const pastAuctionsListPaginated = buyouts.slice(0, PAGE_SIZE * page)
+
+  const hasMore = pastAuctionsListPaginated.length < buyouts.length
+
   const isBuyoutHappening = data.buckets.buyoutInProgress.length > 0
 
   return (
@@ -47,10 +64,21 @@ export default function HomePastNounletAuctions() {
             </p>
           </div>
         )}
-        {buyouts.map((vault, index) => (
+        {pastAuctionsListPaginated.map((vault, index) => (
           <NounletsPastAuctionCard key={vault.id || index} vault={vault} />
         ))}
       </div>
+      {hasMore && (
+        <div className="flex justify-center">
+          <Button
+            className="default-outline text-black"
+            loading={isLoading}
+            onClick={handleShowMore}
+          >
+            Show more
+          </Button>
+        </div>
+      )}
     </div>
   )
 }

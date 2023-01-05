@@ -60,7 +60,6 @@ export default function LeaderboardListTile(props: {
   }, [isDelegateCandidate])
 
   const handleCastVote = (address: string) => {
-    console.log('castying', address)
     if (account == null) {
       setConnectModalOpen(true)
       return
@@ -154,19 +153,19 @@ export default function LeaderboardListTile(props: {
   return (
     <div className="leaderboard-list-tile">
       <div
-        className={classNames('border-2 rounded-px16 px-4 py-4', {
+        className={classNames('rounded-px16 border-2 px-4 py-4', {
           'border-gray-2': !isDelegate,
-          'border-transparent outline-[3px] outline-dashed outline-secondary-green': isDelegate
+          'border-transparent outline-dashed outline-[3px] outline-secondary-green': isDelegate
         })}
       >
         <div
-          className="flex flex-col space-y-4 lg:grid lg:-mx-4 lg:space-y-0 min-h-[40px]"
+          className="flex min-h-[40px] flex-col space-y-4 lg:-mx-4 lg:grid lg:space-y-0"
           style={{ gridTemplateColumns: 'auto 100px 140px 160px' }}
         >
-          <div className="flex items-center flex-grow-1 overflow-hidden lg:flex-grow-0 lg:pl-4">
+          <div className="flex-grow-1 flex items-center overflow-hidden lg:flex-grow-0 lg:pl-4">
             <div
               className={classNames(
-                'hidden lg:block text-px26 font-700 mr-4 leading-px32',
+                'mr-4 hidden text-px26 font-700 leading-px32 lg:block',
                 isDelegate ? 'text-secondary-green' : 'text-gray-3'
               )}
             >
@@ -175,15 +174,15 @@ export default function LeaderboardListTile(props: {
             <SimpleAddress
               avatarSize={32}
               address={walletAddress}
-              className="text-px18 leading-px28 font-700 gap-4"
+              className="gap-4 text-px18 font-700 leading-px28"
             />
             {isMe && (
-              <p className="text-px14 leading-px26 font-700 ml-4 border-2 border-t-secondary-blue text-secondary-blue px-3 rounded-px8">
+              <p className="ml-4 rounded-px8 border-2 border-t-secondary-blue px-3 text-px14 font-700 leading-px26 text-secondary-blue">
                 You
               </p>
             )}
             {isDelegate && (
-              <p className="text-px14 leading-px30 font-700 ml-4 bg-secondary-green text-white px-3 rounded-px8">
+              <p className="ml-4 rounded-px8 bg-secondary-green px-3 text-px14 font-700 leading-px30 text-white">
                 Delegate
               </p>
             )}
@@ -191,7 +190,7 @@ export default function LeaderboardListTile(props: {
               <Button
                 loading={isClaiming}
                 onClick={() => handleClaimDelegate(walletAddress)}
-                className="hidden lg:flex ml-4 items-center justify-center text-secondary-blue hover:text-secondary-green text-px18 font-700 border-2 border-transparent h-10 rounded-px10"
+                className="ml-4 hidden h-10 items-center justify-center rounded-px10 border-2 border-transparent text-px18 font-700 text-secondary-blue hover:text-secondary-green lg:flex"
               >
                 <IconUpdateDelegate />
                 <span className="ml-2">Update delegate</span>
@@ -200,22 +199,22 @@ export default function LeaderboardListTile(props: {
           </div>
 
           {/* Display on mobile */}
-          <div className="grid lg:hidden items-center grid-cols-3">
+          <div className="grid grid-cols-3 items-center lg:hidden">
             <div
               className={classNames(
-                'text-px26 font-700  mr-2 leading-px32',
+                'mr-2 text-px26  font-700 leading-px32',
                 isDelegate ? 'text-secondary-green' : 'text-gray-3'
               )}
             >
               {percentageString}
             </div>
             <div className="text-right">
-              <p className="text-px16 text-gray-4 font-500">Nounlets</p>
+              <p className="text-px16 font-500 text-gray-4">Nounlets</p>
               <p className="text-px18 font-700">{numberOfOwnedNounlets}</p>
             </div>
 
             <div className="text-right">
-              <p className="text-px16 text-gray-4 font-500">Votes</p>
+              <p className="text-px16 font-500 text-gray-4">Votes</p>
               <div className="flex items-center justify-end">
                 <LeaderboardVotesDots votes={numberOfMyVotes} />
                 <p className="text-px18 font-700">{numberOfVotes}</p>
@@ -224,11 +223,11 @@ export default function LeaderboardListTile(props: {
           </div>
 
           {/* Display on desktop */}
-          <div className="hidden lg:flex items-center justify-end">
+          <div className="hidden items-center justify-end lg:flex">
             <p className="text-px18 font-700">{numberOfOwnedNounlets}</p>
           </div>
 
-          <div className="hidden lg:flex items-center justify-end">
+          <div className="hidden items-center justify-end lg:flex">
             <LeaderboardVotesDots votes={numberOfMyVotes} />
             <p className="text-px18 font-700">{numberOfVotes}</p>
           </div>
@@ -237,7 +236,7 @@ export default function LeaderboardListTile(props: {
             <Button
               loading={isClaiming}
               onClick={() => handleClaimDelegate(walletAddress)}
-              className="flex lg:hidden items-center justify-center text-secondary-blue text-px18 font-700 border-2 border-secondary-blue px-2 h-10 rounded-px10"
+              className="flex h-10 items-center justify-center rounded-px10 border-2 border-secondary-blue px-2 text-px18 font-700 text-secondary-blue lg:hidden"
             >
               <IconUpdateDelegate />
               <span className="ml-2">Update delegate</span>
@@ -268,18 +267,18 @@ function ZeroAddressTile(props: {
   return (
     <div className="leaderboard-list-tile">
       <div
-        className={classNames('border-2 rounded-px16 px-4 py-4', {
-          'border-transparent outline-[3px] outline-dashed outline-secondary-red': true
+        className={classNames('rounded-px16 border-2 px-4 py-4', {
+          'border-transparent outline-dashed outline-[3px] outline-secondary-red': true
         })}
       >
         <div
-          className="flex flex-col space-y-4 lg:grid lg:-mx-4 lg:space-y-0 min-h-[40px]"
+          className="flex min-h-[40px] flex-col space-y-4 lg:-mx-4 lg:grid lg:space-y-0"
           style={{ gridTemplateColumns: 'auto 100px 140px 160px' }}
         >
-          <div className="flex items-center flex-grow-1 overflow-hidden lg:flex-grow-0 lg:pl-4">
+          <div className="flex-grow-1 flex items-center overflow-hidden lg:flex-grow-0 lg:pl-4">
             <div
               className={classNames(
-                'hidden lg:block text-px26 font-700 mr-4 leading-px32 text-secondary-red'
+                'mr-4 hidden text-px26 font-700 leading-px32 text-secondary-red lg:block'
               )}
             >
               {props.percentageString}
@@ -294,17 +293,17 @@ function ZeroAddressTile(props: {
           </div>
 
           {/* Display on mobile */}
-          <div className="grid lg:hidden items-center grid-cols-3">
-            <div className={classNames('text-px26 font-700  mr-2 leading-px32 text-secondary-red')}>
+          <div className="grid grid-cols-3 items-center lg:hidden">
+            <div className={classNames('mr-2 text-px26  font-700 leading-px32 text-secondary-red')}>
               {props.percentageString}
             </div>
             <div className="text-right">
-              <p className="text-px16 text-gray-4 font-500">Nounlets</p>
+              <p className="text-px16 font-500 text-gray-4">Nounlets</p>
               <p className="text-px18 font-700">{props.numberOfOwnedNounlets}</p>
             </div>
 
             <div className="text-right">
-              <p className="text-px16 text-gray-4 font-500">Votes</p>
+              <p className="text-px16 font-500 text-gray-4">Votes</p>
               <div className="flex items-center justify-end">
                 <p className="text-px18 font-700">🔥</p>
               </div>
@@ -312,11 +311,11 @@ function ZeroAddressTile(props: {
           </div>
 
           {/* Display on desktop */}
-          <div className="hidden lg:flex items-center justify-end">
+          <div className="hidden items-center justify-end lg:flex">
             <p className="text-px18 font-700">{props.numberOfOwnedNounlets}</p>
           </div>
 
-          <div className="hidden lg:flex items-center justify-end">
+          <div className="hidden items-center justify-end lg:flex">
             <p className="text-px18 font-700">🔥</p>
           </div>
         </div>
@@ -333,18 +332,18 @@ function OptimisticBidTile(props: {
   return (
     <div className="leaderboard-list-tile">
       <div
-        className={classNames('border-2 rounded-px16 px-4 py-4', {
-          'border-transparent outline-[3px] outline-dashed outline-secondary-oranger': true
+        className={classNames('rounded-px16 border-2 px-4 py-4', {
+          'border-transparent outline-dashed outline-[3px] outline-secondary-oranger': true
         })}
       >
         <div
-          className="flex flex-col space-y-4 lg:grid lg:-mx-4 lg:space-y-0 min-h-[40px]"
+          className="flex min-h-[40px] flex-col space-y-4 lg:-mx-4 lg:grid lg:space-y-0"
           style={{ gridTemplateColumns: 'auto 100px 140px 160px' }}
         >
-          <div className="flex items-center flex-grow-1 overflow-hidden lg:flex-grow-0 lg:pl-4">
+          <div className="flex-grow-1 flex items-center overflow-hidden lg:flex-grow-0 lg:pl-4">
             <div
               className={classNames(
-                'hidden lg:block text-px26 font-700 mr-4 leading-px32 text-secondary-oranger'
+                'mr-4 hidden text-px26 font-700 leading-px32 text-secondary-oranger lg:block'
               )}
             >
               {props.percentageString}
@@ -353,19 +352,19 @@ function OptimisticBidTile(props: {
           </div>
 
           {/* Display on mobile */}
-          <div className="grid lg:hidden items-center grid-cols-3">
+          <div className="grid grid-cols-3 items-center lg:hidden">
             <div
-              className={classNames('text-px26 font-700  mr-2 leading-px32 text-secondary-oranger')}
+              className={classNames('mr-2 text-px26  font-700 leading-px32 text-secondary-oranger')}
             >
               {props.percentageString}
             </div>
             <div className="text-right">
-              <p className="text-px16 text-gray-4 font-500">Nounlets</p>
+              <p className="text-px16 font-500 text-gray-4">Nounlets</p>
               <p className="text-px18 font-700">{props.numberOfOwnedNounlets}</p>
             </div>
 
             <div className="text-right">
-              <p className="text-px16 text-gray-4 font-500">Votes</p>
+              <p className="text-px16 font-500 text-gray-4">Votes</p>
               <div className="flex items-center justify-end">
                 <p className="text-px18 font-700">🕶</p>
               </div>
@@ -373,11 +372,11 @@ function OptimisticBidTile(props: {
           </div>
 
           {/* Display on desktop */}
-          <div className="hidden lg:flex items-center justify-end">
+          <div className="hidden items-center justify-end lg:flex">
             <p className="text-px18 font-700">{props.numberOfOwnedNounlets}</p>
           </div>
 
-          <div className="hidden lg:flex items-center justify-end">
+          <div className="hidden items-center justify-end lg:flex">
             <p className="text-px18 font-700">🕶</p>
           </div>
         </div>

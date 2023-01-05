@@ -60,7 +60,7 @@ export default function useProofs() {
       if (version === 'v1') {
         if (merkleRootV1 == null) {
           merkleRootV1 = new Promise(async (resolve, reject) => {
-            console.log('resolving getMerkleRootV1')
+            // console.log('resolving getMerkleRootV1')
             resolve(await sdk.NounletProtoform.generateMerkleTree(getProofOrder(version)))
           })
         }
@@ -69,7 +69,7 @@ export default function useProofs() {
 
       if (merkleRootV2 == null) {
         merkleRootV2 = new Promise(async (resolve, reject) => {
-          console.log('resolving getMerkleRootV2')
+          // console.log('resolving getMerkleRootV2')
           resolve(await sdk.NounletProtoform.generateMerkleTree(getProofOrder(version)))
         })
       }

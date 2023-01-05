@@ -110,7 +110,7 @@ export const useBuyoutStore = createTrackedSelector(
     immer<BuyoutStoreState & BuyoutStoreMethods>((set) => ({
       ...initialBuyoutStateData,
       reset: () => {
-        console.log('reseting buyout store')
+        // console.log('reseting buyout store')
         set((state) => {
           Object.assign(state, initialBuyoutStateData)
         })

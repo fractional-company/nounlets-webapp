@@ -307,7 +307,7 @@ export default function useExistingVaults() {
     async () => {
       await sleep(1000)
       const result = await getVaultList()
-      console.log({ result })
+      // console.log({ result })
 
       const transformed = result.vaults
         .map((vault) => {
@@ -359,14 +359,14 @@ export default function useExistingVaults() {
           }
         })
 
-      console.log('Multicall start')
+      // console.log('Multicall start')
       const vaultsInProgress = transformed.filter((vault) => vault.state === 'BUYOUT_IN_PROGRESS')
       const bidInfoResult = await getBatchNounBidInfo(
         sdk!,
         new MulticallProvider(library!),
         vaultsInProgress.map((vault) => vault.id)
       )
-      console.log('Multicall end')
+      // console.log('Multicall end')
 
       vaultsInProgress.forEach((vault, index) => {
         vault.buyoutInfo = {
@@ -408,7 +408,7 @@ export default function useExistingVaults() {
         }
       })
 
-      console.log(splitData)
+      // console.log(splitData)
 
       return {
         ...result,

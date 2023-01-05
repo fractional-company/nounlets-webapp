@@ -25,7 +25,6 @@ export default function TributeOpenseaCard(props: { data: OpenseaCardData }) {
   const [isLoading, setIsLoading] = useState(false)
 
   const onTribute = useCallback(async () => {
-    console.log('tributing')
     try {
       setIsLoading(true)
       const response = await tributeNoun(token_id)
@@ -34,7 +33,6 @@ export default function TributeOpenseaCard(props: { data: OpenseaCardData }) {
         response.status === WrappedTransactionReceiptState.SUCCESS ||
         response.status === WrappedTransactionReceiptState.SPEDUP
       ) {
-        console.log('result', response)
         // await sleep(10000)
         mutateTributedList()
         toastSuccess('Tributed! 🎊', "Bam, it's tributed!")
@@ -49,7 +47,6 @@ export default function TributeOpenseaCard(props: { data: OpenseaCardData }) {
   }, [token_id, tributeNoun, mutateTributedList])
 
   const onRemoveTribute = useCallback(async () => {
-    console.log('un-tributing')
     try {
       setIsLoading(true)
       const response = await removeTributedNoun(token_id)
@@ -58,7 +55,6 @@ export default function TributeOpenseaCard(props: { data: OpenseaCardData }) {
         response.status === WrappedTransactionReceiptState.SUCCESS ||
         response.status === WrappedTransactionReceiptState.SPEDUP
       ) {
-        console.log('result', response)
         // await sleep(10000)
         mutateTributedList()
         toastSuccess('Un-tributed! 😭', 'Awww, I liked that one :(')

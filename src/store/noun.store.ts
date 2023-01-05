@@ -89,7 +89,7 @@ export const useNounStore = createTrackedSelector(
     immer<StoreState & StoreActions>((set) => ({
       ...initialState,
       reset: () => {
-        console.log('reseting noun store')
+        // console.log('reseting noun store')
         set((state) => {
           Object.assign(state, initialState)
         })

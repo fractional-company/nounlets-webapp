@@ -35,7 +35,7 @@ type NounHomeProps = {
 export const getServerSideProps: GetServerSideProps<NounHomeProps> = async (context) => {
   const queryPath = context.query.path as string[]
   const [nounId, subdirectory, nounletId] = queryPath
-  console.log([nounId, subdirectory, nounletId])
+  // console.log([nounId, subdirectory, nounletId])
 
   if (nounId == null || !ONLY_NUMBERS_REGEX.test(nounId)) {
     return {
@@ -181,7 +181,7 @@ function PageContent(props: { isPageReady: boolean }) {
     if (!isPageReady) return
     if (!isLive) return
 
-    console.log({ isLive })
+    // console.log({ isLive })
     if (paramNounletId != null) {
       if (+paramNounletId > +latestNounletTokenId) {
         console.log('Nounlet id too big, goto root')
@@ -239,7 +239,6 @@ function PageContent(props: { isPageReady: boolean }) {
   useEffect(() => {
     if (wereAllNounletsAuctioned) {
       if (paramNounletId != null) {
-        console.log('open nounlets tab!')
         setTabIndex(2)
       }
     }

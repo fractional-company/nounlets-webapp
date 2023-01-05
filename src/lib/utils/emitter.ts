@@ -7,5 +7,5 @@ const Emitter = {
   emit: (event: string, payload: any) => eventEmitter.emit(event, payload)
 }
 Object.freeze(Emitter)
-console.log('created event emitter', Emitter)
+// console.log('created event emitter', Emitter)
 export default Emitter

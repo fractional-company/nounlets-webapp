@@ -70,10 +70,10 @@ export default function NounHeroAuctionCompleted(): JSX.Element {
         response.status === WrappedTransactionReceiptState.SPEDUP
       ) {
         if (formattedData.wonByAddress.toLowerCase() === account?.toLowerCase()) {
-          setCongratulationsModalForNounletId(true, nounletId)
+          setCongratulationsModalForNounletId(true, nounTokenIdTmp, nounletId)
           // setIsCongratulationsModalShown(true)
         }
-        console.log('settle mutate')
+        // console.log('settle mutate')
         await globalMutate(
           // unstable_serialize({
           //   name: 'VaultMetadata',
@@ -107,9 +107,6 @@ export default function NounHeroAuctionCompleted(): JSX.Element {
     return formattedData.settledTransactionHash === ethers.constants.AddressZero
   }, [formattedData.settledTransactionHash])
 
-  const test = () => {
-    setCongratulationsModalForNounletId(true, '10')
-  }
   return (
     <div className="home-hero-auction lg:min-h-[21.875rem]">
       {/* <pre
@@ -213,7 +210,7 @@ export default function NounHeroAuctionCompleted(): JSX.Element {
               loading={isSettlingAuction}
               onClick={() => handleSettleAuction()}
             >
-              Settle{'' + nid !== '100' ? ' & start next auction' : ''}
+              Settle{'' + nid !== '' + NEXT_PUBLIC_MAX_NOUNLETS ? ' & start next auction' : ''}
             </Button>
           </>
         )}

@@ -35,16 +35,16 @@ export default function CountdownTimer(props: ComponentProps): JSX.Element {
       if (timeLeft > 0) {
         onTimerTick?.()
       } else {
-        console.log('ending')
+        // console.log('ending')
         onTimerFinished?.()
         setHasEnded(true)
       }
     }
 
-    console.log('subscribing')
+    // console.log('subscribing')
     const unsubscribe = subscribeTicker(onTick)
     return () => {
-      console.log('unsubing')
+      // console.log('unsubing')
       unsubscribe()
     }
   }, [hasEnded, auctionEnd, setAuctionTimer, onTimerTick, onTimerFinished, setHasEnded])

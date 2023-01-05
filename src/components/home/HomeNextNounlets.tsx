@@ -5,12 +5,13 @@ import useTributedNounsList from 'src/hooks/tribute/useTributedNounsList'
 import Button from '../common/buttons/Button'
 import classNames from 'classnames'
 import { NounImage } from '../common/NounletImage'
+import Link from 'next/link'
 
 export default function NextNounlets() {
   const { data: tributedNounsListFull } = useTributedNounsList()
   const [isLoading, setIsLoading] = useState(false)
   const [page, setPage] = useState(1)
-  const PAGE_SIZE = 2
+  const PAGE_SIZE = 8
 
   const tributedNounsListPaginated = useMemo(() => {
     return tributedNounsListFull?.slice(0, PAGE_SIZE * page) || null
@@ -71,7 +72,7 @@ export default function NextNounlets() {
               </div>
             ))}
           </div>
-          {hasMore && (
+          {/* {hasMore && (
             <div className="flex justify-center">
               <Button
                 className="default-outline text-black"
@@ -81,7 +82,14 @@ export default function NextNounlets() {
                 Show more
               </Button>
             </div>
-          )}
+          )} */}
+          <div className="flex justify-center">
+            <Link href="/tribute#tributed-list">
+              <Button className="default-outline text-black">
+                See all ({tributedNounsListFull?.length}) tributed Nouns
+              </Button>
+            </Link>
+          </div>
         </>
       )}
     </div>

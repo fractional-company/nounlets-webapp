@@ -10,7 +10,7 @@ import { VaultData } from 'src/hooks/useExistingVaults'
 
 export default function NounletsPastAuctionCard(props: { vault: VaultData }) {
   const { noun, buyoutInfo } = props.vault
-  console.log({ noun })
+  // console.log({ noun })
 
   if (noun == null) return null
 
@@ -68,7 +68,6 @@ function BuyoutInProgress(props: {
   buyoutInfo: NonNullable<VaultData['buyoutInfo']>
 }) {
   const { nounId, buyoutInfo } = props
-  console.log('sadsdfsf', { buyoutInfo })
   const timeLeft = Math.max(
     0,
     Math.floor(BigNumber.from(buyoutInfo.endTime).toNumber()) - dayjs().unix()

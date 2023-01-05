@@ -18,6 +18,7 @@ export interface VoteForDelegateModal {
 
 export interface CongratulationsModal {
   show: boolean
+  nounId?: string
   nounletId?: string
 }
 
@@ -35,7 +36,11 @@ interface ApplicationSetters {
   setConnectModalOpen: (isOpen: boolean) => void
   setBidModalOpen: (isOpen: boolean) => void
   setVoteForDelegateModalForAddress: (isOpen: boolean, address?: string) => void
-  setCongratulationsModalForNounletId: (isOpen: boolean, nounletId?: string) => void
+  setCongratulationsModalForNounletId: (
+    isOpen: boolean,
+    nounId?: string,
+    nounletId?: string
+  ) => void
 }
 
 const initialState: ApplicationState = {
@@ -74,10 +79,11 @@ export const useAppStore = createTrackedSelector(
           state.isBidModalOpen = isOpen
         })
       },
-      setCongratulationsModalForNounletId: (isOpen, nounletId) => {
+      setCongratulationsModalForNounletId: (isOpen, nounId, nounletId) => {
         set((state) => {
           state.congratulationsModal.show = isOpen
           if (nounletId != null) {
+            state.congratulationsModal.nounId = nounId
             state.congratulationsModal.nounletId = nounletId
           }
         })

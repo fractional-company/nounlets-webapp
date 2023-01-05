@@ -18,7 +18,7 @@ export async function nounBuyoutDataFetcher(
   sdk: NounletsSDK
 ) {
   const response = await getBuyoutBidInfo(sdk!, vaultAddress, nounletTokenAddress, nounTokenId)
-  console.log('buyout response', { response })
+  // console.log('buyout response', { response })
   return { buyout: response, fetchedAt: Date.now() }
 }
 
@@ -60,7 +60,7 @@ export function useNounBuyoutData(callback?: (data: any) => void) {
       setIsLoading(true)
       setBuyoutInfo(null)
     } else {
-      console.log('Auction data cached', cachedData)
+      // console.log('Auction data cached', cachedData)
       setBuyoutInfo(cachedData.buyout)
       setIsLoading(false)
     }
@@ -75,7 +75,7 @@ export function useNounBuyoutData(callback?: (data: any) => void) {
 
     const listener = (...eventData: any) => {
       const event = eventData.at(-1)
-      console.log('☄️☄️☄️ Optimistic event', event, eventData)
+      // console.log('☄️☄️☄️ Optimistic event', event, eventData)
       debouncedMutate()
     }
 

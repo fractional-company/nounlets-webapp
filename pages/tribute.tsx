@@ -1,25 +1,11 @@
-import { useEthers } from '@usedapp/core'
-import classNames from 'classnames'
-import { CHAIN_ID } from 'config'
-import { ethers } from 'ethers'
-import { getTributedNounsList } from 'graphql/src/queries'
 import { NextPage } from 'next'
-import Image from 'next/image'
 import { sleep } from 'radash'
-import { createContext, useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import Button from 'src/components/common/buttons/Button'
-import IconCheckmark from 'src/components/common/icons/IconCheckmark'
-import { NounImage } from 'src/components/common/NounletImage'
-import SimpleAccordion from 'src/components/common/simple/SimpleAccordion'
-import SimpleAddress from 'src/components/common/simple/SimpleAddress'
 import TributedNounCard from 'src/components/tribute/TributedNounCard'
 import TributeFAQ from 'src/components/tribute/TributeFAQ'
 import TributeYourWallet from 'src/components/tribute/TributeYourWallet'
 import useTributedNounsList from 'src/hooks/tribute/useTributedNounsList'
-import useNounTribute from 'src/hooks/tribute/useNounTribute'
-import useSdk, { NounletsSDK } from 'src/hooks/utils/useSdk'
-import { toastSuccess } from 'src/hooks/utils/useToasts'
-import useSWR from 'swr'
 
 const Tribute: NextPage = () => {
   return (
@@ -41,40 +27,41 @@ const Tribute: NextPage = () => {
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-20">
             <div className="space-y-4">
               <h2 className="font-londrina text-px24 leading-px28">
-                <span className="text-primary">1.</span> Tribute your Noun to put it in the waiting
-                list.
+                <span className="text-primary">1.</span> Sign a transaction to tribute your Noun and
+                add it to the waitlist.
               </h2>
               <p className="font-500 leading-px22 text-gray-4">
-                Connect your wallet and unde omnis iste natus error sit voluptatem accusantium
-                doloremque laudantium.
+                Connect your wallet and approve the transaction for the Tessera smart contracts to
+                transfer your Noun to be auctioned.
               </p>
             </div>
 
             <div className="space-y-4">
               <h2 className="font-londrina text-px24 leading-px28">
-                <span className="text-primary">1.</span> Tribute your Noun to put it in the waiting
-                list.
+                <span className="text-primary">2.</span> Tessera will work with the Nouns community
+                to decide which Noun is next.
               </h2>
               <p className="font-500 leading-px22 text-gray-4">
-                Connect your wallet and unde omnis iste natus error sit voluptatem accusantium
-                doloremque laudantium.
+                The Tessera team will work with community members to vote on which Noun should be
+                auctioned next. There is no set schedule for Noun auctions.
               </p>
             </div>
 
             <div className="space-y-4">
               <h2 className="font-londrina text-px24 leading-px28">
-                <span className="text-primary">1.</span> Tribute your Noun to put it in the waiting
-                list.
+                <span className="text-primary">3.</span> Voila, your Noun will be put on auction -
+                Nounlets style.
               </h2>
               <p className="font-500 leading-px22 text-gray-4">
-                Connect your wallet and unde omnis iste natus error sit voluptatem accusantium
-                doloremque laudantium.
+                Once the next Noun is voted on, Tessera will initiate the transaction and kick off
+                the auction. ETH proceeds from the auction will be automatically distributed back to
+                the original Noun owner.
               </p>
             </div>
           </div>
         </div>
 
-        <div className="space-y-12">
+        <div className="space-y-12" id="tributed-list">
           <h1 className="text-center font-londrina text-[48px] leading-[58px]">Tributed Nouns</h1>
 
           <p className="text-center font-500 text-gray-4">

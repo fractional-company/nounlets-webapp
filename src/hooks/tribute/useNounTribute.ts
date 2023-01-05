@@ -41,7 +41,7 @@ export default function useNounTribute() {
 
   const tributeNoun = useCallback(
     async (nounId: string) => {
-      console.log('tributing', nounId)
+      // console.log('tributing', nounId)
       const nounsToken = sdk.NounsToken.connect(library!.getSigner())
       const nounletProtoform = sdk.NounletProtoform
 
@@ -53,7 +53,7 @@ export default function useNounTribute() {
 
   const removeTributedNoun = useCallback(
     async (nounId: string) => {
-      console.log('un-tributing', nounId)
+      // console.log('un-tributing', nounId)
       const nounsToken = sdk.NounsToken.connect(library!.getSigner())
       const tx = await nounsToken.approve(ethers.constants.AddressZero, nounId)
       return txWithErrorHandling(tx, 2)
@@ -63,7 +63,7 @@ export default function useNounTribute() {
 
   const vaultNoun = useCallback(
     async (nounId: string) => {
-      console.log('vaulting', nounId)
+      // console.log('vaulting', nounId)
       const tx = await sdk.NounletProtoform.connect(library!.getSigner()).deployVault(
         getProofOrder(),
         [],

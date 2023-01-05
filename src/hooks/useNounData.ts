@@ -40,7 +40,7 @@ export function useNounData(enabled: boolean, callback?: (data: any) => void) {
   const { data, mutate } = useSWR(
     enabled && sdk && nounTokenId != null && `noun/${nounTokenId}`,
     async (key) => {
-      console.log('useNounData fetcher ran', key)
+      // console.log('useNounData fetcher ran', key)
       const vaultData = await getVaultData(nounTokenId!)
 
       if (vaultData == null) throw new Error('vault not found')

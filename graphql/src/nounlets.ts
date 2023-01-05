@@ -40,7 +40,7 @@ export const getVaultListGQL = async (first = 10) => {
 }
 
 export const getVaultGQL = async (vaultId: string) => {
-  console.log('getVaultGQL', vaultId)
+  // console.log('getVaultGQL', vaultId)
   return client.query({
     query: graphql(`
       query Vault($vaultId: ID!) {
@@ -81,7 +81,7 @@ export const getVaultGQL = async (vaultId: string) => {
 }
 
 export const getVaultByNounGQL = async (nounId: string) => {
-  console.log('getVaultByNounGQL', nounId)
+  // console.log('getVaultByNounGQL', nounId)
   return client.query({
     query: graphql(`
       query VaultByNoun($nounId: String!) {

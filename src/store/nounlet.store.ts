@@ -28,7 +28,7 @@ export const useNounletStore = createTrackedSelector(
     immer<StoreState & StoreActions>((set) => ({
       ...initialState,
       reset: () => {
-        console.log('reseting nounlet store')
+        // console.log('reseting nounlet store')
         set((state) => {
           Object.assign(state, initialState)
         })

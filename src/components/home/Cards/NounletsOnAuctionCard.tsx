@@ -11,7 +11,6 @@ import SimpleProgressIndicator from 'src/components/common/simple/SimpleProgress
 import { VaultData } from 'src/hooks/useExistingVaults'
 
 export default function NounletsOnAuctionCard(props: { vault: VaultData }) {
-  console.log('🚀 VaultData', props.vault)
   const noun = props.vault.noun!
   const nounletsCount = noun.nounlets.length
   const latestAuction = noun.nounlets.at(-1)!.auction
@@ -34,7 +33,7 @@ export default function NounletsOnAuctionCard(props: { vault: VaultData }) {
   // )
   // const isOver = timeLeft === 0
 
-  console.log({ latestAuction })
+  // console.log({ latestAuction })
 
   const ethValue = FixedNumber.from(
     formatEther(noun.nounlets.at(-1)?.auction.highestBidAmount.toString())
