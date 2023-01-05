@@ -128,7 +128,7 @@ export const getNounletAuctionDataBC = async (
   nounletTokenId: string,
   nounletAuction: NounletsSDK['NounletAuction']
 ) => {
-  // console.groupCollapsed('🔩 Fetching auction data from Blockchain')
+  console.groupCollapsed('🔩 Fetching auction data from Blockchain')
   // console.table({ vaultAddress, nounletTokenAddress, nounletTokenId })
   // console.groupEnd()
 

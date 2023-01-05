@@ -1,10 +1,10 @@
 import { getNounletAuctionData, getNounletAuctionDataBC } from 'graphql/src/queries'
-import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import useSdk, { NounletsSDK } from 'src/hooks/utils/useSdk'
 import { useNounStore } from 'src/store/noun.store'
 import { useNounletStore } from 'src/store/nounlet.store'
 import useSWR, { useSWRConfig } from 'swr'
+import useLocalStorage from './utils/useLocalStorage'
 
 const tmpCache = new Map<string, any>()
 
@@ -41,6 +41,7 @@ export async function nounletDataFetcher(
 
 export function useNounletData(callback?: (data: any) => void) {
   const { cache, mutate: globalMutate } = useSWRConfig()
+  const { setAuctionsCache } = useLocalStorage()
   const sdk = useSdk()
   const {
     isLive,
@@ -58,11 +59,11 @@ export function useNounletData(callback?: (data: any) => void) {
     keySWR = `${nounletTokenAddress}/nounlet/${nounletId}`
   }
 
-  const cachedData: Awaited<ReturnType<typeof nounletDataFetcher>> | null = tmpCache.get(
+  const cachedData: Awaited<ReturnType<typeof nounletDataFetcher>> | null = cache.get(
     keySWR || '--empty'
   )
 
-  const shouldRevalidate = cachedData == null
+  const shouldRevalidate = cachedData == null || !cachedData.auction?.settled
 
   let refreshInterval = 0
   if (shouldRevalidate) {
@@ -74,18 +75,18 @@ export function useNounletData(callback?: (data: any) => void) {
       setIsLoading(true)
       setAuctionData(null)
     } else {
-      // console.log('Auction data cached', cachedData)
+      // console.log('Auction data from cache', cachedData)
       setAuctionData(cachedData)
       setIsLoading(false)
     }
-  }, [cachedData])
+  }, [cachedData, setAuctionData, setIsLoading])
 
   const { data, mutate } = useSWR(
-    cachedData == null && keySWR,
+    shouldRevalidate && keySWR,
     async () =>
       nounletDataFetcher(vaultAddress, nounletTokenAddress, nounletId!, latestNounletTokenId, sdk!),
     {
-      dedupingInterval: 0,
+      dedupingInterval: 1000,
       refreshInterval: refreshInterval,
       revalidateIfStale: shouldRevalidate,
       onSuccess(data, key) {
@@ -93,9 +94,9 @@ export function useNounletData(callback?: (data: any) => void) {
         setIsLoading(false)
 
         if (data?.auction?.settled) {
-          console.log('✨ setting cache', data)
+          // console.log('✨ setting cache', key, data)
           // cache.set(key, data)
-          tmpCache.set(key, data)
+          setAuctionsCache(key, data)
         }
 
         if (callback) {
