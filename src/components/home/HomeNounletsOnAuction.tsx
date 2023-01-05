@@ -4,8 +4,6 @@ import NounletsOnAuctionCard from './Cards/NounletsOnAuctionCard'
 export default function HomeNounletsOnAuction() {
   const { data } = useExistingVaults()
 
-  console.log('shhshshs', data)
-
   if (data == null)
     return (
       <div className="space-y-12 bg-black px-6 py-12">
