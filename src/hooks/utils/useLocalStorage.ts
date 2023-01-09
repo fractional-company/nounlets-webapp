@@ -6,9 +6,16 @@ import { mutate as globalMutate } from 'swr'
 const cacheVersion = NEXT_PUBLIC_CACHE_VERSION
 const cacheKey = `nounlets-cache-v2/v${cacheVersion}/`
 
-let localStorageData: { images: { [key: string]: object }; auctions: { [key: string]: object } } = {
+type localStageData = {
+  images: { [key: string]: object }
+  auctions: { [key: string]: object }
+  ensNames: { [key: string]: { name?: string; timestamp?: number } }
+}
+
+let localStorageData: localStageData = {
   images: {},
-  auctions: {}
+  auctions: {},
+  ensNames: {}
 }
 
 // Cache version -1 is an escape hatch to disable caching
@@ -16,7 +23,7 @@ if (cacheVersion !== -1) {
   if (typeof window !== 'undefined' && window.localStorage != null) {
     try {
       localStorageData = JSON.parse(
-        localStorage.getItem(cacheKey) || '{"images": {}, "auctions": {}}'
+        localStorage.getItem(cacheKey) || '{"images": {}, "auctions": {}, "ensNames": {}}'
       )
 
       if (localStorageData['images'] == null) {
@@ -25,6 +32,10 @@ if (cacheVersion !== -1) {
 
       if (localStorageData['auctions'] == null) {
         localStorageData['auctions'] = {}
+      }
+
+      if (localStorageData['ensNames'] == null) {
+        localStorageData['ensNames'] = {}
       }
 
       // Populate nounlet images
@@ -81,8 +92,23 @@ export default function useLocalStorage() {
     }
   }, [])
 
+  const setEnsNameCache = useCallback(
+    (key: string, data: { name?: string; timestamp?: number }) => {
+      if (cacheVersion !== -1) {
+        if (typeof window !== 'undefined' && window.localStorage != null) {
+          console.log('🔫🔫🔫 setting ens data', key, data)
+          localStorageData['ensNames'][key] = data
+          debouncedLocalStorageWrite()
+        }
+      }
+    },
+    []
+  )
+
   return {
+    localStorageData,
     setImageCache,
-    setAuctionsCache
+    setAuctionsCache,
+    setEnsNameCache
   }
 }

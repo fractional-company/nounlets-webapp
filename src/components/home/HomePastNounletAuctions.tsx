@@ -1,6 +1,7 @@
 import { sleep } from 'radash'
 import { useCallback, useMemo, useState } from 'react'
 import useExistingVaults from 'src/hooks/useExistingVaults'
+import scrollToElement from 'src/lib/utils/scrollToElement'
 import Button from '../common/buttons/Button'
 import NounletsPastAuctionCard from './Cards/NounletsPastAuctionCard'
 
@@ -60,7 +61,13 @@ export default function HomePastNounletAuctions() {
             <p className="text-px16 font-500 leading-px24 text-gray-4">
               Someone submitted an offer to buyout a Noun. Anyone can reject the offer by purchasing
               the Nounlets in their proposal. If any Nounlets remain after 7 days the offer will be
-              automatically accepted. Read More
+              automatically accepted.{' '}
+              <span
+                className="cursor-pointer underline"
+                onClick={() => scrollToElement('faq-scroll-target')}
+              >
+                Read More
+              </span>
             </p>
           </div>
         )}

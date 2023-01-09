@@ -1,5 +1,5 @@
 import Davatar from '@davatar/react'
-import { useEthers } from '@usedapp/core'
+import { useEthers, useLookupAddress } from '@usedapp/core'
 import classNames from 'classnames'
 import { ethers } from 'ethers'
 import { getCurrentChainExplorerAddressLink, shortenAddress } from 'src/lib/utils/common'
@@ -23,7 +23,8 @@ export default function SimpleAddress(props: ComponentProps): JSX.Element {
   const address = props.address || ethers.constants.AddressZero
   const shortenedAddres = shortenAddress(address).toLowerCase()
   // TODO uncomment this and optimize
-  const ens = null // useReverseENSLookUp(address, false)
+  // const { ens } = useLookupAddress(address) // null // useReverseENSLookUp(address, false)
+  const ens = useReverseENSLookUp(address, false)
 
   // TODO if the address owns an nounlet, use it as avatar
 

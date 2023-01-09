@@ -10,7 +10,7 @@ export default function WTFAreNounlets(props: { showCurrentAuction: boolean }) {
   const [openAccordionIndex, setOpenAccordionIndex] = useState(-1)
 
   return (
-    <div className="space-y-14 lg:space-y-20">
+    <div className="space-y-14 lg:space-y-20" id="faq-scroll-target">
       <div className="space-y-6 overflow-hidden rounded-px20 bg-gray-1 py-12 px-4 text-center lg:px-12">
         <h2 className="text-center font-londrina text-[56px] font-900 leading-[62px] lg:text-[72px] lg:leading-[80px]">
           <span className="text-primary">Q:</span> WTF ARE NOUNLETS?

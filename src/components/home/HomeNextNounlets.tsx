@@ -6,28 +6,16 @@ import Button from '../common/buttons/Button'
 import classNames from 'classnames'
 import { NounImage } from '../common/NounletImage'
 import Link from 'next/link'
+import scrollToElement from 'src/lib/utils/scrollToElement'
 
 export default function NextNounlets() {
   const { data: tributedNounsListFull } = useTributedNounsList()
-  const [isLoading, setIsLoading] = useState(false)
   const [page, setPage] = useState(1)
   const PAGE_SIZE = 8
 
   const tributedNounsListPaginated = useMemo(() => {
     return tributedNounsListFull?.slice(0, PAGE_SIZE * page) || null
   }, [tributedNounsListFull, page])
-
-  const hasMore =
-    tributedNounsListFull != null &&
-    tributedNounsListPaginated != null &&
-    tributedNounsListPaginated.length < tributedNounsListFull.length
-
-  const handleShowMore = useCallback(async () => {
-    setIsLoading(true)
-    await sleep(1000)
-    setPage((value) => value + 1)
-    setIsLoading(false)
-  }, [])
 
   const gridStyles = 'grid grid-cols-2 gap-3 md:gap-8 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'
 
@@ -62,7 +50,12 @@ export default function NextNounlets() {
                 Anyone can Tribute their Noun to take part in the the Nounlets experiment.
                 <br />
                 <br />
-                Read More
+                <span
+                  className="cursor-pointer underline"
+                  onClick={() => scrollToElement('faq-scroll-target')}
+                >
+                  Read More
+                </span>
               </p>
             </div>
 
@@ -72,17 +65,6 @@ export default function NextNounlets() {
               </div>
             ))}
           </div>
-          {/* {hasMore && (
-            <div className="flex justify-center">
-              <Button
-                className="default-outline text-black"
-                loading={isLoading}
-                onClick={handleShowMore}
-              >
-                Show more
-              </Button>
-            </div>
-          )} */}
           <div className="flex justify-center">
             <Link href="/tribute#tributed-list">
               <Button className="default-outline text-black">
