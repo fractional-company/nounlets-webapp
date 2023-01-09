@@ -6,9 +6,9 @@ export default function NounWtf(): JSX.Element {
 
   return (
     <div className="home-wtf">
-      <div className="lg:container mx-auto font-500 text-px22 leading-px28 text-gray-4">
+      <div className="mx-auto text-px22 font-500 leading-px28 text-gray-4 lg:container">
         <div className="px-4 md:px-12 lg:px-4">
-          <h2 className="font-londrina text-[64px] leading-[78px] font-700 mb-16 text-black">
+          <h2 className="mb-16 font-londrina text-[64px] font-700 leading-[78px] text-black">
             WTF?
           </h2>
           <p className="mb-6">
@@ -28,7 +28,7 @@ export default function NounWtf(): JSX.Element {
           <p className="mb-6">
             Learn more below, or by visiting and reviewing the{' '}
             <a
-              href="src/components/home/HomeWtf.tsx"
+              href="https://nouns.wtf/"
               className="text-secondary-blue"
               target="_blank"
               rel="noreferrer"
@@ -56,11 +56,11 @@ export default function NounWtf(): JSX.Element {
               onOpen={() => setOpenAccordionIndex(0)}
               onClose={() => setOpenAccordionIndex(-1)}
             >
-              <ul className="list-disc pl-6 space-y-2">
+              <ul className="list-disc space-y-2 pl-6">
                 <li>
                   Nounlets artwork is in the{' '}
                   <a
-                    href="src/components/home/HomeWtf.tsx"
+                    href="https://creativecommons.org/publicdomain/zero/1.0/"
                     className="text-secondary-blue"
                     target="_blank"
                     rel="noreferrer"
@@ -182,7 +182,7 @@ export default function NounWtf(): JSX.Element {
                   have the same head as the Vaulted Noun.
                 </p>
                 <p>As of this writing, Nounlet traits contain:</p>
-                <ul className="list-disc pl-6 space-y-2">
+                <ul className="list-disc space-y-2 pl-6">
                   <li>backgrounds (2)</li>
                   <li>bodies (30)</li>
                   <li>accessories (137)</li>
@@ -237,7 +237,7 @@ export default function NounWtf(): JSX.Element {
                   number generation:
                 </p>
                 <p>
-                  <span className="bg-gray-2 rounded-lg p-2 px-4 text-black text-px16">
+                  <span className="rounded-lg bg-gray-2 p-2 px-4 text-px16 text-black">
                     keccak256( abi.encodePacked( blockhash( block.number - 1 ), nounId ) )
                   </span>
                 </p>

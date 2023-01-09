@@ -10,8 +10,11 @@ import IconTwitter from 'src/components/common/icons/IconTwitter'
 import { getCurrentChainExplorerAddressLink } from 'src/lib/utils/common'
 import { Fragment } from 'react'
 import Button from './Button'
+import Link from 'next/link'
+import useSdk from 'src/hooks/utils/useSdk'
 
 export default function ButtonLinksDropdown(props: { className?: string }): JSX.Element {
+  const sdk = useSdk()
   return (
     <div className={props.className}>
       <Menu as="div" className="relative inline-block">
@@ -47,17 +50,19 @@ export default function ButtonLinksDropdown(props: { className?: string }): JSX.
                 </Button>
               </Menu.Item> */}
               <Menu.Item>
-                <Button className="basic w-full !justify-start space-x-2 !rounded-none">
-                  <a
-                    href="https://medium.com/tessera-nft/nounlets-explained-faq-57e9bc537d93"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="grid h-full w-full grid-cols-[32px_auto] items-center justify-items-start"
-                  >
-                    <IconMedium className="h-[16px] w-auto" />
-                    <span>Tributed Nouns</span>
-                  </a>
-                </Button>
+                {({ close }) => (
+                  <Button className="basic w-full !justify-start space-x-2 !rounded-none">
+                    <Link href="/tribute#tributed-list">
+                      <div
+                        className="grid h-full w-full grid-cols-[32px_auto] items-center justify-items-start"
+                        onClick={close}
+                      >
+                        <IconMedium className="h-[16px] w-auto" />
+                        <span>Tributed Nouns</span>
+                      </div>
+                    </Link>
+                  </Button>
+                )}
               </Menu.Item>
               <Menu.Item>
                 <Button className="basic w-full !justify-start space-x-2 !rounded-none">
@@ -100,23 +105,23 @@ export default function ButtonLinksDropdown(props: { className?: string }): JSX.
               </Menu.Item>
               <Menu.Item>
                 <Button className="basic w-full !justify-start space-x-2 !rounded-none">
-                  <a
-                    href={getCurrentChainExplorerAddressLink(
-                      process.env.NEXT_PUBLIC_NOUN_VAULT_ADDRESS!
-                    )}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="grid h-full w-full grid-cols-[32px_auto] items-center justify-items-start"
-                  >
-                    <IconEtherscan className="h-[16px] w-auto" />
-                    <span>Etherscan</span>
-                  </a>
+                  {sdk && (
+                    <a
+                      href={getCurrentChainExplorerAddressLink(sdk?.NounletProtoform.address)}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="grid h-full w-full grid-cols-[32px_auto] items-center justify-items-start"
+                    >
+                      <IconEtherscan className="h-[16px] w-auto" />
+                      <span>Etherscan</span>
+                    </a>
+                  )}
                 </Button>
               </Menu.Item>
               <Menu.Item>
                 <Button className="basic w-full !justify-start !rounded-none">
                   <a
-                    href="src/components/common/buttons/ButtonLinksDropdown.tsx"
+                    href="https://tessera.co/"
                     target="_blank"
                     rel="noreferrer"
                     className="grid h-full w-full grid-cols-[32px_auto] items-center justify-items-start"

@@ -1,3 +1,4 @@
+import { IS_DEVELOP } from 'config'
 import Link from 'next/link'
 import { useState } from 'react'
 import Button from './common/buttons/Button'
@@ -6,7 +7,7 @@ import SimpleAccordion from './common/simple/SimpleAccordion'
 import HomeNounletsOnAuction from './home/HomeNounletsOnAuction'
 
 export default function WTFAreNounlets(props: { showCurrentAuction: boolean }) {
-  const nounID = '1'
+  const nounID = IS_DEVELOP ? 1 : 315
   const [openAccordionIndex, setOpenAccordionIndex] = useState(-1)
 
   return (
@@ -82,7 +83,7 @@ export default function WTFAreNounlets(props: { showCurrentAuction: boolean }) {
             <li>
               Nounlets artwork is in the{' '}
               <a
-                href="src/components/home/HomeWtf.tsx"
+                href="https://creativecommons.org/publicdomain/zero/1.0/"
                 className="text-secondary-blue"
                 target="_blank"
                 rel="noreferrer"

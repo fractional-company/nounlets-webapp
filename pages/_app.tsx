@@ -16,6 +16,8 @@ import utc from 'dayjs/plugin/utc'
 import ModalCongratulations from 'src/components/modals/ModalCongratulations'
 import useLocalStorage from 'src/hooks/utils/useLocalStorage'
 import { useAppStore } from 'src/store/application.store'
+import { useRouter } from 'next/router'
+import { useEffect } from 'react'
 
 dayjs.extend(duration)
 dayjs.extend(utc)
@@ -32,6 +34,16 @@ const useDappConfig: Config = {
 function MyApp({ Component, pageProps }: AppProps) {
   const {} = useLocalStorage()
   const { congratulationsModal, setCongratulationsModalForNounletId } = useAppStore()
+  const router = useRouter()
+
+  // Remove # from urls
+  useEffect(() => {
+    if (router.isReady) {
+      if (router.asPath.includes('#')) {
+        router.replace(router.asPath.split('#')[0], undefined, { shallow: true })
+      }
+    }
+  }, [router])
 
   return (
     <SWRConfig

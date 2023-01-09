@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import ModalVoteForDelegate from 'src/components/modals/ModalVoteForDelegate'
 import useCurrentBackground from 'src/hooks/utils/useCurrentBackground'
+import useSdk from 'src/hooks/utils/useSdk'
+import { getCurrentChainExplorerAddressLink } from 'src/lib/utils/common'
 import { useNounStore } from 'src/store/noun.store'
 import { useAppStore } from '../../store/application.store'
 import ModalWallet from '../modals/ModalWallet'
@@ -17,11 +19,13 @@ import IconHeartHollow from './icons/iconHeartHollow'
 import IconHome from './icons/IconHome'
 import IconLink from './icons/IconLink'
 import IconMedium from './icons/IconMedium'
+import IconNounlets from './icons/IconNounlets'
 import IconNounletsLogo from './icons/IconNounletsLogo'
 import IconTwitter from './icons/IconTwitter'
 import SimpleAddress from './simple/SimpleAddress'
 
 export default function AppHeader(): JSX.Element {
+  const sdk = useSdk()
   const [isMobileMenuOpen, setIsModalMenuOpen] = useState(false)
   const [mobileMenuMaxHeight, setMobileMenuMaxHeight] = useState(0)
   const mobileMenuRef = useRef<HTMLDivElement>(null)
@@ -106,12 +110,16 @@ export default function AppHeader(): JSX.Element {
                   </Button>
                 </Link>
 
-                <Link href="/">
+                <a
+                  href="https://medium.com/tessera-nft/nounlets-explained-faq-57e9bc537d93"
+                  target="_blank"
+                  rel="noreferrer"
+                >
                   <Button className="basic flex-shrink-0 space-x-2">
                     <IconHome className="h-[12px] w-auto" />
                     <span>WTF are Nounlets?</span>
                   </Button>
-                </Link>
+                </a>
               </div>
             </div>
 
@@ -149,13 +157,22 @@ export default function AppHeader(): JSX.Element {
                   <span>Home</span>
                 </Button>
               </Link>
-              <Link href="/">
+              <Link href="/tribute">
                 <Button
                   className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40"
                   onClick={() => setIsModalMenuOpen(false)}
                 >
-                  <IconHome className="h-[12px] w-auto" />
-                  <span>Trbute your Noun</span>
+                  <IconNounlets className="h-[12px] w-auto" />
+                  <span>Tribute your Noun</span>
+                </Button>
+              </Link>
+              <Link href="/tribute#tributed-list">
+                <Button
+                  className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40"
+                  onClick={() => setIsModalMenuOpen(false)}
+                >
+                  <IconNounlets className="h-[12px] w-auto" />
+                  <span>Tributed Nouns</span>
                 </Button>
               </Link>
               <a
@@ -167,17 +184,6 @@ export default function AppHeader(): JSX.Element {
                 <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
                   <IconMedium className="h-[16px] w-auto" />
                   <span>WTF are Nounlets?</span>
-                </Button>
-              </a>
-              <a
-                href="https://medium.com/tessera-nft/nounlets-explained-faq-57e9bc537d93"
-                target="_blank"
-                rel="noreferrer"
-                className="flex w-full justify-center space-x-2"
-              >
-                <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
-                  <IconMedium className="h-[16px] w-auto" />
-                  <span>Tributed Nouns</span>
                 </Button>
               </a>
               <a
@@ -213,12 +219,23 @@ export default function AppHeader(): JSX.Element {
                   <span>Twitter</span>
                 </Button>
               </a>
-              <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
-                <IconEtherscan className="h-[16px] w-auto" />
-                <span>Etherscan</span>
-              </Button>
+
+              {sdk && (
+                <a
+                  href={getCurrentChainExplorerAddressLink(sdk?.NounletProtoform.address)}
+                  target="_blank"
+                  className="block"
+                  rel="noreferrer"
+                >
+                  <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
+                    <IconEtherscan className="h-[16px] w-auto" />
+                    <span>Etherscan</span>
+                  </Button>
+                </a>
+              )}
+
               <a
-                href="src/components/common/AppHeader.tsx"
+                href="https://tessera.co/"
                 target="_blank"
                 rel="noreferrer"
                 className="flex w-full justify-center space-x-2"

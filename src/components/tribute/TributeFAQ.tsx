@@ -20,7 +20,7 @@ export default function TributeFAQ() {
                 <li>
                   Nounlets artwork is in the{' '}
                   <a
-                    href="src/components/home/HomeWtf.tsx"
+                    href="https://creativecommons.org/publicdomain/zero/1.0/"
                     className="text-secondary-blue"
                     target="_blank"
                     rel="noreferrer"
