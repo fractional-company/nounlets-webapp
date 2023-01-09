@@ -7,7 +7,7 @@ import SimpleAccordion from './common/simple/SimpleAccordion'
 import HomeNounletsOnAuction from './home/HomeNounletsOnAuction'
 
 export default function WTFAreNounlets(props: { showCurrentAuction: boolean }) {
-  const nounID = IS_DEVELOP ? 1 : 315
+  const nounID = IS_DEVELOP ? '1' : '315'
   const [openAccordionIndex, setOpenAccordionIndex] = useState(-1)
 
   return (
