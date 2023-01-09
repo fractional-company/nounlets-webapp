@@ -11,7 +11,7 @@ export default function HomeNounletsOnAuction() {
       </Wrapper>
     )
 
-  const list = data?.buckets.auctionInProgress || []
+  const list = data?.buckets.auctionInProgress
   if (list.length === 0) return null
 
   return (
@@ -25,7 +25,7 @@ export default function HomeNounletsOnAuction() {
 
 function Wrapper(props: { children: React.ReactNode }) {
   return (
-    <div className="space-y-12 bg-black px-6 py-12">
+    <div className="space-y-12 bg-black px-6 py-12" id="nounlets-on-auction">
       <h2 className="text-center font-londrina text-[48px] font-900 leading-[52px] text-gray-0.5 lg:text-[56px] lg:leading-[62px]">
         Nounlets ON AUCTION now!
       </h2>

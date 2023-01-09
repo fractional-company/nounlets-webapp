@@ -20,7 +20,7 @@ export default function HomePastNounletAuctions() {
 
   if (data == null)
     return (
-      <div className="space-y-8">
+      <div className="space-y-8" id="past-nounlet-auctions">
         <h2 className="text-center font-londrina text-[48px] font-900 leading-[52px]">
           Past Nounlet auctions
         </h2>
@@ -48,7 +48,7 @@ export default function HomePastNounletAuctions() {
   const isBuyoutHappening = data.buckets.buyoutInProgress.length > 0
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8" id="past-nounlet-auctions">
       <h2 className="text-center font-londrina text-[48px] font-900 leading-[52px]">
         Past Nounlet auctions
       </h2>
@@ -62,10 +62,7 @@ export default function HomePastNounletAuctions() {
               Someone submitted an offer to buyout a Noun. Anyone can reject the offer by purchasing
               the Nounlets in their proposal. If any Nounlets remain after 7 days the offer will be
               automatically accepted.{' '}
-              <span
-                className="cursor-pointer underline"
-                onClick={() => scrollToElement('faq-scroll-target')}
-              >
+              <span className="cursor-pointer underline" onClick={() => scrollToElement('faq')}>
                 Read More
               </span>
             </p>

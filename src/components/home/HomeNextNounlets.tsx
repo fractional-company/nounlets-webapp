@@ -50,10 +50,7 @@ export default function NextNounlets() {
                 Anyone can Tribute their Noun to take part in the the Nounlets experiment.
                 <br />
                 <br />
-                <span
-                  className="cursor-pointer underline"
-                  onClick={() => scrollToElement('faq-scroll-target')}
-                >
+                <span className="cursor-pointer underline" onClick={() => scrollToElement('faq')}>
                   Read More
                 </span>
               </p>

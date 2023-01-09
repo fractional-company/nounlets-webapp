@@ -16,24 +16,9 @@ export default function NounletsOnAuctionCard(props: { vault: VaultData }) {
   const latestAuction = noun.nounlets.at(-1)!.auction
 
   const [hasAuctionEnded, setHasAuctionEnded] = useState(false)
-
-  // useEffect(() => {
-  //   setHasAuctionEnded(false)
-  // }, [nounletsCount])
   const handleTimerFinished = useCallback(() => {
     setHasAuctionEnded(true)
   }, [])
-
-  // const startTime = ~~(Date.now() / 1000 - 600) + ''
-  // const endTime = ~~(Date.now() / 1000 + 600) + ''
-
-  // const timeLeft = Math.max(
-  //   0,
-  //   Math.floor(BigNumber.from(latestAuction.endTime).toNumber()) - dayjs().unix()
-  // )
-  // const isOver = timeLeft === 0
-
-  // console.log({ latestAuction })
 
   const ethValue = FixedNumber.from(
     formatEther(noun.nounlets.at(-1)?.auction.highestBidAmount.toString())
@@ -60,6 +45,7 @@ export default function NounletsOnAuctionCard(props: { vault: VaultData }) {
                 startTime={latestAuction.startTime}
                 endTime={latestAuction.endTime}
                 onTimerFinished={handleTimerFinished}
+                countUp
               />
               <p>
                 {hasAuctionEnded ? 'Winning bid:' : 'Current bid:'}{' '}
@@ -99,18 +85,20 @@ function CountdownWithBar(props: {
   startTime: string
   endTime: string
   onTimerFinished?: () => void
+  countUp?: boolean
 }) {
-  const { startTime, endTime, onTimerFinished } = props
+  const { startTime, endTime, onTimerFinished, countUp } = props
   const length = +endTime - +startTime
-  const [percentage, setPercentage] = useState(0)
+  const [percentage, setPercentage] = useState(countUp ? 1.0 : 0.0)
   const [isOver, setIsOver] = useState(false)
 
   const calculatePercentage = useCallback(() => {
     const timeLeft = ~~((+endTime * 1000 - Date.now()) / 1000)
     const percentage = +((timeLeft * 100) / length / 100).toFixed(2)
-    setPercentage(percentage)
-    return percentage
-  }, [endTime, length])
+    const adjusedPercentage = countUp ? 1.0 - percentage : percentage
+    setPercentage(adjusedPercentage)
+    return adjusedPercentage
+  }, [endTime, length, countUp])
 
   const handleTimerFinished = useCallback(() => {
     onTimerFinished?.()
@@ -120,7 +108,11 @@ function CountdownWithBar(props: {
   return (
     <div className="space-y-2">
       {/* <p>{percentage}</p> */}
-      <SimpleProgressIndicator percentage={percentage} className="!h-2" />
+      <SimpleProgressIndicator
+        percentage={percentage}
+        className="!h-2"
+        trackColorClassName="bg-secondary-green"
+      />
 
       <div className="flex items-center space-x-1">
         {isOver ? <p>Auction ended on:</p> : <p>Auction ends in:</p>}
