@@ -73,48 +73,50 @@ export default function GovernanceLeaderboard() {
 
   return (
     <div className="leaderboard mt-14">
-      <div className="flex flex-col md:flex-row items-center gap-2">
-        <div className="flex items-center flex-1 gap-3">
-          <h2 className="text-px32 font-londrina">Leaderboard</h2>
+      <div className="flex flex-col gap-2 md:flex-row md:items-center">
+        <div className="flex flex-1 items-center gap-3">
+          <h2 className="font-londrina text-[40px] leading-[48px] lg:text-[56px] lg:leading-[64px]">
+            Leaderboard
+          </h2>
           {isOutOfSync && (
             <SimplePopover>
-              <IconSpinner className="animate-spin h-6" />
+              <IconSpinner className="h-6 animate-spin" />
               <div>Leaderboard is syncing.</div>
             </SimplePopover>
           )}
         </div>
         {account == null ? (
-          <div className="flex flex-col xs:flex-row items-center gap-2">
-            <p className="font-500 text-px14 text-gray-3">Connect wallet to cast a vote</p>
+          <div className="flex flex-col gap-2 xs:flex-row">
+            <p className="text-px14 font-500 text-gray-3">Connect wallet to cast a vote</p>
             <Button className="default --sm" onClick={() => setConnectModalOpen(true)}>
               Connect wallet
             </Button>
           </div>
         ) : (
-          <p className="font-500 text-px14 text-gray-3">You can change your cast votes below</p>
+          <p className="text-px14 font-500 text-gray-3">You can change your cast votes below</p>
         )}
       </div>
       <div
-        className="lg:grid leading-[38px] mt-10 items-center"
+        className="mt-10 items-center leading-[38px] lg:grid"
         style={{ gridTemplateColumns: 'auto 100px 140px 160px' }}
       >
         <div className="flex">
-          <div className="flex h-12 items-center bg-gray-1 focus-within:outline-dashed focus-within:outline-[3px] rounded-px10 px-2 gap-2 w-full lg:w-10/12">
-            <IconMagnify className="w-5 h-5 flex-shrink-0" />
+          <div className="flex h-12 w-full items-center gap-2 rounded-px10 bg-gray-1 px-2 focus-within:outline-dashed focus-within:outline-[3px] lg:w-10/12">
+            <IconMagnify className="h-5 w-5 flex-shrink-0" />
             <input
               value={searchInputValue}
               onChange={handleInput}
-              className="outline-none font-500 text-px20 flex-1 bg-transparent"
+              className="flex-1 bg-transparent text-px20 font-500 outline-none"
               type="text"
               placeholder="Search by wallet or ENS"
             />
             {isLoadingENSName && (
-              <IconSpinner className="flex-shrink-0 h-5 text-gray-3 animate-spin" />
+              <IconSpinner className="h-5 flex-shrink-0 animate-spin text-gray-3" />
             )}
           </div>
         </div>
-        <h4 className="hidden lg:block text-right text-px18 text-gray-4 font-500">Nounlets</h4>
-        <div className="hidden lg:flex items-center justify-end text-px18 text-gray-4 font-500">
+        <h4 className="hidden text-right text-px18 font-500 text-gray-4 lg:block">Nounlets</h4>
+        <div className="hidden items-center justify-end text-px18 font-500 text-gray-4 lg:flex">
           <span className="mr-1">Votes</span>
           <SimplePopover>
             <IconQuestionCircle className="text-gray-3" />
@@ -128,11 +130,11 @@ export default function GovernanceLeaderboard() {
         {filteredLeaderboardListData.length === 0 ? (
           <>
             {filterByText.length === 0 ? (
-              <p className="font-500 text-px20 leading-px28 text-gray-4">
+              <p className="text-px20 font-500 leading-px28 text-gray-4">
                 No auctions finished yet
               </p>
             ) : (
-              <p className="font-500 text-px20 leading-px28 text-gray-4">Wallet not found :(</p>
+              <p className="text-px20 font-500 leading-px28 text-gray-4">Wallet not found :(</p>
             )}
           </>
         ) : (
@@ -145,7 +147,7 @@ export default function GovernanceLeaderboard() {
               <>
                 <Button
                   onClick={() => setIsVoteForDelegateModalShown(true)}
-                  className="border-2 border-gray-2 hover:border-secondary-blue h-12 sm:h-[74px] rounded-px16 text-secondary-blue w-full text-px20 font-700"
+                  className="h-12 w-full rounded-px16 border-2 border-gray-2 text-px20 font-700 text-secondary-blue hover:border-secondary-blue sm:h-[74px]"
                 >
                   Vote for a custom wallet
                 </Button>

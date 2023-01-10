@@ -20,7 +20,7 @@ const Home: NextPage<{ url: string }> = () => {
       <HomeNounletsOnAuction />
 
       <div className="bg-white pb-[64px] pt-[48px] lg:pb-[120px] lg:pt-[80px]">
-        <div className="space-y-16 px-4 lg:container lg:mx-auto">
+        <div className="space-y-16 px-4 md:px-12 lg:container lg:mx-auto lg:px-4">
           <HomePastNounletAuctions />
 
           <NextNounlets />

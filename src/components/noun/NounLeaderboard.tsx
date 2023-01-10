@@ -24,7 +24,7 @@ export default function NounLeaderboard(): JSX.Element {
           style={{ gridTemplateColumns: 'auto 100px 140px 160px' }}
         >
           <div className="flex items-center gap-3">
-            <h3 className="font-londrina text-px32">Leaderboard</h3>
+            <h3 className="font-londrina text-[24px] leading-[38px] lg:text-[32px]">Leaderboard</h3>
             {isOutOfSync && (
               <SimplePopover>
                 <IconSpinner className="h-6 animate-spin" />

@@ -18,15 +18,15 @@ export default function BuyoutHero() {
       {/*<pre>*/}
       {/*  {JSON.stringify(buyoutInfo || {}, null, 4)} -- {'' + isLoading}*/}
       {/*</pre>*/}
-      <div className="lg:container mx-auto px-4">
+      <div className="mx-auto px-4 lg:container">
         <div className="lg:grid lg:grid-cols-2">
-          <div className="flex flex-col justify-end lg:pr-4 lg:min-h-[544px]">
-            <div className="w-full aspect-square max-w-[512px] mx-auto">
+          <div className="flex flex-col justify-end lg:min-h-[544px] lg:pr-4">
+            <div className="mx-auto aspect-square w-full max-w-[512px]">
               <NounImage id={nounTokenId} />
             </div>
           </div>
 
-          <div className="px-4 py-12 lg:pb-0 lg:pt-4 md:p-12 lg:pl-6 lg:pr-0 -mx-4 lg:-mx-0 bg-white lg:bg-transparent space-y-3">
+          <div className="-mx-4 space-y-3 bg-gray-1 px-4 py-12 md:p-12 lg:-mx-0 lg:bg-transparent lg:pb-0 lg:pt-4 lg:pl-6 lg:pr-0">
             {isLoading ? (
               <>
                 <div className="buyout-inactive space-y-4">

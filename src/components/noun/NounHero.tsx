@@ -80,7 +80,7 @@ export default function NounHero(): JSX.Element {
             </div>
           </div>
 
-          <div className="-mx-4 space-y-3 bg-white px-4 py-12 md:p-12 lg:-mx-0 lg:bg-transparent lg:pb-0 lg:pt-4 lg:pl-6 lg:pr-0">
+          <div className="-mx-4 space-y-3 bg-gray-1 px-4 py-12 md:p-12 lg:-mx-0 lg:bg-transparent lg:pb-0 lg:pt-4 lg:pl-6 lg:pr-0">
             {/*<pre>{JSON.stringify(auctionData, null, 4)}</pre>*/}
             <div className="navigation flex items-center space-x-1">
               <Button

@@ -16,7 +16,7 @@ export default function NounTabGeneral() {
       {isLive && hasAuctionSettled && !wereAllNounletsAuctioned && <NounVotesFromNounlet />}
       {isLive && isGovernanceEnabled && <NounLeaderboard />}
       {isLive && (
-        <div className="space-y-12 px-4 lg:container lg:mx-auto">
+        <div className="space-y-12 px-4 md:px-12 lg:container lg:mx-auto lg:px-4">
           <WTFAreNounlets showCurrentAuction={wereAllNounletsAuctioned} />
         </div>
       )}

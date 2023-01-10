@@ -10,7 +10,9 @@ export default function NounTabVote() {
   return (
     <div className="page-governance mx-auto lg:container">
       <div className="px-4 md:px-12 lg:px-4">
-        <h1 className="font-londrina text-px32 leading-[38px]">Vote for a delegate</h1>
+        <h1 className="font-londrina text-[40px] leading-[48px] lg:text-[56px] lg:leading-[64px]">
+          Vote for a delegate
+        </h1>
 
         {!isLive || latestNounletTokenId === '1' ? (
           <>

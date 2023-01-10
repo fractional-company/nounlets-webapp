@@ -315,7 +315,7 @@ function PageContent(props: { isPageReady: boolean }) {
 
         {isReady && (
           <div className="flex flex-col">
-            <div className="px-4 lg:container lg:mx-auto">
+            <div className="px-4 md:px-12 lg:container lg:mx-auto lg:px-4">
               <div className="flex gap-4 lg:gap-12">
                 <div
                   id="general-tab"

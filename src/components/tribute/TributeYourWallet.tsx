@@ -67,7 +67,9 @@ function TributeYourWallet() {
   if (account == null) {
     return (
       <div className="flex flex-col items-center space-y-8 overflow-hidden rounded-[20px] bg-gray-1 p-6">
-        <h1 className="text-center font-londrina text-px32 font-900">Please connect your wallet</h1>
+        <h1 className="text-center font-londrina text-px32 font-900 lg:text-[48px] lg:leading-[58px]">
+          Please connect your wallet
+        </h1>
         <Button className="primary" onClick={() => setConnectModalOpen(true)}>
           Connect wallet
         </Button>
@@ -77,7 +79,9 @@ function TributeYourWallet() {
 
   return (
     <div className="flex flex-col items-center space-y-8 overflow-hidden rounded-[20px] bg-gray-1 p-6">
-      <h1 className="text-center font-londrina text-px32 font-900">Nouns in your wallet</h1>
+      <h1 className="text-center font-londrina text-px32 font-900 lg:text-[48px] lg:leading-[58px]">
+        Nouns in your wallet
+      </h1>
       <div>
         <SimpleAddress address={account} avatarSize={24} className="space-x-2 font-700" />
       </div>
@@ -96,7 +100,9 @@ function TributeYourWallet() {
       )}
 
       {walletNounsList && walletNounsList.length === 0 && (
-        <h1 className="text-center font-londrina text-px22 font-900">You don`t own any Nouns :(</h1>
+        <h1 className="text-center font-londrina text-px22 font-900 lg:text-[48px] lg:leading-[58px]">
+          You don`t own any Nouns :(
+        </h1>
       )}
 
       {walletNounsList && (

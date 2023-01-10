@@ -6,7 +6,9 @@ export default function TributeFAQ() {
 
   return (
     <div className="space-y-12">
-      <h1 className="text-center font-londrina text-[48px] leading-[58px]">FAQs</h1>
+      <h1 className="text-center font-londrina text-[48px] leading-[58px] lg:text-[64px] lg:leading-[76px]">
+        FAQs
+      </h1>
       <div className="mx-auto text-px22 font-500 leading-px28 text-gray-4 lg:container">
         <div className="">
           <div className="flex flex-col space-y-12">
