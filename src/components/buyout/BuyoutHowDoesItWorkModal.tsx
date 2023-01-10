@@ -1,3 +1,5 @@
+import { NEXT_PUBLIC_MAX_NOUNLETS } from 'config'
+
 type ComponentProps = {}
 
 export default function BuyoutHowDoesItWorkModal(props: ComponentProps): JSX.Element {
@@ -9,9 +11,9 @@ export default function BuyoutHowDoesItWorkModal(props: ComponentProps): JSX.Ele
           <p className="text-px42 leading-[40px]">How does it work?</p>
         </div>
         <div className="space-y-4">
-          <div className="space-y-4 text-gray-4 text-px14 font-500">
-            <div className="p-4 bg-gray-2 rounded-px16">
-              <p className="font-londrina text-px24 text-center">Submitting an offer</p>
+          <div className="space-y-4 text-px14 font-500 text-gray-4">
+            <div className="rounded-px16 bg-gray-2 p-4">
+              <p className="text-center font-londrina text-px24">Submitting an offer</p>
             </div>
             <p>
               You must connect a wallet holding at least 1 Nounlet to make an offer for the full
@@ -22,14 +24,14 @@ export default function BuyoutHowDoesItWorkModal(props: ComponentProps): JSX.Ele
             <p>
               Once you connect your wallet, enter your offer amount (in ETH) and proceed to the next
               step to submit 1 or more Nounlets with your offer. Before submitting, view the
-              calculated value (Offer Value/100) for your Nounlets. This is an important factor for
-              the review period.
+              calculated value (Offer Value/{NEXT_PUBLIC_MAX_NOUNLETS}) for your Nounlets. This is
+              an important factor for the review period.
             </p>
           </div>
 
-          <div className="space-y-4 text-gray-4 text-px14 font-500">
-            <div className="p-4 bg-gray-2 rounded-px16">
-              <p className="font-londrina text-px24 text-center">7 day review period</p>
+          <div className="space-y-4 text-px14 font-500 text-gray-4">
+            <div className="rounded-px16 bg-gray-2 p-4">
+              <p className="text-center font-londrina text-px24">7 day review period</p>
             </div>
             <p>
               Offers are valid for 7 days from the date and time of submission. During this time,
@@ -40,15 +42,15 @@ export default function BuyoutHowDoesItWorkModal(props: ComponentProps): JSX.Ele
             </p>
           </div>
 
-          <div className="space-y-4 text-gray-4 text-px14 font-500">
-            <div className="p-4 bg-gray-2 rounded-px16">
-              <p className="font-londrina text-px24 text-center">
+          <div className="space-y-4 text-px14 font-500 text-gray-4">
+            <div className="rounded-px16 bg-gray-2 p-4">
+              <p className="text-center font-londrina text-px24">
                 Accepting and rejecting the offer
               </p>
             </div>
             <p>
               To reject an offer, people must buy each Nounlet submitted in the offer at the value
-              proposed (Offer Value/100) until none remain in the contract.
+              proposed (Offer Value/{NEXT_PUBLIC_MAX_NOUNLETS}) until none remain in the contract.
             </p>
             <p>
               If all Nounlets are purchased, the offer is immediately rejected and the offer amount

@@ -9,6 +9,7 @@ export default function SimpleAccordion(props: {
   isOpen: boolean
   onOpen?: () => void
   onClose?: () => void
+  id?: string
 }): JSX.Element {
   const [isOpen, setIsOpen] = useState(false)
 
@@ -56,7 +57,7 @@ export default function SimpleAccordion(props: {
   }
 
   return (
-    <div className="simple-accordion">
+    <div className="simple-accordion" id={props.id}>
       <Button
         onClick={handleOnClick}
         className="min-h-12 flex w-full items-center justify-between space-x-2 text-left font-londrina text-px32 leading-px32 text-black focus:text-primary lg:text-px42 lg:leading-px42"

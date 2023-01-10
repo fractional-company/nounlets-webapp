@@ -1,4 +1,4 @@
-import { NEXT_PUBLIC_BID_DECIMALS } from 'config'
+import { NEXT_PUBLIC_BID_DECIMALS, NEXT_PUBLIC_MAX_NOUNLETS } from 'config'
 import dayjs from 'dayjs'
 import { BigNumber, FixedNumber } from 'ethers'
 import { formatEther } from 'ethers/lib/utils'
@@ -38,7 +38,9 @@ export default function NounletsOnAuctionCard(props: { vault: VaultData }) {
           </p>
           <div className="space-y-4 rounded-2xl bg-divider p-4" key={nounletsCount}>
             <div className="space-y-2 text-px14 font-500 leading-[20px]">
-              <p className="text-px18 font-700 leading-px24">Nounlet {nounletsCount}/100</p>
+              <p className="text-px18 font-700 leading-px24">
+                Nounlet {nounletsCount}/{NEXT_PUBLIC_MAX_NOUNLETS}
+              </p>
 
               {/* <CountdownTimer auctionEnd={endTime} /> */}
               <CountdownWithBar
@@ -72,7 +74,9 @@ NounletsOnAuctionCard.Skeleton = function NounletsOnAuctionCardSkeleton() {
         <p className="font-londrina text-px32 font-900 leading-px36 text-gray-0.5">NOUN ???</p>
         <div className="space-y-4 rounded-2xl bg-divider p-4">
           <div className="h-24 space-y-2 text-px14 font-500 leading-[20px]">
-            <p className="text-px18 font-700 leading-px24">Nounlet ???/100</p>
+            <p className="text-px18 font-700 leading-px24">
+              Nounlet ???/{NEXT_PUBLIC_MAX_NOUNLETS}
+            </p>
           </div>
         </div>
         <div className="h-12 w-full rounded-px10 bg-divider"></div>

@@ -21,9 +21,9 @@ export default function NounletsPastAuctionCard(props: { vault: VaultData }) {
     return <BuyoutIdle nounId={noun.id} auctionEnded={lastAuctionEnded} />
   }
 
-  if (buyoutInfo.state === 2) {
-    return <BuyoutFinished nounId={noun.id} />
-  }
+  // if (buyoutInfo.state === 2) {
+  //   return <BuyoutFinished nounId={noun.id} />
+  // }
 
   return <BuyoutInProgress nounId={noun.id} buyoutInfo={buyoutInfo} />
 }
@@ -73,30 +73,34 @@ function BuyoutInProgress(props: {
     Math.floor(BigNumber.from(buyoutInfo.endTime).toNumber()) - dayjs().unix()
   )
   const isOver = timeLeft === 0
+  const isInProgress = buyoutInfo.state === 1
 
   return (
     <NounCardWrapper nounId={nounId}>
       <div className="flex items-center justify-between">
         <p className="font-londrina text-px32 font-900 leading-px36 text-black">NOUN {nounId}</p>
-        <p className="text-px14 font-500 leading-px20">🔥 Buyout</p>
+        <p className="text-px14 font-500 leading-px20">
+          {isInProgress ? '🔥 Buyout' : '🎉 Offer accepted'}
+        </p>
       </div>
       <div className="space-y-4 rounded-2xl bg-black p-4 text-white">
         <div className="space-y-2 text-px14 font-500 leading-[20px]">
-          {isOver ? (
-            <div className="flex items-center space-x-1">
-              <p>Offer accepted! 🎉🎉🎉</p>
-            </div>
-          ) : (
-            <div className="flex items-center space-x-1">
-              <p>Offer accepted in:</p>
-              <CountdownTimer
-                className="!text-px14 !font-700 !leading-[20px]"
-                auctionEnd={buyoutInfo.endTime}
-              />
-            </div>
-          )}
+          <div className="flex items-center space-x-1">
+            <p>Accepted {isOver ? 'on' : 'in'}:</p>
+            <CountdownTimer
+              className="!text-px14 !font-700 !leading-[20px]"
+              auctionEnd={buyoutInfo.endTime}
+              showEndTime={isOver}
+            />
+          </div>
         </div>
-        <Button className="primary-danger w-full !text-white">Review offer</Button>
+        {isInProgress ? (
+          <Button className="primary-danger w-full !text-white">
+            {isOver ? 'Settle offer' : 'Review offer'}
+          </Button>
+        ) : (
+          <Button className="primary w-full">View & Claim</Button>
+        )}
       </div>
     </NounCardWrapper>
   )

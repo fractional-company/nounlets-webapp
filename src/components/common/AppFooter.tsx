@@ -23,7 +23,7 @@ export default function AppFooter(): JSX.Element {
   }
 
   return (
-    <div className="bg-gray-1 py-12 px-4 lg:py-24">
+    <div className="bg-gray-1 py-12 lg:py-24">
       <div className="space-y-16 px-4 lg:container lg:mx-auto">
         <div className="flex flex-col gap-8 lg:flex-row lg:justify-between">
           <div>

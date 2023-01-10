@@ -18,9 +18,9 @@ export default function WTFAreNounlets(props: { showCurrentAuction: boolean }) {
         </h2>
         <p className="text-px16 font-500 leading-px22 text-gray-4 lg:text-px22 lg:leading-px28">
           Nounlets are an experiment to allow for collective ownership over an individual Noun. Each
-          Nounlet represents 1% of the vaulted Noun and has a vote in delegating the Noun`s
-          governance rights. The selected delegate is the official representative to the NounsDAO on
-          behalf of the underlying Noun.
+          Nounlet represents 1% of the vaulted Noun and has a vote in delegating the Noun’s
+          governance rights. The chosen delegate can vote in governance and submit governance
+          proposals (if they have 2 Nouns delegated to them).
           <br />
           <br />
           Learn more below, or by visiting and reviewing the{' '}
@@ -32,7 +32,7 @@ export default function WTFAreNounlets(props: { showCurrentAuction: boolean }) {
           >
             Nouns DAO homepage.
           </a>
-          <br />
+          {/* <br />
           <br />
           In addition to participating in governance, all Nounlet owners are invited to{' '}
           <a
@@ -42,7 +42,7 @@ export default function WTFAreNounlets(props: { showCurrentAuction: boolean }) {
             rel="noreferrer"
           >
             join the Nounlets community in our Discord.
-          </a>
+          </a> */}
         </p>
       </div>
 
@@ -92,40 +92,64 @@ export default function WTFAreNounlets(props: { showCurrentAuction: boolean }) {
               </a>
             </li>
             <li>
-              One Nounlet is trustlessly auctioned every 4 hours until all 100 Nounlets have been
-              sold.
+              One Nounlet is trustlessly auctioned every 25 minutes (subject to change) until all
+              100 Nounlets have been sold.
             </li>
             <li>
               98% of auction proceeds are trustlessly sent to the original Noun owner. 2% of auction
               proceeds are sent to Tessera.
             </li>
-            <li>Settlement of one auction kicks off the next.</li>
+            <li>Settlement of one Nounlet auction kicks off the next.</li>
             <li>The elected delegate of the Noun is considered a member of NounsDAO.</li>
             <li>One Nounlet is equal to one vote for a delegate.</li>
             <li>Artwork is generative and stored directly on-chain (not IPFS).</li>
             <li>
-              Nounlets will all have the same head trait as the Vaulted Noun, but remaining
+              Nounlets will all have the same head trait as the Vaulted Noun, but the remaining
               attributes will vary.
             </li>
           </ul>
         </SimpleAccordion>
+
         <SimpleAccordion
-          title="4 Hour Auctions"
+          title="Tributing"
           isOpen={openAccordionIndex === 1}
           onOpen={() => setOpenAccordionIndex(1)}
+          onClose={() => setOpenAccordionIndex(-1)}
+          id="faq-tributing"
+        >
+          <div className="space-y-4">
+            <p>
+              Noun owners who wanted to participate in Nounlets can tribute their Noun to be
+              auctioned. By tributing your Noun, you agree to have your Noun auctioned at any time.
+              You will need to sign a transaction allowing the Nounlets smart contracts to transfer
+              the Noun from your wallet and begin an auction. If you change your mind, you can
+              withdraw your tributed Noun as long as the auction has not started.
+            </p>
+            <p>
+              The Tessera team will work with the community to decide which Noun comes next and when
+              the Nounlets auction will start. Tessera does not guarantee that all tributed Nouns
+              will be auctioned. There is no set cadence that auctions will occur.
+            </p>
+          </div>
+        </SimpleAccordion>
+
+        <SimpleAccordion
+          title="25 Minute Auctions"
+          isOpen={openAccordionIndex === 2}
+          onOpen={() => setOpenAccordionIndex(2)}
           onClose={() => setOpenAccordionIndex(-1)}
         >
           <div className="space-y-4">
             <p>
               The Nounlets Auction Contract will act as a self-sufficient Noun generation and
-              distribution mechanism, auctioning one Nounlet every 4 hours until all 100 Nounlets
+              distribution mechanism, auctioning one Nounlet every 25 minutes until all 100 Nounlets
               are sold. 98% of auction proceeds are trustlessly sent to the original Noun owner. 2%
               of auction proceeds are sent to Tessera.
             </p>
             <p>
               Each time an auction is settled, the settlement transaction will cause a new Nounlet
-              to be minted and a new 4 hour auction to begin. Bids within the last 10 minutes reset
-              the auction timer to 10 minutes.
+              to be minted and a new 25 minute auction to begin. Bids within the last 10 minutes
+              reset the auction timer to 10 minutes.
             </p>
             <p>
               While settlement is most heavily incentivized for the winning bidder, it can be
@@ -136,41 +160,41 @@ export default function WTFAreNounlets(props: { showCurrentAuction: boolean }) {
         </SimpleAccordion>
         <SimpleAccordion
           title="Delegating"
-          isOpen={openAccordionIndex === 2}
-          onOpen={() => setOpenAccordionIndex(2)}
-          onClose={() => setOpenAccordionIndex(-1)}
-        >
-          <div className="space-y-4">
-            <p>
-              All Nounlet owners will be able to vote on a delegate. The delegate will be elected
-              on-chain in the nouns contract. The selected delegate is the official representative
-              to the NounsDAO on behalf of the underlying Noun. Each Nounlet has 1 vote on the
-              delegate. When a Nounlet is transferred the delegate will be automatically assigned to
-              the receivers wallet address.
-            </p>
-          </div>
-        </SimpleAccordion>
-        <SimpleAccordion
-          title="Optimistic Buyouts"
           isOpen={openAccordionIndex === 3}
           onOpen={() => setOpenAccordionIndex(3)}
           onClose={() => setOpenAccordionIndex(-1)}
         >
           <div className="space-y-4">
             <p>
+              All Nounlet owners will be able to vote on a delegate. The delegate will be elected
+              on-chain in the nouns contract. The active delegate will be able to join the official
+              nouns-private discord channel, vote in governance and submit governance proposals.
+              Each Nounlet has 1 vote on the delegate.
+            </p>
+          </div>
+        </SimpleAccordion>
+        <SimpleAccordion
+          title="Optimistic Buyouts"
+          isOpen={openAccordionIndex === 4}
+          onOpen={() => setOpenAccordionIndex(4)}
+          onClose={() => setOpenAccordionIndex(-1)}
+          id="faq-optimistic-buyout"
+        >
+          <div className="space-y-4">
+            <p>
               Reconstitution is only possible after all 100 Nounlets have been sold. The Noun is
               able to be purchased and reconstituted (meaning one person buys the entire Noun from
-              the vault) using what we call an optimistic bid.
+              the vault) using what we call an optimistic buyout.
             </p>
             <p>
-              Someone who wants to buy the vaulted Noun makes a bid to buy the Noun out of the
+              Someone who wants to buy the vaulted Noun makes an offer to buy the Noun out of the
               vault, which the Nounlet holders implicitly accept if the rejection criteria of
-              purchasing all the bidder’s Nounlets aren’t met.
+              purchasing all the bidder’s Nounlets are not met.
             </p>
             <p>
               In this mechanism, the bidder must name a price and put up at least 1 of their
               Nounlets as collateral. All other participants (whether they currently hold a Nounlet
-              or not) are able to reject this bid by purchasing all of the Nounlets used as
+              or not) are able to reject this offer by purchasing all of the Nounlets used as
               collateral at the fixed price proposed by the buyer.
             </p>
             <p>
@@ -180,7 +204,7 @@ export default function WTFAreNounlets(props: { showCurrentAuction: boolean }) {
                 the buyout ends and is rejected.
               </span>
             </p>
-            <p>
+            {/* <p>
               For more information visit the{' '}
               <a
                 target="_blank"
@@ -190,13 +214,13 @@ export default function WTFAreNounlets(props: { showCurrentAuction: boolean }) {
               >
                 FAQ
               </a>
-            </p>
+            </p> */}
           </div>
         </SimpleAccordion>
         <SimpleAccordion
           title="Nounlet Traits"
-          isOpen={openAccordionIndex === 4}
-          onOpen={() => setOpenAccordionIndex(4)}
+          isOpen={openAccordionIndex === 5}
+          onOpen={() => setOpenAccordionIndex(5)}
           onClose={() => setOpenAccordionIndex(-1)}
         >
           <div className="space-y-4">
@@ -227,8 +251,8 @@ export default function WTFAreNounlets(props: { showCurrentAuction: boolean }) {
         </SimpleAccordion>
         <SimpleAccordion
           title="On-Chain Artwork"
-          isOpen={openAccordionIndex === 5}
-          onOpen={() => setOpenAccordionIndex(5)}
+          isOpen={openAccordionIndex === 6}
+          onOpen={() => setOpenAccordionIndex(6)}
           onClose={() => setOpenAccordionIndex(-1)}
         >
           <div className="space-y-4">
@@ -247,8 +271,8 @@ export default function WTFAreNounlets(props: { showCurrentAuction: boolean }) {
         </SimpleAccordion>
         <SimpleAccordion
           title="Nounlet Seeder Contract"
-          isOpen={openAccordionIndex === 6}
-          onOpen={() => setOpenAccordionIndex(6)}
+          isOpen={openAccordionIndex === 7}
+          onOpen={() => setOpenAccordionIndex(7)}
           onClose={() => setOpenAccordionIndex(-1)}
         >
           <div className="space-y-4">

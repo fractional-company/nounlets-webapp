@@ -34,7 +34,8 @@ const app: Record<number, AppConfig> = {
 }
 
 const config = {
-  app: app[CHAIN_ID]
+  app: app[CHAIN_ID],
+  isClientNavigation: false
 }
 
 export const OPENSEA_API_URL = {

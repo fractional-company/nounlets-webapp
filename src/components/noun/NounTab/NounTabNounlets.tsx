@@ -43,12 +43,12 @@ export default function NounTabNounlets() {
 
   // TODO change color
   return (
-    <div className={'space-y-16'}>
+    <div className="space-y-6 lg:space-y-16">
       <div className="nounlet-hero">
-        <div className="lg:container mx-auto px-4">
+        <div className="mx-auto px-4 lg:container">
           <div className="lg:grid lg:grid-cols-2">
-            <div className="flex flex-col justify-end lg:pr-4 lg:min-h-[544px] lg:order-2">
-              <div className="w-full aspect-square max-w-[512px] mx-auto">
+            <div className="flex flex-col justify-end lg:order-2 lg:min-h-[544px] lg:pr-4">
+              <div className="mx-auto aspect-square w-full max-w-[512px]">
                 <NounletImage
                   noundId={nounTokenId}
                   nounletTokenAddress={nounletTokenAddress}
@@ -57,13 +57,13 @@ export default function NounTabNounlets() {
               </div>
             </div>
 
-            <div className="px-4 py-12 lg:pb-0 lg:pt-4 md:p-12 lg:pl-6 lg:pr-10 -mx-4 lg:-mx-0 bg-white lg:bg-transparent space-y-3">
+            <div className="-mx-4 space-y-3 bg-white px-4 py-12 md:p-12 lg:-mx-0 lg:bg-transparent lg:pb-0 lg:pt-4 lg:pl-6 lg:pr-10">
               {/*<pre>{JSON.stringify(auctionData, null, 4)}</pre>*/}
               <div className="navigation flex items-center space-x-1">
                 <Button
                   disabled={isButtonPreviousDisabled}
                   onClick={() => moveToNounletDirection(-1)}
-                  className="flex items-center justify-center rounded-full w-10 h-10 cursor-pointer bg-gray-2 lg:bg-white hover:bg-gray-2"
+                  className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-gray-2 hover:bg-gray-2 lg:bg-white"
                 >
                   <IconArrow />
                 </Button>
@@ -71,14 +71,14 @@ export default function NounTabNounlets() {
                 <Button
                   onClick={() => moveToNounletDirection(+1)}
                   disabled={isButtonNextDisabled}
-                  className="flex items-center justify-center rounded-full w-10 h-10 cursor-pointer bg-gray-2 lg:bg-white hover:bg-gray-2"
+                  className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-gray-2 hover:bg-gray-2 lg:bg-white"
                 >
                   <IconArrow className="rotate-180" />
                 </Button>
 
-                <p className="text-px18 font-700 pl-2">
+                <p className="pl-2 text-px18 font-700">
                   {nounletNumberString}
-                  <span className="text-gray-4">/100</span>
+                  <span className="text-gray-4">/{NEXT_PUBLIC_MAX_NOUNLETS}</span>
                 </p>
               </div>
 

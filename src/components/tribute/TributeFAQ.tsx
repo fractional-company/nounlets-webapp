@@ -8,7 +8,7 @@ export default function TributeFAQ() {
     <div className="space-y-12">
       <h1 className="text-center font-londrina text-[48px] leading-[58px]">FAQs</h1>
       <div className="mx-auto text-px22 font-500 leading-px28 text-gray-4 lg:container">
-        <div className="px-4 md:px-12 lg:px-4">
+        <div className="">
           <div className="flex flex-col space-y-12">
             <SimpleAccordion
               title="Summary"

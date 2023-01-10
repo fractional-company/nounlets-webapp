@@ -1,4 +1,5 @@
 import classNames from 'classnames'
+import config from 'config'
 import { GetServerSideProps, NextPage } from 'next'
 import { NextRouter, useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
@@ -17,6 +18,7 @@ import { useNounBuyoutData } from 'src/hooks/useNounBuyoutData'
 import { useNounData } from 'src/hooks/useNounData'
 import { useNounletData } from 'src/hooks/useNounletData'
 import { ONLY_NUMBERS_REGEX } from 'src/lib/utils/nextBidCalculator'
+import scrollToElement from 'src/lib/utils/scrollToElement'
 import { useAppStore } from 'src/store/application.store'
 import { useBuyoutStore } from 'src/store/buyout/buyout.store'
 import { useBuyoutHowDoesItWorkModalStore } from 'src/store/buyout/buyoutHowDoesItWorkModal.store'
@@ -32,6 +34,8 @@ type NounHomeProps = {
   vaultAddress: string
 }
 
+const localCache = new Map()
+
 export const getServerSideProps: GetServerSideProps<NounHomeProps> = async (context) => {
   const queryPath = context.query.path as string[]
   const [nounId, subdirectory, nounletId] = queryPath
@@ -46,7 +50,19 @@ export const getServerSideProps: GetServerSideProps<NounHomeProps> = async (cont
     }
   }
 
+  if (localCache.has(nounId)) {
+    console.log('cache hit  :', nounId)
+    return {
+      props: {
+        url: 'https://' + context?.req?.headers?.host,
+        nounId,
+        vaultAddress: localCache.get(nounId)
+      }
+    }
+  }
+
   const data = await getVaultData(nounId)
+  console.log('cache miss :', nounId)
   if (!data || !data.vaultAddress) {
     return {
       redirect: {
@@ -55,6 +71,8 @@ export const getServerSideProps: GetServerSideProps<NounHomeProps> = async (cont
       }
     }
   }
+
+  localCache.set(nounId, data.vaultAddress)
 
   return {
     props: {
@@ -239,6 +257,12 @@ function PageContent(props: { isPageReady: boolean }) {
   useEffect(() => {
     if (wereAllNounletsAuctioned) {
       if (paramNounletId != null) {
+        // console.log(config.isClientNavigation)
+        // if (!config.isClientNavigation) {
+        //   setTimeout(() => {
+        //     scrollToElement('general-tab')
+        //   }, 250)
+        // }
         setTabIndex(2)
       }
     }
@@ -286,16 +310,17 @@ function PageContent(props: { isPageReady: boolean }) {
         </>
       </OnMounted>
 
-      <div className="min-h-screen space-y-16 bg-white">
+      <div className="min-h-screen space-y-6 bg-white lg:space-y-16">
         {isReady && wereAllNounletsAuctioned ? <BuyoutHero /> : <NounHero />}
 
         {isReady && (
           <div className="flex flex-col">
             <div className="px-4 lg:container lg:mx-auto">
-              <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:gap-12">
+              <div className="flex gap-4 lg:gap-12">
                 <div
+                  id="general-tab"
                   className={classNames(
-                    'cursor-pointer font-londrina text-[56px]',
+                    'cursor-pointer font-londrina text-[32px] lg:text-[56px]',
                     selectedTabIndex === 0 ? 'text-black' : 'text-gray-3'
                   )}
                   onClick={() => handleChangeTabIndex(0)}
@@ -305,7 +330,7 @@ function PageContent(props: { isPageReady: boolean }) {
                 {isGovernanceEnabled && (
                   <div
                     className={classNames(
-                      'cursor-pointer font-londrina text-[56px]',
+                      'cursor-pointer font-londrina text-[32px] lg:text-[56px]',
                       selectedTabIndex === 1 ? 'text-black' : 'text-gray-3'
                     )}
                     onClick={() => handleChangeTabIndex(1)}
@@ -316,7 +341,7 @@ function PageContent(props: { isPageReady: boolean }) {
                 {wereAllNounletsAuctioned && (
                   <div
                     className={classNames(
-                      'cursor-pointer font-londrina text-[56px]',
+                      'cursor-pointer font-londrina text-[32px] lg:text-[56px]',
                       selectedTabIndex === 2 ? 'text-black' : 'text-gray-3'
                     )}
                     onClick={() => handleChangeTabIndex(2)}
@@ -327,7 +352,7 @@ function PageContent(props: { isPageReady: boolean }) {
               </div>
             </div>
 
-            <div className="mt-12 pb-16">
+            <div className="mt-6 pb-16 lg:mt-12">
               {selectedTabIndex === 0 && <NounTabGeneral />}
               {selectedTabIndex === 1 && isGovernanceEnabled && <NounTabVote />}
               {selectedTabIndex === 2 && wereAllNounletsAuctioned && <NounTabNounlets />}

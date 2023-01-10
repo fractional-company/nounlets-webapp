@@ -8,7 +8,7 @@ import '../styles/globals.css'
 
 import { SWRConfig } from 'swr'
 
-import { CHAIN_ID } from 'config'
+import config, { CHAIN_ID } from 'config'
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -42,6 +42,10 @@ function MyApp({ Component, pageProps }: AppProps) {
       if (router.asPath.includes('#')) {
         router.replace(router.asPath.split('#')[0], undefined, { shallow: true })
       }
+    }
+
+    return () => {
+      config.isClientNavigation = true
     }
   }, [router])
 

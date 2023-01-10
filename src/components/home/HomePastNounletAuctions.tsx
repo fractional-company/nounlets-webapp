@@ -62,7 +62,10 @@ export default function HomePastNounletAuctions() {
               Someone submitted an offer to buyout a Noun. Anyone can reject the offer by purchasing
               the Nounlets in their proposal. If any Nounlets remain after 7 days the offer will be
               automatically accepted.{' '}
-              <span className="cursor-pointer underline" onClick={() => scrollToElement('faq')}>
+              <span
+                className="cursor-pointer underline"
+                onClick={() => scrollToElement('faq-optimistic-buyout')}
+              >
                 Read More
               </span>
             </p>
