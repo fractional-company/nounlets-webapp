@@ -12,11 +12,11 @@ import SimpleAddress from '../common/simple/SimpleAddress'
 
 // TODO ask Lilly for more
 const trubitedMemes = [
+  'Covertly submitted by',
   'Gracefully added by',
-  'Sneakily added by',
-  'Promoted by',
-  'Something something by',
-  '`Lilly come up with more plx` by'
+  'Thoughtfully contributed by',
+  'Sneakily sent by',
+  'Awesomely tributed by'
 ]
 
 export default function TributedNounCard(props: {
@@ -40,7 +40,6 @@ export default function TributedNounCard(props: {
   //   toastSuccess('UN-Tributed!', "Bam, it's UN-tributed!")
   // }, [noun.id, removeTributedNoun])
 
-  // TODO test if this works
   // This should update the loading indicator when the tributed list updates
   // so that we dont have a race condition between the BC and Subgraph
   useEffect(() => {

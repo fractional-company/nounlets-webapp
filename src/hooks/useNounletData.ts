@@ -37,8 +37,6 @@ export async function nounletDataFetcher(
   return { auction: response, fetchedAt: Date.now() }
 }
 
-// TODO implement refresh interval
-
 export function useNounletData(callback?: (data: any) => void) {
   const { cache, mutate: globalMutate } = useSWRConfig()
   const { setAuctionsCache } = useLocalStorage()

@@ -41,7 +41,6 @@ export default function NounTabNounlets() {
       .then()
   }
 
-  // TODO change color
   return (
     <div className="space-y-6 lg:space-y-16">
       <div className="nounlet-hero">

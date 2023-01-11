@@ -65,7 +65,6 @@ export default function NounHero(): JSX.Element {
       .then()
   }
 
-  // TODO change color
   return (
     <div className="home-hero" style={{ background: currentBackground }}>
       <div className="mx-auto px-4 lg:container">

@@ -22,8 +22,6 @@ export default function SimpleAddress(props: ComponentProps): JSX.Element {
   const { avatarSize = 0 } = props
   const address = props.address || ethers.constants.AddressZero
   const shortenedAddres = shortenAddress(address).toLowerCase()
-  // TODO uncomment this and optimize
-  // const { ens } = useLookupAddress(address) // null // useReverseENSLookUp(address, false)
   const ens = useReverseENSLookUp(address, false)
 
   // TODO if the address owns an nounlet, use it as avatar

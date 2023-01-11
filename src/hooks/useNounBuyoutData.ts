@@ -22,8 +22,6 @@ export async function nounBuyoutDataFetcher(
   return { buyout: response, fetchedAt: Date.now() }
 }
 
-// TODO implement refresh interval
-
 export function useNounBuyoutData(callback?: (data: any) => void) {
   const { cache, mutate: globalMutate } = useSWRConfig()
   const sdk = useSdk()

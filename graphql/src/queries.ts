@@ -64,8 +64,6 @@ export const getVaultData = async (vaultAddressOrNounId: string) => {
   }
 
   const wereAllNounletsAuctioned = vault.noun.nounlets.every((nounlet) => nounlet.auction.settled)
-
-  // TODO remove when BE fixes - please write down what was wrong, I forget easily
   vault.noun.nounlets = vault.noun.nounlets.filter((nounlet) => {
     return nounlet.id.split('-')[0].toLowerCase() === vault!.token.id.toLowerCase()
   })
@@ -196,7 +194,7 @@ export const getAllNounlets = async (vaultAddress: string, nounletAuctionAddress
   if (data?.vault?.noun == null) throw new Error('Noun not found')
 
   // Remove nounlet auction address
-  const nounlets = data.vault.noun.nounlets // TODO remove when BE fixes
+  const nounlets = data.vault.noun.nounlets
     .filter((nounlet) => {
       return nounlet.id.split('-')[0].toLowerCase() === data.vault!.token.id.toLowerCase()
     })
@@ -300,7 +298,7 @@ const axiosConfig: any = {
   timeout: 5000
 }
 
-// TODO add leaky bucket
+// TODO add leaky bucket maybe?
 export const getNFTBalance = async (
   sdk: NounletsSDK,
   walletAddress: string,

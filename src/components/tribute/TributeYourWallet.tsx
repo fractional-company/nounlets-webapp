@@ -16,19 +16,6 @@ import useSWR from 'swr'
 import SimpleAddress from '../common/simple/SimpleAddress'
 import TributeOpenseaCard from './TributeOpenseaCard'
 
-/*
-
-
-TODOS:
-- Add skeletons when loading
-- Add "vault noun" functionality
-- Wire all the tx to txWithErrorHandling
-- Add spinners to buttons
-- Add pagination to opensea data
-- Add fake pagination to tributed Nouns
-
-*/
-
 function TributeYourWallet() {
   const { account } = useEthers()
   const { setConnectModalOpen } = useAppStore()
