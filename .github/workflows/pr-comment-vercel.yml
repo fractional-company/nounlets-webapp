@@ -27,9 +27,9 @@ jobs:
                 "filter": {
                   "and": [
                   {
-                      "property": "Github Branch",
+                      "property": "PR",
                       "formula": {
-                          "string": {"starts_with": "${{ github.head_ref }}"}
+                          "string": {"equals": "${{ github.event.repository.html_url }}/pull/${{ github.event.issue.number }}"}
                       }
                   }
                 ]
