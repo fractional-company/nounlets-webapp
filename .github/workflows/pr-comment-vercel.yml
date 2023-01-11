@@ -28,7 +28,7 @@ jobs:
                 "filter": {
                   "and": [
                   {
-                      "property": "test-formula",
+                      "property": "Github Branch",
                       "formula": {
                           "string": {"starts_with": "${{ github.head_ref }}"}
                       }
@@ -37,7 +37,7 @@ jobs:
                 },
                 "sorts": [
                   {
-                    "property": "Due",
+                    "property": "Target Date",
                     "direction": "ascending"
                   }
                 ]
@@ -48,11 +48,6 @@ jobs:
                 --header 'Content-Type: application/json' \
                 --data-raw '{
                   "properties": {
-                    "Vercel": { "rich_text": [{
-                        "text": {
-                            "content": "${{ env.vercel_link }}",
-                            "link": {"url": "${{ env.vercel_link }}"}
-                        }
-                    }] }
+                    "Deployment": {"url": "${{ env.vercel_link }}"}
                   }
                 }'

@@ -19,7 +19,7 @@ jobs:
                 "filter": {
                   "and": [
                   {
-                      "property": "test-formula",
+                      "property": "Github Branch",
                       "formula": {
                           "string": {"starts_with": "${{ github.head_ref }}"}
                       }
@@ -28,7 +28,7 @@ jobs:
                 },
                 "sorts": [
                   {
-                    "property": "Due",
+                    "property": "Target Date",
                     "direction": "ascending"
                   }
                 ]
@@ -39,11 +39,6 @@ jobs:
                 --header 'Content-Type: application/json' \
                 --data-raw '{
                   "properties": {
-                    "PR": { "rich_text": [{
-                        "text": {
-                            "content": "${{ github.event.repository.html_url }}/pull/${{ github.event.number }}",
-                            "link": {"url": "${{ github.event.repository.html_url }}/pull/${{ github.event.number }}"}
-                        }
-                    }] }
+                    "PR": {"url": "${{ github.event.repository.html_url }}/pull/${{ github.event.number }}"}
                   }
                 }'
