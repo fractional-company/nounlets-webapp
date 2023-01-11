@@ -56,7 +56,7 @@ export default function HomePastNounletAuctions() {
         {liveBuyoutsHappeningCount > 0 && (
           <div className="flex max-w-[300px] flex-col gap-6">
             <h1 className="font-londrina text-px42 leading-px48">
-              {liveBuyoutsHappeningCount === 2 ? (
+              {liveBuyoutsHappeningCount === 1 ? (
                 <>
                   <span className="text-secondary-red">Live buyout</span> is happening!
                 </>
