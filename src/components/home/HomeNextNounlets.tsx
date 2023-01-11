@@ -45,7 +45,7 @@ export default function NextNounlets() {
         <>
           <div className={gridStyles}>
             <div className="col-span-2 space-y-6 p-4">
-              <h1 className="font-londrina text-px32 leading-px36">Tributed Nouns for Nounlets</h1>
+              <h1 className="font-londrina text-px32 leading-px36">Tributed Nouns</h1>
               <p className="text-px16 font-500 leading-px24 text-gray-4">
                 Tributed Nouns are Nouns on the waitlist for auction. Anyone can tribute their Noun
                 to participate in Nounlets.

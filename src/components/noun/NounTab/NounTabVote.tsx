@@ -28,9 +28,9 @@ export default function NounTabVote() {
           <>
             <p className="mt-6 text-px20 font-500 leading-px28 text-gray-4">
               All Nounlet owners will be able to vote on a delegate. The delegate will be elected
-              on-chain in the Nouns contract. The selected delegate is the official representative
-              to the NounsDAO on behalf of the underlying Noun. Each Nounlet has 1 vote on the
-              delegate.
+              on-chain in the Nouns contract. The active delegate will be able to join the official
+              nouns-private discord channel, vote in governance and submit governance proposals.
+              Each Nounlet has 1 vote on the delegate.
             </p>
 
             <GovernanceCurrentDelegate />

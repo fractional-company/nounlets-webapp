@@ -51,7 +51,6 @@ export const getServerSideProps: GetServerSideProps<NounHomeProps> = async (cont
   }
 
   if (localCache.has(nounId)) {
-    console.log('cache hit  :', nounId)
     return {
       props: {
         url: 'https://' + context?.req?.headers?.host,
@@ -62,7 +61,6 @@ export const getServerSideProps: GetServerSideProps<NounHomeProps> = async (cont
   }
 
   const data = await getVaultData(nounId)
-  console.log('cache miss :', nounId)
   if (!data || !data.vaultAddress) {
     return {
       redirect: {

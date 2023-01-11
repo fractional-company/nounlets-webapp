@@ -69,10 +69,11 @@ const Tribute: NextPage = () => {
           </h1>
 
           <p className="text-center font-500 text-gray-4 lg:text-px18 lg:leading-px28">
-            Explanation of this feature..... Nounlets are an experiment to allow for collective
-            ownership over an individual Noun. Each Nounlet represents 1% of the vaulted Noun and
-            has a vote in delegating the Noun`s governance rights. The selected delegate is the
-            official representative to the NounsDAO on behalf of the underlying Noun.
+            Noun owners who wanted to participate in Nounlets can “tribute” their Noun to be
+            auctioned. Tributed Nouns will display below. The Tessera team will work with the
+            community to decide which Noun comes next and when the Nounlets auction will start. If
+            you change your mind, you can withdraw your tributed Noun as long as the Noun has not
+            been vaulted.
           </p>
 
           <div>

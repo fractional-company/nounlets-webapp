@@ -32,7 +32,7 @@ export default function WTFAreNounlets(props: { showCurrentAuction: boolean }) {
           >
             Nouns DAO homepage.
           </a>
-          {/* <br />
+          <br />
           <br />
           In addition to participating in governance, all Nounlet owners are invited to{' '}
           <a
@@ -42,13 +42,13 @@ export default function WTFAreNounlets(props: { showCurrentAuction: boolean }) {
             rel="noreferrer"
           >
             join the Nounlets community in our Discord.
-          </a> */}
+          </a>
         </p>
       </div>
 
       <div className="flex flex-col items-center gap-3 lg:flex-row">
         <h2 className="flex-1 font-londrina text-[48px] font-900 leading-[58px] lg:text-[96px] lg:leading-[116px]">
-          <span className="text-primary">A:</span> COLLECTIVE OWNERSHIP OF NOUNS!
+          <span className="text-primary">A:</span> COLLECTIVE OWNERSHIP OF A NOUN!
         </h2>
 
         <div className="relative w-full max-w-[400px] flex-1 pt-[48px]">
