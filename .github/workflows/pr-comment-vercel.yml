@@ -13,7 +13,7 @@ jobs:
             - name: Get Vercel link
               run: |
                 vercel_slug=$(grep -Po "\[Visit Preview\]\((https:.*?)\)" <<< "${{ github.event.comment.body }}") || [[ $? == 1 ]]
-                vercel_link=$(grep -Po "(https:.*?).app" <<< "$vercel_slug") || [[ $? == 1 ]]
+                vercel_link=$(grep -Po "(https:.*?)\.app" <<< "$vercel_slug") || [[ $? == 1 ]]
                 echo "vercel_link=$vercel_link" >> $GITHUB_ENV
 
             - name: Update notion ticket
