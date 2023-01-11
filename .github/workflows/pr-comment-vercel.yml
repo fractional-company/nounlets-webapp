@@ -2,8 +2,7 @@ name: "PR CI :: Vercel"
 
 on:
     issue_comment:
-        types:
-          - created
+        types: [created, edited]
 
 jobs:
     vercel_to_notion:
