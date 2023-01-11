@@ -119,16 +119,16 @@ export default function WTFAreNounlets(props: { showCurrentAuction: boolean }) {
         >
           <div className="space-y-4">
             <p>
-              Noun owners who wanted to participate in Nounlets can tribute their Noun to be
+              Noun owners who want to participate in Nounlets can tribute their Noun to be
               auctioned. By tributing your Noun, you agree to have your Noun auctioned at any time.
               You will need to sign a transaction allowing the Nounlets smart contracts to transfer
-              the Noun from your wallet and begin an auction. If you change your mind, you can
-              withdraw your tributed Noun as long as the auction has not started.
+              the Noun from your wallet to a Nounlets Vault to be auctioned. If you change your
+              mind, you can withdraw your tributed Noun as long as the auction has not started.
             </p>
             <p>
-              The Tessera team will work with the community to decide which Noun comes next and when
-              the Nounlets auction will start. Tessera does not guarantee that all tributed Nouns
-              will be auctioned. There is no set cadence that auctions will occur.
+              The Tessera team will work with the community to decide which Noun will be auctioned
+              next and when the Nounlets auction will start. Tessera does not guarantee that all
+              tributed Nouns will be auctioned. There is no set cadence that auctions will occur.
             </p>
           </div>
         </SimpleAccordion>
@@ -141,7 +141,7 @@ export default function WTFAreNounlets(props: { showCurrentAuction: boolean }) {
         >
           <div className="space-y-4">
             <p>
-              The Nounlets Auction Contract will act as a self-sufficient Noun generation and
+              The Nounlets auction contract will act as a self-sufficient Noun generation and
               distribution mechanism, auctioning one Nounlet every 25 minutes until all 100 Nounlets
               are sold. 98% of auction proceeds are trustlessly sent to the original Noun owner. 2%
               of auction proceeds are sent to Tessera.
@@ -167,9 +167,9 @@ export default function WTFAreNounlets(props: { showCurrentAuction: boolean }) {
           <div className="space-y-4">
             <p>
               All Nounlet owners will be able to vote on a delegate. The delegate will be elected
-              on-chain in the nouns contract. The active delegate will be able to join the official
-              nouns-private discord channel, vote in governance and submit governance proposals.
-              Each Nounlet has 1 vote on the delegate.
+              on-chain in the Nouns contract. The active delegate will be able to vote in governance
+              and submit governance proposals (if they have 2 total Nouns delegated to them). Each
+              Nounlet has 1 vote on the delegate.
             </p>
           </div>
         </SimpleAccordion>
@@ -184,11 +184,11 @@ export default function WTFAreNounlets(props: { showCurrentAuction: boolean }) {
             <p>
               Reconstitution is only possible after all 100 Nounlets have been sold. The Noun is
               able to be purchased and reconstituted (meaning one person buys the entire Noun from
-              the vault) using what we call an optimistic buyout.
+              the Vault) using what we call an optimistic buyout.
             </p>
             <p>
-              Someone who wants to buy the vaulted Noun makes an offer to buy the Noun out of the
-              vault, which the Nounlet holders implicitly accept if the rejection criteria of
+              Someone who wants to buy the Vaulted Noun makes an offer to buy the Noun out of the
+              Vault, which the Nounlet holders implicitly accept if the rejection criteria of
               purchasing all the bidder’s Nounlets are not met.
             </p>
             <p>
@@ -277,7 +277,7 @@ export default function WTFAreNounlets(props: { showCurrentAuction: boolean }) {
         >
           <div className="space-y-4">
             <p>
-              The Noun Descriptor contract is used to determine Nounlet traits during the minting
+              The Nounlet Seeder contract is used to determine Noun traits during the minting
               process. Currently, Nounlet traits are determined using pseudo-random number
               generation:
             </p>
@@ -287,8 +287,8 @@ export default function WTFAreNounlets(props: { showCurrentAuction: boolean }) {
               </span>
             </p>
             <p>
-              Trait generation is not truly random. Traits can be predicted when minting a Nounlet
-              on the pending block.
+              Trait generation is not truly random. Traits can be predicted when minting a Noun on
+              the pending block.
             </p>
           </div>
         </SimpleAccordion>
