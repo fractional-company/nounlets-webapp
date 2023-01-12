@@ -56,7 +56,11 @@ export default function NounletsOnAuctionCard(props: { vault: VaultData }) {
             </div>
           </div>
           <Button className="primary w-full">
-            {hasAuctionEnded ? 'Settle auction' : 'Bid for Nounlet ' + nounletsCount}
+            {hasAuctionEnded
+              ? nounletsCount === NEXT_PUBLIC_MAX_NOUNLETS
+                ? 'Settle auction'
+                : 'Settle & start next auction'
+              : 'Bid for Nounlet ' + nounletsCount}
           </Button>
         </div>
       </div>

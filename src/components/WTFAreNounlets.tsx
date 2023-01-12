@@ -1,14 +1,29 @@
 import { IS_DEVELOP } from 'config'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
 import Button from './common/buttons/Button'
 import { NounImage } from './common/NounletImage'
 import SimpleAccordion from './common/simple/SimpleAccordion'
 import HomeNounletsOnAuction from './home/HomeNounletsOnAuction'
+import Emmiter from 'src/lib/utils/emitter'
 
 export default function WTFAreNounlets(props: { showCurrentAuction: boolean }) {
   const nounID = IS_DEVELOP ? '1' : '315'
   const [openAccordionIndex, setOpenAccordionIndex] = useState(-1)
+
+  useEffect(() => {
+    const handleOpenOptimisticBuyoutFAQ = (data: any) => {
+      console.log('handleOpenOptimisticBuyoutFAQ', data)
+      setOpenAccordionIndex(4)
+    }
+
+    console.log('WTFAreNounlets useEffect')
+    Emmiter.on('openOptimisticBuyoutFAQ', handleOpenOptimisticBuyoutFAQ)
+    return () => {
+      Emmiter.off('openOptimisticBuyoutFAQ', handleOpenOptimisticBuyoutFAQ)
+    }
+  }, [])
 
   return (
     <div className="space-y-14 lg:space-y-20" id="faq">

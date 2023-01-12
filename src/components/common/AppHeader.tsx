@@ -21,6 +21,7 @@ import IconLink from './icons/IconLink'
 import IconMedium from './icons/IconMedium'
 import IconNounlets from './icons/IconNounlets'
 import IconNounletsLogo from './icons/IconNounletsLogo'
+import IconTesseraLogo from './icons/IconTesseraLogo'
 import IconTwitter from './icons/IconTwitter'
 import SimpleAddress from './simple/SimpleAddress'
 
@@ -116,7 +117,7 @@ export default function AppHeader(): JSX.Element {
                   rel="noreferrer"
                 >
                   <Button className="basic flex-shrink-0 space-x-2">
-                    <IconHome className="h-[12px] w-auto" />
+                    <IconMedium className="h-[16px] w-auto" />
                     <span>WTF are Nounlets?</span>
                   </Button>
                 </a>
@@ -241,7 +242,7 @@ export default function AppHeader(): JSX.Element {
                 className="flex w-full justify-center space-x-2"
               >
                 <Button className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40">
-                  <IconFractionalLogo className="h-[16px] w-auto text-black" />
+                  <IconTesseraLogo className="h-[16px] w-auto text-black" />
                   <span>Tessera</span>
                 </Button>
               </a>

@@ -86,7 +86,7 @@ export default function GovernanceLeaderboard() {
           )}
         </div>
         {account == null ? (
-          <div className="flex flex-col gap-2 xs:flex-row">
+          <div className="flex flex-col gap-2 xs:flex-row xs:items-center">
             <p className="text-px14 font-500 text-gray-3">Connect wallet to cast a vote</p>
             <Button className="default --sm" onClick={() => setConnectModalOpen(true)}>
               Connect wallet

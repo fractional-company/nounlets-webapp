@@ -1,6 +1,7 @@
 import { sleep } from 'radash'
 import { useCallback, useMemo, useState } from 'react'
 import useExistingVaults from 'src/hooks/useExistingVaults'
+import Emitter from 'src/lib/utils/emitter'
 import scrollToElement from 'src/lib/utils/scrollToElement'
 import Button from '../common/buttons/Button'
 import NounletsPastAuctionCard from './Cards/NounletsPastAuctionCard'
@@ -16,6 +17,12 @@ export default function HomePastNounletAuctions() {
     await sleep(1000)
     setPage((value) => value + 1)
     setIsLoading(false)
+  }, [])
+
+  const handleScrollToOptimisticBuyoutFAQ = useCallback(async () => {
+    Emitter.emit('openOptimisticBuyoutFAQ')
+    await sleep(100)
+    scrollToElement('faq-optimistic-buyout')
   }, [])
 
   if (data == null)
@@ -76,7 +83,7 @@ export default function HomePastNounletAuctions() {
               <br />
               <span
                 className="cursor-pointer underline"
-                onClick={() => scrollToElement('faq-optimistic-buyout')}
+                onClick={handleScrollToOptimisticBuyoutFAQ}
               >
                 Read More
               </span>

@@ -21,7 +21,7 @@ export default function CountdownTimer(props: ComponentProps): JSX.Element {
 
   useEffect(() => {
     if (hasEnded) {
-      console.log('has ended')
+      // console.log('has ended')
       return
     }
 

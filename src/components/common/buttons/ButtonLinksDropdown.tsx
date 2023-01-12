@@ -12,6 +12,8 @@ import { Fragment } from 'react'
 import Button from './Button'
 import Link from 'next/link'
 import useSdk from 'src/hooks/utils/useSdk'
+import IconNounlets from '../icons/IconNounlets'
+import IconTesseraLogo from '../icons/IconTesseraLogo'
 
 export default function ButtonLinksDropdown(props: { className?: string }): JSX.Element {
   const sdk = useSdk()
@@ -57,7 +59,7 @@ export default function ButtonLinksDropdown(props: { className?: string }): JSX.
                         className="grid h-full w-full grid-cols-[32px_auto] items-center justify-items-start"
                         onClick={close}
                       >
-                        <IconMedium className="h-[16px] w-auto" />
+                        <IconNounlets className="h-[16px] w-auto" />
                         <span>Tributed Nouns</span>
                       </div>
                     </Link>
@@ -126,7 +128,7 @@ export default function ButtonLinksDropdown(props: { className?: string }): JSX.
                     rel="noreferrer"
                     className="grid h-full w-full grid-cols-[32px_auto] items-center justify-items-start"
                   >
-                    <IconFractionalLogo className="h-[16px] w-auto text-black" />
+                    <IconTesseraLogo className="h-[16px] w-auto text-black" />
                     <span>Tessera</span>
                   </a>
                 </Button>

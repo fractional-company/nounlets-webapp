@@ -22,7 +22,7 @@ export default function NextNounlets() {
   return (
     <div className="space-y-8">
       <h2 className="text-center font-londrina text-[48px] font-900 leading-[52px]">
-        Upcomming (maybe?) Nounlets
+        Next on Nounlets
       </h2>
 
       {!tributedNounsListPaginated && (
@@ -51,12 +51,9 @@ export default function NextNounlets() {
                 to participate in Nounlets.
                 <br />
                 <br />
-                <span
-                  className="cursor-pointer underline"
-                  onClick={() => scrollToElement('faq-tributing')}
-                >
-                  Read More
-                </span>
+                <Link href="/tribute">
+                  <span className="cursor-pointer underline">Read More</span>
+                </Link>
               </p>
             </div>
 

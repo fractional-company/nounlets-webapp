@@ -99,7 +99,7 @@ function BuyoutInProgress(props: {
             {isOver ? 'Settle offer' : 'Review offer'}
           </Button>
         ) : (
-          <Button className="primary w-full">View & Claim</Button>
+          <Button className="primary w-full">View & claim</Button>
         )}
       </div>
     </NounCardWrapper>
@@ -116,7 +116,7 @@ function BuyoutFinished(props: { nounId: string }) {
         <p className="text-px14 font-500 leading-px20">🎉 Offer accepted</p>
       </div>
       <div className="space-y-4 rounded-2xl bg-black p-4">
-        <Button className="primary w-full">View & Claim</Button>
+        <Button className="primary w-full">View & claim</Button>
       </div>
     </NounCardWrapper>
   )
