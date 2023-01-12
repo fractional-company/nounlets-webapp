@@ -1,10 +1,10 @@
 import { storeKeyNameFromField } from '@apollo/client/utilities'
-import { NEXT_PUBLIC_CACHE_VERSION, NEXT_PUBLIC_NOUN_VAULT_ADDRESS } from 'config'
+import { IS_DEVELOP, NEXT_PUBLIC_CACHE_VERSION, NEXT_PUBLIC_NOUN_VAULT_ADDRESS } from 'config'
 import { debounce } from 'lodash'
 import { useCallback } from 'react'
 import { mutate as globalMutate } from 'swr'
 const cacheVersion = NEXT_PUBLIC_CACHE_VERSION
-const cacheKey = `nounlets-cache-v2/v${cacheVersion}/`
+const cacheKey = `nounlets-cache-v2${IS_DEVELOP ? '/dev-0' : ''}/v${cacheVersion}/`
 
 type localStageData = {
   images: { [key: string]: object }
