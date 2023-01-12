@@ -18,54 +18,55 @@ type ComponentProps = {
 }
 
 export default function SimpleAddress(props: ComponentProps): JSX.Element {
-  const { library: provider } = useEthers()
-  const { avatarSize = 0 } = props
-  const address = props.address || ethers.constants.AddressZero
-  const shortenedAddres = shortenAddress(address).toLowerCase()
-  const ens = useReverseENSLookUp(address, false)
-
-  // TODO if the address owns an nounlet, use it as avatar
-
+  const address = (props.address || ethers.constants.AddressZero).toLowerCase()
   return (
     <div
       key={address}
       className={classNames('simple-address flex items-center overflow-hidden', props.className)}
     >
-      <OnMounted>
-        <>
-          {!!avatarSize && (
-            <a
-              href={getCurrentChainExplorerAddressLink(address)}
-              target="_blank"
-              rel="noreferrer"
-              className="flex-shrink-0 overflow-hidden"
-            >
-              <div
-                className={classNames(
-                  'flex-shrink-0 overflow-hidden rounded-full',
-                  props.avatarClassName
-                )}
-                style={{ width: avatarSize, height: avatarSize }}
-              >
-                <Jazzicon
-                  diameter={avatarSize}
-                  seed={jsNumberForAddress('' + address)}
-                  paperStyles={{ display: 'block' }}
-                />
-                {/* <Davatar size={avatarSize} address={address} provider={provider} /> */}
-              </div>
-            </a>
-          )}
-          <div className="flex flex-col overflow-hidden">
-            <a href={getCurrentChainExplorerAddressLink(address)} target="_blank" rel="noreferrer">
-              <p className={classNames('truncate ', props.textClassName)}>
-                {ens || shortenedAddres}
-              </p>
-            </a>
-            {props.subtitle}
-          </div>
-        </>
-      </OnMounted>
+      <KeyedAddress {...{ ...props, address }} />
     </div>
+  )
+}
+
+function KeyedAddress(props: ComponentProps) {
+  const { avatarSize = 0, address } = props
+  const shortenedAddres = shortenAddress(address)
+  const ens = useReverseENSLookUp(address, false)
+
+  return (
+    <OnMounted>
+      <>
+        {!!avatarSize && (
+          <a
+            href={getCurrentChainExplorerAddressLink(address)}
+            target="_blank"
+            rel="noreferrer"
+            className="flex-shrink-0 overflow-hidden"
+          >
+            <div
+              className={classNames(
+                'flex-shrink-0 overflow-hidden rounded-full',
+                props.avatarClassName
+              )}
+              style={{ width: avatarSize, height: avatarSize }}
+            >
+              <Jazzicon
+                diameter={avatarSize}
+                seed={jsNumberForAddress('' + address)}
+                paperStyles={{ display: 'block' }}
+              />
+              {/* <Davatar size={avatarSize} address={address} provider={provider} /> */}
+            </div>
+          </a>
+        )}
+        <div className="flex flex-col overflow-hidden">
+          <a href={getCurrentChainExplorerAddressLink(address)} target="_blank" rel="noreferrer">
+            <p className={classNames('truncate ', props.textClassName)}>{ens || shortenedAddres}</p>
+          </a>
+          {props.subtitle}
+        </div>
+      </>
+    </OnMounted>
   )
 }
