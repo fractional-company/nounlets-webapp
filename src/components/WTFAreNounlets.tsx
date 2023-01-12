@@ -14,11 +14,9 @@ export default function WTFAreNounlets(props: { showCurrentAuction: boolean }) {
 
   useEffect(() => {
     const handleOpenOptimisticBuyoutFAQ = (data: any) => {
-      console.log('handleOpenOptimisticBuyoutFAQ', data)
       setOpenAccordionIndex(4)
     }
 
-    console.log('WTFAreNounlets useEffect')
     Emmiter.on('openOptimisticBuyoutFAQ', handleOpenOptimisticBuyoutFAQ)
     return () => {
       Emmiter.off('openOptimisticBuyoutFAQ', handleOpenOptimisticBuyoutFAQ)

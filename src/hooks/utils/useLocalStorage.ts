@@ -96,7 +96,7 @@ export default function useLocalStorage() {
     (key: string, data: { name?: string; timestamp?: number }) => {
       if (cacheVersion !== -1) {
         if (typeof window !== 'undefined' && window.localStorage != null) {
-          console.log('🔫🔫🔫 setting ens data', key, data)
+          // console.log('🔫🔫🔫 setting ens data', key, data)
           localStorageData['ensNames'][key] = data
           debouncedLocalStorageWrite()
         }

@@ -375,7 +375,7 @@ export default function useExistingVaults() {
         }
       })
 
-      console.log({ transformed })
+      // console.log({ transformed })
 
       // transformed.push(tmpObjBuyoutInProgress)
 
