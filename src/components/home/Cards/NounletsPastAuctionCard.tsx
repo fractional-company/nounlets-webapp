@@ -49,7 +49,7 @@ function BuyoutIdle(props: { nounId: string; auctionEnded: string }) {
 
   const formattedTime = useMemo(() => {
     const endTime = dayjs.unix(BigNumber.from(auctionEnded).toNumber()).local()
-    return endTime.format('MM/D/YY')
+    return endTime.format('MM/DD/YY')
   }, [auctionEnded])
 
   return (
