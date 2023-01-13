@@ -3,8 +3,8 @@ import { sleep } from 'radash'
 import { useCallback, useMemo, useState } from 'react'
 import Button from 'src/components/common/buttons/Button'
 import TributedNounCard from 'src/components/tribute/TributedNounCard'
-import TributeFAQ from 'src/components/tribute/TributeFAQ'
 import TributeYourWallet from 'src/components/tribute/TributeYourWallet'
+import WTFAreNounlets from 'src/components/WTFAreNounlets'
 import useTributedNounsList from 'src/hooks/tribute/useTributedNounsList'
 
 const Tribute: NextPage = () => {
@@ -16,7 +16,7 @@ const Tribute: NextPage = () => {
         </h1>
       </div>
 
-      <div className="space-y-12 px-4 lg:container lg:mx-auto lg:space-y-16">
+      <div className="space-y-12 px-4 md:px-12 lg:container lg:mx-auto  lg:space-y-16 lg:px-4">
         <TributeYourWallet />
 
         <div className="space-y-12">
@@ -81,8 +81,11 @@ const Tribute: NextPage = () => {
           </div>
         </div>
 
-        <div className="pb-20">
-          <TributeFAQ />
+        <div className="space-y-12 pb-20">
+          <h1 className="text-center font-londrina text-[48px] leading-[58px] lg:text-[64px] lg:leading-[76px]">
+            FAQs
+          </h1>
+          <WTFAreNounlets showFAQOnly />
         </div>
       </div>
     </div>

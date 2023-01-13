@@ -112,7 +112,7 @@ export default function AppHeader(): JSX.Element {
                 </Link>
 
                 <a
-                  href="https://medium.com/tessera-nft/nounlets-explained-faq-57e9bc537d93"
+                  href="https://medium.com/tessera-nft/wtf-are-nounlets-ec4d6e324910"
                   target="_blank"
                   rel="noreferrer"
                 >
@@ -177,7 +177,7 @@ export default function AppHeader(): JSX.Element {
                 </Button>
               </Link>
               <a
-                href="https://medium.com/tessera-nft/nounlets-explained-faq-57e9bc537d93"
+                href="https://medium.com/tessera-nft/wtf-are-nounlets-ec4d6e324910"
                 target="_blank"
                 rel="noreferrer"
                 className="flex w-full justify-center space-x-2"

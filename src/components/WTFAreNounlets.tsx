@@ -8,7 +8,10 @@ import SimpleAccordion from './common/simple/SimpleAccordion'
 import HomeNounletsOnAuction from './home/HomeNounletsOnAuction'
 import Emmiter from 'src/lib/utils/emitter'
 
-export default function WTFAreNounlets(props: { showCurrentAuction: boolean }) {
+export default function WTFAreNounlets(props: {
+  showCurrentAuction?: boolean
+  showFAQOnly?: boolean
+}) {
   const nounID = IS_DEVELOP ? '1' : '315'
   const [openAccordionIndex, setOpenAccordionIndex] = useState(-1)
 
@@ -25,64 +28,77 @@ export default function WTFAreNounlets(props: { showCurrentAuction: boolean }) {
 
   return (
     <div className="space-y-14 lg:space-y-20" id="faq">
-      <div className="space-y-6 overflow-hidden rounded-px20 bg-gray-1 py-12 px-4 text-center lg:px-12">
-        <h2 className="text-center font-londrina text-[56px] font-900 leading-[62px] lg:text-[72px] lg:leading-[80px]">
-          <span className="text-primary">Q:</span> WTF ARE NOUNLETS?
-        </h2>
-        <p className="text-px16 font-500 leading-px22 text-gray-4 lg:text-px22 lg:leading-px28">
-          Nounlets are an experiment to allow for collective ownership over an individual Noun. Each
-          Nounlet represents 1% of the vaulted Noun and has a vote in delegating the Noun’s
-          governance rights. The chosen delegate can vote in governance and submit governance
-          proposals (if they have 2 Nouns delegated to them).
-          <br />
-          <br />
-          Learn more below, or by visiting and reviewing the{' '}
-          <a
-            href="https://medium.com/tessera-nft/nounlets-explained-faq-57e9bc537d93"
-            target="_blank"
-            className="font-700 text-secondary-blue"
-            rel="noreferrer"
-          >
-            Nouns DAO homepage.
-          </a>
-          <br />
-          <br />
-          In addition to participating in governance, all Nounlet owners are invited to{' '}
-          <a
-            href="https://medium.com/tessera-nft/nounlets-explained-faq-57e9bc537d93"
-            target="_blank"
-            className="font-700 text-secondary-blue"
-            rel="noreferrer"
-          >
-            join the Nounlets community in our Discord.
-          </a>
-        </p>
-      </div>
-
-      <div className="flex flex-col items-center gap-3 lg:flex-row">
-        <h2 className="flex-1 font-londrina text-[48px] font-900 leading-[58px] lg:text-[96px] lg:leading-[116px]">
-          <span className="text-primary">A:</span> COLLECTIVE OWNERSHIP OF A NOUN!
-        </h2>
-
-        <div className="relative w-full max-w-[400px] flex-1 pt-[48px]">
-          <div className="aspect-square w-full">
-            <NounImage id={nounID} />
+      {!props.showFAQOnly && (
+        <>
+          <div className="space-y-6 overflow-hidden rounded-px20 bg-gray-1 py-12 px-4 text-center lg:px-12">
+            <h2 className="text-center font-londrina text-[56px] font-900 leading-[62px] lg:text-[72px] lg:leading-[80px]">
+              <span className="text-primary">Q:</span> WTF ARE NOUNLETS?
+            </h2>
+            <p className="text-px16 font-500 leading-px22 text-gray-4 lg:text-px22 lg:leading-px28">
+              Nounlets are an experiment to allow for collective ownership over an individual{' '}
+              <a
+                href="https://nouns.wtf/noun/315"
+                target="_blank"
+                className="font-700 text-secondary-blue"
+                rel="noreferrer"
+              >
+                Noun.
+              </a>
+              Each Nounlet represents 1% of the vaulted Noun and has a vote in delegating the Noun’s
+              governance rights. The chosen delegate can vote in governance and submit governance
+              proposals (if they have 2 Nouns delegated to them).
+              <br />
+              <br />
+              Learn more below, or by visiting and reviewing the{' '}
+              <a
+                href="https://nouns.wtf/"
+                target="_blank"
+                className="font-700 text-secondary-blue"
+                rel="noreferrer"
+              >
+                Nouns DAO homepage.
+              </a>
+              <br />
+              <br />
+              In addition to participating in governance, all Nounlet owners are invited to{' '}
+              <a
+                href="https://discord.gg/AQ8dMm9S"
+                target="_blank"
+                className="font-700 text-secondary-blue"
+                rel="noreferrer"
+              >
+                join the Nounlets community in our Discord.
+              </a>
+            </p>
           </div>
-          <Link href={`/noun/${nounID}/nounlet/1`}>
-            <div className="absolute top-0 right-3 lg:right-auto lg:-left-12">
-              <div className="space-y-3 rounded-px16 bg-gray-1 p-4">
-                <h1 className="font-londrina text-px36 leading-px42">Noun {nounID}</h1>
-                <Button className="primary">See Nounlets of {nounID}</Button>
-              </div>
-            </div>
-          </Link>
-        </div>
-      </div>
 
-      {props.showCurrentAuction && (
-        <div className="overflow-hidden rounded-px20">
-          <HomeNounletsOnAuction />
-        </div>
+          <div className="flex flex-col items-center gap-3 lg:flex-row">
+            <h2 className="flex-1 font-londrina text-[48px] font-900 leading-[58px] lg:text-[96px] lg:leading-[116px]">
+              <span className="text-primary">A:</span> COLLECTIVE OWNERSHIP OF A NOUN!
+            </h2>
+
+            <div className="relative w-full max-w-[400px] flex-1 pt-[48px]">
+              <div className="aspect-square w-full">
+                <NounImage id={nounID} />
+              </div>
+              <Link href={`/noun/${nounID}/nounlet/1`}>
+                <div className="absolute top-0 right-3 lg:right-auto lg:-left-12">
+                  <div className="space-y-3 rounded-px16 bg-gray-1 p-4">
+                    <h1 className="font-londrina text-px36 leading-px42">Noun {nounID}</h1>
+                    <Button className="primary">See Nounlets of {nounID}</Button>
+                  </div>
+                </div>
+              </Link>
+            </div>
+          </div>
+          <>
+            {props.showCurrentAuction && (
+              <div className="overflow-hidden rounded-px20">
+                <HomeNounletsOnAuction />
+              </div>
+            )}
+          </>
+        </>
       )}
 
       <div className="flex flex-col space-y-12">

@@ -38,19 +38,6 @@ export default function ButtonLinksDropdown(props: { className?: string }): JSX.
         >
           <Menu.Items className="divide-gray-100 absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y overflow-hidden rounded-md bg-white shadow-sm focus:outline-none">
             <div className="divide-y divide-gray-1">
-              {/* <Menu.Item>
-                <Button className="basic w-full space-x-2 !justify-start !rounded-none">
-                  <a
-                    href="https://medium.com/tessera-nft/nounlets-explained-faq-57e9bc537d93"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="w-full h-full items-center justify-items-start grid grid-cols-[32px_auto]"
-                  >
-                    <IconMedium className="h-[16px] w-auto" />
-                    <span>WTF are Nounlets?</span>
-                  </a>
-                </Button>
-              </Menu.Item> */}
               <Menu.Item>
                 {({ close }) => (
                   <Button className="basic w-full !justify-start space-x-2 !rounded-none">

@@ -20,8 +20,8 @@ export default function BuyoutHero() {
       {/*</pre>*/}
       <div className="mx-auto px-4 lg:container">
         <div className="lg:grid lg:grid-cols-2">
-          <div className="flex flex-col justify-end lg:min-h-[544px] lg:pr-4">
-            <div className="mx-auto aspect-square w-full max-w-[512px]">
+          <div className="flex flex-col justify-end lg:min-h-[544px] lg:justify-start lg:pt-8 lg:pr-4">
+            <div className="mx-auto aspect-square w-full max-w-[512px] border-b-2 border-gray-3/25">
               <NounImage id={nounTokenId} />
             </div>
           </div>
