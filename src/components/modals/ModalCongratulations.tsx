@@ -43,7 +43,7 @@ export default function ModalCongratulations(props: ComponentProps): JSX.Element
               setCongratulationsModalForNounletId(false)
             }}
           >
-            Cast votes
+            Show me the Nounlet!
           </Button>
           {/* </Link> */}
         </div>
