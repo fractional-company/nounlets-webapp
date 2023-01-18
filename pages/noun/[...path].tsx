@@ -13,6 +13,7 @@ import NounTabGeneral from 'src/components/noun/NounTab/NounTabGeneral'
 import NounTabNounlets from 'src/components/noun/NounTab/NounTabNounlets'
 import NounTabVote from 'src/components/noun/NounTab/NounTabVote'
 import OnMounted from 'src/components/OnMounted'
+import SEO from 'src/components/SEO'
 import useLeaderboardData from 'src/hooks/useLeaderboardData'
 import { useNounBuyoutData } from 'src/hooks/useNounBuyoutData'
 import { useNounData } from 'src/hooks/useNounData'
@@ -127,7 +128,7 @@ function parseRouteParams(router: NextRouter) {
   }
 }
 
-const NounHome: NextPage<NounHomeProps> = (props) => {
+const NounHome: NextPage<NounHomeProps> = ({ url }) => {
   const router = useRouter()
   const {
     nounId: paramNounId,
@@ -168,7 +169,18 @@ const NounHome: NextPage<NounHomeProps> = (props) => {
     paramRedirect
   ])
 
-  return <PageContent isPageReady={isPageReady} />
+  return (
+    <>
+      <SEO
+        url={`${url}`}
+        openGraphType="website"
+        title="Nounlets"
+        description="Own a noun together with Nounlets"
+        image={`${url}/img/noun.jpg`}
+      />
+      <PageContent isPageReady={isPageReady} />
+    </>
+  )
 }
 
 export default NounHome

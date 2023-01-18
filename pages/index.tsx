@@ -3,11 +3,19 @@ import type { NextPage } from 'next'
 import NextNounlets from 'src/components/home/HomeNextNounlets'
 import HomeNounletsOnAuction from 'src/components/home/HomeNounletsOnAuction'
 import HomePastNounletAuctions from 'src/components/home/HomePastNounletAuctions'
+import SEO from 'src/components/SEO'
 import WTFAreNounlets from 'src/components/WTFAreNounlets'
 
-const Home: NextPage<{ url: string }> = () => {
+const Home: NextPage<{ url: string }> = ({ url }) => {
   return (
     <div className="page-home">
+      <SEO
+        url={`${url}`}
+        openGraphType="website"
+        title="Nounlets"
+        description="Own a noun together with Nounlets"
+        image={`${url}/img/noun.jpg`}
+      />
       <div className="space-y-4 px-6 pt-4 pb-12 text-center lg:pb-20 lg:pt-10">
         <h1 className="font-londrina text-[64px] font-900 leading-[70px] lg:text-[96px] lg:leading-[106px]">
           OWN A NOUN, TOGETHER
@@ -33,3 +41,11 @@ const Home: NextPage<{ url: string }> = () => {
 }
 
 export default Home
+
+export const getServerSideProps = (context: any) => {
+  return {
+    props: {
+      url: 'https://' + context?.req?.headers?.host
+    }
+  }
+}
