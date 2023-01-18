@@ -125,7 +125,7 @@ export default function WTFAreNounlets(props: {
               100 Nounlets have been sold.
             </li>
             <li>
-              98% of auction proceeds are trustlessly sent to the original Noun owner. 2% of auction
+              95% of auction proceeds are trustlessly sent to the original Noun owner. 5% of auction
               proceeds are sent to Tessera.
             </li>
             <li>Settlement of one Nounlet auction kicks off the next.</li>
@@ -172,7 +172,7 @@ export default function WTFAreNounlets(props: {
             <p>
               The Nounlets auction contract will act as a self-sufficient Noun generation and
               distribution mechanism, auctioning one Nounlet every 25 minutes until all 100 Nounlets
-              are sold. 98% of auction proceeds are trustlessly sent to the original Noun owner. 2%
+              are sold. 95% of auction proceeds are trustlessly sent to the original Noun owner. 5%
               of auction proceeds are sent to Tessera.
             </p>
             <p>

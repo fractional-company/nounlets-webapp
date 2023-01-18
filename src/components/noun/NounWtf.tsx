@@ -73,7 +73,7 @@ export default function NounWtf(): JSX.Element {
                   been sold.
                 </li>
                 <li>
-                  98% of auction proceeds are trustlessly sent to the original Noun owner. 2% of
+                  95% of auction proceeds are trustlessly sent to the original Noun owner. 5% of
                   auction proceeds are sent to Tessera.
                 </li>
                 <li>Settlement of one auction kicks off the next.</li>
@@ -96,8 +96,8 @@ export default function NounWtf(): JSX.Element {
                 <p>
                   The Nounlets Auction Contract will act as a self-sufficient Noun generation and
                   distribution mechanism, auctioning one Nounlet every 4 hours until all 100
-                  Nounlets are sold. 98% of auction proceeds are trustlessly sent to the original
-                  Noun owner. 2% of auction proceeds are sent to Tessera.
+                  Nounlets are sold. 95% of auction proceeds are trustlessly sent to the original
+                  Noun owner. 5% of auction proceeds are sent to Tessera.
                 </p>
                 <p>
                   Each time an auction is settled, the settlement transaction will cause a new
