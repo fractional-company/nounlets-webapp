@@ -135,7 +135,7 @@ export default function NounHeroAuctionProgress(): JSX.Element {
   // Currently unused
   const handleTimerTick = useCallback(() => {
     // debouncedMutateAuctionInfo()
-  }, [debouncedMutateAuctionInfo])
+  }, [])
 
   const handleBidInputValue = (event: ChangeEvent<HTMLInputElement>) => {
     const onlyNumbers = new RegExp(`^\\d+\\.?\\d{0,${NEXT_PUBLIC_BID_DECIMALS}}$`)

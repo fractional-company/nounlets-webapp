@@ -1,5 +1,6 @@
 import {
   CHAIN_ID,
+  IS_DEVELOP,
   NEXT_PUBLIC_BLOCKS_PER_DAY,
   NEXT_PUBLIC_OPENSEA_KEY,
   OPENSEA_API_URL
@@ -45,6 +46,16 @@ export const getVaultList = async () => {
     vault.noun.nounlets = nounlets
     return vault
   })
+
+  // This is develop only issue. We Vaulted the same Noun (16) twice, and the
+  // be is not able to handle it right now. For now this is an edge case since
+  // its unlikely we will ever do this on production. But if we ever do
+  // this needs to be addressed
+  if (IS_DEVELOP) {
+    data.vaults = data.vaults.filter((vault) => {
+      return vault.noun?.id !== '16'
+    })
+  }
 
   return data
 }
