@@ -1,8 +1,5 @@
 import { Config, DAppProvider } from '@usedapp/core'
 import type { AppProps } from 'next/app'
-import { Toaster } from 'react-hot-toast'
-import AppFooter from 'src/components/common/AppFooter'
-import AppHeader from 'src/components/common/AppHeader'
 import WalletConfig from '../src/components/common/WalletConfig'
 import '../styles/globals.css'
 
@@ -13,11 +10,10 @@ import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import utc from 'dayjs/plugin/utc'
-import ModalCongratulations from 'src/components/modals/ModalCongratulations'
-import useLocalStorage from 'src/hooks/utils/useLocalStorage'
-import { useAppStore } from 'src/store/application.store'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
+import useLocalStorage from 'src/hooks/utils/useLocalStorage'
+import { useAppStore } from 'src/store/application.store'
 
 dayjs.extend(duration)
 dayjs.extend(utc)
@@ -60,18 +56,18 @@ function MyApp({ Component, pageProps }: AppProps) {
     >
       <DAppProvider config={useDappConfig}>
         <WalletConfig>
-          <Toaster />
-          <AppHeader />
+          {/* <Toaster /> */}
+          {/* <AppHeader /> */}
           <div id="backdrop-root"></div>
           <div id="overlay-root"></div>
           <Component {...pageProps} />
-          <AppFooter />
-          <ModalCongratulations
+          {/* <AppFooter /> */}
+          {/* <ModalCongratulations
             isShown={congratulationsModal.show}
             onClose={() => {
               setCongratulationsModalForNounletId(false)
             }}
-          />
+          /> */}
         </WalletConfig>
       </DAppProvider>
     </SWRConfig>
