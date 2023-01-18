@@ -87,9 +87,7 @@ function TributeYourWallet() {
       )}
 
       {walletNounsList && walletNounsList.length === 0 && (
-        <h1 className="text-center font-londrina text-px22 font-900 lg:text-[48px] lg:leading-[58px]">
-          You don`t own any Nouns :(
-        </h1>
+        <h1 className="text-center font-londrina text-px22 font-900">You don`t own any Nouns :(</h1>
       )}
 
       {walletNounsList && (

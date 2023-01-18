@@ -238,7 +238,7 @@ export default function WTFAreNounlets(props: {
               <a
                 target="_blank"
                 rel="noreferrer"
-                href="https://medium.com/tessera-nft/nounlets-explained-faq-57e9bc537d93"
+                href="https://medium.com/tessera-nft/wtf-are-nounlets-ec4d6e324910"
                 className="text-secondary-blue"
               >
                 FAQ

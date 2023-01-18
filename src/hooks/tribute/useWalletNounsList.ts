@@ -6,7 +6,7 @@ import useSWRInfinite from 'swr/infinite'
 export default function useWalletNounsList(enabled: boolean) {
   const { account } = useEthers()
   const sdk = useSdk()
-  const PAGE_SIZE = 3
+  const PAGE_SIZE = 9
 
   const infinite = useSWRInfinite(
     (pageIndex, previousPageData) => {
@@ -16,7 +16,7 @@ export default function useWalletNounsList(enabled: boolean) {
       return null
     },
     async (key, index) => {
-      return await getNFTBalance(sdk, account!, index, PAGE_SIZE)
+      return await getNFTBalance(sdk, account!, +index, PAGE_SIZE)
     },
     {
       revalidateFirstPage: false,

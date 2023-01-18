@@ -216,7 +216,7 @@ export default function NounHeroAuctionProgress(): JSX.Element {
         <p>
           You are bidding for 1% ownership of the Noun.{' '}
           <a
-            href="https://medium.com/tessera-nft/nounlets-explained-faq-57e9bc537d93"
+            href="https://medium.com/tessera-nft/wtf-are-nounlets-ec4d6e324910"
             target="_blank"
             className="font-700 text-secondary-blue"
             rel="noreferrer"

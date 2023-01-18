@@ -98,7 +98,7 @@ function TributedNounsList() {
   const { data: tributedNounsListFull } = useTributedNounsList()
   const [isLoading, setIsLoading] = useState(false)
   const [page, setPage] = useState(1)
-  const PAGE_SIZE = 3
+  const PAGE_SIZE = 9
 
   const tributedNounsListPaginated = useMemo(() => {
     return tributedNounsListFull?.slice(0, PAGE_SIZE * page) || null
