@@ -1,7 +1,7 @@
 import client from '../../apollo-client'
 import { graphql } from '../dist'
 
-export const getVaultListGQL = async (first = 10) => {
+export const getVaultListGQL = async (first = 100) => {
   return client.query({
     query: graphql(`
       query VaultList($first: Int!) {
