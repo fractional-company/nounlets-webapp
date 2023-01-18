@@ -12,7 +12,9 @@ export default function useTributedNounsList() {
       // console.log({ result })
       return result.nouns
     },
-    {}
+    {
+      refreshInterval: 30000
+    }
   )
   return {
     ...swrData
