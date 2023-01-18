@@ -167,7 +167,7 @@ export default function AppHeader(): JSX.Element {
                   <span>Tribute your Noun</span>
                 </Button>
               </Link>
-              <Link href="/tribute#tributed-list">
+              <Link href="/tribute">
                 <Button
                   className="default-outline w-full space-x-2 !border-black/10 hover:bg-white/40"
                   onClick={() => setIsModalMenuOpen(false)}

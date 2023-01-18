@@ -41,7 +41,7 @@ export default function ButtonLinksDropdown(props: { className?: string }): JSX.
               <Menu.Item>
                 {({ close }) => (
                   <Button className="basic w-full !justify-start space-x-2 !rounded-none">
-                    <Link href="/tribute#tributed-list">
+                    <Link href="/tribute">
                       <div
                         className="grid h-full w-full grid-cols-[32px_auto] items-center justify-items-start"
                         onClick={close}

@@ -56,8 +56,8 @@ const Tribute: NextPage = () => {
               </h2>
               <p className="font-500 leading-px22 text-gray-4 lg:text-px18 lg:leading-px28">
                 If your Noun is selected, Tessera will initiate a transaction and kickoff the
-                Nounlets auction. ETH proceeds from the auction will be automatically sent back to
-                your wallet (minus a 2% fee).
+                Nounlets auction. ETH proceeds from the auction will be automatically sent to your
+                wallet (minus a 2% fee).
               </p>
             </div>
           </div>

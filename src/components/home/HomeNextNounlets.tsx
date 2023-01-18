@@ -64,7 +64,7 @@ export default function NextNounlets() {
             ))}
           </div>
           <div className="flex justify-center">
-            <Link href="/tribute#tributed-list">
+            <Link href="/tribute">
               <Button className="default-outline text-black">
                 See all ({tributedNounsListFull?.length}) tributed Nouns
               </Button>
