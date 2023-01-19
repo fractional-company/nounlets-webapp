@@ -4,7 +4,7 @@ import SEO from 'src/components/SEO'
 
 const Home: NextPage<{ url: string }> = ({ url }) => {
   return (
-    <div className="page-home min-h-screen bg-white">
+    <div className="page-home hello-brb min-h-screen bg-white">
       <SEO
         url={`${url}`}
         openGraphType="website"
