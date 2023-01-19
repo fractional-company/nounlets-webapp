@@ -7,7 +7,7 @@ import NetworkAlert from '../NetworkAlert'
 import AlertModal from '../../modals/Modal'
 import { AvatarProvider } from '@davatar/react'
 import { NounletsSDK } from 'src/hooks/utils/useSdk'
-import { getGoerliSdk, getMainnetSdk } from '@dethcrypto/eth-sdk-client'
+import { getGoerliSdk, getMainnetSdk, GoerliSdk } from '@dethcrypto/eth-sdk-client'
 
 export const SDKContext = createContext<NounletsSDK | null>(null)
 export default function WalletConfig(props: { children: ReactNode }) {
@@ -36,8 +36,8 @@ export default function WalletConfig(props: { children: ReactNode }) {
     if (library) {
       if (chainId === CHAIN_ID) {
         if (chainId === 1) {
-          // setSdk(getMainnetSdk(library).v2.nounlets)
-          setSdk(getGoerliSdk(library).v2.nounlets)
+          setSdk(getMainnetSdk(library).v2.nounlets as unknown as NounletsSDK)
+          // setSdk(getGoerliSdk(library).v2.nounlets)
         } else if (chainId === 5) {
           setSdk(getGoerliSdk(library).v2.nounlets)
         } else {

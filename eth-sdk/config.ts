@@ -24,14 +24,14 @@ export default defineConfig({
           Multicall3: '0xcA11bde05977b3631167028862bE2a173976CA11',
           NounsDescriptorV2: '0x0Cfdb3Ba1694c2bb2CFACB0339ad7b1Ae5932B63',
           NounsToken: '0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03',
-          NounletRegistry: '0xF5F93d5089ebf8eA0e6C1b69ED12F3baE9958982',
+          NounletRegistry: '0x086bEd3c3566C0C65EC15f35783042823A23deC3',
 
-          NounletAuction: '0x867cD80e464E8E2074a8c46aE3C983096395172F',
-          NounletProtoform: '0x162a2D951E4d2864378B90d6ddDb0693E0C4bb07',
-          OptimisticBid: '0x22592C894DC7762b99b1688b4A947aE0492FEEaE',
+          NounletAuction: '0x31Cd7378715174e2c5Bd7EDF9984c9bC2A9209Eb',
+          NounletProtoform: '0x3677e33527C8Db084866bB2BeAC51592e83d9aB6',
+          OptimisticBid: '0x55D23A7cE5600a4ebE6f752Ce290F804bCC50f7b',
 
-          NounletGovernance: '0x9744c9EbFa3F8be2f4507759147fCbB1e0028D4a',
-          NounletToken: '0x26f0ECEF411Fb856B267B0F2Fb21eE694fc056e9',
+          NounletGovernance: '0xcbF507ca4F48B36E7da2aACcEeCb385328beB5dD',
+          NounletToken: '0x082b5b7998Ebe60e4ACC8c776E16A0F408dCeDe1',
           ReverseRecords: '0x3671aE578E63FdF66ad4F3E12CC0c0d71Ac7510C'
         }
       }
