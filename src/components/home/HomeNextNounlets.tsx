@@ -43,30 +43,34 @@ export default function NextNounlets() {
 
       {tributedNounsListPaginated && (
         <>
-          <div className={gridStyles}>
-            <div className="col-span-2 space-y-6 p-4">
-              <h1 className="font-londrina text-px32 leading-px36">Tributed Nouns</h1>
-              <p className="text-px16 font-500 leading-px24 text-gray-4">
-                Tributed Nouns are Nouns on the waitlist for auction. Anyone can tribute their Noun
-                to participate in Nounlets.
-                <br />
-                <br />
-                <Link href="/tribute">
-                  <span className="cursor-pointer underline">Read More</span>
-                </Link>
-              </p>
-            </div>
-
-            {tributedNounsListPaginated.map((nounData) => (
-              <div key={nounData.id} className="w-auto">
-                <SmallTributedCard noun={nounData} />
+          {tributedNounsListPaginated.length > 0 && (
+            <div className={gridStyles}>
+              <div className="col-span-2 space-y-6 p-4">
+                <h1 className="font-londrina text-px32 leading-px36">Tributed Nouns</h1>
+                <p className="text-px16 font-500 leading-px24 text-gray-4">
+                  Tributed Nouns are Nouns on the waitlist for auction. Anyone can tribute their
+                  Noun to participate in Nounlets.
+                  <br />
+                  <br />
+                  <Link href="/tribute">
+                    <span className="cursor-pointer underline">Read More</span>
+                  </Link>
+                </p>
               </div>
-            ))}
-          </div>
+
+              {tributedNounsListPaginated.map((nounData) => (
+                <div key={nounData.id} className="w-auto">
+                  <SmallTributedCard noun={nounData} />
+                </div>
+              ))}
+            </div>
+          )}
           <div className="flex justify-center">
             <Link href="/tribute">
               <Button className="default-outline text-black">
-                See all ({tributedNounsListFull?.length}) tributed Nouns
+                {tributedNounsListPaginated.length === 0
+                  ? 'Tribute your own!'
+                  : `See all (${tributedNounsListFull?.length}) tributed Nouns`}
               </Button>
             </Link>
           </div>
