@@ -19,6 +19,7 @@ import { useNounBuyoutData } from 'src/hooks/useNounBuyoutData'
 import { useNounData } from 'src/hooks/useNounData'
 import { useNounletData } from 'src/hooks/useNounletData'
 import { ONLY_NUMBERS_REGEX } from 'src/lib/utils/nextBidCalculator'
+import getNounMetadata from 'src/lib/utils/nounOSMetadata'
 import scrollToElement from 'src/lib/utils/scrollToElement'
 import { useAppStore } from 'src/store/application.store'
 import { useBuyoutStore } from 'src/store/buyout/buyout.store'
@@ -32,10 +33,11 @@ import { getVaultData } from '../../graphql/src/queries'
 type NounHomeProps = {
   url: string
   nounId: string
-  vaultAddress: string
+  vaultAddress?: string
+  imageUrl?: string
 }
 
-const localCache = new Map()
+const localCache = new Map<string, string>()
 
 export const getServerSideProps: GetServerSideProps<NounHomeProps> = async (context) => {
   const queryPath = context.query.path as string[]
@@ -51,33 +53,34 @@ export const getServerSideProps: GetServerSideProps<NounHomeProps> = async (cont
     }
   }
 
-  if (localCache.has(nounId)) {
-    return {
-      props: {
-        url: 'https://' + context?.req?.headers?.host,
-        nounId,
-        vaultAddress: localCache.get(nounId)
+  if (!localCache.has(nounId)) {
+    const data = await getVaultData(nounId)
+    if (!data || !data.vaultAddress) {
+      return {
+        redirect: {
+          destination: '/',
+          permanent: false
+        }
       }
     }
+
+    localCache.set(nounId, data.vaultAddress)
   }
 
-  const data = await getVaultData(nounId)
-  if (!data || !data.vaultAddress) {
-    return {
-      redirect: {
-        destination: '/',
-        permanent: false
-      }
-    }
+  let imageUrl
+  try {
+    const metadata = await getNounMetadata(nounId)
+    imageUrl = metadata.image_url
+  } catch (e) {
+    console.error('Error getting Noun image', e)
   }
-
-  localCache.set(nounId, data.vaultAddress)
 
   return {
     props: {
       url: 'https://' + context?.req?.headers?.host,
       nounId,
-      vaultAddress: data.vaultAddress
+      vaultAddress: localCache.get(nounId),
+      imageUrl
     }
   }
 }
@@ -128,7 +131,7 @@ function parseRouteParams(router: NextRouter) {
   }
 }
 
-const NounHome: NextPage<NounHomeProps> = ({ url }) => {
+const NounHome: NextPage<NounHomeProps> = ({ url, imageUrl }) => {
   const router = useRouter()
   const {
     nounId: paramNounId,
@@ -174,9 +177,9 @@ const NounHome: NextPage<NounHomeProps> = ({ url }) => {
       <SEO
         url={`${url}`}
         openGraphType="website"
-        title="Nounlets"
+        title={'Noun ' + paramNounId}
         description="Own a noun together with Nounlets"
-        image={`${url}/img/noun.jpg`}
+        image={imageUrl || `${url}/img/noun.jpg`}
       />
       <PageContent isPageReady={isPageReady} />
     </>

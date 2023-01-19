@@ -1,15 +1,26 @@
+import { IS_DEVELOP } from 'config'
 import { NextPage } from 'next'
 import { sleep } from 'radash'
 import { useCallback, useMemo, useState } from 'react'
 import Button from 'src/components/common/buttons/Button'
+import SEO from 'src/components/SEO'
 import TributedNounCard from 'src/components/tribute/TributedNounCard'
 import TributeYourWallet from 'src/components/tribute/TributeYourWallet'
 import WTFAreNounlets from 'src/components/WTFAreNounlets'
 import useTributedNounsList from 'src/hooks/tribute/useTributedNounsList'
 
 const Tribute: NextPage = () => {
+  const url = IS_DEVELOP ? 'https://dev-nounlets.tessera.co/' : 'https://nounlets.wtf/'
   return (
     <div className="page-tribute space-y-8 bg-white lg:space-y-16">
+      <SEO
+        url={`${url}`}
+        openGraphType="website"
+        title="Tribute"
+        description="Tribute your Noun"
+        image={`${url}/img/noun.jpg`}
+      />
+
       <div className="bg-gray-1 px-4 pt-4 pb-12">
         <h1 className="text-center font-londrina text-[56px] font-700 uppercase leading-[62px]">
           Want to Tribute your Noun?

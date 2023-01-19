@@ -1,5 +1,6 @@
 import { NEXT_PUBLIC_OPENSEA_KEY } from 'config'
 import type { NextApiRequest, NextApiResponse } from 'next'
+import getNounMetadata from 'src/lib/utils/nounOSMetadata'
 
 type Data = {
   name: string
@@ -11,12 +12,7 @@ type Data = {
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
-  const options = { method: 'GET', headers: { 'X-API-KEY': NEXT_PUBLIC_OPENSEA_KEY || '' } }
-
-  const data = await fetch(
-    `https://api.opensea.io/api/v1/asset/0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03/${req.query.nid}/?include_orders=false`,
-    options
-  ).then((response) => response.json())
+  const data = await getNounMetadata('' + req.query.nid)
 
   res.status(200).json({
     name: data.name,
