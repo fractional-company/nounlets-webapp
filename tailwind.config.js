@@ -1,7 +1,7 @@
 module.exports = {
   safelist: process.env.NODE_ENV === 'development' ? [{ pattern: /.*/ }] : [],
   darkMode: 'class',
-  content: ['./pages/**/*.{js,ts,jsx,tsx}', './components/**/*.{js,ts,jsx,tsx}'],
+  content: ['./pages/**/*.{js,ts,jsx,tsx}', './src/components/**/*.{js,ts,jsx,tsx}'],
   theme: {
     fontFamily: {
       inter: ['Inter', 'sans-serif'],
@@ -33,6 +33,7 @@ module.exports = {
       gray: {
         DEFAULT: '#E4E6E9',
         0: '#FCFCFD',
+        0.5: '#FAFBFB',
         1: '#F4F5F6',
         2: '#E4E6E9',
         3: '#8F97A3',
@@ -148,5 +149,5 @@ module.exports = {
       }
     }
   },
-  plugins: []
+  plugins: [require('@headlessui/tailwindcss')({ prefix: 'ui' })]
 }

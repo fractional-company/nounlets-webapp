@@ -1,22 +1,23 @@
-import { ChainId, Config, DAppProvider, useEthers } from '@usedapp/core'
-import AppFooter from 'components/app-footer'
-import AppHeader from 'components/app-header'
+import { Config, DAppProvider } from '@usedapp/core'
 import type { AppProps } from 'next/app'
 import { Toaster } from 'react-hot-toast'
-import WalletConfig from '../components/WalletConfig'
+import AppFooter from 'src/components/common/AppFooter'
+import AppHeader from 'src/components/common/AppHeader'
+import WalletConfig from '../src/components/common/WalletConfig'
 import '../styles/globals.css'
 
 import { SWRConfig } from 'swr'
-import ChainUpdater from '../components/ChainUpdater'
 
+import config, { CHAIN_ID } from 'config'
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
-import utc from 'dayjs/plugin/utc'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import { CHAIN_ID, NEXT_PUBLIC_CACHE_VERSION, NEXT_PUBLIC_NOUN_VAULT_ADDRESS } from 'config'
-import { useAppStore } from 'store/application'
-import CongratulationsModal from 'components/modals/congratulations-modal'
-import useLocalStorage from 'hooks/useLocalStorage'
+import utc from 'dayjs/plugin/utc'
+import ModalCongratulations from 'src/components/modals/ModalCongratulations'
+import useLocalStorage from 'src/hooks/utils/useLocalStorage'
+import { useAppStore } from 'src/store/application.store'
+import { useRouter } from 'next/router'
+import { useEffect } from 'react'
 
 dayjs.extend(duration)
 dayjs.extend(utc)
@@ -33,6 +34,21 @@ const useDappConfig: Config = {
 function MyApp({ Component, pageProps }: AppProps) {
   const {} = useLocalStorage()
   const { congratulationsModal, setCongratulationsModalForNounletId } = useAppStore()
+  const router = useRouter()
+
+  // Remove # from urls
+  useEffect(() => {
+    if (router.isReady) {
+      if (router.asPath.includes('#')) {
+        router.replace(router.asPath.split('#')[0], undefined, { shallow: true })
+      }
+    }
+
+    return () => {
+      config.isClientNavigation = true
+    }
+  }, [router])
+
   return (
     <SWRConfig
       value={{
@@ -44,16 +60,13 @@ function MyApp({ Component, pageProps }: AppProps) {
     >
       <DAppProvider config={useDappConfig}>
         <WalletConfig>
-          <ChainUpdater />
           <Toaster />
-          <div className="bg-gray-1">
-            <AppHeader />
-          </div>
+          <AppHeader />
           <div id="backdrop-root"></div>
           <div id="overlay-root"></div>
           <Component {...pageProps} />
           <AppFooter />
-          <CongratulationsModal
+          <ModalCongratulations
             isShown={congratulationsModal.show}
             onClose={() => {
               setCongratulationsModalForNounletId(false)

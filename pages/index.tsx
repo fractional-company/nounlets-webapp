@@ -1,38 +1,14 @@
 import type { NextPage } from 'next'
 
-import HomeCollectiveOwnership from 'components/home/home-collective-ownership'
-import HomeHero from 'components/home/home-hero'
-import HomeLeaderboard from 'components/home/home-leaderboard'
-import HomeVotesFromNounlet from 'components/home/home-votes-from-nounlet'
-import HomeWTF from 'components/home/home-wtf'
-import useDisplayedNounlet from 'hooks/useDisplayedNounlet'
-import { useVaultStore } from 'store/vaultStore'
-import BidHistoryModal from '../components/modals/bid-history-modal'
-import SimpleModalWrapper from '../components/SimpleModalWrapper'
-import { useAppStore } from '../store/application'
-import useCurrentBackground from 'hooks/useCurrentBackground'
-import SEO from '../components/seo'
-import BuyoutHero from 'components/buyout/buyout-hero'
-import { useBuyoutOfferModalStore } from 'store/buyout/buyout-offer-modal.store'
-import { useBuyoutHowDoesItWorkModalStore } from 'store/buyout/buyout-how-does-it-work-modal.store'
-import BuyoutOfferModal from 'components/buyout/buyout-offer-modal/buyout-offer-modal'
-import BuyoutHowDoesItWorkModal from 'components/buyout/buyout-how-does-it-work-modal'
-import { useBuyoutStore } from 'store/buyout/buyout.store'
+import NextNounlets from 'src/components/home/HomeNextNounlets'
+import HomeNounletsOnAuction from 'src/components/home/HomeNounletsOnAuction'
+import HomePastNounletAuctions from 'src/components/home/HomePastNounletAuctions'
+import SEO from 'src/components/SEO'
+import WTFAreNounlets from 'src/components/WTFAreNounlets'
 
 const Home: NextPage<{ url: string }> = ({ url }) => {
-  const { setBidModalOpen, isBidModalOpen } = useAppStore()
-  const { isLive, wereAllNounletsAuctioned, isGovernanceEnabled } = useVaultStore()
-  const { isLoading } = useBuyoutStore()
-
-  const { isLatestNounlet, hasAuctionSettled } = useDisplayedNounlet()
-
-  const { initialFullPriceOffer, isBuyoutOfferModalShown, closeBuyoutOfferModal } =
-    useBuyoutOfferModalStore()
-  const { isBuyoutHowDoesItWorkModalShown, closeBuyoutHowDoesItWorkModal } =
-    useBuyoutHowDoesItWorkModalStore()
-
   return (
-    <div className="page-home w-screen">
+    <div className="page-home">
       <SEO
         url={`${url}`}
         openGraphType="website"
@@ -40,49 +16,31 @@ const Home: NextPage<{ url: string }> = ({ url }) => {
         description="Own a noun together with Nounlets"
         image={`${url}/img/noun.jpg`}
       />
+      <div className="space-y-4 px-6 pt-4 pb-12 text-center lg:pb-20 lg:pt-10">
+        <h1 className="font-londrina text-[64px] font-900 leading-[70px] lg:text-[96px] lg:leading-[106px]">
+          OWN A NOUN, TOGETHER
+        </h1>
+        <p className="font-londrina text-[34px] font-900 leading-[40px] text-[#202A46] lg:text-[42px] lg:leading-[52px]">
+          1 Noun. 100 Nounlets. Until they´re gone.
+        </p>
+      </div>
 
-      <div className="space-y-16">
-        {wereAllNounletsAuctioned ? (
-          <>
-            <BuyoutHero />
-            <SimpleModalWrapper
-              className="md:!max-w-[512px]"
-              isShown={isBuyoutOfferModalShown}
-              onClose={() => closeBuyoutOfferModal()}
-              preventCloseOnBackdrop
-            >
-              <BuyoutOfferModal initialFullPriceOffer={initialFullPriceOffer} />
-            </SimpleModalWrapper>
+      <HomeNounletsOnAuction />
 
-            <SimpleModalWrapper
-              className="!max-w-[680px]"
-              isShown={isBuyoutHowDoesItWorkModalShown}
-              onClose={() => closeBuyoutHowDoesItWorkModal()}
-            >
-              <BuyoutHowDoesItWorkModal />
-            </SimpleModalWrapper>
-          </>
-        ) : (
-          <>
-            <HomeHero />
-            {isLive && hasAuctionSettled && <HomeVotesFromNounlet />}
-            <SimpleModalWrapper
-              className="md:!w-[600px] !max-w-[600px]"
-              onClose={() => setBidModalOpen(false)}
-              isShown={isBidModalOpen}
-            >
-              <BidHistoryModal />
-            </SimpleModalWrapper>
-          </>
-        )}
+      <div className="bg-white pb-[64px] pt-[48px] lg:pb-[120px] lg:pt-[80px]">
+        <div className="space-y-16 px-4 md:px-12 lg:container lg:mx-auto lg:px-4">
+          <HomePastNounletAuctions />
 
-        {isLive && isGovernanceEnabled && <HomeLeaderboard />}
-        {isLive && <HomeCollectiveOwnership />}
-        <HomeWTF />
+          <NextNounlets />
+
+          <WTFAreNounlets showCurrentAuction={false} />
+        </div>
       </div>
     </div>
   )
 }
+
+export default Home
 
 export const getServerSideProps = (context: any) => {
   return {
@@ -91,5 +49,3 @@ export const getServerSideProps = (context: any) => {
     }
   }
 }
-
-export default Home
