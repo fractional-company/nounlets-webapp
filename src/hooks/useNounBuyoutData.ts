@@ -77,11 +77,11 @@ export function useNounBuyoutData(callback?: (data: any) => void) {
       debouncedMutate()
     }
 
-    console.log('☄️ optimsiticbid on')
+    // console.log('☄️ optimsiticbid on')
     optimisticBid.on(optimisticBid, listener)
 
     return () => {
-      console.log('☄️ optimsiticbid off')
+      // console.log('☄️ optimsiticbid off')
       optimisticBid.off(optimisticBid, listener)
     }
   }, [isLive, sdk])

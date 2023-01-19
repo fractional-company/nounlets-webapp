@@ -237,22 +237,22 @@ function PageContent(props: { isPageReady: boolean }) {
   ])
 
   useNounData(isPageReady && paramNounId === nounTokenId, (data) => {
-    console.log('Noun data', data)
+    // console.log('Noun data', data)
     if (!(data as { wereAllNounletsAuctioned: boolean }).wereAllNounletsAuctioned) {
       setIsReady(true)
     }
   })
 
   useNounletData((data) => {
-    console.log('Nounlet data', data)
+    // console.log('Nounlet data', data)
   })
 
   useLeaderboardData((data) => {
-    console.log('Leaderboard data', data)
+    // console.log('Leaderboard data', data)
   })
 
   useNounBuyoutData((data) => {
-    console.log('Buyout data', data)
+    // console.log('Buyout data', data)
     if (data != null) {
       setIsReady(true)
     }

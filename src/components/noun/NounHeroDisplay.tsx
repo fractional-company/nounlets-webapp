@@ -21,8 +21,6 @@ export default function NounHeroDisplay() {
   const { isBuyoutHowDoesItWorkModalShown, closeBuyoutHowDoesItWorkModal } =
     useBuyoutHowDoesItWorkModalStore()
 
-  console.log({ isGovernanceEnabled })
-
   return (
     <OnMounted>
       {wereAllNounletsAuctioned ? (
@@ -48,7 +46,7 @@ export default function NounHeroDisplay() {
       ) : (
         <>
           <SimpleModalWrapper
-            className="md:!w-[600px] !max-w-[600px]"
+            className="!max-w-[600px] md:!w-[600px]"
             onClose={() => setBidModalOpen(false)}
             isShown={isBidModalOpen}
           >

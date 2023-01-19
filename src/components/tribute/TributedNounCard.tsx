@@ -10,7 +10,6 @@ import IconCheckmark from '../common/icons/IconCheckmark'
 import { NounImage } from '../common/NounletImage'
 import SimpleAddress from '../common/simple/SimpleAddress'
 
-// TODO ask Lilly for more
 const trubitedMemes = [
   'Covertly submitted by',
   'Gracefully added by',

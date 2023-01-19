@@ -25,7 +25,6 @@ export const useLeaderboardStore = createTrackedSelector(
     immer<StoreState & StoreActions>((set) => ({
       ...initialState,
       reset: () => {
-        console.log('reseting leaderboard store')
         set((state) => {
           Object.assign(state, initialState)
         })

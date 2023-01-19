@@ -338,7 +338,7 @@ export const getNFTBalance = async (
     assets: Omit<OpenseaCardData, 'isTributed'>[]
   }>(url)
 
-  console.log('got OS data', data)
+  // console.log('got OS data', data)
 
   const assets = data.assets.map((asset) => {
     return {

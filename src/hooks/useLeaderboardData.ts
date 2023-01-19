@@ -13,7 +13,7 @@ const tmpCache = new Map<string, any>()
 
 export async function leaderboardDataFetcher(vaultAddress: string, sdk: NounletsSDK) {
   const response = await getAllNounlets(vaultAddress, sdk!.NounletAuction.address)
-  console.log('leaderboard response', { response })
+  // console.log('leaderboard response', { response })
 
   return { leaderboard: response, fetchedAt: Date.now() }
 }
@@ -58,7 +58,7 @@ export default function useLeaderboardData(callback?: (data: any) => void) {
       setIsLoading(true)
       setLeaderboardData(null)
     } else {
-      console.log('Leaderboard data cached', cachedData)
+      // console.log('Leaderboard data cached', cachedData)
       setLeaderboardData(cachedData)
       setIsLoading(false)
     }
@@ -85,7 +85,7 @@ export default function useLeaderboardData(callback?: (data: any) => void) {
     if (!isLive || sdk == null) return
 
     // TODO Maybe be more specific with the events?
-    console.log('🍉 listen to any event on NounletToken', vaultAddress, nounletTokenAddress)
+    // console.log('🍉 listen to any event on NounletToken', vaultAddress, nounletTokenAddress)
     const nounletToken = sdk.NounletToken.attach(nounletTokenAddress)
     const nounletAuction = sdk.NounletAuction
     const nounletGovernance = sdk.NounletGovernance
@@ -138,7 +138,7 @@ export default function useLeaderboardData(callback?: (data: any) => void) {
       revalidateIfStale: shouldRevalidate,
       onSuccess(data, key) {
         if (data?.leaderboard == null) {
-          console.log('data null? mutate')
+          // console.log('data null? mutate')
           setTimeout(() => {
             mutate().then()
           }, 15000)
@@ -151,7 +151,7 @@ export default function useLeaderboardData(callback?: (data: any) => void) {
         )
 
         if (data.leaderboard._meta!.block.number > leaderboardBlockNumber) {
-          console.log(data.leaderboard._meta!.block.number, leaderboardBlockNumber)
+          // console.log(data.leaderboard._meta!.block.number, leaderboardBlockNumber)
           setLeaderboardBlockNumber(data.leaderboard._meta!.block.number)
         }
 

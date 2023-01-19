@@ -14,7 +14,6 @@ export default function AppFooter(): JSX.Element {
   const hasAuctionsInProgress = (data?.buckets.auctionInProgress.length || 0) > 0
 
   function scrollOrNavigate(id: string) {
-    console.log(router.pathname)
     if (router.pathname === '/') {
       scrollToElement(id)
     } else {
