@@ -9,6 +9,7 @@ import { useNounStore } from 'src/store/noun.store'
 import useSWR from 'swr'
 import useSdk from './utils/useSdk'
 import useProofs from './useProofs'
+import { getMainnetSdk } from '@dethcrypto/eth-sdk-client'
 
 export default function useLeaderboard() {
   const sdk = useSdk()
@@ -34,7 +35,7 @@ export default function useLeaderboard() {
   // }, [isLive, sdk, nounTokenId])
 
   const { mutate: delegateMutate } = useSWR(
-    library && sdk && 'currentNounDelegate',
+    library && sdk && isLive && 'currentNounDelegate',
     async () => {
       if (!sdk || !library) return
       return sdk.NounsToken.delegates(vaultAddress)
