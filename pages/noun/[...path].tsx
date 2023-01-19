@@ -226,6 +226,12 @@ function PageContent(props: { isPageReady: boolean }) {
       return
     }
 
+    if (!paramNounletId) {
+      if (selectedTabIndex === 2) {
+        setTabIndex(0)
+      }
+    }
+
     setNounletID(paramNounletId)
   }, [
     isPageReady,
@@ -235,7 +241,9 @@ function PageContent(props: { isPageReady: boolean }) {
     wereAllNounletsAuctioned,
     paramNounId,
     paramNounletId,
+    selectedTabIndex,
     setNounletID,
+    setTabIndex,
     resetNounletStore
   ])
 
