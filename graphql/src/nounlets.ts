@@ -230,10 +230,27 @@ export const getTributedNounsGQL = async (first = 10) => {
   //   }
   // }
 
+  // return client.query({
+  //   query: graphql(`
+  //     query Nouns {
+  //       nouns {
+  //         id
+  //         tributedBy
+  //       }
+  //       _meta {
+  //         block {
+  //           number
+  //           timestamp
+  //         }
+  //       }
+  //     }
+  //   `)
+  // })
+
   return client.query({
     query: graphql(`
       query Nouns {
-        nouns {
+        nouns(where: { tributedBy_not: "0x0000000000000000000000000000000000000000" }) {
           id
           tributedBy
         }
