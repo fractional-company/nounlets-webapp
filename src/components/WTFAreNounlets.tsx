@@ -81,14 +81,14 @@ export default function WTFAreNounlets(props: {
               <div className="aspect-square w-full">
                 <NounImage id={nounID} />
               </div>
-              <Link href={`/noun/${nounID}/nounlet/1`}>
-                <div className="absolute top-0 right-3 lg:right-auto lg:-left-12">
-                  <div className="space-y-3 rounded-px16 bg-gray-1 p-4">
-                    <h1 className="font-londrina text-px36 leading-px42">Noun {nounID}</h1>
-                    <Button className="primary">See Nounlets of {nounID}</Button>
-                  </div>
+              {/* <Link href={`/noun/${nounID}/nounlet/1`}> */}
+              <div className="absolute top-0 right-3 lg:right-auto lg:-left-12">
+                <div className="space-y-3 rounded-px16 bg-gray-1 p-4">
+                  <h1 className="font-londrina text-px36 leading-px42">Noun {nounID}</h1>
+                  {/* <Button className="primary">See Nounlets of {nounID}</Button> */}
                 </div>
-              </Link>
+              </div>
+              {/* </Link> */}
             </div>
           </div>
           <>
