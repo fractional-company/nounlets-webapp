@@ -19,8 +19,9 @@ import IconBidHistory from '../common/icons/IconBidHistory'
 import IconHeart from '../common/icons/IconHeart'
 import IconLock from '../common/icons/IconLock'
 import IconVerified from '../common/icons/IconVerified'
+import classNames from 'classnames'
 
-export default function NounHeroAuctionCompleted(): JSX.Element {
+export default function NounHeroAuctionCompleted(props: { isReversed?: boolean }): JSX.Element {
   const { account } = useEthers()
   const { mutate: globalMutate } = useSWRConfig()
   const { setBidModalOpen, setCongratulationsModalForNounletId, setConnectModalOpen } =
@@ -117,7 +118,14 @@ export default function NounHeroAuctionCompleted(): JSX.Element {
         {JSON.stringify(endedAuctionInfo, null, 2)}
       </pre> */}
 
-      <div className="flex flex-col space-y-2 sm:flex-row sm:space-x-14 sm:space-y-0 lg:space-x-10 xl:space-x-14">
+      <div
+        className={classNames(
+          'flex flex-col space-y-2',
+          props.isReversed
+            ? ''
+            : 'sm:flex-row sm:space-x-14 sm:space-y-0 lg:space-x-10 xl:space-x-14'
+        )}
+      >
         <div className="flex flex-col space-y-3">
           <p className="text-px18 font-500 leading-px22 text-gray-4">Winning bid</p>
           <div className="flex items-center space-x-3">

@@ -88,7 +88,7 @@ export default function NounTabNounlets() {
               {auctionData == null || isLoading ? (
                 <></>
               ) : (
-                <NounHeroAuctionCompleted key={'completed-' + nounletId} />
+                <NounHeroAuctionCompleted key={'completed-' + nounletId} isReversed />
               )}
             </div>
           </div>
