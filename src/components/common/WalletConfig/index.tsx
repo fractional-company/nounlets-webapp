@@ -1,7 +1,7 @@
 import { createContext, ReactNode, useEffect, useState } from 'react'
 import { useEthers } from '@usedapp/core'
 import { useAppStore } from '../../../store/application.store'
-import { CHAIN_ID } from '../../../../config'
+import { CHAIN_ID, IS_DEVELOP } from '../../../../config'
 import classes from './WalletConfig.module.css'
 import NetworkAlert from '../NetworkAlert'
 import AlertModal from '../../modals/Modal'
@@ -35,14 +35,41 @@ export default function WalletConfig(props: { children: ReactNode }) {
   useEffect(() => {
     if (library) {
       if (chainId === CHAIN_ID) {
+        let ethSdk = null
+        let fullSdk = null
+
         if (chainId === 1) {
-          setSdk(getMainnetSdk(library).v2.nounlets as unknown as NounletsSDK)
-          // setSdk(getGoerliSdk(library).v2.nounlets)
-        } else if (chainId === 5) {
-          setSdk(getGoerliSdk(library).v2.nounlets)
-        } else {
-          setSdk(null)
+          ethSdk = getMainnetSdk(library) as unknown as ReturnType<typeof getGoerliSdk>
         }
+
+        if (chainId === 5) {
+          ethSdk = getGoerliSdk(library)
+        }
+
+        if (ethSdk != null) {
+          fullSdk = {
+            v1: ethSdk.v1.nounlets,
+            v2: ethSdk.v2.nounlets,
+            getVersion: function (nounTokenId: string) {
+              // v1 support for DEV is 39 and 28, LIVE is 315
+              if (
+                (IS_DEVELOP && (nounTokenId == '28' || nounTokenId == '39')) ||
+                (!IS_DEVELOP && nounTokenId == '315')
+              ) {
+                return 'v1'
+              }
+              return 'v2'
+            },
+            getFor: function (nounTokenId: string) {
+              if (this.getVersion(nounTokenId) === 'v1') {
+                return this.v1
+              }
+              return this.v2
+            }
+          }
+        }
+
+        setSdk(fullSdk)
       }
     }
   }, [library, chainId])

@@ -14,7 +14,7 @@ export function useReverseRecords(addresses: string[] | undefined) {
       if (!addresses || addresses.length === 0 || !sdk) return
       try {
         setIsLoading(true)
-        const resolved = await sdk.ReverseRecords.getNames(addresses)
+        const resolved = await sdk.v2.ReverseRecords.getNames(addresses)
         if (!mounted) return
         setENSNames(resolved)
       } catch (e: any) {

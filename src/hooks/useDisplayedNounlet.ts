@@ -15,10 +15,10 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
   const { cache, mutate: globalMutate } = useSWRConfig()
   const sdk = useSdk()
   const { getMintProof } = useProofs()
-  const { backgrounds } = useNounStore()
   const { account, library } = useEthers()
   const {
     isLoading,
+    backgrounds,
     vaultAddress,
     nounletTokenAddress,
     vaultCuratorAddress,
@@ -53,9 +53,10 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
   const { data: nounletHolderAddress } = useSWR(
     shouldCheckForHolder && { nounTokenId, nounletId, name: 'NounletHolder' },
     async () => {
-      const ownerAddress = await sdk!.NounletToken.attach(nounletTokenAddress).ownerOf(
-        nounletId as string
-      )
+      const ownerAddress = await sdk!
+        .getFor(nounTokenId)
+        .NounletToken.attach(nounletTokenAddress)
+        .ownerOf(nounletId as string)
       return ownerAddress || ethers.constants.AddressZero
     },
     {
@@ -124,11 +125,16 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
     if (library == null) throw new Error('no library')
     if (vaultAddress == null) throw new Error('no vault')
 
-    const gasLimit = await sdk.NounletAuction.estimateGas.bid(vaultAddress, { value: bidAmount })
-    const tx = await sdk.NounletAuction.connect(library.getSigner()).bid(vaultAddress, {
-      value: bidAmount,
-      gasLimit: gasLimit.mul(12).div(10)
-    })
+    const gasLimit = await sdk
+      .getFor(nounTokenId)
+      .NounletAuction.estimateGas.bid(vaultAddress, { value: bidAmount })
+    const tx = await sdk
+      .getFor(nounTokenId)
+      .NounletAuction.connect(library.getSigner())
+      .bid(vaultAddress, {
+        value: bidAmount,
+        gasLimit: gasLimit.mul(12).div(10)
+      })
     return txWithErrorHandling(tx)
   }
 
@@ -138,11 +144,13 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
     if (library == null) throw new Error('no library')
     if (vaultAddress == null) throw new Error('no vault')
 
-    const mintProof = await getMintProof()
-    const tx = await sdk.NounletAuction.connect(library.getSigner()).settleAuction(
-      vaultAddress,
-      mintProof
-    )
+    console.log('settle for', nounTokenId)
+
+    const mintProof = await getMintProof(sdk.getVersion(nounTokenId))
+    const tx = await sdk
+      .getFor(nounTokenId)
+      .NounletAuction.connect(library.getSigner())
+      .settleAuction(vaultAddress, mintProof)
     return txWithErrorHandling(tx)
   }
 

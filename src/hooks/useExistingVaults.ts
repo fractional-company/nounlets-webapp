@@ -6,8 +6,8 @@ import useSdk from 'src/hooks/utils/useSdk'
 import useSWR from 'swr'
 
 import { BigNumber, ethers } from 'ethers'
-import { getBatchNounBidInfo } from 'src/lib/utils/buyoutInfoUtils'
 import { sleep } from 'radash'
+import { getBatchNounBidInfo } from 'src/lib/utils/buyoutInfoUtils'
 
 const tmpObj = {
   state: 'AUCTION_IN_PROGRESS',
@@ -364,7 +364,7 @@ export default function useExistingVaults() {
       const bidInfoResult = await getBatchNounBidInfo(
         sdk!,
         new MulticallProvider(library!),
-        vaultsInProgress.map((vault) => vault.id)
+        vaultsInProgress.map((vault) => ({ id: vault.id, nounTokenId: vault.noun!.id }))
       )
       // console.log('Multicall end')
 

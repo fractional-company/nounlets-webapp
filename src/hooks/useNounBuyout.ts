@@ -1,16 +1,16 @@
-import { multicall, useEtherBalance, useEthers } from '@usedapp/core'
-import { OfferDetails } from 'src/components/buyout/BuyoutOfferModal'
+import { useEtherBalance, useEthers } from '@usedapp/core'
 import { BigNumber, FixedNumber } from 'ethers'
 import { parseEther } from 'ethers/lib/utils'
-import txWithErrorHandling from 'src/lib/utils/txWithErrorHandling'
 import { useMemo } from 'react'
+import { OfferDetails } from 'src/components/buyout/BuyoutOfferModal'
+import txWithErrorHandling from 'src/lib/utils/txWithErrorHandling'
 import { useBuyoutStore } from 'src/store/buyout/buyout.store'
 import { useNounStore } from 'src/store/noun.store'
 import { useSWRConfig } from 'swr'
-import useLeaderboard from './useLeaderboard'
 import useNounImageData from './images/useNounImageData'
-import useSdk from './utils/useSdk'
+import useLeaderboard from './useLeaderboard'
 import useProofs from './useProofs'
+import useSdk from './utils/useSdk'
 
 export default function useNounBuyout() {
   const { mutate: globalMutate } = useSWRConfig()
@@ -100,8 +100,14 @@ export default function useNounBuyout() {
     if (nounletTokenAddress == null) throw new Error('no token address')
 
     // Approve
-    const nounletToken = sdk.NounletToken.attach(nounletTokenAddress).connect(library.getSigner())
-    const isApprovedForAll = await nounletToken.isApprovedForAll(account, sdk.OptimisticBid.address)
+    const nounletToken = sdk
+      .getFor(nounTokenId)
+      .NounletToken.attach(nounletTokenAddress)
+      .connect(library.getSigner())
+    const isApprovedForAll = await nounletToken.isApprovedForAll(
+      account,
+      sdk.getFor(nounTokenId).OptimisticBid.address
+    )
     return isApprovedForAll
   }
 
@@ -113,8 +119,14 @@ export default function useNounBuyout() {
     if (nounletTokenAddress == null) throw new Error('no token address')
 
     // Approve
-    const nounletToken = sdk.NounletToken.attach(nounletTokenAddress).connect(library.getSigner())
-    const tx = await nounletToken.setApprovalForAll(sdk.OptimisticBid.address, true)
+    const nounletToken = sdk
+      .getFor(nounTokenId)
+      .NounletToken.attach(nounletTokenAddress)
+      .connect(library.getSigner())
+    const tx = await nounletToken.setApprovalForAll(
+      sdk.getFor(nounTokenId).OptimisticBid.address,
+      true
+    )
     return txWithErrorHandling(tx)
   }
 
@@ -130,7 +142,7 @@ export default function useNounBuyout() {
     const fractionsOffered = nounletsOffered.map((nounlet) => +nounlet.id)
     const amountsOffered = fractionsOffered.map((v) => 1)
 
-    const vault = sdk.OptimisticBid.connect(library.getSigner())
+    const vault = sdk.getFor(nounTokenId).OptimisticBid.connect(library.getSigner())
     const tx = await vault.start(vaultAddress, fractionsOffered, amountsOffered, {
       value: initialEthBalance
     })
@@ -160,7 +172,7 @@ export default function useNounBuyout() {
     if (nounletTokenAddress == null) throw new Error('no token address')
     if (account == null) throw new Error('No address')
 
-    const optimisticBid = sdk.OptimisticBid.connect(library.getSigner())
+    const optimisticBid = sdk.getFor(nounTokenId).OptimisticBid.connect(library.getSigner())
     const tx = await optimisticBid.buyFractions(
       vaultAddress,
       nounletIds,
@@ -179,15 +191,8 @@ export default function useNounBuyout() {
     if (vaultAddress == null) throw new Error('no vault')
     if (nounletTokenAddress == null) throw new Error('no token address')
     if (account == null) throw new Error('No address')
-
-    const merkleTree = await sdk.NounletProtoform.generateMerkleTree([
-      sdk.NounletAuction.address,
-      sdk.NounletGovernance.address,
-      sdk.OptimisticBid.address
-    ])
-    // const burnProof = await sdk.NounletProtoform.getProof(merkleTree, 6)
-    const burnProof = await getBatchBurnProof()
-    const optimisticBid = sdk.OptimisticBid.connect(library.getSigner())
+    const burnProof = await getBatchBurnProof(sdk.getVersion(nounTokenId))
+    const optimisticBid = sdk.getFor(nounTokenId).OptimisticBid.connect(library.getSigner())
 
     const tx = await optimisticBid.end(
       vaultAddress,
@@ -205,15 +210,8 @@ export default function useNounBuyout() {
     if (vaultAddress == null) throw new Error('no vault')
     if (nounletTokenAddress == null) throw new Error('no token address')
     if (myNounlets.length === 0) throw new Error('No nounlets held')
-
-    const merkleTree = await sdk.NounletProtoform.generateMerkleTree([
-      sdk.NounletAuction.address,
-      sdk.NounletGovernance.address,
-      sdk.OptimisticBid.address
-    ])
-    // const burnProof = await sdk.NounletProtoform.getProof(merkleTree, 6)
-    const burnProof = await getBatchBurnProof()
-    const optimisticBid = sdk.OptimisticBid.connect(library.getSigner())
+    const burnProof = await getBatchBurnProof(sdk.getVersion(nounTokenId))
+    const optimisticBid = sdk.getFor(nounTokenId).OptimisticBid.connect(library.getSigner())
 
     const tx = await optimisticBid.cash(
       vaultAddress,
@@ -235,20 +233,12 @@ export default function useNounBuyout() {
     if (nounletTokenAddress == null) throw new Error('no token address')
     if (account.toLowerCase() !== buyoutInfo.proposer.toLowerCase())
       throw new Error('not the proposer')
-
-    const merkleTree = await sdk.NounletProtoform.generateMerkleTree([
-      sdk.NounletAuction.address,
-      sdk.NounletGovernance.address,
-      sdk.OptimisticBid.address
-    ])
-
-    // const withdrawProof = await sdk.NounletProtoform.getProof(merkleTree, 7)
-    const withdrawProof = await getWithdrawERC721Proof()
-    const optimisticBid = sdk.OptimisticBid.connect(library.getSigner())
+    const withdrawProof = await getWithdrawERC721Proof(sdk.getVersion(nounTokenId))
+    const optimisticBid = sdk.getFor(nounTokenId).OptimisticBid.connect(library.getSigner())
 
     const tx = await optimisticBid.withdrawERC721(
       vaultAddress,
-      sdk.NounsToken.address,
+      sdk.getFor(nounTokenId).NounsToken.address,
       account,
       nounTokenId,
       withdrawProof

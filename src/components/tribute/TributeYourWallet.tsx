@@ -10,7 +10,6 @@ import useTributedNounsList from 'src/hooks/tribute/useTributedNounsList'
 import useWalletNounsList from 'src/hooks/tribute/useWalletNounsList'
 import useSdk from 'src/hooks/utils/useSdk'
 import useToasts, { toastError, toastSuccess } from 'src/hooks/utils/useToasts'
-import { getBatchTributeInfo } from 'src/lib/utils/buyoutInfoUtils'
 import { useAppStore } from 'src/store/application.store'
 import useSWR from 'swr'
 import SimpleAddress from '../common/simple/SimpleAddress'
@@ -19,7 +18,7 @@ import TributeOpenseaCard from './TributeOpenseaCard'
 function TributeYourWallet() {
   const { account } = useEthers()
   const { setConnectModalOpen } = useAppStore()
-  const { mintANoun } = useNounTribute()
+  const { mintANoun, vaultNounV1 } = useNounTribute()
   const { data: tributedNounsList } = useTributedNounsList()
   const [isMinting, setIsMinting] = useState(false)
   const {

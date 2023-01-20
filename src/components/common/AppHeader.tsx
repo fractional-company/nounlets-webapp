@@ -223,7 +223,7 @@ export default function AppHeader(): JSX.Element {
 
               {sdk && (
                 <a
-                  href={getCurrentChainExplorerAddressLink(sdk?.NounletProtoform.address)}
+                  href={getCurrentChainExplorerAddressLink(sdk?.v2.NounletProtoform.address)}
                   target="_blank"
                   className="block"
                   rel="noreferrer"

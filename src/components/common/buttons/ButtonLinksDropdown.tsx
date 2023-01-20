@@ -96,7 +96,7 @@ export default function ButtonLinksDropdown(props: { className?: string }): JSX.
                 <Button className="basic w-full !justify-start space-x-2 !rounded-none">
                   {sdk && (
                     <a
-                      href={getCurrentChainExplorerAddressLink(sdk?.NounletProtoform.address)}
+                      href={getCurrentChainExplorerAddressLink(sdk?.v2.NounletProtoform.address)}
                       target="_blank"
                       rel="noreferrer"
                       className="grid h-full w-full grid-cols-[32px_auto] items-center justify-items-start"
