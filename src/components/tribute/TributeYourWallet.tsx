@@ -50,11 +50,6 @@ function TributeYourWallet() {
     }
   }
 
-  const test = async () => {
-    const result = await vaultNounV1('28')
-    console.log('done!', result)
-  }
-
   if (account == null) {
     return (
       <div className="flex flex-col items-center space-y-8 overflow-hidden rounded-[20px] bg-gray-1 p-6">
@@ -70,10 +65,7 @@ function TributeYourWallet() {
 
   return (
     <div className="flex flex-col items-center space-y-8 overflow-hidden rounded-[20px] bg-gray-1 p-6">
-      <h1
-        className="text-center font-londrina text-px32 font-900 lg:text-[48px] lg:leading-[58px]"
-        onClick={test}
-      >
+      <h1 className="text-center font-londrina text-px32 font-900 lg:text-[48px] lg:leading-[58px]">
         Nouns in your wallet
       </h1>
       <div>
