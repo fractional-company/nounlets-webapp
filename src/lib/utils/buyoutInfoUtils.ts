@@ -192,8 +192,6 @@ export async function getBatchNounBidInfo(
     const mcV1 = new MulticallContract(sdk.v1.OptimisticBid.address, OptimisticBidABI.slice(0, -1))
     const mcV2 = new MulticallContract(sdk.v2.OptimisticBid.address, OptimisticBidABI.slice(0, -1))
 
-    console.log('addresses', addresses)
-
     const calls = addresses.map((address) => {
       return (sdk.getVersion(address.nounTokenId) === 'v1' ? mcV1 : mcV2).bidInfo(address.id)
     })
@@ -201,7 +199,6 @@ export async function getBatchNounBidInfo(
     const nounBidInfoArray = (await multicallProvider.all(calls)) as Awaited<
       ReturnType<typeof sdk.v2.OptimisticBid.bidInfo>
     >[]
-    console.log('results', nounBidInfoArray)
     return nounBidInfoArray
   } catch (error) {
     console.log('multicallProvider error', error)
