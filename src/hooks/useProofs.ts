@@ -123,10 +123,10 @@ export default function useProofs() {
     async (version: 'v1' | 'v2' = 'v2') => {
       const merkleRoot = await getMerkleRoot(version)
       if (version === 'v1') {
-        return sdk.v1.NounletProtoform.getProof(merkleRoot, 1)
+        return sdk.v1.NounletProtoform.getProof(merkleRoot, 7)
       }
 
-      return sdk.v2.NounletProtoform.getProof(merkleRoot, 1)
+      return sdk.v2.NounletProtoform.getProof(merkleRoot, 7)
     },
     [sdk, getMerkleRoot]
   )
