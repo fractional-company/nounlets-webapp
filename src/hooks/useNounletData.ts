@@ -25,7 +25,7 @@ export async function nounletDataFetcher(
         vaultAddress,
         nounletTokenAddress,
         nounletId,
-        sdk.NounletAuction
+        sdk.v2.NounletAuction
       )
     }
   } else {

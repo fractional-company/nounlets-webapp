@@ -68,7 +68,7 @@ export function useNounBuyoutData(callback?: (data: any) => void) {
     if (sdk == null) return
     if (!isLive) return
 
-    const optimisticBid = sdk.OptimisticBid
+    const optimisticBid = sdk.v2.OptimisticBid
     const debouncedMutate = debounce(mutate, 1000)
 
     const listener = (...eventData: any) => {

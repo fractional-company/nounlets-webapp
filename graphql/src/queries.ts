@@ -325,7 +325,7 @@ export const getNFTBalance = async (
     delete axiosConfig.headers['X-API-KEY']
   }
 
-  const contractAddress = sdk.NounsToken.address
+  const contractAddress = sdk.v2.NounsToken.address
   const contracts = `&asset_contract_address=${contractAddress}`
 
   const limit = pageSize

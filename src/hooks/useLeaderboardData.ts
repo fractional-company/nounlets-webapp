@@ -12,7 +12,7 @@ import useSWR, { useSWRConfig } from 'swr'
 const tmpCache = new Map<string, any>()
 
 export async function leaderboardDataFetcher(vaultAddress: string, sdk: NounletsSDK) {
-  const response = await getAllNounlets(vaultAddress, sdk!.NounletAuction.address)
+  const response = await getAllNounlets(vaultAddress, sdk!.v2.NounletAuction.address)
   // console.log('leaderboard response', { response })
 
   return { leaderboard: response, fetchedAt: Date.now() }
@@ -68,7 +68,7 @@ export default function useLeaderboardData(callback?: (data: any) => void) {
     keySWR && `noun/${nounTokenId}/leaderboard/delegate`,
     async () => {
       if (!sdk || !library) return
-      return sdk.NounsToken.delegates(vaultAddress)
+      return sdk.v2.NounsToken.delegates(vaultAddress)
     },
     {
       onSuccess: (delegate) => {
@@ -86,9 +86,9 @@ export default function useLeaderboardData(callback?: (data: any) => void) {
 
     // TODO Maybe be more specific with the events?
     // console.log('🍉 listen to any event on NounletToken', vaultAddress, nounletTokenAddress)
-    const nounletToken = sdk.NounletToken.attach(nounletTokenAddress)
-    const nounletAuction = sdk.NounletAuction
-    const nounletGovernance = sdk.NounletGovernance
+    const nounletToken = sdk.v2.NounletToken.attach(nounletTokenAddress)
+    const nounletAuction = sdk.v2.NounletAuction
+    const nounletGovernance = sdk.v2.NounletGovernance
 
     const debouncedMutate = debounce(() => {
       globalMutate(`noun/${nounTokenId}/leaderboard`).then()

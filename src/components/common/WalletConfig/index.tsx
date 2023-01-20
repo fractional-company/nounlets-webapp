@@ -35,14 +35,37 @@ export default function WalletConfig(props: { children: ReactNode }) {
   useEffect(() => {
     if (library) {
       if (chainId === CHAIN_ID) {
+        let ethSdk = null
+        let fullSdk = null
+
         if (chainId === 1) {
-          setSdk(getMainnetSdk(library).v2.nounlets as unknown as NounletsSDK)
-          // setSdk(getGoerliSdk(library).v2.nounlets)
-        } else if (chainId === 5) {
-          setSdk(getGoerliSdk(library).v2.nounlets)
-        } else {
-          setSdk(null)
+          ethSdk = getMainnetSdk(library) as unknown as ReturnType<typeof getGoerliSdk>
         }
+
+        if (chainId === 5) {
+          ethSdk = getGoerliSdk(library)
+        }
+
+        if (ethSdk != null) {
+          fullSdk = {
+            v1: ethSdk.v1.nounlets,
+            v2: ethSdk.v2.nounlets,
+            getFor: function (nounId: string) {
+              return this.v2
+            }
+          }
+        }
+
+        setSdk(fullSdk)
+        // if (chainId === 1) {
+        //   const asd = getMainnetSdk(library)
+        //   setSdk(getMainnetSdk(library).v2.nounlets as unknown as NounletsSDK)
+        //   // setSdk(getGoerliSdk(library).v2.nounlets)
+        // } else if (chainId === 5) {
+        //   setSdk(getGoerliSdk(library).v2.nounlets)
+        // } else {
+        //   setSdk(null)
+        // }
       }
     }
   }, [library, chainId])

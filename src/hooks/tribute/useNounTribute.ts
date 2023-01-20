@@ -42,8 +42,8 @@ export default function useNounTribute() {
   const tributeNoun = useCallback(
     async (nounId: string) => {
       // console.log('tributing', nounId)
-      const nounsToken = sdk.NounsToken.connect(library!.getSigner())
-      const nounletProtoform = sdk.NounletProtoform
+      const nounsToken = sdk.v2.NounsToken.connect(library!.getSigner())
+      const nounletProtoform = sdk.v2.NounletProtoform
 
       const tx = await nounsToken.approve(nounletProtoform.address, nounId)
       return txWithErrorHandling(tx, 2)
@@ -54,7 +54,7 @@ export default function useNounTribute() {
   const removeTributedNoun = useCallback(
     async (nounId: string) => {
       // console.log('un-tributing', nounId)
-      const nounsToken = sdk.NounsToken.connect(library!.getSigner())
+      const nounsToken = sdk.v2.NounsToken.connect(library!.getSigner())
       const tx = await nounsToken.approve(ethers.constants.AddressZero, nounId)
       return txWithErrorHandling(tx, 2)
     },
@@ -64,12 +64,12 @@ export default function useNounTribute() {
   const vaultNoun = useCallback(
     async (nounId: string) => {
       // console.log('vaulting', nounId)
-      const tx = await sdk.NounletProtoform.connect(library!.getSigner()).deployVault(
+      const tx = await sdk.v2.NounletProtoform.connect(library!.getSigner()).deployVault(
         getProofOrder(),
         [],
         [],
         await getMintProof(),
-        sdk.NounsDescriptorV2.address,
+        sdk.v2.NounsDescriptorV2.address,
         nounId,
         account!
       )

@@ -16,7 +16,7 @@ export default function useNounletImageData(
   const { data } = useSWR<NounletsImageData>(
     swrKey,
     async () => {
-      const nounletToken = sdk!.NounletToken.attach(nounletTokenAddress!)
+      const nounletToken = sdk!.v2.NounletToken.attach(nounletTokenAddress!)
 
       const [data, seed] = await Promise.all([
         nounletToken.uri(nounletId!),

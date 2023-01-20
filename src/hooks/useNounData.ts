@@ -45,7 +45,7 @@ export function useNounData(enabled: boolean, callback?: (data: any) => void) {
 
       if (vaultData == null) throw new Error('vault not found')
 
-      const vaultInfo = await sdk!.NounletAuction.vaultInfo(vaultData.vaultAddress)
+      const vaultInfo = await sdk!.v2.NounletAuction.vaultInfo(vaultData.vaultAddress)
 
       const tmp = {
         ...vaultInfo,

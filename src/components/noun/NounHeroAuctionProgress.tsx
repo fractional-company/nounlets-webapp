@@ -99,7 +99,7 @@ export default function NounHeroAuctionProgress(): JSX.Element {
     if (nounletId === '0') return
 
     // console.log('👍 setting bid listener for ', nounletId)
-    const nounletAuction = sdk.NounletAuction
+    const nounletAuction = sdk.v2.NounletAuction
     const bidFilter = nounletAuction.filters.Bid(
       vaultAddress,
       nounletTokenAddress,

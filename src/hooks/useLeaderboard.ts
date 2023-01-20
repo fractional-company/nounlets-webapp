@@ -38,7 +38,7 @@ export default function useLeaderboard() {
     library && sdk && isLive && 'currentNounDelegate',
     async () => {
       if (!sdk || !library) return
-      return sdk.NounsToken.delegates(vaultAddress)
+      return sdk.v2.NounsToken.delegates(vaultAddress)
     },
     {
       onSuccess: (delegate) => {
@@ -61,7 +61,7 @@ export default function useLeaderboard() {
   //   canFetchLeaderboard && { name: 'Leaderboard' },
   //   async (key) => {
   //     // console.log('🌽🌽🌽🌽🌽 Fetching new leaderboard data')
-  //     const leaderboardData = await getAllNounlets(vaultAddress, sdk!.NounletAuction.address)
+  //     const leaderboardData = await getAllNounlets(vaultAddress, sdk!.v2.NounletAuction.address)
   //     // console.groupCollapsed('🌽🌽🌽🌽🌽 Fetched new leaderboard data')
   //     // console.log({ leaderboardData })
   //     // console.groupEnd()
@@ -140,7 +140,7 @@ export default function useLeaderboard() {
   const claimVaultDelegate = async (toAddress: string) => {
     if (sdk == null || account == null || library == null) throw new Error('No signer')
     if (nounletTokenAddress == '') throw new Error('No nounlet token address')
-    const nounletGovernance = sdk.NounletGovernance.connect(library.getSigner())
+    const nounletGovernance = sdk.v2.NounletGovernance.connect(library.getSigner())
     const gasLimitClaimDelegate = await nounletGovernance.estimateGas.claimDelegate(
       vaultAddress,
       toAddress
@@ -154,13 +154,13 @@ export default function useLeaderboard() {
   const claimNounsDelegate = async (toAddress: string) => {
     if (sdk == null || account == null || library == null) throw new Error('No signer')
     if (nounletTokenAddress == '') throw new Error('No nounlet token address')
-    const nounletGovernance = sdk.NounletGovernance.connect(library.getSigner())
-    const merkleTree = await sdk.NounletProtoform.generateMerkleTree([
-      sdk.NounletAuction.address,
-      sdk.NounletGovernance.address,
-      sdk.OptimisticBid.address
+    const nounletGovernance = sdk.v2.NounletGovernance.connect(library.getSigner())
+    const merkleTree = await sdk.v2.NounletProtoform.generateMerkleTree([
+      sdk.v2.NounletAuction.address,
+      sdk.v2.NounletGovernance.address,
+      sdk.v2.OptimisticBid.address
     ])
-    // const delegateProof = await sdk.NounletProtoform.getProof(merkleTree, 5)
+    // const delegateProof = await sdk.v2.NounletProtoform.getProof(merkleTree, 5)
     const delegateProof = await getDelegateProof()
     const gasLimitDelegate = await nounletGovernance.estimateGas.delegate(
       vaultAddress,
@@ -177,7 +177,9 @@ export default function useLeaderboard() {
     if (sdk == null || account == null || library == null) throw new Error('No signer')
     if (nounletTokenAddress == '') throw new Error('No nounlet token address')
 
-    const nounletToken = sdk.NounletToken.connect(library.getSigner()).attach(nounletTokenAddress)
+    const nounletToken = sdk.v2.NounletToken.connect(library.getSigner()).attach(
+      nounletTokenAddress
+    )
     const tx = await nounletToken.delegate(toAddress)
     return txWithErrorHandling(tx)
   }

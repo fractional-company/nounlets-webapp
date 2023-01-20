@@ -130,7 +130,7 @@ export default function useNounletAuctionInfo(nounletId: string | null) {
               key.vaultAddress,
               key.nounletTokenAddress,
               key.nounletId,
-              sdk!.NounletAuction
+              sdk!.v2.NounletAuction
             )
             response.settled = true // Fake it
           }
@@ -155,7 +155,7 @@ export default function useNounletAuctionInfo(nounletId: string | null) {
             key.vaultAddress,
             key.nounletTokenAddress,
             key.nounletId,
-            sdk!.NounletAuction
+            sdk!.v2.NounletAuction
           )
           // response.settled = true // Dont fake it
         }

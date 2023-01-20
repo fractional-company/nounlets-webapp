@@ -53,7 +53,7 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
   const { data: nounletHolderAddress } = useSWR(
     shouldCheckForHolder && { nounTokenId, nounletId, name: 'NounletHolder' },
     async () => {
-      const ownerAddress = await sdk!.NounletToken.attach(nounletTokenAddress).ownerOf(
+      const ownerAddress = await sdk!.v2.NounletToken.attach(nounletTokenAddress).ownerOf(
         nounletId as string
       )
       return ownerAddress || ethers.constants.AddressZero
@@ -124,8 +124,8 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
     if (library == null) throw new Error('no library')
     if (vaultAddress == null) throw new Error('no vault')
 
-    const gasLimit = await sdk.NounletAuction.estimateGas.bid(vaultAddress, { value: bidAmount })
-    const tx = await sdk.NounletAuction.connect(library.getSigner()).bid(vaultAddress, {
+    const gasLimit = await sdk.v2.NounletAuction.estimateGas.bid(vaultAddress, { value: bidAmount })
+    const tx = await sdk.v2.NounletAuction.connect(library.getSigner()).bid(vaultAddress, {
       value: bidAmount,
       gasLimit: gasLimit.mul(12).div(10)
     })
@@ -139,7 +139,7 @@ export default function useDisplayedNounlet(ignoreUpdate = false) {
     if (vaultAddress == null) throw new Error('no vault')
 
     const mintProof = await getMintProof()
-    const tx = await sdk.NounletAuction.connect(library.getSigner()).settleAuction(
+    const tx = await sdk.v2.NounletAuction.connect(library.getSigner()).settleAuction(
       vaultAddress,
       mintProof
     )

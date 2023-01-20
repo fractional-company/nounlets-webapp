@@ -41,15 +41,15 @@ export default function useProofs() {
     (version: 'v1' | 'v2' = 'v1') => {
       if (version === 'v1')
         return [
-          sdk?.NounletAuction.address,
-          sdk?.NounletGovernance.address,
-          sdk?.OptimisticBid.address
+          sdk?.v2.NounletAuction.address,
+          sdk?.v2.NounletGovernance.address,
+          sdk?.v2.OptimisticBid.address
         ]
 
       return [
-        sdk?.NounletAuction.address,
-        sdk?.OptimisticBid.address,
-        sdk?.NounletGovernance.address
+        sdk?.v2.NounletAuction.address,
+        sdk?.v2.OptimisticBid.address,
+        sdk?.v2.NounletGovernance.address
       ]
     },
     [sdk]
@@ -61,19 +61,23 @@ export default function useProofs() {
         if (merkleRootV1 == null) {
           merkleRootV1 = new Promise(async (resolve, reject) => {
             // console.log('resolving getMerkleRootV1')
-            resolve(await sdk.NounletProtoform.generateMerkleTree(getProofOrder(version)))
+            resolve(await sdk.v2.NounletProtoform.generateMerkleTree(getProofOrder(version)))
           })
         }
-        return merkleRootV1 as unknown as ReturnType<typeof sdk.NounletProtoform.generateMerkleTree>
+        return merkleRootV1 as unknown as ReturnType<
+          typeof sdk.v2.NounletProtoform.generateMerkleTree
+        >
       }
 
       if (merkleRootV2 == null) {
         merkleRootV2 = new Promise(async (resolve, reject) => {
           // console.log('resolving getMerkleRootV2')
-          resolve(await sdk.NounletProtoform.generateMerkleTree(getProofOrder(version)))
+          resolve(await sdk.v2.NounletProtoform.generateMerkleTree(getProofOrder(version)))
         })
       }
-      return merkleRootV2 as unknown as ReturnType<typeof sdk.NounletProtoform.generateMerkleTree>
+      return merkleRootV2 as unknown as ReturnType<
+        typeof sdk.v2.NounletProtoform.generateMerkleTree
+      >
     },
     [sdk, getProofOrder]
   )
@@ -81,7 +85,7 @@ export default function useProofs() {
   const getMintProof = useCallback(
     async (version: 'v1' | 'v2' = 'v1') => {
       const merkleRoot = await getMerkleRoot(version)
-      return sdk.NounletProtoform.getProof(merkleRoot, 0)
+      return sdk.v2.NounletProtoform.getProof(merkleRoot, 0)
     },
     [sdk, getMerkleRoot]
   )
@@ -89,7 +93,7 @@ export default function useProofs() {
   const getDelegateProof = useCallback(
     async (version: 'v1' | 'v2' = 'v1') => {
       const merkleRoot = await getMerkleRoot(version)
-      return sdk.NounletProtoform.getProof(merkleRoot, version === 'v1' ? 5 : 7)
+      return sdk.v2.NounletProtoform.getProof(merkleRoot, version === 'v1' ? 5 : 7)
     },
     [sdk, getMerkleRoot]
   )
@@ -97,7 +101,7 @@ export default function useProofs() {
   const getBatchBurnProof = useCallback(
     async (version: 'v1' | 'v2' = 'v1') => {
       const merkleRoot = await getMerkleRoot(version)
-      return sdk.NounletProtoform.getProof(merkleRoot, version === 'v1' ? 6 : 1)
+      return sdk.v2.NounletProtoform.getProof(merkleRoot, version === 'v1' ? 6 : 1)
     },
     [sdk, getMerkleRoot]
   )
@@ -105,7 +109,7 @@ export default function useProofs() {
   const getWithdrawERC721Proof = useCallback(
     async (version: 'v1' | 'v2' = 'v1') => {
       const merkleRoot = await getMerkleRoot(version)
-      return sdk.NounletProtoform.getProof(merkleRoot, version === 'v1' ? 7 : 2)
+      return sdk.v2.NounletProtoform.getProof(merkleRoot, version === 'v1' ? 7 : 2)
     },
     [sdk, getMerkleRoot]
   )
