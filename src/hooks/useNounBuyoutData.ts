@@ -68,7 +68,7 @@ export function useNounBuyoutData(callback?: (data: any) => void) {
     if (sdk == null) return
     if (!isLive) return
 
-    const optimisticBid = sdk.v2.OptimisticBid
+    const optimisticBid = sdk.getFor(nounTokenId).OptimisticBid
     const debouncedMutate = debounce(mutate, 1000)
 
     const listener = (...eventData: any) => {
@@ -84,7 +84,7 @@ export function useNounBuyoutData(callback?: (data: any) => void) {
       // console.log('☄️ optimsiticbid off')
       optimisticBid.off(optimisticBid, listener)
     }
-  }, [isLive, sdk])
+  }, [isLive, sdk, nounTokenId])
 
   const { data, mutate } = useSWR(
     cachedData == null && keySWR,

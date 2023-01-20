@@ -1,3 +1,4 @@
+import { IS_DEVELOP } from 'config'
 import useSWR from 'swr'
 import useLocalStorage from '../utils/useLocalStorage'
 import useSdk from '../utils/useSdk'
@@ -16,8 +17,7 @@ export default function useNounletImageData(
   const { data } = useSWR<NounletsImageData>(
     swrKey,
     async () => {
-      const nounletToken = sdk!.v2.NounletToken.attach(nounletTokenAddress!)
-
+      const nounletToken = sdk!.getFor(nounId!).NounletToken.attach(nounletTokenAddress!)
       const [data, seed] = await Promise.all([
         nounletToken.uri(nounletId!),
         nounletToken.seeds(nounletId!)

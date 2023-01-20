@@ -27,7 +27,7 @@ export default function NounHeroAuctionProgress(): JSX.Element {
   const sdk = useSdk()
   const { toastSuccess, toastError } = useToasts()
 
-  const { vaultAddress, nounletTokenAddress, minBidIncrease } = useNounStore()
+  const { vaultAddress, nounTokenId, nounletTokenAddress, minBidIncrease } = useNounStore()
   const {
     nid: nounletId,
     auctionData,
@@ -99,7 +99,7 @@ export default function NounHeroAuctionProgress(): JSX.Element {
     if (nounletId === '0') return
 
     // console.log('👍 setting bid listener for ', nounletId)
-    const nounletAuction = sdk.v2.NounletAuction
+    const nounletAuction = sdk.getFor(nounTokenId).NounletAuction
     const bidFilter = nounletAuction.filters.Bid(
       vaultAddress,
       nounletTokenAddress,
@@ -126,7 +126,7 @@ export default function NounHeroAuctionProgress(): JSX.Element {
       // console.log('👎 removing listener for', nounletId)
       nounletAuction.off(bidFilter, listener)
     }
-  }, [vaultAddress, nounletTokenAddress, nounletId, sdk, debouncedMutateAuctionInfo])
+  }, [vaultAddress, nounletTokenAddress, nounletId, sdk, debouncedMutateAuctionInfo, nounTokenId])
 
   const handleTimerFinished = useCallback(() => {
     debouncedMutateAuctionInfo()

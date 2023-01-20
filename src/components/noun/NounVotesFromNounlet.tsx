@@ -12,7 +12,8 @@ import SimpleAddress from '../common/simple/SimpleAddress'
 
 export default function NounVotesFromNounlet(): JSX.Element {
   const sdk = useSdk()
-  const { nid, nounletTokenAddress, auctionData, endedAuctionInfo } = useDisplayedNounlet()
+  const { nid, nounTokenId, nounletTokenAddress, auctionData, endedAuctionInfo } =
+    useDisplayedNounlet()
   const [showAll, setShowAll] = useState(false)
 
   const voteShowLimit = 5
@@ -22,7 +23,7 @@ export default function NounVotesFromNounlet(): JSX.Element {
       return await getNounletVotes(
         nounletTokenAddress,
         nid as string,
-        sdk!.v2.NounletAuction.address
+        sdk!.getFor(nounTokenId).NounletAuction.address
       )
     },
     {

@@ -10,6 +10,7 @@ const tmpCache = new Map<string, any>()
 
 export async function nounletDataFetcher(
   vaultAddress: string,
+  nounTokenId: string,
   nounletTokenAddress: string,
   nounletId: string,
   latestNounletTokenID: string,
@@ -25,7 +26,7 @@ export async function nounletDataFetcher(
         vaultAddress,
         nounletTokenAddress,
         nounletId,
-        sdk.v2.NounletAuction
+        sdk.getFor(nounTokenId).NounletAuction
       )
     }
   } else {
@@ -82,7 +83,14 @@ export function useNounletData(callback?: (data: any) => void) {
   const { data, mutate } = useSWR(
     shouldRevalidate && keySWR,
     async () =>
-      nounletDataFetcher(vaultAddress, nounletTokenAddress, nounletId!, latestNounletTokenId, sdk!),
+      nounletDataFetcher(
+        vaultAddress,
+        nounTokenId,
+        nounletTokenAddress,
+        nounletId!,
+        latestNounletTokenId,
+        sdk!
+      ),
     {
       dedupingInterval: 1000,
       refreshInterval: refreshInterval,

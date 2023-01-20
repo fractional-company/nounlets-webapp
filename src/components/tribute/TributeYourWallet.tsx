@@ -10,7 +10,6 @@ import useTributedNounsList from 'src/hooks/tribute/useTributedNounsList'
 import useWalletNounsList from 'src/hooks/tribute/useWalletNounsList'
 import useSdk from 'src/hooks/utils/useSdk'
 import useToasts, { toastError, toastSuccess } from 'src/hooks/utils/useToasts'
-import { getBatchTributeInfo } from 'src/lib/utils/buyoutInfoUtils'
 import { useAppStore } from 'src/store/application.store'
 import useSWR from 'swr'
 import SimpleAddress from '../common/simple/SimpleAddress'
@@ -19,7 +18,7 @@ import TributeOpenseaCard from './TributeOpenseaCard'
 function TributeYourWallet() {
   const { account } = useEthers()
   const { setConnectModalOpen } = useAppStore()
-  const { mintANoun } = useNounTribute()
+  const { mintANoun, vaultNounV1 } = useNounTribute()
   const { data: tributedNounsList } = useTributedNounsList()
   const [isMinting, setIsMinting] = useState(false)
   const {
@@ -51,6 +50,11 @@ function TributeYourWallet() {
     }
   }
 
+  const test = async () => {
+    const result = await vaultNounV1('28')
+    console.log('done!', result)
+  }
+
   if (account == null) {
     return (
       <div className="flex flex-col items-center space-y-8 overflow-hidden rounded-[20px] bg-gray-1 p-6">
@@ -66,7 +70,10 @@ function TributeYourWallet() {
 
   return (
     <div className="flex flex-col items-center space-y-8 overflow-hidden rounded-[20px] bg-gray-1 p-6">
-      <h1 className="text-center font-londrina text-px32 font-900 lg:text-[48px] lg:leading-[58px]">
+      <h1
+        className="text-center font-londrina text-px32 font-900 lg:text-[48px] lg:leading-[58px]"
+        onClick={test}
+      >
         Nouns in your wallet
       </h1>
       <div>

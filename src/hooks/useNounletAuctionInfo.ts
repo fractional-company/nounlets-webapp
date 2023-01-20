@@ -10,7 +10,8 @@ export default function useNounletAuctionInfo(nounletId: string | null) {
   const { setAuctionsCache: setNounletAuctionsCache } = useLocalStorage()
   const sdk = useSdk()
   const { cache, mutate: globalMutate } = useSWRConfig()
-  const { isLive, vaultAddress, nounletTokenAddress, latestNounletTokenId } = useNounStore()
+  const { isLive, vaultAddress, nounTokenId, nounletTokenAddress, latestNounletTokenId } =
+    useNounStore()
 
   const nid = useMemo(() => {
     if (!isLive) return null
@@ -130,7 +131,7 @@ export default function useNounletAuctionInfo(nounletId: string | null) {
               key.vaultAddress,
               key.nounletTokenAddress,
               key.nounletId,
-              sdk!.v2.NounletAuction
+              sdk!.getFor(nounTokenId).NounletAuction
             )
             response.settled = true // Fake it
           }
@@ -155,7 +156,7 @@ export default function useNounletAuctionInfo(nounletId: string | null) {
             key.vaultAddress,
             key.nounletTokenAddress,
             key.nounletId,
-            sdk!.v2.NounletAuction
+            sdk!.getFor(nounTokenId).NounletAuction
           )
           // response.settled = true // Dont fake it
         }

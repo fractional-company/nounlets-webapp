@@ -11,8 +11,15 @@ import useSWR, { useSWRConfig } from 'swr'
 
 const tmpCache = new Map<string, any>()
 
-export async function leaderboardDataFetcher(vaultAddress: string, sdk: NounletsSDK) {
-  const response = await getAllNounlets(vaultAddress, sdk!.v2.NounletAuction.address)
+export async function leaderboardDataFetcher(
+  vaultAddress: string,
+  nounTokenId: string,
+  sdk: NounletsSDK
+) {
+  const response = await getAllNounlets(
+    vaultAddress,
+    sdk!.getFor(nounTokenId).NounletAuction.address
+  )
   // console.log('leaderboard response', { response })
 
   return { leaderboard: response, fetchedAt: Date.now() }
@@ -68,7 +75,7 @@ export default function useLeaderboardData(callback?: (data: any) => void) {
     keySWR && `noun/${nounTokenId}/leaderboard/delegate`,
     async () => {
       if (!sdk || !library) return
-      return sdk.v2.NounsToken.delegates(vaultAddress)
+      return sdk.getFor(nounTokenId).NounsToken.delegates(vaultAddress)
     },
     {
       onSuccess: (delegate) => {
@@ -86,9 +93,9 @@ export default function useLeaderboardData(callback?: (data: any) => void) {
 
     // TODO Maybe be more specific with the events?
     // console.log('🍉 listen to any event on NounletToken', vaultAddress, nounletTokenAddress)
-    const nounletToken = sdk.v2.NounletToken.attach(nounletTokenAddress)
-    const nounletAuction = sdk.v2.NounletAuction
-    const nounletGovernance = sdk.v2.NounletGovernance
+    const nounletToken = sdk.getFor(nounTokenId).NounletToken.attach(nounletTokenAddress)
+    const nounletAuction = sdk.getFor(nounTokenId).NounletAuction
+    const nounletGovernance = sdk.getFor(nounTokenId).NounletGovernance
 
     const debouncedMutate = debounce(() => {
       globalMutate(`noun/${nounTokenId}/leaderboard`).then()
@@ -115,21 +122,21 @@ export default function useLeaderboardData(callback?: (data: any) => void) {
       nounletAuction.off(nounletAuction, listener)
       nounletGovernance.off(nounletGovernance, listener)
     }
-  }, [isLive, sdk, vaultAddress, nounletTokenAddress, setLeaderboardBlockNumber])
+  }, [isLive, nounTokenId, sdk, vaultAddress, nounletTokenAddress, setLeaderboardBlockNumber])
 
   const { data, mutate } = useSWR(
     cachedData == null && keySWR,
-    async () => leaderboardDataFetcher(vaultAddress, sdk!),
+    async () => leaderboardDataFetcher(vaultAddress, nounTokenId, sdk!),
     {
       dedupingInterval: 0,
       refreshInterval: (latestData) => {
         if (latestData?.leaderboard == null) return 15000
         if (latestData.leaderboard._meta!.block.number < leaderboardBlockNumber) {
-          console.log(
-            '🐌 Leaderboard is outdated',
-            latestData.leaderboard._meta!.block.number,
-            leaderboardBlockNumber
-          )
+          // console.log(
+          //   '🐌 Leaderboard is outdated',
+          //   latestData.leaderboard._meta!.block.number,
+          //   leaderboardBlockNumber
+          // )
           return 15000
         }
 
