@@ -135,7 +135,7 @@ export const getNounletAuctionDataBC = async (
   vaultAddress: string,
   nounletTokenAddress: string,
   nounletTokenId: string,
-  nounletAuction: NounletsSDK['NounletAuction']
+  nounletAuction: NounletsSDK['v2']['NounletAuction']
 ) => {
   console.groupCollapsed('🔩 Fetching auction data from Blockchain')
   console.table({ vaultAddress, nounletTokenAddress, nounletTokenId })
@@ -325,7 +325,8 @@ export const getNFTBalance = async (
     delete axiosConfig.headers['X-API-KEY']
   }
 
-  const contractAddress = sdk.NounsToken.address
+  // v1 does not have this functionality
+  const contractAddress = sdk.v2.NounsToken.address
   const contracts = `&asset_contract_address=${contractAddress}`
 
   const limit = pageSize

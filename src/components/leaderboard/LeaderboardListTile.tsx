@@ -12,6 +12,7 @@ import { useMemo, useState } from 'react'
 import { useAppStore } from 'src/store/application.store'
 import { useBlockNumberCheckpointStore } from 'src/store/blockNumberCheckpointStore.store'
 import LeaderboardVotesDots from './LeaderboardVotesDots'
+import { useNounStore } from 'src/store/noun.store'
 
 export type LeaderboardListTileProps = {
   isMe: boolean
@@ -30,6 +31,7 @@ export default function LeaderboardListTile(props: {
 }): JSX.Element {
   const sdk = useSdk()
   const { account } = useEthers()
+  const { nounTokenId } = useNounStore()
   const { claimVaultDelegate, claimNounsDelegate, mostVotesAcc } = useLeaderboard()
   const { setVoteForDelegateModalForAddress, setConnectModalOpen } = useAppStore()
   const { toastSuccess, toastError, toastInfo } = useToasts()
@@ -133,8 +135,10 @@ export default function LeaderboardListTile(props: {
   // Optimistic bid holding nounlets during buyout
 
   const isOptimisticBidAddress = useMemo(() => {
-    return walletAddress.toLowerCase() === sdk?.OptimisticBid.address.toLowerCase()
-  }, [walletAddress, sdk])
+    return (
+      walletAddress.toLowerCase() === sdk?.getFor(nounTokenId).OptimisticBid.address.toLowerCase()
+    )
+  }, [walletAddress, nounTokenId, sdk])
 
   // Zero address burning nounlets
 

@@ -12,14 +12,19 @@ import SimpleAddress from '../common/simple/SimpleAddress'
 
 export default function NounVotesFromNounlet(): JSX.Element {
   const sdk = useSdk()
-  const { nid, nounletTokenAddress, auctionData, endedAuctionInfo } = useDisplayedNounlet()
+  const { nid, nounTokenId, nounletTokenAddress, auctionData, endedAuctionInfo } =
+    useDisplayedNounlet()
   const [showAll, setShowAll] = useState(false)
 
   const voteShowLimit = 5
   const { data } = useSWR(
     sdk != null && nid != null && { name: 'NounletVotes', nounletId: nid },
     async () => {
-      return await getNounletVotes(nounletTokenAddress, nid as string, sdk!.NounletAuction.address)
+      return await getNounletVotes(
+        nounletTokenAddress,
+        nid as string,
+        sdk!.getFor(nounTokenId).NounletAuction.address
+      )
     },
     {
       dedupingInterval: 4000,
@@ -46,17 +51,17 @@ export default function NounVotesFromNounlet(): JSX.Element {
 
       return (
         <div className="votes-list-tile" key={vote.id}>
-          <div className="border rounded-px16 p-4 border-gray-2 leading-px24">
-            <div className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:justify-between">
-              <div className="flex items-start text-gray-4 space-x-3">
+          <div className="rounded-px16 border border-gray-2 p-4 leading-px24">
+            <div className="flex flex-col space-y-4 lg:flex-row lg:justify-between lg:space-y-0">
+              <div className="flex items-start space-x-3 text-gray-4">
                 <IconTime className="h-6 w-6 flex-shrink-0" />
                 <p className="text-px18 font-500">Voted for delegate</p>
-                <div className="text-px18 font-700 text-secondary-blue inline-flex">
+                <div className="inline-flex text-px18 font-700 text-secondary-blue">
                   <SimpleAddress address={address} />
                 </div>
               </div>
 
-              <p className="pl-8 text-px14 text-gray-3 text-right">{formattedTimestamp}</p>
+              <p className="pl-8 text-right text-px14 text-gray-3">{formattedTimestamp}</p>
             </div>
           </div>
         </div>
@@ -71,16 +76,16 @@ export default function NounVotesFromNounlet(): JSX.Element {
   const hasHiddenVotes = useMemo(() => votesCount > voteShowLimit, [votesCount])
 
   return (
-    <div className="home-votes-from-nounlet lg:container mx-auto">
+    <div className="home-votes-from-nounlet mx-auto lg:container">
       <div className="px-4 md:px-12 lg:px-4">
-        <h3 className="text-px32 font-londrina">Votes from this Nounlet</h3>
+        <h3 className="font-londrina text-px32">Votes from this Nounlet</h3>
         <div className="votes-list mt-8 space-y-2">{nounletVotes}</div>
         {hasHiddenVotes && (
           <div
-            className="flex items-center justify-center space-x-2 text-gray-3 cursor-pointer mt-2"
+            className="mt-2 flex cursor-pointer items-center justify-center space-x-2 text-gray-3"
             onClick={() => setShowAll(!showAll)}
           >
-            <p className="text-center text-px20 leading-px24 font-700 py-3">
+            <p className="py-3 text-center text-px20 font-700 leading-px24">
               {showAll ? 'Show fewer' : `Show all ${votesCount} votes`}
             </p>
             <IconCaret className={classNames('h-3', showAll ? '' : 'rotate-180')} />

@@ -8,6 +8,7 @@ import { useSWRConfig } from 'swr'
 import useProofs from '../useProofs'
 import useSdk from '../utils/useSdk'
 
+// Only uses v2 sdk version
 export default function useNounTribute() {
   const { account, library } = useEthers()
   const sdk = useSdk()
@@ -33,7 +34,6 @@ export default function useNounTribute() {
     if (library == null || sdk == null || account == null) throw new Error('sdk or account missing')
 
     const mintHelper = getGoerliSdk(library).v2.nounlets.MintHelper.connect(library.getSigner())
-    const nounsToken = getGoerliSdk(library).v2.nounlets.NounsToken
 
     const tx = await mintHelper.mint()
     return txWithErrorHandling(tx)
@@ -42,8 +42,8 @@ export default function useNounTribute() {
   const tributeNoun = useCallback(
     async (nounId: string) => {
       // console.log('tributing', nounId)
-      const nounsToken = sdk.NounsToken.connect(library!.getSigner())
-      const nounletProtoform = sdk.NounletProtoform
+      const nounsToken = sdk.v2.NounsToken.connect(library!.getSigner())
+      const nounletProtoform = sdk.v2.NounletProtoform
 
       const tx = await nounsToken.approve(nounletProtoform.address, nounId)
       return txWithErrorHandling(tx, 2)
@@ -54,7 +54,7 @@ export default function useNounTribute() {
   const removeTributedNoun = useCallback(
     async (nounId: string) => {
       // console.log('un-tributing', nounId)
-      const nounsToken = sdk.NounsToken.connect(library!.getSigner())
+      const nounsToken = sdk.v2.NounsToken.connect(library!.getSigner())
       const tx = await nounsToken.approve(ethers.constants.AddressZero, nounId)
       return txWithErrorHandling(tx, 2)
     },
@@ -64,12 +64,12 @@ export default function useNounTribute() {
   const vaultNoun = useCallback(
     async (nounId: string) => {
       // console.log('vaulting', nounId)
-      const tx = await sdk.NounletProtoform.connect(library!.getSigner()).deployVault(
+      const tx = await sdk.v2.NounletProtoform.connect(library!.getSigner()).deployVault(
         getProofOrder(),
         [],
         [],
         await getMintProof(),
-        sdk.NounsDescriptorV2.address,
+        sdk.v2.NounsDescriptorV2.address,
         nounId,
         account!
       )
@@ -78,12 +78,29 @@ export default function useNounTribute() {
     [sdk, library, account, getMintProof, getProofOrder]
   )
 
+  const vaultNounV1 = useCallback(
+    async (nounId: string) => {
+      // console.log('vaulting', nounId)
+      const tx = await sdk.v1.NounletProtoform.connect(library!.getSigner()).deployVault(
+        getProofOrder('v1'),
+        [],
+        [],
+        await getMintProof('v1'),
+        sdk.v1.NounsDescriptorV2.address,
+        nounId
+      )
+      return txWithErrorHandling(tx, 2)
+    },
+    [sdk, library, getMintProof, getProofOrder]
+  )
+
   return {
     mintANoun,
     tributeNoun,
     removeTributedNoun,
     mutateNounsInWalletList,
     mutateTributedList,
-    vaultNoun
+    vaultNoun,
+    vaultNounV1
   }
 }

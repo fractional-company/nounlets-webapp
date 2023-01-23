@@ -38,7 +38,7 @@ export default function useLeaderboard() {
     library && sdk && isLive && 'currentNounDelegate',
     async () => {
       if (!sdk || !library) return
-      return sdk.NounsToken.delegates(vaultAddress)
+      return sdk.getFor(nounTokenId).NounsToken.delegates(vaultAddress)
     },
     {
       onSuccess: (delegate) => {
@@ -56,62 +56,6 @@ export default function useLeaderboard() {
       currentNounDelegate.toLowerCase() !== currentDelegate.toLowerCase()
     )
   }, [currentDelegate, currentNounDelegate, setIsCurrentDelegateOutOfSyncOnNounContract])
-
-  // const { data, mutate } = useSWR(
-  //   canFetchLeaderboard && { name: 'Leaderboard' },
-  //   async (key) => {
-  //     // console.log('🌽🌽🌽🌽🌽 Fetching new leaderboard data')
-  //     const leaderboardData = await getAllNounlets(vaultAddress, sdk!.NounletAuction.address)
-  //     // console.groupCollapsed('🌽🌽🌽🌽🌽 Fetched new leaderboard data')
-  //     // console.log({ leaderboardData })
-  //     // console.groupEnd()
-  //
-  //     return leaderboardData
-  //   },
-  //   {
-  //     revalidateIfStale: false,
-  //     refreshInterval: (latestData) => {
-  //       if (latestData == null) return 15000
-  //       if (latestData._meta!.block.number < leaderboardBlockNumber) {
-  //         // console.log(
-  //         //   '🐌 Leaderboard is outdated',
-  //         //   latestData._meta.block.number,
-  //         //   leaderboardBlockNumber
-  //         // )
-  //         return 15000
-  //       }
-  //
-  //       return 0
-  //     },
-  //     onSuccess: (data) => {
-  //       if (data == null) {
-  //         setTimeout(() => {
-  //           mutate()
-  //         }, 15000)
-  //         return
-  //       }
-  //
-  //       setCurrentDelegate(data.currentDelegate)
-  //       setIsCurrentDelegateOutOfSyncOnVaultContract(data.mostVotesAddress !== data.currentDelegate)
-  //
-  //       if (data._meta!.block.number > leaderboardBlockNumber) {
-  //         setLeaderboardBlockNumber(data._meta!.block.number)
-  //         return
-  //       }
-  //
-  //       if (leaderboardBlockNumber === 0) {
-  //         setTimeout(() => {
-  //           mutate()
-  //         }, 15000)
-  //         return
-  //       }
-  //     },
-  //     onError(err, key, config) {
-  //       console.log('Leaderboard error', err)
-  //       //debugger
-  //     }
-  //   }
-  // )
 
   const isOutOfSync = useMemo(() => {
     return (data?._meta!.block.number || 0) < leaderboardBlockNumber
@@ -140,7 +84,7 @@ export default function useLeaderboard() {
   const claimVaultDelegate = async (toAddress: string) => {
     if (sdk == null || account == null || library == null) throw new Error('No signer')
     if (nounletTokenAddress == '') throw new Error('No nounlet token address')
-    const nounletGovernance = sdk.NounletGovernance.connect(library.getSigner())
+    const nounletGovernance = sdk.getFor(nounTokenId).NounletGovernance.connect(library.getSigner())
     const gasLimitClaimDelegate = await nounletGovernance.estimateGas.claimDelegate(
       vaultAddress,
       toAddress
@@ -154,14 +98,8 @@ export default function useLeaderboard() {
   const claimNounsDelegate = async (toAddress: string) => {
     if (sdk == null || account == null || library == null) throw new Error('No signer')
     if (nounletTokenAddress == '') throw new Error('No nounlet token address')
-    const nounletGovernance = sdk.NounletGovernance.connect(library.getSigner())
-    const merkleTree = await sdk.NounletProtoform.generateMerkleTree([
-      sdk.NounletAuction.address,
-      sdk.NounletGovernance.address,
-      sdk.OptimisticBid.address
-    ])
-    // const delegateProof = await sdk.NounletProtoform.getProof(merkleTree, 5)
-    const delegateProof = await getDelegateProof()
+    const nounletGovernance = sdk.getFor(nounTokenId).NounletGovernance.connect(library.getSigner())
+    const delegateProof = await getDelegateProof(sdk.getVersion(nounTokenId))
     const gasLimitDelegate = await nounletGovernance.estimateGas.delegate(
       vaultAddress,
       toAddress,
@@ -177,7 +115,10 @@ export default function useLeaderboard() {
     if (sdk == null || account == null || library == null) throw new Error('No signer')
     if (nounletTokenAddress == '') throw new Error('No nounlet token address')
 
-    const nounletToken = sdk.NounletToken.connect(library.getSigner()).attach(nounletTokenAddress)
+    const nounletToken = sdk
+      .getFor(nounTokenId)
+      .NounletToken.connect(library.getSigner())
+      .attach(nounletTokenAddress)
     const tx = await nounletToken.delegate(toAddress)
     return txWithErrorHandling(tx)
   }

@@ -79,7 +79,7 @@ export default function AppFooter(): JSX.Element {
               </a>
               {sdk && (
                 <a
-                  href={getCurrentChainExplorerAddressLink(sdk?.NounletProtoform.address)}
+                  href={getCurrentChainExplorerAddressLink(sdk?.v2.NounletProtoform.address)}
                   target="_blank"
                   className="transition-colors hover:text-primary"
                   rel="noreferrer"

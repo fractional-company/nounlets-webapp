@@ -1,3 +1,5 @@
+import { NEXT_PUBLIC_REJECTION_PERIOD } from 'config'
+import OptimisticBidABI from 'eth-sdk/abis/goerli/v2/nounlets/OptimisticBid.json'
 import { BigNumber } from 'ethers'
 import { Contract as MulticallContract, Provider as MulticallProvider } from 'ethers-multicall'
 import { NounletsSDK } from 'src/hooks/utils/useSdk'
@@ -7,9 +9,6 @@ import {
   BuyoutOffer,
   BuyoutState
 } from 'src/store/buyout/buyout.store'
-import OptimisticBidABI from 'eth-sdk/abis/goerli/v2/nounlets/OptimisticBid.json'
-import NounsTokenABI from 'eth-sdk/abis/goerli/v2/nounlets/NounsToken.json'
-import { NEXT_PUBLIC_REJECTION_PERIOD } from 'config'
 
 export async function getBuyoutBidInfo(
   sdk: NounletsSDK,
@@ -17,8 +16,8 @@ export async function getBuyoutBidInfo(
   nounletTokenAddres: string,
   nounTokenId: string
 ): Promise<BuyoutInfo> {
-  const bidInfo = await getBidInfo(sdk, vaultAddress)
-  const startEvents = await getStartEvents(sdk, vaultAddress)
+  const bidInfo = await getBidInfo(sdk, nounTokenId, vaultAddress)
+  const startEvents = await getStartEvents(sdk, nounTokenId, vaultAddress)
   const lastStartEvent = startEvents.at(-1)
   let fractionsOffered: BigNumber[] = []
   let fractionsRemaining: BigNumber[] = []
@@ -34,6 +33,7 @@ export async function getBuyoutBidInfo(
     ) {
       const [offered, remaining] = await getStartEventFractions(
         sdk,
+        nounTokenId,
         nounletTokenAddres,
         lastStartEvent
       )
@@ -46,7 +46,9 @@ export async function getBuyoutBidInfo(
 
     if (bidInfo.state === BuyoutState.SUCCESS) {
       try {
-        const currentOwner = (await sdk.NounsToken.ownerOf(nounTokenId)).toLowerCase()
+        const currentOwner = (
+          await sdk.getFor(nounTokenId).NounsToken.ownerOf(nounTokenId)
+        ).toLowerCase()
         const isHeldByVault = currentOwner === vaultAddress.toLowerCase()
         wasNounWithdrawn = !isHeldByVault
       } catch (error) {}
@@ -84,8 +86,12 @@ export async function getBuyoutBidInfo(
   }
 }
 
-async function getBidInfo(sdk: NounletsSDK, vaultAddress: string): Promise<BuyoutInfoPartial> {
-  const bidInfo = await sdk.OptimisticBid.bidInfo(vaultAddress)
+async function getBidInfo(
+  sdk: NounletsSDK,
+  nounTokenId: string,
+  vaultAddress: string
+): Promise<BuyoutInfoPartial> {
+  const bidInfo = await sdk.getFor(nounTokenId).OptimisticBid.bidInfo(vaultAddress)
   const endTime = bidInfo.startTime.add(NEXT_PUBLIC_REJECTION_PERIOD)
   return {
     startTime: bidInfo.startTime,
@@ -99,9 +105,9 @@ async function getBidInfo(sdk: NounletsSDK, vaultAddress: string): Promise<Buyou
   }
 }
 
-async function getStartEvents(sdk: NounletsSDK, vaultAddress: string) {
-  const filter = sdk.OptimisticBid.filters.Start(vaultAddress)
-  const events = await sdk.OptimisticBid.queryFilter(filter)
+async function getStartEvents(sdk: NounletsSDK, nounTokenId: string, vaultAddress: string) {
+  const filter = sdk.getFor(nounTokenId).OptimisticBid.filters.Start(vaultAddress)
+  const events = await sdk.getFor(nounTokenId).OptimisticBid.queryFilter(filter)
   const formattedEvents = events
     .map((startEvent) => {
       return {
@@ -119,10 +125,11 @@ async function getStartEvents(sdk: NounletsSDK, vaultAddress: string) {
 
 async function getStartEventFractions(
   sdk: NounletsSDK,
+  nounTokenId: string,
   nounletTokenAddres: string,
   event: Awaited<ReturnType<typeof getStartEvents>>[0]
 ) {
-  const nounletToken = sdk.NounletToken.attach(nounletTokenAddres)
+  const nounletToken = sdk.getFor(nounTokenId).NounletToken.attach(nounletTokenAddres)
   const tx = await event.tx.getTransactionReceipt()
   const fractionsOffered: BigNumber[] =
     tx.logs
@@ -144,6 +151,7 @@ async function getStartEventFractions(
 
   const fractionsRemaining = await getOptimisticBidBalances(
     sdk,
+    nounTokenId,
     nounletTokenAddres,
     fractionsOffered
   )
@@ -153,11 +161,12 @@ async function getStartEventFractions(
 
 async function getOptimisticBidBalances(
   sdk: NounletsSDK,
+  nounTokenId: string,
   nounletTokenAddres: string,
   fractionsOffered: BigNumber[]
 ): Promise<BigNumber[]> {
-  const nounletToken = sdk.NounletToken.attach(nounletTokenAddres)
-  const optimisticBid = sdk.OptimisticBid
+  const nounletToken = sdk.getFor(nounTokenId).NounletToken.attach(nounletTokenAddres)
+  const optimisticBid = sdk.getFor(nounTokenId).OptimisticBid
   const balances = await nounletToken.balanceOfBatch(
     fractionsOffered.map((_) => optimisticBid.address),
     fractionsOffered
@@ -176,16 +185,19 @@ async function getOptimisticBidBalances(
 export async function getBatchNounBidInfo(
   sdk: NounletsSDK,
   multicallProvider: MulticallProvider,
-  addresses: string[]
+  addresses: { id: string; nounTokenId: string }[]
 ) {
   try {
     await multicallProvider.init()
-    const mc = new MulticallContract(sdk.OptimisticBid.address, OptimisticBidABI.slice(0, -1))
+    const mcV1 = new MulticallContract(sdk.v1.OptimisticBid.address, OptimisticBidABI.slice(0, -1))
+    const mcV2 = new MulticallContract(sdk.v2.OptimisticBid.address, OptimisticBidABI.slice(0, -1))
+
     const calls = addresses.map((address) => {
-      return mc.bidInfo(address)
+      return (sdk.getVersion(address.nounTokenId) === 'v1' ? mcV1 : mcV2).bidInfo(address.id)
     })
+
     const nounBidInfoArray = (await multicallProvider.all(calls)) as Awaited<
-      ReturnType<typeof sdk.OptimisticBid.bidInfo>
+      ReturnType<typeof sdk.v2.OptimisticBid.bidInfo>
     >[]
     return nounBidInfoArray
   } catch (error) {
@@ -194,19 +206,20 @@ export async function getBatchNounBidInfo(
   }
 }
 
-export async function getBatchTributeInfo(sdk: NounletsSDK, library: any, tokenIds: string[]) {
-  const multicallProvider = new MulticallProvider(library!)
-  await multicallProvider.init()
-  const mc = new MulticallContract(sdk.NounsToken.address, NounsTokenABI)
-  const calls = tokenIds.map((tokenId) => {
-    return mc.getApproved(tokenId)
-  })
+// export async function getBatchTributeInfo(sdk: NounletsSDK, library: any, tokenIds: string[]) {
+//   const multicallProvider = new MulticallProvider(library!)
+//   await multicallProvider.init()
+//   const mc = new MulticallContract(sdk.v2.NounsToken.address, NounsTokenABI)
+//   const calls = tokenIds.map((tokenId) => {
+//     return mc.getApproved(tokenId)
+//   })
 
-  const approveArray = (await multicallProvider.all(calls)) as Awaited<
-    ReturnType<typeof sdk.NounsToken.getApproved>
-  >[]
+//   const approveArray = (await multicallProvider.all(calls)) as Awaited<
+//     ReturnType<typeof sdk.v2.NounsToken.getApproved>
+//   >[]
 
-  return approveArray.map(
-    (approveAddress) => approveAddress.toLowerCase() === sdk.NounletProtoform.address.toLowerCase()
-  )
-}
+//   return approveArray.map(
+//     (approveAddress) =>
+//       approveAddress.toLowerCase() === sdk.v2.NounletProtoform.address.toLowerCase()
+//   )
+// }
