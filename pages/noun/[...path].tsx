@@ -67,20 +67,20 @@ export const getServerSideProps: GetServerSideProps<NounHomeProps> = async (cont
     localCache.set(nounId, data.vaultAddress)
   }
 
-  let imageUrl
-  try {
-    const metadata = await getNounMetadata(nounId)
-    imageUrl = metadata.image_url
-  } catch (e) {
-    console.error('Error getting Noun image', e)
-  }
+  // let imageUrl
+  // try {
+  //   const metadata = await getNounMetadata(nounId)
+  //   imageUrl = metadata.image_url
+  // } catch (e) {
+  //   console.error('Error getting Noun image', e)
+  // }
 
   return {
     props: {
       url: 'https://' + context?.req?.headers?.host,
       nounId,
-      vaultAddress: localCache.get(nounId),
-      imageUrl
+      vaultAddress: localCache.get(nounId)
+      // imageUrl
     }
   }
 }
@@ -131,7 +131,7 @@ function parseRouteParams(router: NextRouter) {
   }
 }
 
-const NounHome: NextPage<NounHomeProps> = ({ url, imageUrl }) => {
+const NounHome: NextPage<NounHomeProps> = ({ url }) => {
   const router = useRouter()
   const {
     nounId: paramNounId,
@@ -179,7 +179,7 @@ const NounHome: NextPage<NounHomeProps> = ({ url, imageUrl }) => {
         openGraphType="website"
         title={'Noun ' + paramNounId}
         description="Own a noun together with Nounlets"
-        image={imageUrl || `${url}/img/noun.jpg`}
+        image={`${url}/img/nounlets-tessera.jpeg`}
       />
       <PageContent isPageReady={isPageReady} />
     </>
